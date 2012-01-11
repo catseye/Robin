@@ -62,13 +62,15 @@ You can define functions with `fun`.  They can be anonymous.
 |   ((fun (a) a) (literal whee)))
 = whee
 
-Bindings in force when a function is defined will still be in force
-when the function is applied, even if they are not lexically in scope.
+Function have "closure" behavior; that is, bindings in force when a
+function is defined will still be in force when the function is applied,
+even if they are no longer lexically in scope.
 
 | (robin (0 . 1) (small (0 . 1))
 |   ((let
 |      ((a (literal (hi)))
-|       (f (fun (x) (pair x a)))) f) (literal oh)))
+|       (f (fun (x) (pair x a))))
+|     f) (literal oh)))
 = (oh hi)
 
 Functions can take functions.
@@ -87,6 +89,15 @@ Functions can return functions.
 |      (mk2 (mk (literal (vindaloo)))))
 |     (mk2 (literal chicken))))
 = (chicken vindaloo)
+
+Arguments to functions shadow any other bindings in effect.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let
+|     ((a (literal a))
+|      (b (fun (a) (pair a a))))
+|     (b 7)))
+= (7 . 7)
 
 Functions can be implemented in Robin, using macros, but the implementation
 is rather onerous, so the details are omitted here.

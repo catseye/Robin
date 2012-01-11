@@ -35,6 +35,8 @@ two arguments will raise an exception.
 |   (pair #f #t #f))
 ? robin: uncaught exception: (illegal-arguments #f #t #f)
 
+`pair` is basically equivalent to Scheme's `cons`.
+
 ### `head` ###
 
 `head` evaluates its argument to a pair, and evaluates to the first element
@@ -60,10 +62,12 @@ of that pair.
 |   (head))
 ? robin: uncaught exception: (illegal-arguments)
 
+`head` is basically equivalent to Scheme's `car`.
+
 ### `tail` ###
 
-Likewise, the horribly-named `tail` also evaluates its argument to a
-pair, and evaluates to the second element of that pair.
+`tail` evaluates its argument to a pair, and evaluates to the second element
+of that pair.
 
 | (robin (0 . 1) (core (0 . 1))
 |   (tail (pair #t #f)))
@@ -84,6 +88,8 @@ pair, and evaluates to the second element of that pair.
 | (robin (0 . 1) (core (0 . 1))
 |   (tail))
 ? robin: uncaught exception: (illegal-arguments)
+
+`tail` is basically equivalent to Scheme's `cdr`.
 
 ### `if` ###
 
@@ -362,6 +368,37 @@ simplest possible macros that can be written:
 | (robin (0 . 1) (core (0 . 1))
 |   ((macro (self args env) (head args)) (why hello there)))
 = (why hello there)
+
+Macros have "closure" behavior; that is, bindings in force when a
+macro is defined will still be in force when the macro is applied,
+even if they are no longer lexically in scope.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((let
+|      ((a (literal these-are))
+|       (m (macro (self args env) (pair a args))))
+|     m) my args))
+= (these-are my args)
+
+Macros can return macros.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let
+|     ((mk (macro (self argsa env)
+|         (macro (self argsb env)
+|           (pair (head argsb) argsa))))
+|      (mk2 (mk vindaloo)))
+|     (mk2 chicken)))
+= (chicken vindaloo)
+
+Arguments to macros shadow any other bindings in effect.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let
+|     ((args (literal a))
+|      (b (macro (self args env) (pair args args))))
+|     (b 7)))
+= ((7) 7)
 
 `self` is there to let you write recursive macros.  The following
 example demonstrates this; it evaluates `(pair b d)` in an environment
