@@ -1,0 +1,2 @@
+(robin (0 . 1) (stdlib (0 . 1))
+  (literal hello-world))

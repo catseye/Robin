@@ -1,0 +1,187 @@
+-> encoding: UTF-8
+
+Robin - Concurrency Module
+==========================
+
+-> Functionality "Interpret Robin Program" is implemented by
+-> shell command "bin/robin %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program"
+
+The `concurrency` module exports macros for working with concurrently-
+executing processes which communicate with each other via message-
+passing.
+
+Functionality in this module is difficult to test in isolation, so
+many of the tests make use of more than one macro from this module.
+
+Data Types
+----------
+
+### Process Identifiers ###
+
+A process identifier is an opaque value which identifies a process.
+
+Also known as "pids".
+
+Pids cannot be denoted directly in the textual S-expression format.
+Several macros in `concurrency` evaluate to a pid, however.
+
+Functions
+---------
+
+Robin's `concurrency` module exports things for managing concurrently-
+executing processes.
+
+### `myself` ###
+
+`myself` takes no arguments and evaluates to the pid of the currently
+running process.
+
+`myself` expects exactly zero arguments.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (myself 123))
+? robin: uncaught exception: (illegal-arguments 123)
+
+### `pid?` ###
+
+`pid?` evaluates its argument, then evaluates to `#t` if that value
+is a process identifier, `#f` otherwise.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (pid? (literal b)))
+= #f
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (pid? (myself)))
+= #t
+
+The argument to `pid?` may naturally be of any type, but there
+must be exactly one argument.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (pid?))
+? robin: uncaught exception: (illegal-arguments)
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (pid? 200 500))
+? robin: uncaught exception: (illegal-arguments 200 500)
+
+### `spawn` ###
+
+`spawn` evaluates its argument to a macro, starts a concurrent process
+running that macro, and evaluates to the process identifier (pid) for
+that new process.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (pid? (spawn (fun (parent) parent))))
+= #t
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (equal? (myself) (spawn (fun (parent) parent))))
+= #f
+
+`spawn` takes exactly one argument, which must be a macro.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (spawn (literal cheesecake)))
+? robin: uncaught exception: (expected-macro . cheesecake)
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (spawn))
+? robin: uncaught exception: (illegal-arguments)
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (spawn (fun (x) 0) (fun (x) 1)))
+? robin: uncaught exception: (illegal-arguments (fun (x) 0) (fun (x) 1))
+
+### `send` ###
+
+`send` evaluates its first argument to obtain a pid, then its second
+argument to obtain a value.  It then sends that value as a message to
+the process identified by the pid, then evaluates its third argument
+and itself evaluates to that.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent) parent))
+|     (send worker (literal spam) (literal ok))))
+= ok
+
+`send` expects its first argument to be a pid.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (send (literal eggs) (literal spam) (literal ok)))
+? robin: uncaught exception: (expected-pid . eggs)
+
+`send` expects exactly three arguments.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent) parent))
+|     (send worker worker)))
+? robin: uncaught exception: (illegal-arguments worker worker)
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent) parent))
+|     (send worker worker worker worker)))
+? robin: uncaught exception: (illegal-arguments worker worker worker worker)
+
+### `recv` ###
+
+`recv` waits for a message to arrive in the currently executing
+process's queue, and removes it.  It binds the identifier given in
+its first argument to the value so received, and evaluates its second
+argument, and itself evaluates to that.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                          (send parent (literal lettuce) (literal ok))))
+|     (recv message (pair message message))))
+= (lettuce . lettuce)
+
+`recv` expects its first argument to be an identifier to be bound.  (This
+is a case of illegal arguments, as the identifier is not an expression
+that must evaluate to a certain type.)
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                          (send parent (literal lettuce) (literal ok))))
+|     (recv (pair 7 8) 9)))
+? robin: uncaught exception: (illegal-arguments (pair 7 8) 9)
+
+`recv` expects exactly two arguments.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                          (send parent (literal lettuce) (literal ok))))
+|     (recv message)))
+? robin: uncaught exception: (illegal-arguments message)
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                          (send parent (literal lettuce) (literal ok))))
+|     (recv message message message)))
+? robin: uncaught exception: (illegal-arguments message message message)
+
+### `msgs?` ###
+
+`msgs?` evaluates to `#t` if the current process has one or more messages
+waiting in its queue, `#f` otherwise.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (msgs?))
+= #f
+
+    Note: it's hard to write this test without a race condition...
+
+    | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+    |   (bind worker (spawn (fun (parent)
+    |                          (send parent (literal lettuce) (literal ok))))
+    |     (msgs?)))
+    = #t
+
+`msgs?` expects exactly zero arguments.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (msgs? #t))
+? robin: uncaught exception: (illegal-arguments #t)

@@ -1,0 +1,92 @@
+Robin is distributed under the following, BSD-compatible licenses.
+
+All documentation and tests are covered by this license, modelled
+after the "Report on the Programming Language Haskell 98" license:
+
+-----------------------------------------------------------------------------
+
+  Copyright (c)2012 Chris Pressey, Cat's Eye Technologies.
+
+  The authors intend this Report to belong to the entire Robin
+  community, and so we grant permission to copy and distribute it for
+  any purpose, provided that it is reproduced in its entirety,
+  including this Notice.  Modified versions of this Report may also be
+  copied and distributed for any purpose, provided that the modified
+  version is clearly presented as such, and that it does not claim to
+  be a definition of the Robin Programming Language.
+
+-----------------------------------------------------------------------------
+
+All source code for the reference interpreter, except the Robin.Chan
+module, is covered by this license:
+
+-----------------------------------------------------------------------------
+
+Copyright (c)2012 Cat's Eye Technologies.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+ 1. Redistributions of source code must retain the above copyright
+    notices, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notices, this list of conditions, and the following disclaimer in
+    the documentation and/or other materials provided with the
+    distribution.
+ 3. Neither the names of the copyright holders nor the names of their
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
+COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+-----------------------------------------------------------------------------
+
+The Robin.Chan module is a derivative work based on the
+Control.Concurrent.Chan module from the GHC project, and is thus
+covered by this license:
+
+-----------------------------------------------------------------------------
+
+The Glasgow Haskell Compiler License
+
+Copyright 2004, The University Court of the University of Glasgow. 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+- Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+ 
+- Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+ 
+- Neither name of the University nor the names of its contributors may be
+used to endorse or promote products derived from this software without
+specific prior written permission. 
+
+THIS SOFTWARE IS PROVIDED BY THE UNIVERSITY COURT OF THE UNIVERSITY OF
+GLASGOW AND THE CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+UNIVERSITY COURT OF THE UNIVERSITY OF GLASGOW OR THE CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.

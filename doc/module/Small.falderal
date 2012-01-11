@@ -1,0 +1,272 @@
+-> encoding: UTF-8
+
+Module `small`
+==============
+
+-> Functionality "Interpret Robin Program" is implemented by
+-> shell command "bin/robin %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program"
+
+The `core` module only exports macros which are necessarily, or for reasons
+of practicality, not implemented in Robin itself.  For example, in the Robin
+reference interpreter, they are implemented in Haskell.
+
+This small set of macros omits many abstractions to which programmers have
+become accustomed, and is thus rather brutal to program directly in.
+
+So to make Robin somewhat easier to program in, the `small` module exports a
+number of macros which help bring the language up to parity with Pixley.
+
+That is, the amount of functionality in `small` is rather modest -- only a
+fraction of what you would find in the Haskell standard prelude, or in R5RS
+Scheme, or in the Python core.
+
+All of these macros can be written in core Robin, but whether they are, or
+provided as builtins, is up to the implementation.
+
+In addition, the `small` module re-exports everything from `core`, so that
+it is not necessary to import both of these modules, only `small`.
+
+### `literal` ###
+
+One of the most basic identifiers available in `small` is `literal`,
+which evaluates to the literal content of its sole argument, which can be
+any S-expression.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal symbol))
+= symbol
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (a . pair)))
+= (a . pair)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (hello world)))
+= (hello world)
+
+`literal` could be implemented in Robin.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((macro (self args env) (head args)) hello))
+= hello
+
+`literal` is basically equivalent to Scheme's `quote`.
+
+### `fun` ###
+
+You can define functions with `fun`.  They can be anonymous.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((fun (a) a) (literal whee)))
+= whee
+
+Bindings in force when a function is defined will still be in force
+when the function is applied, even if they are not lexically in scope.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((let
+|      ((a (literal (hi)))
+|       (f (fun (x) (pair x a)))) f) (literal oh)))
+= (oh hi)
+
+Functions can take functions.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let
+|     ((apply (fun (x) (x (literal a)))))
+|     (apply (fun (r) (pair r (literal ()))))))
+= (a)
+
+Functions can return functions.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let
+|     ((mk (fun (x) (fun (y) (pair y x))))
+|      (mk2 (mk (literal (vindaloo)))))
+|     (mk2 (literal chicken))))
+= (chicken vindaloo)
+
+Functions can be implemented in Robin, using macros, but the implementation
+is rather onerous, so the details are omitted here.
+
+`fun` is basically equivalent to Scheme's `lambda`.
+
+### `bind` ###
+
+`bind` binds a single identifier to the result of evaluating a single
+expression, and makes that binding available in another expression which
+it evaluates.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind x (literal hello)
+|     (pair x x)))
+= (hello . hello)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind dup (fun (x) (pair x x))
+|     (dup (literal g))))
+= (g . g)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind dup (fun (x) (pair x x))
+|     (dup (dup (literal g)))))
+= ((g . g) g . g)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind smoosh (fun (x y) (pair y x))
+|     (smoosh #t #f)))
+= (#f . #t)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind find (fun (self alist key)
+|                 (if (equal? alist (literal ())) (literal ())
+|                    (if (equal? key (head (head alist)))
+|                       (head alist)
+|                       (self self (tail alist) key))))
+|     (find find (literal ((c . d) (e . f) (a . b))) (literal a))))
+= (a . b)
+
+`bind` could be implemented in Robin.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((macro (self args env) (eval
+|         (pair (pair (head args) (eval env (head (tail args)))) env)
+|         (head (tail (tail args)))))
+|     x (literal hello) (pair x x)))
+= (hello . hello)
+
+`bind` is basically equivalent to Scheme's `let`, but only one
+binding may be given.
+
+### `let` ###
+
+`let` lets you bind multiple identifiers to multiple values.
+
+An identifier can be bound to a symbol.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let ((a (literal hello))) a))
+= hello
+
+`let` can appear in the binding expression in a `let`.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let ((a (let ((b (literal c))) b))) a))
+= c
+
+`let` can bind a symbol to a function value.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let ((a (fun (x y) (pair x y))))
+|         (a (literal foo) (literal ()))))
+= (foo)
+
+Bindings established in a `let` remain in effect when evaluating
+the arguments things in the body of the `let`.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let ((dup (fun (x) (pair x x))))
+|     (dup (dup (literal g)))))
+= ((g . g) g . g)
+
+Bindings established in a binding in a `let` can be seen in
+subsequent bindings in the same `let`.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let ((a (literal hello)) (b (pair a (literal ())))) b))
+= (hello)
+
+Shadowing happens.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let ((a (literal hello))) (let ((a (literal goodbye))) a)))
+= goodbye
+
+`let` can have an empty list of bindings.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (let () (literal hi)))
+= hi
+
+`let` could be implemented as a recursive macro in Robin.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((macro (self args env)
+|     (bind bindings (head args)
+|       (if (equal? bindings ())
+|         (eval env (head (tail args)))
+|         (bind binding (head bindings)
+|           (bind name (head binding)
+|             (bind value (eval env (head (tail binding)))
+|               (bind newenv (pair (pair name value) env)
+|                 (bind newbindings (tail bindings)
+|                   (bind newargs (pair newbindings (tail args))
+|                     (eval newenv (pair self newargs)))))))))))
+|     ((a (literal b)) (c #f)) (pair a c)))
+= (b . #f)
+
+Bindings internal to the recursive macro don't leak.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((macro (self args env)
+|     (bind bindings (head args)
+|       (if (equal? bindings ())
+|         (eval env (head (tail args)))
+|         (bind binding (head bindings)
+|           (bind name (head binding)
+|             (bind value (eval env (head (tail binding)))
+|               (bind newenv (pair (pair name value) env)
+|                 (bind newbindings (tail bindings)
+|                   (bind newargs (pair newbindings (tail args))
+|                     (eval newenv (pair self newargs)))))))))))
+|     ((a (literal b)) (c #f)) newbindings))
+? robin: uncaught exception: (unbound-identifier . newbindings)
+
+`let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
+
+### `choose` ###
+
+`choose` expects to be given a list of tests.  Each test is a two-element
+list, the first element of which is a condition which should evaluate to
+a boolean, and the second element of which is an expression, which
+will be evaluated only if the boolean is `#t`, and `choose` will immediately
+evaluate to that result without trying any of the subsequent tests.  The
+condition in the final test must be the literal symbol `else`; the
+corresponding expression will be evaluated if all other tests failed.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (choose (#t (literal hi)) (else (literal lo))))
+= hi
+
+| (robin (0 . 1) (small (0 . 1))
+|   (choose (#f (literal hi)) (#t (literal med)) (else (literal lo))))
+= med
+
+| (robin (0 . 1) (small (0 . 1))
+|   (choose (#f (literal hi)) (#f (literal med)) (else (literal lo))))
+= lo
+
+`choose` can have zero tests before the `else`.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (choose (else (literal woo))))
+= woo
+
+`choose` is basically equivalent to Scheme's `cond`.
+
+### `env` ###
+
+`env` evaluates to all the bindings in effect at the point of execution
+where this form is encountered, as an alist.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind find (fun (self alist key)
+|                 (if (equal? alist (literal ())) (literal ())
+|                    (if (equal? key (head (head alist)))
+|                       (head alist)
+|                       (self self (tail alist) key))))
+|     (pair
+|       (find find (env) (literal boolean?)) (find find (env) (literal pair)))))
+= ((boolean? . (builtin boolean?)) pair . (builtin pair))
