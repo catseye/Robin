@@ -20,7 +20,7 @@ abstraction.  Robin's macros are somewhat like PicoLisp's one-argument
 lambas -- they do not automatically evaluate their arguments.  Function
 values are built on top of macros, using the built-in macro `eval`.
 
-Like [Erlang][], Robin is purely functional except for message-passing.
+Like Erlang, Robin is purely functional except for message-passing.
 That is, functions have no side-effects, with the single exception of
 being able to send messages to, and receive messages from, other processes.
 All facilities of the operating system are modelled as such processes.
@@ -135,8 +135,5 @@ Plans
 * Support qualifiers during module import.  Have identifiers be imported
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
-
-* Do not export `make-env` and `make-env-wrap` from `small` -- encapsulate
-  these inside the definition of `fun`.
 
 * Write _Hunt the Wumpus_ in Robin!

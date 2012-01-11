@@ -36,35 +36,35 @@
                   (if (eval env test)
                     (eval env then)
                     (eval env (pair self (tail args))))))))
-            (make-env (macro (self args env)
-              (let (
-                     (closed-env (head args))
-                     (fun-env (head (tail args)))
-                     (formals (head (tail (tail args))))
-                     (actuals (head (tail (tail (tail args)))))
-                   )
-                (if (equal? formals ())
-                  closed-env
-                  (let (
-                        (value (eval fun-env (head actuals)))
-                        (new-closed-env (pair (pair (head formals) value) closed-env))
-                        (new-args (pair new-closed-env (pair fun-env (pair (tail formals) (pair (tail actuals) ())))))
-                       )
-                    (eval env
-                      (pair self new-args)))))))
-            (make-env-wrap (macro (self args env)
-              (let (
-                     (closed-env (eval env (head args)))
-                     (fun-env (eval env (head (tail args))))
-                     (formals (eval env (head (tail (tail args)))))
-                     (actuals (eval env (head (tail (tail (tail args))))))
-                     (new-args (pair closed-env (pair fun-env (pair formals (pair actuals ())))))
-                   )
-                (eval env
-                  (pair make-env new-args)))))
             (fun (macro (self args env)
               (let ((formals (head args))
-                    (body (head (tail args))))
+                    (body (head (tail args)))
+                    (make-env (macro (self args env)
+                      (let (
+                             (closed-env (head args))
+                             (fun-env (head (tail args)))
+                             (formals (head (tail (tail args))))
+                             (actuals (head (tail (tail (tail args)))))
+                           )
+                        (if (equal? formals ())
+                          closed-env
+                          (let (
+                                (value (eval fun-env (head actuals)))
+                                (new-closed-env (pair (pair (head formals) value) closed-env))
+                                (new-args (pair new-closed-env (pair fun-env (pair (tail formals) (pair (tail actuals) ())))))
+                               )
+                            (eval env
+                              (pair self new-args)))))))
+                    (make-env-wrap (macro (self args env)
+                      (let (
+                             (closed-env (eval env (head args)))
+                             (fun-env (eval env (head (tail args))))
+                             (formals (eval env (head (tail (tail args)))))
+                             (actuals (eval env (head (tail (tail (tail args))))))
+                             (new-args (pair closed-env (pair fun-env (pair formals (pair actuals ())))))
+                           )
+                        (eval env
+                          (pair make-env new-args))))))
                 (macro (fun-self actuals fun-env)
                   (eval (make-env-wrap env fun-env formals actuals) body)))))
           )
