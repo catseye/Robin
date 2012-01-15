@@ -125,9 +125,6 @@ Plans
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)
 
-* Add command-line switch for using built-in versions of modules like
-  `small`.
-
 * Document the "why" behind some of the design decisions.
 
 * Document the literate Haskell implementation better -- right now it's
