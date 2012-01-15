@@ -15,7 +15,7 @@ This implementation of the `small` module is non-normative.
 >   cc expr
 > literal env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
-> robinEnv env ienv (Pair expr Null) cc =
+> robinEnv env ienv Null cc =
 >   cc env
 > robinEnv env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
@@ -32,31 +32,39 @@ This implementation of the `small` module is non-normative.
 >             evalArgs formals actuals env ienv (\rest ->
 >                 cc $ Env.insert sym value rest))
 
-Old...
+> choose env ienv (Pair (Pair (Symbol "else") (Pair branch Null)) Null) cc =
+>     eval env ienv branch cc
+> choose env ienv (Pair (Pair test (Pair branch Null)) rest) cc = do
+>     eval env ienv test (\x ->
+>         case x of
+>             Boolean True ->
+>                 eval env ienv branch cc
+>             Boolean False ->
+>                 choose env ienv rest cc)
 
-    > cond env rest =
-    >     checkAll env rest
-    >   where
-    >     checkAll env (Pair (Pair (Symbol "else") (Pair branch Null)) Null) =
-    >         eval env branch
-    >     checkAll env (Pair (Pair test (Pair branch Null)) rest) = do
-    >         x <- eval env test
-    >         case x of
-    >             Boolean True ->
-    >                 eval env branch
-    >             Boolean False ->
-    >                 checkAll env rest
+> bind env ienv (Pair name@(Symbol _) (Pair expr (Pair body Null))) cc =
+>     eval env ienv expr (\value ->
+>         eval (Env.insert name value env) ienv body cc)
 
+> robinLet env ienv (Pair bindings (Pair body Null)) cc =
+>     bindAll bindings env ienv (\newEnv ->
+>         eval newEnv ienv body cc)
+>   where
+>     bindAll Null env ienv cc =
+>         cc env
+>     bindAll (Pair (Pair name@(Symbol _) (Pair sexpr Null)) rest) env ienv cc =
+>         eval env ienv sexpr (\value ->
+>             bindAll rest (Env.insert name value env) ienv cc)
 
 Module Definition
 -----------------
 
 > bindings = [
 >              ("literal",  literal),
->              ("bind",     literal),
+>              ("bind",     bind),
 >              ("env",      robinEnv),
->              ("let",      literal),
->              ("choose",   literal),
+>              ("let",      robinLet),
+>              ("choose",   choose),
 >              ("fun",      robinFun)
 >            ]
 

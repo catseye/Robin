@@ -125,9 +125,8 @@ Plans
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)
 
-* Implement the `small` module as built-in macros, optionally used
-  by the interpreter if given a command-line option (the `fun` macro
-  in particular, as defined in Robin, can be quite slow.)
+* Add command-line switch for using built-in versions of modules like
+  `small`.
 
 * Document the "why" behind some of the design decisions.
 

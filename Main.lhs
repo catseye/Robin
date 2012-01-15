@@ -23,7 +23,7 @@ Module Loading
 > loadModule :: String -> Integer -> Integer -> IO Expr
 
 > loadModule "core" 0 1 = moduleCore
-> -- loadModule "small" 0 1 = moduleSmall
+> loadModule "small" 0 1 = moduleSmall
 > loadModule "concurrency" 0 1 = moduleConcurrency
 > loadModule "exception" 0 1 = moduleException
 > loadModule other major minor =
