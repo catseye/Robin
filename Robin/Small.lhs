@@ -31,6 +31,8 @@ This implementation of the `small` module is non-normative.
 >         eval env ienv actual (\value ->
 >             evalArgs formals actuals env ienv (\rest ->
 >                 cc $ Env.insert sym value rest))
+>     evalArgs _ other _ ienv cc = do
+>         raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > choose env ienv (Pair (Pair (Symbol "else") (Pair branch Null)) Null) cc =
 >     eval env ienv branch cc

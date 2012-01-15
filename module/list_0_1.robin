@@ -48,6 +48,14 @@
           new-tail
           (pair (head li) (self self (tail li) new-tail))))
       (append-r append-r li new-tail))))
+    (elem (fun (item li)
+      (bind elem-r (fun (self item li)
+        (if (empty? li)
+          #f
+          (if (equal? item (head li))
+            #t
+            (self self item (tail li)))))
+      (elem-r elem-r item li))))
     )
     (list
       (pair (literal list) list)
@@ -59,6 +67,7 @@
       (pair (literal filter) filter)
       (pair (literal first) first)
       (pair (literal append) append)
+      (pair (literal elem) elem)
     )
   )
 )

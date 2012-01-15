@@ -1,32 +1,13 @@
 (robin (0 . 1) (small (0 . 1) list (0 . 1))
   (let (
     (unbind
-      (bind del-env
-        (fun (self name env)
-          (if (equal? env ())
-            env
-            (if (equal? name (head (head env)))
-              (self self name (tail env))
-              (pair (head env) (self self name (tail env))))))
-        (macro (self args env)
-          (eval (del-env del-env (head args) env) (head (tail args))))))
+      (macro (self args env)
+        (eval (filter (fun (binding) (if (equal? (head binding) (head args)) #f #t)) env)
+              (head (tail args)))))
     (sandbox
-      (bind elem
-        (fun (self x xs)
-          (if (equal? xs ())
-            #f
-            (if (equal? x (head xs))
-              #t
-              (self self x (tail xs)))))
-        (bind keep-env
-          (fun (self names env)
-            (if (equal? env ())
-              env
-              (if (elem elem (head (head env)) names)
-                (pair (head env) (self self names (tail env)))
-                (self self names (tail env)))))
-          (macro (self args env)
-            (eval (keep-env keep-env (head args) env) (head (tail args)))))))
+      (macro (self args env)
+        (eval (filter (fun (binding) (elem (head binding) (head args))) env)
+              (head (tail args)))))
     )
     (list
       (pair (literal unbind) unbind)

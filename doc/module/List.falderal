@@ -92,8 +92,30 @@ Module `list`
 |   (first (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
 = (two)
 
+### `elem` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (elem (literal p) (literal (a p e))))
+= #t
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (elem (literal p) (literal (a r k))))
+= #f
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (elem 7 ()))
+= #f
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (elem 7 (list 5 (list 6 7) 8)))
+= #f
+
 ### `append` ###
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (append (list 1 2 3) (list 4 5 6)))
 = (1 2 3 4 5 6)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (append () ()))
+= ()
