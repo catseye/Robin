@@ -2,6 +2,11 @@
   (let (
     (empty? (fun (li)
       (equal? li ())))
+    (list (macro (self args env)
+      (if (empty? args)
+        ()
+        (pair (eval env (head args))
+              (eval env (pair self (tail args)))))))
     (list? (fun (li)
       (bind list?-r (fun (self li)
         (if (empty? li)
@@ -38,14 +43,15 @@
             (self self pred (tail li))))))
         (first-r first-r pred li)))
     )
-    (pair
+    (list
+      (pair (literal list) list)
       (pair (literal empty?) empty?)
-      (pair
-        (pair (literal list?) list?)
-        (pair
-          (pair (literal map) map)
-          (pair
-            (pair (literal fold) fold)
-            (pair
-              (pair (literal reverse) reverse)
-              ())))))))
+      (pair (literal list?) list?)
+      (pair (literal map) map)
+      (pair (literal fold) fold)
+      (pair (literal reverse) reverse)
+      (pair (literal filter) filter)
+      (pair (literal first) first)
+    )
+  )
+)

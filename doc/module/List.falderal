@@ -8,6 +8,20 @@ Module `list`
 
 -> Tests for functionality "Interpret Robin Program"
 
+### `list` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (list 1 2 3 4 5))
+= (1 2 3 4 5)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (list (pair 2 3) (pair 6 7)))
+= ((2 . 3) (6 . 7))
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (list))
+= ()
+
 ### `empty?` ###
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
@@ -48,4 +62,12 @@ Module `list`
 
 ### `filter` ###
 
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (filter (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
+= (two four six)
+
 ### `first` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (first (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
+= (two)
