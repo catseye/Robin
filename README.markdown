@@ -114,11 +114,21 @@ Plans
   output.  We'll start simple and crude, possibly with just line-
   buffered string I/O, or S-expressions supported.
 
-* A `list` module, written in Robin, with the usual `map`, `fold`,
-  `length`, and so forth.  Possibly also containing alist macros.
+* Arithmetic -- put essential operations `minus`, `divide`, and `sign`
+  into `core`, and the rest into an `arith` module.
+
+* Document the `list` module, add `length` and alist functions to it.
 
 * An `env` module, with macros for manipulating the environment, like
   `unbind` and `sandbox`.
+
+* A macro for asserting that the correct number of arguments have been
+  given to a macro.  (Right now the `small` macros don't complain if
+  given too many arguments.)
+
+* Implement the `small` module as built-in macros, optionally used
+  by the interpreter if given a command-line option (the `fun` macro
+  in particular, as defined in Robin, can be quite slow.)
 
 * Document the "why" behind some of the design decisions.
 
