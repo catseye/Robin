@@ -119,8 +119,7 @@ Plans
 
 * Document the `list` module, add `length` and alist functions to it.
 
-* An `env` module, with macros for manipulating the environment, like
-  `unbind` and `sandbox`.
+* Document the `env` module, and add some more macros to it.
 
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
