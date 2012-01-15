@@ -1,0 +1,51 @@
+(robin (0 . 1) (small (0 . 1))
+  (let (
+    (empty? (fun (li)
+      (equal? li ())))
+    (list? (fun (li)
+      (bind list?-r (fun (self li)
+        (if (empty? li)
+          #t
+          (if (pair? li)
+            (self self (tail li))
+            #f)))
+        (list?-r list?-r li))))
+    (map (fun (app li)
+      (bind map-r
+        (fun (self app li)
+          (if (empty? li)
+            ()
+            (self self app (pair (app (head li)) (tail li)))))
+        (map-r map-r app li))))
+    (fold (fun (app acc li)
+      (bind fold-r (fun (self app acc li)
+        (if (empty? li)
+          acc
+          (self self app (app (head li) acc) (tail li))))
+        (fold-r fold-r app acc li))))
+    (reverse (fun (li)
+      (fold pair () li)))
+    (filter (fun (pred li)
+      (reverse (fold
+        (fun (x acc) (if (pred x) (pair x acc) acc))
+        () li))))
+    (first (fun (pred li)
+      (bind first-r (fun (self pred li)
+        (if (empty? li)
+          ()
+          (if (pred (head li))
+            (pair (head li) ())
+            (self self pred (tail li))))))
+        (first-r first-r pred li)))
+    )
+    (pair
+      (pair (literal empty?) empty?)
+      (pair
+        (pair (literal list?) list?)
+        (pair
+          (pair (literal map) map)
+          (pair
+            (pair (literal fold) fold)
+            (pair
+              (pair (literal reverse) reverse)
+              ())))))))

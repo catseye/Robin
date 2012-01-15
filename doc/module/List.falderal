@@ -1,0 +1,37 @@
+-> encoding: UTF-8
+
+Module `list`
+=============
+
+-> Functionality "Interpret Robin Program" is implemented by
+-> shell command "bin/robin %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program"
+
+### `empty?` ###
+
+| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+|   (empty? (literal symbol)))
+= #f
+
+| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+|   (empty? ()))
+= #t
+
+### `list?` ###
+
+| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+|   (list? (literal symbol)))
+= #f
+
+| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+|   (list? ()))
+= #t
+
+| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+|   (list? (literal (a b c))))
+= #t
+
+| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+|   (list? (pair 1 2)))
+= #f
