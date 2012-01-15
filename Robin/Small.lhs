@@ -19,6 +19,19 @@ This implementation of the `small` module is non-normative.
 >   cc env
 > robinEnv env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
+> robinFun closedEnv ienv (Pair formals (Pair body Null)) cc = do
+>     cc $ Builtin "<lambda>" fun
+>   where
+>     fun env ienv actuals cc = do
+>         evalArgs formals actuals env ienv (\argEnv ->
+>             eval (Env.union argEnv closedEnv) ienv body cc)
+>     evalArgs Null Null _ _ cc = do
+>         cc Env.empty
+>     evalArgs (Pair sym@(Symbol _) formals) (Pair actual actuals) env ienv cc = do
+>         eval env ienv actual (\value ->
+>             evalArgs formals actuals env ienv (\rest ->
+>                 cc $ Env.insert sym value rest))
+
 Old...
 
     > cond env rest =
@@ -34,18 +47,6 @@ Old...
     >             Boolean False ->
     >                 checkAll env rest
 
-    > lambda closedEnv (Pair formals (Pair body Null)) = do
-    >     return $ Builtin "<lambda>" fun
-    >   where
-    >     fun env actuals = do
-    >         argEnv <- evalArgs formals actuals env
-    >         eval (Env.union argEnv closedEnv) body
-    >     evalArgs Null Null _ = do
-    >         return Env.empty
-    >     evalArgs (Pair (Symbol sym) formals) (Pair actual actuals) env = do
-    >         x <- eval env actual
-    >         rest <- evalArgs formals actuals env
-    >         return $ Env.insert sym x rest
 
 Module Definition
 -----------------
@@ -56,7 +57,7 @@ Module Definition
 >              ("env",      robinEnv),
 >              ("let",      literal),
 >              ("choose",   literal),
->              ("fun",      literal)
+>              ("fun",      robinFun)
 >            ]
 
 > moduleSmall :: IO Expr
