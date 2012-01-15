@@ -58,6 +58,10 @@ Module `list`
 
 ### `fold` ###
 
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (fold (fun (x a) (pair a x)) () (literal (three dog night))))
+= (((() . three) . dog) . night)
+
 ### `reverse` ###
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
@@ -87,3 +91,9 @@ Module `list`
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (first (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
 = (two)
+
+### `append` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (append (list 1 2 3) (list 4 5 6)))
+= (1 2 3 4 5 6)

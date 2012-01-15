@@ -42,6 +42,12 @@
             (pair (head li) ())
             (self self pred (tail li)))))
         (first-r first-r pred li))))
+    (append (fun (li new-tail)
+      (bind append-r (fun (self li new-tail)
+        (if (empty? li)
+          new-tail
+          (pair (head li) (self self (tail li) new-tail))))
+      (append-r append-r li new-tail))))
     )
     (list
       (pair (literal list) list)
@@ -52,6 +58,7 @@
       (pair (literal reverse) reverse)
       (pair (literal filter) filter)
       (pair (literal first) first)
+      (pair (literal append) append)
     )
   )
 )
