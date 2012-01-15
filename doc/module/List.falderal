@@ -10,28 +10,42 @@ Module `list`
 
 ### `empty?` ###
 
-| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (empty? (literal symbol)))
 = #f
 
-| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (empty? ()))
 = #t
 
 ### `list?` ###
 
-| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (list? (literal symbol)))
 = #f
 
-| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (list? ()))
 = #t
 
-| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (list? (literal (a b c))))
 = #t
 
-| (robin (0 . 1) (small (0 . 1)) (list (0 . 1))
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (list? (pair 1 2)))
 = #f
+
+### `map` ###
+
+### `fold` ###
+
+### `reverse` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (reverse (literal (1 2 3 4 5))))
+= (5 4 3 2 1)
+
+### `filter` ###
+
+### `first` ###
