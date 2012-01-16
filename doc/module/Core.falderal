@@ -276,6 +276,34 @@ exactly one argument.
 |   (boolean? #t #f))
 ? robin: uncaught exception: (illegal-arguments #t #f)
 
+### `number?` ###
+
+`number?` evaluates its argument, then evaluates to `#t` if it is a
+rational number, `#f` otherwise.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (number? 5/7))
+= #t
+
+| (robin (0 . 1) (core (0 . 1))
+|   (number? 0))
+= #t
+
+| (robin (0 . 1) (core (0 . 1))
+|   (number? ()))
+= #f
+
+| (robin (0 . 1) (core (0 . 1))
+|   (number? #t))
+= #f
+
+The argument to `number?` may (naturally) be any type, but there must be
+exactly one argument.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (number? 6 4))
+? robin: uncaught exception: (illegal-arguments 6 4)
+
 ### `eval` ###
 
 `eval` evaluates its first argument to obtain an environment, then

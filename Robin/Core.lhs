@@ -37,6 +37,7 @@ Core
 > booleanP = predP isBoolean
 > pairP = predP isPair
 > macroP = predP isMacro
+> numberP = predP isNumber
 
 > robinIf env ienv (Pair test (Pair texpr (Pair fexpr Null))) cc = do
 >     eval env ienv test (\x ->
@@ -75,7 +76,11 @@ Module Definition
 >         ("symbol?",  symbolP),
 >         ("boolean?", booleanP),
 >         ("macro?",   macroP),
+>         ("number?",  numberP),
 >         ("equal?",   equalP),
+> --      ("subtract", subtract),
+> --      ("divide",   divide),
+> --      ("sign",     sign),
 >         ("macro",    macro),
 >         ("eval",     robinEval),
 >         ("if",       robinIf),

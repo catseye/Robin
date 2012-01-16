@@ -125,6 +125,9 @@ Plans
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)
 
+* Some kind of macro for capturing the recursive function call pattern
+  (probably `letrec`, but not necessary to support mutual recursion.)
+
 * Document the "why" behind some of the design decisions.
 
 * Document the literate Haskell implementation better -- right now it's
