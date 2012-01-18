@@ -119,3 +119,44 @@ Module `list`
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (append () ()))
 = ()
+
+### `length` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (length ()))
+= 0
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (length (list 1 2 #t #f 3)))
+= 5
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (length (literal whatnot)))
+? robin: uncaught exception: (expected-pair . whatnot)
+
+### `index` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (index 0 (literal (the girl from ipanema))))
+= the
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (index 2 (literal (the girl from ipanema))))
+= from
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (bind last (fun (li) (index (subtract (length li) 1) li))
+|     (last (literal (the girl from ipanema)))))
+= ipanema
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (index 7 (literal (the girl from ipanema))))
+? robin: uncaught exception: (expected-pair)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (index (literal goofy) (list 1 2 3 4 5)))
+? robin: uncaught exception: (expected-number . goofy)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (index 8 (literal whatnot)))
+? robin: uncaught exception: (expected-pair . whatnot)

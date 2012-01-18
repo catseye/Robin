@@ -56,6 +56,14 @@
             #t
             (self self item (tail li)))))
       (elem-r elem-r item li))))
+    (length (fun (li)
+      (subtract 0 (fold (fun (x acc) (subtract acc 1)) 0 li))))
+    (index (fun (index li)
+      (bind index-r (fun (self index li)
+        (if (equal? index 0)
+          (head li)
+          (self self (subtract index 1) (tail li))))
+      (index-r index-r index li))))
     )
     (list
       (pair (literal list) list)
@@ -68,6 +76,8 @@
       (pair (literal first) first)
       (pair (literal append) append)
       (pair (literal elem) elem)
+      (pair (literal length) length)
+      (pair (literal index) index)
     )
   )
 )
