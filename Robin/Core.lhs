@@ -1,5 +1,7 @@
 > module Robin.Core where
 
+> import Data.Ratio
+
 > import qualified Robin.Env as Env
 > import Robin.Expr
 > import Robin.Eval
@@ -49,6 +51,22 @@ Core
 >             other -> raise ienv (Pair (Symbol "expected-number") other))
 > robinSubtract env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
+> robinDivide env ienv (Pair xexpr (Pair yexpr Null)) cc = do
+>     eval env ienv xexpr (\x ->
+>         case x of
+>             Number xv -> eval env ienv yexpr (\y ->
+>                 case y of
+>                     Number yv ->
+>                         if
+>                             yv == (0%1)
+>                           then
+>                             raise ienv (Pair (Symbol "division-by-zero") x)
+>                           else
+>                             cc (Number (xv / yv))
+>                     other -> raise ienv (Pair (Symbol "expected-number") other))
+>             other -> raise ienv (Pair (Symbol "expected-number") other))
+> robinDivide env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
 > robinIf env ienv (Pair test (Pair texpr (Pair fexpr Null))) cc = do
 >     eval env ienv test (\x ->
 >         case x of
@@ -89,7 +107,7 @@ Module Definition
 >         ("number?",  numberP),
 >         ("equal?",   equalP),
 >         ("subtract", robinSubtract),
-> --      ("divide",   divide),
+>         ("divide",   robinDivide),
 > --      ("sign",     sign),
 >         ("macro",    macro),
 >         ("eval",     robinEval),

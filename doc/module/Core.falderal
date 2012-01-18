@@ -348,6 +348,60 @@ Addition may be accomplished by negating the second argument.
 |   (subtract))
 ? robin: uncaught exception: (illegal-arguments)
 
+### `divide` ###
+
+`divide` evaluates its first argument to a rational number, then
+evaluates its second argument to a rational number, then evaluates
+to the ratio between the first and second numbers.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide 99 11))
+= 9
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide 6 4))
+= 3/2
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide 4 (subtract 0 5)))
+= -4/5
+
+If the second argument is zero, an exception will be raised.
+
+Addition may be accomplished by taking the reciprocal of the second
+argument.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide 123 0))
+? robin: uncaught exception: (division-by-zero . 123)
+
+Addition may be accomplished by taking the reciprocal of the second
+argument.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide 7 (divide 1 7)))
+= 49
+
+`divide` expects both of its arguments to be numbers.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide #f 100))
+? robin: uncaught exception: (expected-number . #f)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide 100 ()))
+? robin: uncaught exception: (expected-number)
+
+`divide` expects exactly two arguments.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (divide 100 200 300))
+? robin: uncaught exception: (illegal-arguments 100 200 300)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract))
+? robin: uncaught exception: (illegal-arguments)
+
 ### `eval` ###
 
 `eval` evaluates its first argument to obtain an environment, then
