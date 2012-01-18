@@ -46,12 +46,6 @@ any S-expression.
 |   (literal (hello world)))
 = (hello world)
 
-`literal` could be implemented in Robin.
-
-| (robin (0 . 1) (small (0 . 1))
-|   ((macro (self args env) (head args)) hello))
-= hello
-
 `literal` is basically equivalent to Scheme's `quote`.
 
 ### `fun` ###
@@ -99,9 +93,6 @@ Arguments to functions shadow any other bindings in effect.
 |     (b 7)))
 = (7 . 7)
 
-Functions can be implemented in Robin, using macros, but the implementation
-is rather onerous, so the details are omitted here.
-
 `fun` is basically equivalent to Scheme's `lambda`.
 
 ### `bind` ###
@@ -138,15 +129,6 @@ it evaluates.
 |                       (self self (tail alist) key))))
 |     (find find (literal ((c . d) (e . f) (a . b))) (literal a))))
 = (a . b)
-
-`bind` could be implemented in Robin.
-
-| (robin (0 . 1) (small (0 . 1))
-|   ((macro (self args env) (eval
-|         (pair (pair (head args) (eval env (head (tail args)))) env)
-|         (head (tail (tail args)))))
-|     x (literal hello) (pair x x)))
-= (hello . hello)
 
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
@@ -200,40 +182,6 @@ Shadowing happens.
 | (robin (0 . 1) (small (0 . 1))
 |   (let () (literal hi)))
 = hi
-
-`let` could be implemented as a recursive macro in Robin.
-
-| (robin (0 . 1) (small (0 . 1))
-|   ((macro (self args env)
-|     (bind bindings (head args)
-|       (if (equal? bindings ())
-|         (eval env (head (tail args)))
-|         (bind binding (head bindings)
-|           (bind name (head binding)
-|             (bind value (eval env (head (tail binding)))
-|               (bind newenv (pair (pair name value) env)
-|                 (bind newbindings (tail bindings)
-|                   (bind newargs (pair newbindings (tail args))
-|                     (eval newenv (pair self newargs)))))))))))
-|     ((a (literal b)) (c #f)) (pair a c)))
-= (b . #f)
-
-Bindings internal to the recursive macro don't leak.
-
-| (robin (0 . 1) (small (0 . 1))
-|   ((macro (self args env)
-|     (bind bindings (head args)
-|       (if (equal? bindings ())
-|         (eval env (head (tail args)))
-|         (bind binding (head bindings)
-|           (bind name (head binding)
-|             (bind value (eval env (head (tail binding)))
-|               (bind newenv (pair (pair name value) env)
-|                 (bind newbindings (tail bindings)
-|                   (bind newargs (pair newbindings (tail args))
-|                     (eval newenv (pair self newargs)))))))))))
-|     ((a (literal b)) (c #f)) newbindings))
-? robin: uncaught exception: (unbound-identifier . newbindings)
 
 `let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
 

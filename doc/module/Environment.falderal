@@ -27,21 +27,6 @@ several definitions that are shadowed, none of them will be in effect.
 |         x))))
 ? robin: uncaught exception: (unbound-identifier . x)
 
-`unbind` could be implemented in Robin.
-
-| (robin (0 . 1) (small (0 . 1) env (0 . 1))
-|   ((bind del-env
-|          (fun (self name env)
-|            (if (equal? env (literal ()))
-|              env
-|              (if (equal? name (head (head env)))
-|                (self self name (tail env))
-|                (pair (head env) (self self name (tail env))))))
-|     (macro (self args env)
-|       (eval (del-env del-env (head args) env) (head (tail args)))))
-|     if (if #t (literal x) (literal y))))
-? robin: uncaught exception: (unbound-identifier . if)
-
 ### `sandbox` ###
 
 `sandbox` takes a list of symbols as its first argument, and evaluates its
@@ -59,26 +44,3 @@ listed symbols have been unbound.
 ? robin: uncaught exception: (unbound-identifier . head)
 
 Could be useful to prevent some bindings from being exported from a module.
-
-`sandbox` could be implemented in Robin.
-
-| (robin (0 . 1) (small (0 . 1) env (0 . 1))
-|   ((bind elem
-|      (fun (self x xs)
-|        (if (equal? xs ())
-|          #f
-|          (if (equal? x (head xs))
-|            #t
-|            (self self x (tail xs)))))
-|      (bind keep-env
-|        (fun (self names env)
-|          (if (equal? env ())
-|            env
-|            (if (elem elem (head (head env)) names)
-|              (pair (head env) (self self names (tail env)))
-|              (self self names (tail env)))))
-|        (macro (self args env)
-|          (eval (keep-env keep-env (head args) env) (head (tail args))))))
-|   (pair tail)
-|     (head (pair 8 9))))
-? robin: uncaught exception: (unbound-identifier . head)
