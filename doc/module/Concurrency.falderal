@@ -108,6 +108,10 @@ and itself evaluates to that.
 |     (send worker (literal spam) (literal ok))))
 = ok
 
+TODO: need a better test for sending to a process we spawned.  The above
+was probably an error before (not caught by Falderal?), but that should be
+fixed now.
+
 `send` expects its first argument to be a pid.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))

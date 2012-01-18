@@ -16,6 +16,7 @@
 > import Robin.Small
 > import Robin.Concurrency
 > import Robin.Exception
+> import Robin.CrudeIO
 
 Module Loading
 --------------
@@ -24,7 +25,8 @@ Module Loading
 >             (("core",0,1), moduleCore),
 >             (("small",0,1), moduleSmall),
 >             (("concurrency",0,1), moduleConcurrency),
->             (("exception",0,1), moduleException)
+>             (("exception",0,1), moduleException),
+>             (("crude-io",0,1), moduleCrudeIO)
 >           ]
 
 > loadModule :: [String] -> String -> Integer -> Integer -> IO Expr

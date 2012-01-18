@@ -25,11 +25,13 @@ something that sends a `oops I bombed` message to the parent pid.
 > launch env ienv chan e = do
 >     let expr = (Pair e (Pair (myself ienv) Null))
 >     tid <- myThreadId
->     let ienv = newIEnv (stop) tid chan
+>     let chan' = setChanThread chan tid
+>     let ienv = newIEnv (stop) tid chan'
 >     eval env ienv expr (\x -> do return Null)
 >     return ()
 
 > getChan (Pid _ c) = c
+> getChan other = error ("getChan: not a Pid: " ++ show other)
 
 > isPid (Pid _ _) = True
 > isPid _ = False
@@ -48,7 +50,8 @@ Now the exported functions.
 >         case isMacro macro of
 >             True -> do
 >                 threadId <- forkIO (launch env ienv chan macro)
->                 cc $ Pid threadId chan
+>                 let chan' = setChanThread chan threadId
+>                 cc $ Pid threadId chan'
 >             other -> raise ienv (Pair (Symbol "expected-macro") macro))
 > spawn env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 

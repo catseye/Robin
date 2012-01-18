@@ -21,6 +21,7 @@ emptiness.)
 >   (
 >       Chan,                   -- abstract
 >       newChan,                -- :: IO (Chan a)
+>       setChanThread,          -- :: Chan a -> ThreadId -> Chan a
 >       writeChan,              -- :: Chan a -> a -> IO ()
 >       readChan,               -- :: Chan a -> IO a
 >       unGetChan,              -- :: Chan a -> a -> IO ()
@@ -60,6 +61,12 @@ Build and return a new instance of `Chan`.
 >    readVar  <- newMVar hole
 >    writeVar <- newMVar hole
 >    return (Chan threadId readVar writeVar)
+
+Set the thread that is allowed to read the `Chan`.
+
+> setChanThread :: Chan a -> ThreadId -> Chan a
+> setChanThread (Chan _ readVar writeVar) threadId =
+>   Chan threadId readVar writeVar
 
 To put an element on a channel, a new hole at the write end is created.
 What was previously the empty `MVar` at the back of the channel is then
