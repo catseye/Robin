@@ -304,6 +304,50 @@ exactly one argument.
 |   (number? 6 4))
 ? robin: uncaught exception: (illegal-arguments 6 4)
 
+### `subtract` ###
+
+`subtract` evaluates its first argument to a rational number, then
+evaluates its second argument to a rational number, then evaluates
+to the difference between the first and second numbers.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract 6 4))
+= 2
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract 16/15 1/5))
+= 13/15
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract 1000 8000))
+= -7000
+
+Addition may be accomplished by negating the second argument.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract 999 (subtract 0 999)))
+= 1998
+
+`subtract` expects both of its arguments to be numbers.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract #f 100))
+? robin: uncaught exception: (expected-number . #f)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract 100 ()))
+? robin: uncaught exception: (expected-number)
+
+`subtract` expects exactly two arguments.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract 100 200 300))
+? robin: uncaught exception: (illegal-arguments 100 200 300)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (subtract))
+? robin: uncaught exception: (illegal-arguments)
+
 ### `eval` ###
 
 `eval` evaluates its first argument to obtain an environment, then
