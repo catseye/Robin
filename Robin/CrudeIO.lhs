@@ -6,7 +6,7 @@
 > import Robin.Expr
 > import qualified Robin.Env as Env
 
-> import Robin.Concurrency (getChan)
+> import Robin.Concurrency (spawn, getChan)
 
 CrudeIO
 =======
@@ -18,26 +18,14 @@ the message to standard output.
 This is going to be really rough until I figure out how I want
 to do this (and how well Haskell will cooperate with me on that.)
 
-> spawnCrudeIO :: IO Expr
-
-> spawnCrudeIO = do
->     chan <- newChan
->     threadId <- forkIO (handler chan)
->     return $ Pid threadId (setChanThread chan threadId)
-
 > handler :: Chan Expr -> IO ()
 
 > handler chan = do
->    tid <- myThreadId
->    let chan' = setChanThread chan tid
->    handler' chan'
-
-> handler' chan = do
 >    message <- readChan chan
 >    let (Pair sender output) = message
 >    putStr $ show output
 >    writeChan (getChan sender) (Symbol "ok")
->    handler' chan
+>    handler chan
 
 TODO: Need a seperate thread for handling input here.
 
@@ -50,7 +38,7 @@ TODO: only start the thread if it hasn't been started already.
 This is where we could use module caching.
 
 > moduleCrudeIO = do
->     crudeIOpid <- spawnCrudeIO
+>     crudeIOpid <- spawn handler
 >     return $ Env.fromList (
 >       [
 >         ("crude-io", crudeIOpid)

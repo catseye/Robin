@@ -12,48 +12,82 @@
 Concurrency
 ===========
 
-First, some helpers:
+First, some general utility functions.  These can be imported by other
+modules (especially built-in Robin modules which expose a process.)
 
-> myself ienv =
+Get a Pid representing the current process out of its IEnv.
+
+> getPid :: IEnv Expr -> Expr
+> getPid ienv =
 >     Pid (getThreadId ienv) (getChannel ienv)
 
-TODO: the initial continuation should not be `stop`, but rather,
-something that sends a `oops I bombed` message to the parent pid.
-
-> launch :: Expr -> IEnv Expr -> Chan Expr -> Expr -> IO ()
-
-> launch env ienv chan e = do
->     let expr = (Pair e (Pair (myself ienv) Null))
->     tid <- myThreadId
->     let chan' = setChanThread chan tid
->     let ienv = newIEnv (stop) tid chan'
->     eval env ienv expr (\x -> do return Null)
->     return ()
+Get the channel of a pid.
 
 > getChan (Pid _ c) = c
 > getChan other = error ("getChan: not a Pid: " ++ show other)
 
+Check if an Expr is a pid or not.
+
 > isPid (Pid _ _) = True
 > isPid _ = False
 
-Now the exported functions.
+Start a Haskell function in a Robin process.  This ensures that the
+new process has a chan it can use, and that the current process has
+an appropriate reference to that chan as well.  However, it will not
+inform the child process who its parent process is.
+
+> spawn :: (Chan Expr -> IO ()) -> IO Expr
+> spawn fun = do
+>     chan <- newChan
+>     thread <- forkIO $ launch (fun) chan
+>     let chan' = setChanThread chan thread
+>     return $ Pid thread chan'
+>   where
+>     launch fun chan = do
+>         thread <- myThreadId
+>         let chan' = setChanThread chan thread
+>         fun chan'
+
+Evaluate a Robin macro in a Robin process.  After the Haskell
+process has started, we set up an appropriate IEnv and evaluate
+the macro in that.
+
+TODO: the exception handler in the new IEnv should not be `stop`,
+but rather something that sends a message to the parent.
+
+TODO: should we put the parent in the IEnv, too?
+
+TODO: should the final continuation send a message to the parent
+too?
+
+> spawnMacro :: Expr -> IEnv Expr -> Expr -> IO Expr
+> spawnMacro env ienv macro = do
+>     spawn launch
+>   where
+>     launch chan = do
+>         thread <- myThreadId
+>         let parent = getPid ienv
+>         let myIenv = newIEnv (stop) thread chan
+>         let expr = Pair macro $ Pair parent Null
+>         eval env myIenv expr (\x -> do return Null)
+>         return ()
+
+Now the functions exported by this Robin module.
 
 > robinMyself env ienv Null cc = do
->     cc $ myself ienv
+>     cc $ getPid ienv
 > robinMyself env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > pidP = predP isPid
 
-> spawn env ienv (Pair e Null) cc = do
->     chan <- newChan
+> robinSpawn env ienv (Pair e Null) cc = do
 >     eval env ienv e (\macro ->
 >         case isMacro macro of
 >             True -> do
->                 threadId <- forkIO (launch env ienv chan macro)
->                 let chan' = setChanThread chan threadId
->                 cc $ Pid threadId chan'
+>                 pid <- spawnMacro env ienv macro
+>                 cc $ pid
 >             other -> raise ienv (Pair (Symbol "expected-macro") macro))
-> spawn env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinSpawn env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > send env ienv (Pair pidExpr (Pair msgExpr (Pair body Null))) cc = do
 >     eval env ienv pidExpr (\pid ->
@@ -66,12 +100,12 @@ Now the exported functions.
 > send env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > recv env ienv (Pair id@(Symbol _) (Pair body Null)) cc = do
->    message <- readChan $ getChan $ myself ienv
+>    message <- readChan $ getChan $ getPid ienv
 >    eval (Env.insert id message env) ienv body cc
 > recv env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > msgsP env ienv Null cc = do
->    isEmpty <- isEmptyChan $ getChan $ myself ienv
+>    isEmpty <- isEmptyChan $ getChan $ getPid ienv
 >    cc $ Boolean $ not isEmpty
 > msgsP env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
@@ -85,7 +119,7 @@ Module Definition
 >       [
 >         ("myself",   robinMyself),
 >         ("pid?",     pidP),
->         ("spawn",    spawn),
+>         ("spawn",    robinSpawn),
 >         ("send",     send),
 >         ("recv",     recv),
 >         ("msgs?",    msgsP)
