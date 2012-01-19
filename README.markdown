@@ -110,9 +110,14 @@ Plans
 * Add sugar for strings to the language (internally they would just be
   lists of numbers, which are Unicode code points.)
 
-* A simple I/O module, for reading and writing to standard input and
-  output.  We'll start simple and crude, possibly with just line-
-  buffered string I/O, or S-expressions supported.
+* Add decimal and proper-fractional sugar for rational numbers, i.e.
+  `2-1/5` and `2.2`.
+
+* Add input to the `crude-io` module.  The input process should wait
+  for a line of input, check to see if it has any new subscribers,
+  send the input to all of its subscribers, and loop.  Not sure how
+  this will work for termination yet (will we need to forcibly kill
+  the process?)
 
 * Arithmetic -- put essential operations `minus`, `divide`, and `sign`
   into `core`, and the rest into an `arith` module.
@@ -143,5 +148,21 @@ Plans
 * Support qualifiers during module import.  Have identifiers be imported
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
+
+* An `-n` option to the implementation which suppresses output of
+  the result of the main evaluation (so, evaluated for side effects only.)
+
+* Refactor module-handling code; put it in its own module, and add a
+  module cache (not just for performance, but also to ensure that objects
+  created by modules, e.g. processes, are singletons.)
+
+* Add a "trace" flag to IEnv and a `-t` flag to the implementation, to
+  trace the execution of a running Robin program.
+
+* Write a test adapter that allows modules to be specified inside
+  Falderal tests (before a line that says "cut here").
+
+* Informally test tail-recursive behavior (does an infinite loop
+  leak memory?)
 
 * Write _Hunt the Wumpus_ in Robin!
