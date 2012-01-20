@@ -91,3 +91,21 @@ these tests should be rewritten to search the resulting alist.
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (export pair tail))
 = ((tail . (builtin tail)) (pair . (builtin pair)))
+
+### Re-exported Functions ###
+
+Because it would be reasonable to find them here by categorization,
+this module re-exports the macro `env` from `core`, and `bind` and `let`
+from `small`.
+
+| (robin (0 . 1) (env (0 . 1))
+|   (env? (env)))
+= #t
+
+| (robin (0 . 1) (env (0 . 1))
+|   (bind a 1 a))
+= 1
+
+| (robin (0 . 1) (env (0 . 1))
+|   (let ((a 7) (b a)) b))
+= 7

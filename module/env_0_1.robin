@@ -25,7 +25,7 @@
       (macro (self args env)
         (filter (fun (binding) (elem (head binding) args)) env)))
     )
-    (export env? unbind sandbox export)
+    (export env bind let env? unbind sandbox export)
   )
 )
 
