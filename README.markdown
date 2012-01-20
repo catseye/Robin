@@ -122,9 +122,40 @@ Plans
 * Arithmetic -- put essential operations `minus`, `divide`, and `sign`
   into `core`, and the rest into an `arith` module.
 
-* Document the `list` module, add `length` and alist functions to it.
+* Document the `list` module.  Add `take-while`, `drop-while`, `first`,
+  `rest`, `last`, and `flatten` to it.  Possibly add alist functions to
+  it, or create a new `alist` module for that purpose.
 
-* Document the `env` module, and add some more macros to it.
+* Document the `env` module, and add some more macros to it,
+  particularly `binding-for` and `unshadow`.
+
+* Write a `random` module which exports a process which can be asked
+  (via a message) to send back a random number in a given range.
+
+* Write a `timer` module which exports a process which can be asked
+  (via a message) to send back a message after a given time has passed.
+  This could be used to build a version of `recv` which can time out.
+
+* Write a `pixley` module which exports only the identifiers supported
+  by Pixley.  This could be imported, instead of `core`, to emulate
+  Pixley in Robin.
+
+* Write a `boolean` module which exports the basic set of Boolean
+  operators: `and`, `or`, `not`, `xor`, and maybe `impl`.  Maybe make
+  `and` `or` and `xor` take any number of arguments.
+
+* Write an `arith` module which exports the basic set of arithmetic
+  operators: `-` and `/`, `+` and `*` (taking any number of arguments),
+  `mod`, `>`, `<`, `>=`, `<=`, `=`, `/=` or `!=`, and possibly `exp`,
+  `pow`, `log`, and `sqrt`.
+
+* Write a `trig` module which exports trigonometric functions `cos`,
+  `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Pixley,
+  but it's a good candidate for implementing natively.
+
+* Write a `set` module which exports functions which treat lists as
+  sets, with each operation ensuring the set elements are unique in
+  the list.
 
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
