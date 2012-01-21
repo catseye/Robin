@@ -70,9 +70,11 @@ Core
 > robinTrunc env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->
 >         case x of
->             Number xv -> cc $ Number (((numerator xv) `div` (denominator xv)) % 1)
+>             Number xv -> cc $ Number (trunc xv % 1)
 >             other -> raise ienv (Pair (Symbol "expected-number") other))
 > robinTrunc env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
+> trunc x = numerator x `div` denominator x
 
 > robinSign env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->

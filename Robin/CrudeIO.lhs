@@ -1,8 +1,6 @@
 > module Robin.CrudeIO where
 
-> import Control.Concurrent (forkIO, myThreadId)
 > import Robin.Chan
-
 > import Robin.Expr
 > import qualified Robin.Env as Env
 > import Robin.Parser

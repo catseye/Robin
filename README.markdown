@@ -136,9 +136,6 @@ Plans
 * Document the `env` module, and add some more macros to it,
   particularly `binding-for` and `unshadow`.
 
-* Write a `random` module which exports a process which can be asked
-  (via a message) to send back a random number in a given range.
-
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.

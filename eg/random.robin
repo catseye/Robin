@@ -1,0 +1,11 @@
+(robin (0 . 1) (small (0 . 1) list (0 . 1) concurrency (0 . 1) crude-io (0 . 1) random (0 . 1))
+  (bind output-loop
+    (fun (self n)
+      (if (equal? n 0)
+        (literal done)
+        (send random (list (myself) 1 6)
+          (recv value
+            (send crude-output (pair (myself) value)
+              (recv response
+                (self self (subtract n 1))))))))
+    (output-loop output-loop 20)))
