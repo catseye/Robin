@@ -97,10 +97,7 @@ Plans
   process raises an exception that it does not catch, it should send
   a message to its parent (the process that spawned it.)
 
-* More tests for concurrency, exceptions, and macros.
-
-* A simple I/O module, for reading and writing S-expressions to standard
-  input and output.
+* Fuller tests for exceptions.
 
 * Add an opaque type -- opaque values have internals that can only be
   accessed inside the module in which they were created.
@@ -116,7 +113,7 @@ Plans
 * Add `int` and `sign` to module `core`.
 
 * Add richer concurrency primitives (`call` and `respond`, which assume
-  the message exists of an envelope (containing the caller's pid), a
+  the message consists of an envelope (containing the caller's pid), a
   "tag" symbol, and a payload; `respond` would be like a case statement
   against the tags, and would know which pid to reply to.)
 
@@ -172,6 +169,8 @@ Plans
   (probably `letrec`, but not necessary to support mutual recursion.)
 
 * Document the "why" behind some of the design decisions.
+
+* Document some style guidelines.
 
 * Document the literate Haskell implementation better -- right now it's
   pretty scant.

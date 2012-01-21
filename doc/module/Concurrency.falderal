@@ -108,10 +108,6 @@ and itself evaluates to that.
 |     (send worker (literal spam) (literal ok))))
 = ok
 
-TODO: need a better test for sending to a process we spawned.  The above
-was probably an error before (not caught by Falderal?), but that should be
-fixed now.
-
 `send` expects its first argument to be a pid.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
@@ -139,7 +135,7 @@ argument, and itself evaluates to that.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind worker (spawn (fun (parent)
-|                          (send parent (literal lettuce) (literal ok))))
+|                         (send parent (literal lettuce) (literal ok))))
 |     (recv message (pair message message))))
 = (lettuce . lettuce)
 
@@ -149,7 +145,7 @@ that must evaluate to a certain type.)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind worker (spawn (fun (parent)
-|                          (send parent (literal lettuce) (literal ok))))
+|                         (send parent (literal lettuce) (literal ok))))
 |     (recv (pair 7 8) 9)))
 ? robin: uncaught exception: (illegal-arguments (pair 7 8) 9)
 
@@ -157,15 +153,71 @@ that must evaluate to a certain type.)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind worker (spawn (fun (parent)
-|                          (send parent (literal lettuce) (literal ok))))
+|                         (send parent (literal lettuce) (literal ok))))
 |     (recv message)))
 ? robin: uncaught exception: (illegal-arguments message)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind worker (spawn (fun (parent)
-|                          (send parent (literal lettuce) (literal ok))))
+|                         (send parent (literal lettuce) (literal ok))))
 |     (recv message message message)))
 ? robin: uncaught exception: (illegal-arguments message message message)
+
+Tests for both `send` and `recv` follow.
+
+A process we spawned can send our message back to us.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                         (recv message (send parent message 123))))
+|     (send worker (literal whoopie)
+|       (recv message message))))
+= whoopie
+
+A process we spawned can receive multiple messages.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                         (recv message1
+|                           (recv message2
+|                             (send parent (pair message1 message2) 0)))))
+|     (send worker (literal thats)
+|       (send worker (literal entertainment)
+|         (recv message message)))))
+= (thats . entertainment)
+
+A process we spawned will terminate while waiting for a message, if the
+main process terminates.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                         (recv message1
+|                           (recv message2
+|                             (send parent (pair message1 message2) 0)))))
+|     (send worker (literal thats)
+|       (literal stop))))
+= stop
+
+A spawned process can spawn processes of its own.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                          (bind subworker (spawn (fun (subparent)
+|                            (send subparent (myself) 123)))
+|                            (recv message (send parent message 123)))))
+|     (recv subworker
+|        (pair (pid? subworker) (equal? worker subworker)))))
+= (#t . #f)
+
+A process can send messages to any process it knows about, not just
+its parent.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                          (spawn (fun (subparent)
+|                            (send parent (literal hello) 123)))))
+|     (recv message message)))
+= hello
 
 ### `msgs?` ###
 
