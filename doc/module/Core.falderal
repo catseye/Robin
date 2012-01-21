@@ -402,6 +402,57 @@ argument.
 |   (subtract))
 ? robin: uncaught exception: (illegal-arguments)
 
+### `trunc` ###
+
+`trunc` evaluates its sole argument to a rational number, then
+evaluates to the nearest whole number not larger than that rational.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (trunc 26/5))
+= 5
+
+| (robin (0 . 1) (core (0 . 1))
+|   (trunc 5))
+= 5
+
+| (robin (0 . 1) (core (0 . 1))
+|   (trunc (subtract 0 1/2)))
+= -1
+
+| (robin (0 . 1) (core (0 . 1))
+|   (trunc 100 200 300))
+? robin: uncaught exception: (illegal-arguments 100 200 300)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (trunc))
+? robin: uncaught exception: (illegal-arguments)
+
+### `sign` ###
+
+`sign` evaluates its sole argument to a rational number, then
+evaluates to 0 if that number is 0, 1 if that number is positive, or
+-1 if that number is negative.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (sign 26/5))
+= 1
+
+| (robin (0 . 1) (core (0 . 1))
+|   (sign 0))
+= 0
+
+| (robin (0 . 1) (core (0 . 1))
+|   (sign (subtract 0 200)))
+= -1
+
+| (robin (0 . 1) (core (0 . 1))
+|   (sign 100 200 300))
+? robin: uncaught exception: (illegal-arguments 100 200 300)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (sign))
+? robin: uncaught exception: (illegal-arguments)
+
 ### `eval` ###
 
 `eval` evaluates its first argument to obtain an environment, then

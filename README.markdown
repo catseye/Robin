@@ -110,17 +110,12 @@ Plans
 * Add decimal and proper-fractional sugar for rational numbers, i.e.
   `2-1/5` and `2.2`.
 
-* Add `int` and `sign` to module `core`.
-
 * Add richer concurrency primitives (`call` and `respond`, which assume
   the message consists of an envelope (containing the caller's pid), a
   "tag" symbol, and a payload; `respond` would be like a case statement
   against the tags, and would know which pid to reply to.)
 
 * Document the `crude-io` module, and add tests for it.
-
-* Arithmetic -- put essential operations `minus`, `divide`, and `sign`
-  into `core`, and the rest into an `arith` module.
 
 * Document the `list` module.  Add `take-while`, `drop-while`, `first`,
   `rest`, `last`, and `flatten` to it.  Possibly add alist functions to

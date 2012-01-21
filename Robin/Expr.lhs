@@ -18,7 +18,7 @@ though somewhat regrettably, as it's quite lacking as a name.
 > data Expr = Symbol String
 >           | Null
 >           | Boolean Bool
->           | Number Rational
+>           | Number (Ratio Integer)
 >           | Pid ThreadId (Chan Expr)
 >           | Macro Expr Expr Expr
 >           | Builtin String Bif
