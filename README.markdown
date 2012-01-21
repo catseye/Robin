@@ -93,14 +93,7 @@ Goals
 Plans
 -----
 
-* Establish the relationship between exceptions and processes -- if a
-  process raises an exception that it does not catch, it should send
-  a message to its parent (the process that spawned it.)
-
-* Fuller tests for exceptions.
-
-* Add an opaque type -- opaque values have internals that can only be
-  accessed inside the module in which they were created.
+### Syntax ###
 
 * Add comments to the language.
 
@@ -110,10 +103,29 @@ Plans
 * Add decimal and proper-fractional sugar for rational numbers, i.e.
   `2-1/5` and `2.2`.
 
+### Fundamental Semantics ###
+
+* Add an opaque type -- opaque values have internals that can only be
+  accessed inside the module in which they were created.
+
+* Support qualifiers during module import.  Have identifiers be imported
+  from modules qualified by default, and have something to turn this off.
+  Possibly support "only" and "hiding" qualifiers.
+
+### Concurrency and Exceptions ###
+
+* Establish the relationship between exceptions and processes -- if a
+  process raises an exception that it does not catch, it should send
+  a message to its parent (the process that spawned it.)
+
+* Fuller tests for exceptions.
+
 * Add richer concurrency primitives (`call` and `respond`, which assume
   the message consists of an envelope (containing the caller's pid), a
   "tag" symbol, and a payload; `respond` would be like a case statement
   against the tags, and would know which pid to reply to.)
+
+### Standard Modules ###
 
 * Document the `crude-io` module, and add tests for it.
 
@@ -131,13 +143,8 @@ Plans
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.
 
-* Write a `pixley` module which exports only the identifiers supported
-  by Pixley.  This could be imported, instead of `core`, to emulate
-  Pixley in Robin.
-
-* Write a `boolean` module which exports the basic set of Boolean
-  operators: `and`, `or`, `not`, `xor`, and maybe `impl`.  Maybe make
-  `and` `or` and `xor` take any number of arguments.
+* In the `boolean` module, make `and`, `or`, and `xor` take any number
+  of arguments.
 
 * Write a `functional` module which exports some functions for working
   with functions, such as `identity`, `compose`, and possibly `curry`
@@ -163,6 +170,8 @@ Plans
 * Some kind of macro for capturing the recursive function call pattern
   (probably `letrec`, but not necessary to support mutual recursion.)
 
+### Documentation ###
+
 * Document the "why" behind some of the design decisions.
 
 * Document some style guidelines.
@@ -173,13 +182,19 @@ Plans
 * Document the evaluation rules (they're very similar to Scheme's, but
   they should still be written down.)
 
+### Tests ###
+
 * Make the tests for `core` only ever import the `core` module -- rewrite
   those tests which currently import `small`, although they may be pretty
   ugly expressed purely in `core` terms.
 
-* Support qualifiers during module import.  Have identifiers be imported
-  from modules qualified by default, and have something to turn this off.
-  Possibly support "only" and "hiding" qualifiers.
+* Informally test tail-recursive behavior (does an infinite loop
+  leak memory?)
+
+* Write a test adapter that allows modules to be specified inside
+  Falderal tests (before a line that says "cut here").
+
+### Implementation ###
 
 * Refactor module-handling code; put it in its own module, and add a
   module cache (not just for performance, but also to ensure that objects
@@ -188,10 +203,10 @@ Plans
 * Add a "trace" flag to IEnv and a `-t` flag to the implementation, to
   trace the execution of a running Robin program.
 
-* Write a test adapter that allows modules to be specified inside
-  Falderal tests (before a line that says "cut here").
+### Awesomeness ###
 
-* Informally test tail-recursive behavior (does an infinite loop
-  leak memory?)
+* Write a `pixley` module which exports only the identifiers supported
+  by Pixley.  This could be imported, instead of `core`, to emulate
+  Pixley in Robin.
 
 * Write _Hunt the Wumpus_ in Robin!

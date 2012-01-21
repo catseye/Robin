@@ -10,4 +10,5 @@ falderal test doc/Robin.falderal \
               doc/module/Exception.falderal \
               doc/module/Concurrency.falderal \
               doc/module/List.falderal \
-              doc/module/Environment.falderal
+              doc/module/Environment.falderal \
+              doc/module/Boolean.falderal

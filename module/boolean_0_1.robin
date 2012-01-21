@@ -1,0 +1,12 @@
+(robin (0 . 1) (small (0 . 1) env (0 . 1))
+  (let (
+    (and (fun (a b)
+      (if a b #f)))
+    (or (fun (a b)
+      (if a #t b)))
+    (not (fun (a)
+      (if a #f #t)))
+    (xor (fun (a b)
+      (or (and a (not b)) (and (not a) b))))
+    )
+    (export and or not xor)))
