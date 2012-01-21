@@ -1,0 +1,9 @@
+(robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+  (bind input-loop
+        (fun (self x)
+          (recv entered
+            (send crude-output (pair (myself) (pair x entered))
+              (recv response
+                (self self x)))))
+    (send crude-input (myself)
+      (input-loop input-loop (literal foo)))))

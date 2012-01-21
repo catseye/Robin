@@ -113,11 +113,14 @@ Plans
 * Add decimal and proper-fractional sugar for rational numbers, i.e.
   `2-1/5` and `2.2`.
 
-* Add input to the `crude-io` module.  The input process should wait
-  for a line of input, check to see if it has any new subscribers,
-  send the input to all of its subscribers, and loop.  Not sure how
-  this will work for termination yet (will we need to forcibly kill
-  the process?)
+* Add `int` and `sign` to module `core`.
+
+* Add richer concurrency primitives (`call` and `respond`, which assume
+  the message exists of an envelope (containing the caller's pid), a
+  "tag" symbol, and a payload; `respond` would be like a case statement
+  against the tags, and would know which pid to reply to.)
+
+* Document the `crude-io` module, and add tests for it.
 
 * Arithmetic -- put essential operations `minus`, `divide`, and `sign`
   into `core`, and the rest into an `arith` module.
@@ -143,6 +146,10 @@ Plans
 * Write a `boolean` module which exports the basic set of Boolean
   operators: `and`, `or`, `not`, `xor`, and maybe `impl`.  Maybe make
   `and` `or` and `xor` take any number of arguments.
+
+* Write a `functional` module which exports some functions for working
+  with functions, such as `identity`, `compose`, and possibly `curry`
+  and `uncurry`.
 
 * Write an `arith` module which exports the basic set of arithmetic
   operators: `-` and `/`, `+` and `*` (taking any number of arguments),
@@ -179,9 +186,6 @@ Plans
 * Support qualifiers during module import.  Have identifiers be imported
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
-
-* An `-n` option to the implementation which suppresses output of
-  the result of the main evaluation (so, evaluated for side effects only.)
 
 * Refactor module-handling code; put it in its own module, and add a
   module cache (not just for performance, but also to ensure that objects

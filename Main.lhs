@@ -79,19 +79,25 @@ Command-line Entry Point
 
 > main = do
 >     args <- getArgs
->     processArgs args []
+>     processArgs args [] True
 
-> processArgs args nonBuiltinModules =
+> processArgs args nonBuiltinModules printResult =
 >     case args of
 >         ("-B":moduleName:rest) ->
->             processArgs rest (moduleName:nonBuiltinModules)
+>             processArgs rest (moduleName:nonBuiltinModules) printResult
+>         ("-n":rest) ->
+>             processArgs rest nonBuiltinModules False
 >         [filename] -> do
 >              program <- readFile filename
 >              case parseRobin program of
 >                  Right ast -> do
 >                      result <- evalRobin nonBuiltinModules ast
->                      putStrLn $ show result
->                      exitWith ExitSuccess
+>                      case printResult of
+>                          True -> do
+>                              putStrLn $ show result
+>                              exitWith ExitSuccess
+>                          False -> do
+>                              exitWith ExitSuccess
 >                  Left problem -> do
 >                      print problem
 >                      exitWith $ ExitFailure 1
