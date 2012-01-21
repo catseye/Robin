@@ -171,8 +171,6 @@ Plans
 
 * Document the "why" behind some of the design decisions.
 
-* Document some style guidelines.
-
 * Document the literate Haskell implementation better -- right now it's
   pretty scant.
 
