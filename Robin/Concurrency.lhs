@@ -52,11 +52,6 @@ Evaluate a Robin macro in a Robin process.  After the Haskell
 process has started, we set up an appropriate IEnv and evaluate
 the macro in that.
 
-TODO: the exception handler in the new IEnv should not be `stop`,
-but rather something that sends a message to the parent.
-
-TODO: should we put the parent in the IEnv, too?
-
 TODO: should the final continuation send a message to the parent
 too?
 
@@ -67,10 +62,15 @@ too?
 >     launch chan = do
 >         thread <- myThreadId
 >         let parent = getPid ienv
->         let myIenv = newIEnv (stop) thread chan
+>         let myIenv = newIEnv (makeMsgSendingExcHandler parent) thread chan
 >         let expr = Pair macro $ Pair parent Null
 >         eval env myIenv expr (\x -> do return Null)
 >         return ()
+
+> makeMsgSendingExcHandler pid =
+>     \value -> do
+>         writeChan (getChan pid) (Pair (Symbol "uncaught-exception") value)
+>         return Null
 
 Now the functions exported by this Robin module.
 

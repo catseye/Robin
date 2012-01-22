@@ -114,10 +114,6 @@ Plans
 
 ### Concurrency and Exceptions ###
 
-* Establish the relationship between exceptions and processes -- if a
-  process raises an exception that it does not catch, it should send
-  a message to its parent (the process that spawned it.)
-
 * Fuller tests for exceptions.
 
 * Add richer concurrency primitives (`call` and `respond`, which assume

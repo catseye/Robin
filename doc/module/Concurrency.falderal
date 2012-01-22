@@ -219,6 +219,17 @@ its parent.
 |     (recv message message)))
 = hello
 
+If an exception is raised, but not caught, in a process, that process
+sends a message to this effect to the process that spawned it,
+immediately before terminating.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|                  (bind x (head ())
+|                    (send parent (literal hi) 0))))
+|     (recv message message)))
+= (uncaught-exception expected-pair)
+
 ### `msgs?` ###
 
 `msgs?` evaluates to `#t` if the current process has one or more messages
