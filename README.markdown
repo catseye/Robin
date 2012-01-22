@@ -147,10 +147,9 @@ Plans
   with functions, such as `identity`, `compose`, and possibly `curry`
   and `uncurry`.
 
-* Write an `arith` module which exports the basic set of arithmetic
-  operators: `-` and `/`, `+` and `*` (taking any number of arguments),
-  `mod`, `>`, `<`, `>=`, `<=`, `=`, `/=` or `!=`, and possibly `exp`,
-  `pow`, `log`, and `sqrt`.
+* Document the `arith` module, make `+` and `*` take any number of
+  arguments, and add `>`, `<`, `>=`, `<=`, `=`, `/=` or `!=`, and
+  possibly `exp`, `pow`, `log`, and `sqrt`.
 
 * Write a `trig` module which exports trigonometric functions `cos`,
   `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Pixley,

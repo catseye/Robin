@@ -56,8 +56,72 @@ Module `arith`
 |   (frac (- 0 6/5)))
 = 1/5
 
+| (robin (0 . 1) (arith (0 . 1))
+|   (frac 8))
+= 0
+
+### `integer?` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (integer? 6/5))
+= #f
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (integer? 8))
+= #t
+
 ### `div` ###
 
 | (robin (0 . 1) (arith (0 . 1))
 |   (div 100 3))
 = 33
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (div (- 0 100) 3))
+= -34
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (div 100 (- 0 3)))
+= -34
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (div 1001/10 3))
+= 33
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (div 100 10/3))
+= 33
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (div 10 0))
+? robin: uncaught exception: (division-by-zero . 10)
+
+### `rem` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (rem 12 3))
+= 0
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (rem 11 3))
+= 2
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (rem 10 3))
+= 1
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (rem 9 3))
+= 0
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (rem (- 0 10) 3))
+= 2
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (rem 10 (- 0 3)))
+= -2
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (rem 10 0))
+? robin: uncaught exception: (division-by-zero . 10)
