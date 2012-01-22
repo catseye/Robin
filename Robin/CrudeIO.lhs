@@ -10,12 +10,10 @@
 CrudeIO
 =======
 
-First cut at a rudimentary I/O module.  The virtual I/O device
-accepts messages, and prints the S-expression representation of
-the message to standard output.
+A rudimentary I/O module for Robin.
 
-This is going to be really rough until I figure out how I want
-to do this (and how well Haskell will cooperate with me on that.)
+The virtual output device accepts messages, and prints the S-expression
+representation of the message to standard output.
 
 > outputHandler :: Chan Expr -> IO ()
 
@@ -26,13 +24,18 @@ to do this (and how well Haskell will cooperate with me on that.)
 >     writeChan (getChan sender) (Symbol "ok")
 >     outputHandler chan
 
+The virtual input device waits for a line of input to become available,
+checks to see if it has any new subscribers (and if so, registers them),
+parses the line of text, sends the result to all subscribers (it it could
+be parsed), and loops.
+
 > inputHandler :: Chan Expr -> IO ()
 
 > inputHandler chan = do
 >     inputHandler' chan []
 
 > inputHandler' chan subscribers = do
->     line <- getLine
+>     line <- getLine `catch` (\e -> return "")
 >     subscribers' <- getNewSubscribers chan subscribers
 >     case parseRobin line of
 >         Right expr -> do

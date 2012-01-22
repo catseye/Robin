@@ -112,9 +112,7 @@ Plans
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
 
-### Concurrency and Exceptions ###
-
-* Fuller tests for exceptions.
+### Concurrency ###
 
 * Add richer concurrency primitives (`call` and `respond`, which assume
   the message consists of an envelope (containing the caller's pid), a
@@ -161,8 +159,6 @@ Plans
 
 ### Documentation ###
 
-* Document the `crude-io` module.
-
 * Document the `boolean` module.
 
 * Document the `arith` module.
@@ -179,9 +175,12 @@ Plans
 
 ### Tests ###
 
-* Add tests for the `crude-io` module.
+* Fuller tests for exceptions.
 
-* Add tests for short-circuit behavior of `and` and `or`.
+* Make the tests for the `crude-io` module actually work.
+
+* Add tests for short-circuit behavior of `and` and `or`.  (Requires message
+  passing.)
 
 * Make the tests for `core` only ever import the `core` module -- rewrite
   those tests which currently import `small`, although they may be pretty

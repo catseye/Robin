@@ -1,9 +1,12 @@
 (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
   (bind input-loop
-        (fun (self x)
+        (fun (self)
           (recv entered
-            (send crude-output (pair (myself) (pair x entered))
-              (recv response
-                (self self x)))))
+            (if (equal? entered (literal quit))
+              #f
+              (if (equal? entered (literal ok))
+                (self self)
+                (send crude-output (pair (myself) entered)
+                  (self self))))))
     (send crude-input (myself)
-      (input-loop input-loop (literal foo)))))
+      (input-loop input-loop))))

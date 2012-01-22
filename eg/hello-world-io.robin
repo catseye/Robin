@@ -1,3 +1,0 @@
-(robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-  (send crude-output (pair (myself) (literal hello-world))
-    (recv response response)))
