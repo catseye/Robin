@@ -77,3 +77,15 @@ Exception Handler
 > raise :: IEnv Expr -> Expr -> IO Expr
 > raise ienv expr =
 >     (getExceptionHandler ienv) expr
+
+Assertions
+----------
+
+> assert pred msg ienv expr cc =
+>     case pred expr of
+>         True -> cc expr
+>         False -> raise ienv (Pair (Symbol msg) expr)
+
+> assertSymbol = assert (isSymbol) "expected-symbol"
+
+> assertBoolean = assert (isBoolean) "expected-boolean"

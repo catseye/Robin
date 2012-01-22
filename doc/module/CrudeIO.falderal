@@ -38,7 +38,7 @@ be written to the standard output, and an `ok` message sent back to the
 sending process as a confirmation.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (call crude-output write (literal hello-world)))
+|   (call crude-output write (literal hello-world) reply reply))
 = hello-world
 = ok
 
@@ -49,7 +49,7 @@ implementation need not write the result of the main process to the
 standard output.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (bind foo (call crude-output write (literal hello-world)) 0))
+|   (call crude-output write (literal hello-world) reply 0))
 = hello-world
 
 Multiple messages may be sent to `crude-output`; the content of each
@@ -57,8 +57,8 @@ message will be formatted as a textual S-expression, and written out on
 its own line.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (bind x (call crude-output write (literal hello))
-|     (bind y (call crude-output write (literal (world 1 2 3)))
+|   (call crude-output write (literal hello) x
+|     (call crude-output write (literal (world 1 2 3)) y
 |       0)))
 = hello
 = (world 1 2 3)
@@ -86,7 +86,7 @@ entered and parsed correctly.
 messages when input occurs.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (bind x (call crude-input subscribe ())
+|   (call crude-input subscribe () x
 |     (recv entered
 |       (pair (literal i-got) entered))))
 = (i-got . hello)
@@ -96,7 +96,7 @@ messages when input occurs.
 Arbitrary S-expressions may occur on each line; they are parsed.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (bind x (call crude-input subscribe ())
+|   (call crude-input subscribe () x
 |     (recv entered
 |       (pair (literal i-got) entered))))
 = (i-got 1 2 3)
@@ -111,9 +111,9 @@ Multiple lines of text may be input, and multiple messages will be sent.
 |           (recv entered
 |             (if (equal? entered (literal eof))
 |               #f
-|               (bind foo (call crude-output write (pair #t entered))
+|               (call crude-output write (pair #t entered) foo
 |                 (self self)))))
-|     (bind x (call crude-input subscribe ())
+|     (call crude-input subscribe () x
 |       (input-loop input-loop))))
 = (#t . 1)
 = (#t . 2)
@@ -130,9 +130,9 @@ sent.
 |           (recv entered
 |             (if (equal? entered (literal eof))
 |               #f
-|               (bind foo (call crude-output write (pair #t entered))
+|               (call crude-output write (pair #t entered) foo
 |                 (self self)))))
-|     (bind x (call crude-input subscribe ())
+|     (call crude-input subscribe () x
 |       (input-loop input-loop))))
 = (#t . 1)
 = (#t . 3)

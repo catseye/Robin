@@ -31,6 +31,8 @@ Check if an Expr is a pid or not.
 > isPid (Pid _ _) = True
 > isPid _ = False
 
+> assertPid = assert (isPid) "expected-pid"
+
 Start a Haskell function in a Robin process.  This ensures that the
 new process has a chan it can use, and that the current process has
 an appropriate reference to that chan as well.  However, it will not
@@ -91,12 +93,10 @@ Now the functions exported by this Robin module.
 
 > send env ienv (Pair pidExpr (Pair msgExpr (Pair body Null))) cc = do
 >     eval env ienv pidExpr (\pid ->
->         case isPid pid of
->             True ->
->                 eval env ienv msgExpr (\msg -> do
->                     writeChan (getChan pid) msg
->                     eval env ienv body cc)
->             False -> raise ienv (Pair (Symbol "expected-pid") pid))
+>         assertPid ienv pid (\pid ->
+>             eval env ienv msgExpr (\msg -> do
+>                 writeChan (getChan pid) msg
+>                 eval env ienv body cc)))
 > send env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > recv env ienv (Pair id@(Symbol _) (Pair body Null)) cc = do
@@ -121,34 +121,29 @@ messages in the meantime, and re-sends them to self when done.
 TODO: This should also handle any "finished" or "uncaught exception" response
 from the destination pid.
 
-> call env ienv (Pair pidExpr (Pair tag (Pair payloadExpr Null))) cc = do
+> call env ienv (Pair pidExpr (Pair tag (Pair payloadExpr (Pair repsym (Pair body Null))))) cc = do
 >     eval env ienv pidExpr (\pid ->
->         case isPid pid of
->             True ->
->                 case isSymbol tag of
->                     True ->
->                         eval env ienv payloadExpr (\payload -> do
->                             let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
->                             --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
->                             writeChan (getChan pid) msg
->                             waitForResponse env ienv pid tag [] cc)
->                     False ->
->                         raise ienv (Pair (Symbol "expected-symbol") tag)
->             False ->  raise ienv (Pair (Symbol "expected-pid") pid))
+>         assertPid ienv pid (\pid ->
+>             assertSymbol ienv tag (\tag ->
+>                 eval env ienv payloadExpr (\payload -> do
+>                 let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
+>                 --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
+>                 writeChan (getChan pid) msg
+>                 waitForResponse env ienv pid tag repsym body [] cc))))
 > call env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
-> waitForResponse env ienv pid tag queue cc = do
+> waitForResponse env ienv pid tag repsym body queue cc = do
 >     message <- readChan $ getChan $ getPid ienv
 >     --putStrLn ("recvd back " ++ show message)
 >     case message of
 >          (Pair somePid (Pair (Pair someTag (Symbol "reply")) (Pair returnPayload Null))) -> do
 >              if (pid == somePid) && (tag == someTag) then do
 >                  sendAll (getChan $ getPid ienv) (reverse queue)
->                  cc returnPayload
+>                  eval (Env.insert repsym returnPayload env) ienv body cc
 >                else
->                  waitForResponse env ienv pid tag (message:queue) cc
+>                  waitForResponse env ienv pid tag repsym body (message:queue) cc
 >          other ->
->              waitForResponse env ienv pid tag (message:queue) cc
+>              waitForResponse env ienv pid tag repsym body (message:queue) cc
 
 > sendAll chan [] = do
 >     return ()

@@ -114,19 +114,11 @@ Plans
 
 ### Concurrency ###
 
-* Add richer concurrency primitives (`call` and `respond`, which assume
-  the message consists of an envelope (containing the caller's pid), a
-  "tag" symbol, and a payload; `respond` would be like a case statement
-  against the tags, and would know which pid to reply to.)
+* Add `respond`, which assumes it's being called by `call` and acts like
+  a case statement against the tags, and knows which pid to reply to.
 
-  This is basically going to be necessary in order to deal with `crude-io`
-  as it stands so far, because you need to be able to distinguish input
-  messages from output confirmation messages, and this is the cleanest
-  way to do this.  Note that it will require re-queueing messages that
-  we don't understand, in `respond`, and this will require some care to
-  get right and not lead to self-sending busy loops.  We might want to
-  do this at the native level (not unlike Erlang, but simpler -- no full
-  pattern matching, just checking against the tag.)
+* Write these both in pure Robin, taking care to queue unrecognized
+  messages and re-send them to self while avoiding busy looping.
 
 ### Standard Modules ###
 
@@ -186,7 +178,7 @@ Plans
 
 * Fuller tests for exceptions.
 
-* Make the tests for the `crude-io` module actually work.
+* Fuller tests for `call`.
 
 * Add tests for short-circuit behavior of `and` and `or`.  (Requires message
   passing.)
