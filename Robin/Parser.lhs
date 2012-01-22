@@ -17,9 +17,14 @@ A symbol is denoted by a string which may contain only alphanumeric
 characters, hyphens, underscores, and question marks.  (TODO: this set
 of characters is provisional.)
 
+> legalSymbolic = (char '*' <|> char '-' <|> char '/' <|>
+>                  char '+' <|> char '<' <|> char '>' <|>
+>                  char '<' <|> char '=' <|> char '?' <|>
+>                  char '_')
+
 > symbol = do
->     c <- letter
->     cs <- many (alphaNum <|> char '-' <|> char '?' <|> char '_' <|> char '*')
+>     c <- (letter <|> legalSymbolic)
+>     cs <- many (alphaNum <|> legalSymbolic)
 >     return (Symbol (c:cs))
 
 TODO: document these productions.

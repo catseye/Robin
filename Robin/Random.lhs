@@ -7,7 +7,7 @@
 > import Robin.Expr
 > import qualified Robin.Env as Env
 
-> import Robin.Core (trunc)
+> import Robin.Core (ratFloor)
 > import Robin.Concurrency (spawn, getChan)
 
 Random
@@ -21,7 +21,7 @@ it is written in Haskell for now.
 > handler chan = do
 >     message <- readChan chan
 >     let (Pair sender (Pair (Number low) (Pair (Number high) Null))) = message
->     x <- randomRIO ((trunc low), (trunc high))
+>     x <- randomRIO ((ratFloor low), (ratFloor high))
 >     writeChan (getChan sender) $ Number (x % 1)
 >     handler chan
 

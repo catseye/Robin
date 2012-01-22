@@ -67,14 +67,14 @@ Core
 >             other -> raise ienv (Pair (Symbol "expected-number") other))
 > robinDivide env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
-> robinTrunc env ienv (Pair expr Null) cc = do
+> robinFloor env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->
 >         case x of
->             Number xv -> cc $ Number (trunc xv % 1)
+>             Number xv -> cc $ Number (ratFloor xv % 1)
 >             other -> raise ienv (Pair (Symbol "expected-number") other))
-> robinTrunc env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinFloor env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
-> trunc x = numerator x `div` denominator x
+> ratFloor x = numerator x `div` denominator x
 
 > robinSign env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->
@@ -126,7 +126,7 @@ Module Definition
 >         ("equal?",   equalP),
 >         ("subtract", robinSubtract),
 >         ("divide",   robinDivide),
->         ("trunc",    robinTrunc),
+>         ("floor",    robinFloor),
 >         ("sign",     robinSign),
 >         ("macro",    macro),
 >         ("eval",     robinEval),

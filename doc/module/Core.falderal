@@ -399,32 +399,32 @@ argument.
 ? robin: uncaught exception: (illegal-arguments 100 200 300)
 
 | (robin (0 . 1) (core (0 . 1))
-|   (subtract))
+|   (divide))
 ? robin: uncaught exception: (illegal-arguments)
 
-### `trunc` ###
+### `floor` ###
 
-`trunc` evaluates its sole argument to a rational number, then
+`floor` evaluates its sole argument to a rational number, then
 evaluates to the nearest whole number not larger than that rational.
 
 | (robin (0 . 1) (core (0 . 1))
-|   (trunc 26/5))
+|   (floor 26/5))
 = 5
 
 | (robin (0 . 1) (core (0 . 1))
-|   (trunc 5))
+|   (floor 5))
 = 5
 
 | (robin (0 . 1) (core (0 . 1))
-|   (trunc (subtract 0 1/2)))
+|   (floor (subtract 0 1/2)))
 = -1
 
 | (robin (0 . 1) (core (0 . 1))
-|   (trunc 100 200 300))
+|   (floor 100 200 300))
 ? robin: uncaught exception: (illegal-arguments 100 200 300)
 
 | (robin (0 . 1) (core (0 . 1))
-|   (trunc))
+|   (floor))
 ? robin: uncaught exception: (illegal-arguments)
 
 ### `sign` ###

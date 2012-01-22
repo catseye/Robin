@@ -1,0 +1,63 @@
+-> encoding: UTF-8
+
+Module `arith`
+==============
+
+-> Functionality "Interpret Robin Program" is implemented by
+-> shell command "bin/robin %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program"
+
+### `+` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (+ 14 23))
+= 37
+
+### `-` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (- 23 10))
+= 13
+
+### `*` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (* 23 10))
+= 230
+
+### `/` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (/ 33 11))
+= 3
+
+### `abs` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (abs 5))
+= 5
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (abs (- 0 5)))
+= 5
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (abs 0))
+= 0
+
+### `frac` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (frac 6/5))
+= 1/5
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (frac (- 0 6/5)))
+= 1/5
+
+### `div` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (div 100 3))
+= 33

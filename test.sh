@@ -11,4 +11,5 @@ falderal test doc/Robin.falderal \
               doc/module/Concurrency.falderal \
               doc/module/List.falderal \
               doc/module/Environment.falderal \
-              doc/module/Boolean.falderal
+              doc/module/Boolean.falderal \
+              doc/module/Arithmetic.falderal
