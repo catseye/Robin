@@ -96,7 +96,7 @@ Now the functions exported by this Robin module.
 >                 eval env ienv msgExpr (\msg -> do
 >                     writeChan (getChan pid) msg
 >                     eval env ienv body cc)
->             other -> raise ienv (Pair (Symbol "expected-pid") pid))
+>             False -> raise ienv (Pair (Symbol "expected-pid") pid))
 > send env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > recv env ienv (Pair id@(Symbol _) (Pair body Null)) cc = do
@@ -108,6 +108,53 @@ Now the functions exported by this Robin module.
 >    isEmpty <- isEmptyChan $ getChan $ getPid ienv
 >    cc $ Boolean $ not isEmpty
 > msgsP env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
+This might, one day, be implemented in Robin, in some other module.
+For now, for simplicity, it's here.
+
+`call` is a synchronous communication with another process; it executes a
+`send` and then a `recv`.  It only finishes when the message received came
+from the process to which the first message was sent; it queues up all other
+messages in the meantime, and re-sends them to self when done.
+
+TODO: This should also handle any "finished" or "uncaught exception" response
+from the destination pid.
+
+> call env ienv (Pair pidExpr (Pair tagExpr (Pair payloadExpr Null))) cc = do
+>     eval env ienv pidExpr (\pid ->
+>         case isPid pid of
+>             True ->
+>                 eval env ienv tagExpr (\tag -> do
+>                     case isSymbol tag of
+>                         True ->
+>                             eval env ienv payloadExpr (\payload -> do
+>                                 let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
+>                                 --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
+>                                 writeChan (getChan pid) msg
+>                                 waitForResponse env ienv pid tag [] cc)
+>                         False ->
+>                             raise ienv (Pair (Symbol "expected-symbol") tag))
+>             False ->  raise ienv (Pair (Symbol "expected-pid") pid))
+> call env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
+> waitForResponse env ienv pid tag queue cc = do
+>     message <- readChan $ getChan $ getPid ienv
+>     --putStrLn ("recvd back " ++ show message)
+>     case message of
+>          (Pair somePid (Pair (Pair someTag (Symbol "reply")) (Pair returnPayload Null))) -> do
+>              if (pid == somePid) && (tag == someTag) then do
+>                  sendAll (getChan $ getPid ienv) queue
+>                  cc returnPayload
+>                else
+>                  waitForResponse env ienv pid tag (message:queue) cc
+>          other ->
+>              waitForResponse env ienv pid tag (message:queue) cc
+
+> sendAll chan [] = do
+>     return ()
+> sendAll chan (msg:msgs) = do
+>     writeChan chan msg
+>     sendAll chan msgs
 
 Module Definition
 -----------------
@@ -122,5 +169,6 @@ Module Definition
 >         ("spawn",    robinSpawn),
 >         ("send",     send),
 >         ("recv",     recv),
+>         ("call",     call),
 >         ("msgs?",    msgsP)
 >       ]
