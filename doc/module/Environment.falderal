@@ -46,6 +46,13 @@ second argument in that reduced environment.
 |   (unbind if (if #t (literal x) (literal y))))
 ? robin: uncaught exception: (unbound-identifier . if)
 
+If the identifier doesn't exist in the environment, no change is made to
+the environment.
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (unbind yog-sothoth (if #t (literal x) (literal y))))
+= x
+
 `unbind` removes all trace of binding from the given identifier; if that
 identifier has several definitions that are shadowed, none of them will be
 in effect.
@@ -120,6 +127,61 @@ in the order in which they were shadowed.)
 |       (bind q 700
 |         (bindings-for (literal q))))))
 = (700 900)
+
+`bindings-for` is something of a gimmick that shows off Robin's ability
+to examine the evaluation environment.  In practice, the bindings
+can be determined lexically, so there is no advantage to computing the
+name of a binding.  In fact, please don't.  Code that relies on
+`bindings-for` will be weird and hard to analyze.
+
+### `unshadow` ###
+
+`unshadow` is similar to `unbind`, but only removes the latest binding
+for the given identifier; previously shadowed bindings, if any exist,
+will be visible instead.
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (unshadow yog-sothoth (if #t (literal x) (literal y))))
+= x
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (unshadow if (if #t (literal x) (literal y))))
+? robin: uncaught exception: (unbound-identifier . if)
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (bind if (literal what)
+|     (unshadow if (if #t (literal x) (literal y)))))
+= x
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (bind q 400
+|     (unshadow q q)))
+? robin: uncaught exception: (unbound-identifier . q)
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (bind q 200
+|     (bind q 400
+|       (unshadow q q))))
+= 200
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (bind q 100
+|     (bind q 200
+|       (bind q 400
+|         (unshadow q (unshadow q q))))))
+= 100
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (let ((q 100)
+|         (q 200)
+|         (q 400))
+|     (unshadow q (unshadow q q))))
+= 100
+
+`unshadow` is something of a gimmick that shows off Robin's ability
+to manipulate the evaluation environment.  In practice, the bindings
+can be determined lexically, and a different identifier could always
+be chosen instead.
 
 ### Re-exported Functions ###
 

@@ -17,20 +17,30 @@
       (macro (self args env)
         (eval (filter (fun (binding) (if (equal? (head binding) (head args)) #f #t)) env)
               (head (tail args)))))
+    (unshadow
+      (macro (self args env)
+        (bind remove-binding-r (fun (self id li)
+          (if (empty? li)
+            li
+            (if (equal? (head (head li)) id)
+              (tail li)
+              (pair (head li) (self self id (tail li))))))
+          (eval (remove-binding-r remove-binding-r (head args) env)
+            (head (tail args))))))
     (sandbox
       (macro (self args env)
         (eval (filter (fun (binding) (elem (head binding) (head args))) env)
               (head (tail args)))))
-    (export
-      (macro (self args env)
-        (filter (fun (binding) (elem (head binding) args)) env)))
     (bindings-for
       (macro (self args env)
         (bind id (eval env (head args))
           (map tail
             (filter (fun (binding) (equal? (head binding) id)) env)))))
+    (export
+      (macro (self args env)
+        (filter (fun (binding) (elem (head binding) args)) env)))
     )
-    (export env bind let env? unbind sandbox export bindings-for)
+    (export env bind let env? unbind unshadow sandbox bindings-for export)
   )
 )
 
