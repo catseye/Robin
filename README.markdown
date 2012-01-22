@@ -123,24 +123,22 @@ Plans
 
 ### Standard Modules ###
 
-* Document the `crude-io` module, and add tests for it.
-
-* Finish documenting the `list` module.  Add `take-while`, `drop-while`,
-  `first`, `rest`, `last`, and `flatten` to it.  Possibly add alist functions
-  to it, or create a new `alist` module for that purpose.
+* Add `take-while`, `drop-while`, `first`, `rest`, `last`, and `flatten`
+  to the `list` module.  Possibly add alist functions to it, or create a
+  new `alist` module for that purpose.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.
 
-* In the `boolean` module, make `and`, `or`, and `xor` take any number
-  of arguments.  Make `and` and `or` short-circuiting.
+* In the `boolean` module, make `xor` able to take more than two
+  arguments.
 
 * Write a `functional` module which exports some functions for working
   with functions, such as `identity`, `compose`, and possibly `curry`
   and `uncurry`.
 
-* Document the `arith` module, make `+` and `*` take any number of
+* In the `arith` module, make `+` and `*` take any number of
   arguments.  Possibly add `=`, and `!=`. Possibly add `exp`, `pow`,
   `log`, and `sqrt`.  Possibly add a short-circuiting `*` (which
   doesn't evaluate anything after the first 0 result.)
@@ -163,6 +161,14 @@ Plans
 
 ### Documentation ###
 
+* Document the `crude-io` module.
+
+* Document the `boolean` module.
+
+* Document the `arith` module.
+
+* Finish documenting the `list` module.
+
 * Document the "why" behind some of the design decisions.
 
 * Document the literate Haskell implementation better -- right now it's
@@ -172,6 +178,10 @@ Plans
   they should still be written down.)
 
 ### Tests ###
+
+* Add tests for the `crude-io` module.
+
+* Add tests for short-circuit behavior of `and` and `or`.
 
 * Make the tests for `core` only ever import the `core` module -- rewrite
   those tests which currently import `small`, although they may be pretty
