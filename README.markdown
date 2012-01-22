@@ -133,7 +133,7 @@ Plans
   `first`, `rest`, `last`, and `flatten` to it.  Possibly add alist functions
   to it, or create a new `alist` module for that purpose.
 
-* Add `binding-for` and `unshadow` to the `env` module.
+* Add `unshadow` to the `env` module.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.

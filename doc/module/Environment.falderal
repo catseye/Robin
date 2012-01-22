@@ -97,6 +97,30 @@ these tests should be rewritten to search the resulting alist.
 |   (export pair tail))
 = ((tail . (builtin tail)) (pair . (builtin pair)))
 
+### `bindings-for` ###
+
+`bindings-for` evaluates its single argument to a symbol, then returns a
+list (possibly empty) of all the values to which that identifier is bound in
+the current environment.  The first (if any) value in the list is the value
+that it is currently bound to; the rest are shadowed (and are arranged
+in the order in which they were shadowed.)
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (bindings-for (literal shoggoth)))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (bind q 900
+|     (bindings-for (literal q))))
+= (900)
+
+| (robin (0 . 1) (small (0 . 1) env (0 . 1))
+|   (bind q 900
+|     (bind p 800
+|       (bind q 700
+|         (bindings-for (literal q))))))
+= (700 900)
+
 ### Re-exported Functions ###
 
 Because it would be reasonable to find them here by categorization,

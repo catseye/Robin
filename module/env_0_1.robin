@@ -24,8 +24,13 @@
     (export
       (macro (self args env)
         (filter (fun (binding) (elem (head binding) args)) env)))
+    (bindings-for
+      (macro (self args env)
+        (bind id (eval env (head args))
+          (map tail
+            (filter (fun (binding) (equal? (head binding) id)) env)))))
     )
-    (export env bind let env? unbind sandbox export)
+    (export env bind let env? unbind sandbox export bindings-for)
   )
 )
 
