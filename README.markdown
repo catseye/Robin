@@ -129,12 +129,11 @@ Plans
 
 * Document the `crude-io` module, and add tests for it.
 
-* Document the `list` module.  Add `take-while`, `drop-while`, `first`,
-  `rest`, `last`, and `flatten` to it.  Possibly add alist functions to
-  it, or create a new `alist` module for that purpose.
+* Finish documenting the `list` module.  Add `take-while`, `drop-while`,
+  `first`, `rest`, `last`, and `flatten` to it.  Possibly add alist functions
+  to it, or create a new `alist` module for that purpose.
 
-* Document the `env` module, and add some more macros to it,
-  particularly `binding-for` and `unshadow`.
+* Add `binding-for` and `unshadow` to the `env` module.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
@@ -165,7 +164,8 @@ Plans
   given too many arguments.)
 
 * Some kind of macro for capturing the recursive function call pattern
-  (probably `letrec`, but not necessary to support mutual recursion.)
+  (like `letrec`, but not necessary to support mutual recursion.)  Possibly
+  called `bind-recur`.  Also `let-recur` could build on that.
 
 ### Documentation ###
 

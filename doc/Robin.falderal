@@ -387,3 +387,32 @@ that it requires an implementation which supports concurrency.
 
 The `concurrency` module is documented in
 [module/Concurrency.falderal](module/Concurrency.falderal).
+
+### `list` ###
+
+Robin's `list` module exports macros and functions for working with
+data of conventional list type.
+
+All macros in this module can be expressed in Robin, but of course
+could also be implemented natively for efficiency.
+
+`list` is technically an optional module, but it's really handy,
+and could be written in pure Robin, so it's likely to be available.
+
+The `list` module is documented in
+[module/List.falderal](module/List.falderal).
+
+### `env` ###
+
+Robin's `env` module exports macros and functions for examining and
+manipulating evaluation environments and, to the extent they are
+represented as binding alists, binding alists.
+
+All macros in this module can be expressed in Robin, but of course
+could also be implemented natively for efficiency.
+
+`env` is technically an optional module, but it's really handy,
+and could be written in pure Robin, so it's likely to be available.
+
+The `env` module is documented in
+[module/Environment.falderal](module/Environment.falderal).

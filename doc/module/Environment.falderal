@@ -8,6 +8,10 @@ Module `env`
 
 -> Tests for functionality "Interpret Robin Program"
 
+The `env` module exports macros for examining and manipulating evaluation
+environments and, to the extent they are represented as binding alists,
+binding alists.
+
 ### `env?` ###
 
 `env?` evaluates its single argument, and evaluates to `#t` if
@@ -35,15 +39,16 @@ and only if it is a well-formed binding alist.
 
 ### `unbind` ###
 
-`unbind` removes the given symbol from the environment and evaluates its
+`unbind` removes the given identifier from the environment and evaluates its
 second argument in that reduced environment.
 
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (unbind if (if #t (literal x) (literal y))))
 ? robin: uncaught exception: (unbound-identifier . if)
 
-`unbind` removes all trace of binding from the given symbol; if it has
-several definitions that are shadowed, none of them will be in effect.
+`unbind` removes all trace of binding from the given identifier; if that
+identifier has several definitions that are shadowed, none of them will be
+in effect.
 
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (let ((x 7))
