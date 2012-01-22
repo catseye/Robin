@@ -141,15 +141,16 @@ Plans
   This could be used to build a version of `recv` which can time out.
 
 * In the `boolean` module, make `and`, `or`, and `xor` take any number
-  of arguments.
+  of arguments.  Make `and` and `or` short-circuiting.
 
 * Write a `functional` module which exports some functions for working
   with functions, such as `identity`, `compose`, and possibly `curry`
   and `uncurry`.
 
 * Document the `arith` module, make `+` and `*` take any number of
-  arguments, and add `>`, `<`, `>=`, `<=`, `=`, `/=` or `!=`, and
-  possibly `exp`, `pow`, `log`, and `sqrt`.
+  arguments.  Possibly add `=`, and `!=`. Possibly add `exp`, `pow`,
+  `log`, and `sqrt`.  Possibly add a short-circuiting `*` (which
+  doesn't evaluate anything after the first 0 result.)
 
 * Write a `trig` module which exports trigonometric functions `cos`,
   `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Pixley,

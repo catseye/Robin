@@ -125,3 +125,59 @@ Module `arith`
 | (robin (0 . 1) (arith (0 . 1))
 |   (rem 10 0))
 ? robin: uncaught exception: (division-by-zero . 10)
+
+### `>` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (> 6 4))
+= #t
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (> 6 8))
+= #f
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (> 6 6))
+= #f
+
+### `<` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (< 6 4))
+= #f
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (< 6 8))
+= #t
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (< 6 6))
+= #f
+
+### `>=` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (>= 6 4))
+= #t
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (>= 6 8))
+= #f
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (>= 6 6))
+= #t
+
+### `<=` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (<= 6 4))
+= #f
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (<= 6 8))
+= #t
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (<= 6 6))
+= #t
