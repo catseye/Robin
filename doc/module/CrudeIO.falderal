@@ -14,17 +14,22 @@ more refined approach to I/O in some other module at some point.
 
 The `crude-output` identifier is bound to a process which accepts messages
 sent to it, and outputs the content of those messages to the operating
-system's "standard output".  Each message consists of a pair; the first
-element of the pair should be the process which sent the message, and the
-second is the value which we intend to output.
+system's "standard output".
 
-The value will be formatted as a textual S-expression, and this text will
+Each message should be in the `call` format, which is a list of three items:
+the pid of the sender, the tag (which should be the symbol `write`), and
+the payload (which is the value which we intend to output.)
+
+The payload will be formatted as a textual S-expression, and this text will
 be written, as a line, to the standard output.  After the text has been
-written, a confirmation message consisting of the symbol `ok` will be sent
-back to the process that sent the message.  To ensure that the text is
-written, the sending process should wait for this confirmation message.
-If the program terminates before this confirmation message is received, the
-text might not be written to the standard output.
+written, a confirmation message (in the standard `call` response format)
+consisting of the symbol `ok` will be sent back to the process that sent
+the message.
+
+To ensure that the text is written, the sending process should wait for
+this confirmation message.  The simplest way to do this is to use the
+`call` macro.  If the program terminates before this confirmation message
+is received, the text might not be written to the standard output.
 
 -> Tests for shell command "bin/robin %(test-file)"
 
@@ -33,8 +38,7 @@ be written to the standard output, and an `ok` message sent back to the
 sending process as a confirmation.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (send crude-output (pair (myself) (literal hello-world))
-|     (recv response response)))
+|   (call crude-output write (literal hello-world)))
 = hello-world
 = ok
 
@@ -45,8 +49,7 @@ implementation need not write the result of the main process to the
 standard output.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (send crude-output (pair (myself) (literal hello-world))
-|     (recv response 0)))
+|   (bind foo (call crude-output write (literal hello-world)) 0))
 = hello-world
 
 Multiple messages may be sent to `crude-output`; the content of each
@@ -54,10 +57,9 @@ message will be formatted as a textual S-expression, and written out on
 its own line.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (send crude-output (pair (myself) (literal hello))
-|     (recv response
-|       (send crude-output (pair (myself) (literal (world 1 2 3)))
-|         (recv response 0)))))
+|   (bind x (call crude-output write (literal hello))
+|     (bind y (call crude-output write (literal (world 1 2 3)))
+|       0)))
 = hello
 = (world 1 2 3)
 
@@ -76,61 +78,61 @@ to all subscribers.
 `crude-input` will not send any message until an entire line has been
 entered and parsed correctly.
 
--> Tests for shell command "echo -e 'hello\n' | bin/robin %(test-file)"
+  -> Tests for shell command "echo 'hello\n' | bin/robin %(test-file)"
 
-`crude-input` can be subscribed to, and the subscriber will receive
-messages when input occurs.
+  `crude-input` can be subscribed to, and the subscriber will receive
+  messages when input occurs.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (send crude-input (myself)
-|     (recv entered
-|       (pair (literal i-got) entered))))
-= (i-got . hello)
+  | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+  |   (send crude-input (myself)
+  |     (recv entered
+  |       (pair (literal i-got) entered))))
+  = (i-got . hello)
 
--> Tests for shell command "echo '(1 2 3)' | bin/robin %(test-file)"
+  -> Tests for shell command "echo '(1 2 3)' | bin/robin %(test-file)"
 
-Arbitrary S-expressions may occur on each line; they are parsed.
+  Arbitrary S-expressions may occur on each line; they are parsed.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (send crude-input (myself)
-|     (recv entered
-|       (pair (literal i-got) entered))))
-= (i-got 1 2 3)
+  | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+  |   (send crude-input (myself)
+  |     (recv entered
+  |       (pair (literal i-got) entered))))
+  = (i-got 1 2 3)
 
--> Tests for shell command "echo -e '1\n2\n3\nquit' | bin/robin %(test-file)"
+  -> Tests for shell command "echo -e '1\n2\n3\nquit' | bin/robin %(test-file)"
 
-Multiple lines of text may be input, and multiple messages will be sent.
+  Multiple lines of text may be input, and multiple messages will be sent.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (bind input-loop
-|         (fun (self)
-|           (recv entered
-|             (if (equal? entered (literal quit))
-|               #f
-|               (send crude-output (pair (myself) (pair #t entered))
-|                 (recv response
-|                   (self self))))))
-|     (send crude-input (myself)
-|       (input-loop input-loop))))
-= (#t . 1)
-= (#t . 2)
-= (#t . 3)
+  | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+  |   (bind input-loop
+  |         (fun (self)
+  |           (recv entered
+  |             (if (equal? entered (literal quit))
+  |               #f
+  |               (send crude-output (pair (myself) (pair #t entered))
+  |                 (recv response
+  |                   (self self))))))
+  |     (send crude-input (myself)
+  |       (input-loop input-loop))))
+  = (#t . 1)
+  = (#t . 2)
+  = (#t . 3)
 
--> Tests for shell command "echo -e '1\n#r\n3\nquit' | bin/robin %(test-file)"
+  -> Tests for shell command "echo -e '1\n#r\n3\nquit' | bin/robin %(test-file)"
 
-If an S-expression on a given line cannot be parsed, no message will be
-sent.
+  If an S-expression on a given line cannot be parsed, no message will be
+  sent.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (bind input-loop
-|         (fun (self)
-|           (recv entered
-|             (if (equal? entered (literal quit))
-|               #f
-|               (send crude-output (pair (myself) (pair #t entered))
-|                 (recv response
-|                   (self self))))))
-|     (send crude-input (myself)
-|       (input-loop input-loop))))
-= (#t . 1)
-= (#t . 3)
+  | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+  |   (bind input-loop
+  |         (fun (self)
+  |           (recv entered
+  |             (if (equal? entered (literal quit))
+  |               #f
+  |               (send crude-output (pair (myself) (pair #t entered))
+  |                 (recv response
+  |                   (self self))))))
+  |     (send crude-input (myself)
+  |       (input-loop input-loop))))
+  = (#t . 1)
+  = (#t . 3)

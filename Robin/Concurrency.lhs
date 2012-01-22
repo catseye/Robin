@@ -120,20 +120,19 @@ messages in the meantime, and re-sends them to self when done.
 TODO: This should also handle any "finished" or "uncaught exception" response
 from the destination pid.
 
-> call env ienv (Pair pidExpr (Pair tagExpr (Pair payloadExpr Null))) cc = do
+> call env ienv (Pair pidExpr (Pair tag (Pair payloadExpr Null))) cc = do
 >     eval env ienv pidExpr (\pid ->
 >         case isPid pid of
 >             True ->
->                 eval env ienv tagExpr (\tag -> do
->                     case isSymbol tag of
->                         True ->
->                             eval env ienv payloadExpr (\payload -> do
->                                 let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
->                                 --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
->                                 writeChan (getChan pid) msg
->                                 waitForResponse env ienv pid tag [] cc)
->                         False ->
->                             raise ienv (Pair (Symbol "expected-symbol") tag))
+>                 case isSymbol tag of
+>                     True ->
+>                         eval env ienv payloadExpr (\payload -> do
+>                             let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
+>                             --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
+>                             writeChan (getChan pid) msg
+>                             waitForResponse env ienv pid tag [] cc)
+>                     False ->
+>                         raise ienv (Pair (Symbol "expected-symbol") tag)
 >             False ->  raise ienv (Pair (Symbol "expected-pid") pid))
 > call env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 

@@ -264,7 +264,7 @@ waiting in its queue, `#f` otherwise.
 |         (send sender (pair (myself)
 |                        (pair (pair tag (literal reply))
 |                          (pair (pair tag payload) ()))) 0)))))
-|      (call worker (literal this-tag) (literal this-payload))))
+|      (call worker this-tag (literal this-payload))))
 = (this-tag . this-payload)
 
 The pid and tag in the return message must match, or `call` will
@@ -280,7 +280,7 @@ may in fact hang instead of doing what our implementation does.
 |         (send sender (pair parent
 |                        (pair (pair tag (literal reply))
 |                          (pair (pair tag payload) ()))) 0)))))
-|      (call worker (literal this-tag) (literal this-payload))))
+|      (call worker this-tag (literal this-payload))))
 ? robin: thread blocked indefinitely in an MVar operation
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
@@ -292,5 +292,5 @@ may in fact hang instead of doing what our implementation does.
 |         (send sender (pair (myself)
 |                        (pair (pair (literal some-other-tag) (literal reply))
 |                          (pair (pair tag payload) ()))) 0)))))
-|      (call worker (literal this-tag) (literal this-payload))))
+|      (call worker this-tag (literal this-payload))))
 ? robin: thread blocked indefinitely in an MVar operation

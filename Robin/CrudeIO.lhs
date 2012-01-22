@@ -1,5 +1,7 @@
 > module Robin.CrudeIO where
 
+> import Control.Concurrent (myThreadId)
+
 > import Robin.Chan
 > import Robin.Expr
 > import qualified Robin.Env as Env
@@ -19,10 +21,20 @@ representation of the message to standard output.
 
 > outputHandler chan = do
 >     message <- readChan chan
->     let (Pair sender output) = message
->     putStrLn $ show output
->     writeChan (getChan sender) (Symbol "ok")
->     outputHandler chan
+>     case message of
+>         (Pair sender (Pair (Symbol "write") (Pair output Null))) -> do
+>             putStrLn $ show output
+>             tid <- myThreadId
+>             let myPid = Pid tid chan
+>             let response = (Pair myPid (Pair (Pair (Symbol "write") (Symbol "reply")) (Pair (Symbol "ok") Null)))
+>             writeChan (getChan sender) response
+>             outputHandler chan
+>         (Pair sender (Pair tag rest)) -> do
+>             tid <- myThreadId
+>             let myPid = Pid tid chan
+>             let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>             writeChan (getChan sender) response
+>             outputHandler chan
 
 The virtual input device waits for a line of input to become available,
 checks to see if it has any new subscribers (and if so, registers them),

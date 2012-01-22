@@ -15,8 +15,7 @@ falderal -m test doc/Robin.falderal \
               doc/module/List.falderal \
               doc/module/Environment.falderal \
               doc/module/Boolean.falderal \
-              doc/module/Arithmetic.falderal
-
-#             doc/module/CrudeIO.falderal
+              doc/module/Arithmetic.falderal \
+              doc/module/CrudeIO.falderal
 
 rm -f GeneratedFalderalTests.sh results*.txt
