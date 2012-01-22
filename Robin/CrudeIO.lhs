@@ -69,8 +69,20 @@ symbol `eof` to all of its subscribers, and terminates.
 >     case isEmpty of
 >         True -> do return subscribers
 >         False -> do
->             newSubscriber <- readChan chan
->             getNewSubscribers chan (newSubscriber:subscribers)
+>             message <- readChan chan
+>             case message of
+>                 (Pair sender (Pair (Symbol "subscribe") (Pair _ Null))) -> do
+>                     tid <- myThreadId
+>                     let myPid = Pid tid chan
+>                     let response = (Pair myPid (Pair (Pair (Symbol "subscribe") (Symbol "reply")) (Pair (Symbol "ok") Null)))
+>                     writeChan (getChan sender) response
+>                     getNewSubscribers chan (sender:subscribers)
+>                 (Pair sender (Pair tag rest)) -> do
+>                     tid <- myThreadId
+>                     let myPid = Pid tid chan
+>                     let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>                     writeChan (getChan sender) response
+>                     getNewSubscribers chan (subscribers)
 
 > sendToSubscribers chan expr [] = do
 >     -- putStrLn ("just sent " ++ show expr)
