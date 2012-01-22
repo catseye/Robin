@@ -61,7 +61,7 @@ otherwise we might lose input before anyone has subscribed to us.
 >     inputHandler' chan subscribers
 
 > inputHandler' chan subscribers = do
->     line <- getLine `catch` (\e -> return "eof")
+>     line <- getLine `catch` (\e -> do return "eof")
 >     subscribers' <- getAnyNewSubscribers chan subscribers
 >     case parseRobin line of
 >         Right expr@(Symbol "eof") -> do
@@ -97,13 +97,15 @@ otherwise we might lose input before anyone has subscribed to us.
 >             let myPid = Pid tid chan
 >             let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
 >             writeChan (getChan sender) response
->             getAnyNewSubscribers chan (subscribers)
+>             getAnyNewSubscribers chan subscribers
+>         _ -> do
+>             getAnyNewSubscribers chan subscribers
 
 > sendToSubscribers chan expr [] = do
->     -- putStrLn ("just sent " ++ show expr)
 >     return ()
 > sendToSubscribers chan expr (subscriber:rest) = do
 >     writeChan (getChan subscriber) expr
+>     --putStrLn ("just sent " ++ (show expr) ++ " to " ++ (show subscriber))
 >     sendToSubscribers chan expr rest
 
 > blackHole chan = do

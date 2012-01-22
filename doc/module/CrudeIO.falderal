@@ -66,9 +66,11 @@ its own line.
 ### `crude-input` ###
 
 The `crude-input` identifier is bound to a process which accepts
-subscription messages sent to it.  Each subscription message consists
-of the pid of a process which wishes to subscribe to lines received on
-the program's "standard input".
+subscription messages sent to it.  A subscription message is in `call`
+format, with the tag `subscribe`; the payload is ignored.  The process
+which sent the subscription message is the process that will be
+subscribed to receive data from lines read on the program's "standard
+input".
 
 After receiving a subscription message, that pid is added to `crude-input`'s
 list of subscribers.  After a line of text has been entered, that line is
@@ -78,7 +80,7 @@ to all subscribers.
 `crude-input` will not send any message until an entire line has been
 entered and parsed correctly.
 
--> Tests for shell command "/bin/echo -e 'hello\n' | bin/robin %(test-file)"
+-> Tests for shell command "echo 'hello' | bin/robin %(test-file)"
 
 `crude-input` can be subscribed to, and the subscriber will receive
 messages when input occurs.
@@ -89,7 +91,7 @@ messages when input occurs.
 |       (pair (literal i-got) entered))))
 = (i-got . hello)
 
--> Tests for shell command "/bin/echo -e '(1 2 3)\n' | bin/robin %(test-file)"
+-> Tests for shell command "echo '(1 2 3)' | bin/robin %(test-file)"
 
 Arbitrary S-expressions may occur on each line; they are parsed.
 
@@ -99,39 +101,38 @@ Arbitrary S-expressions may occur on each line; they are parsed.
 |       (pair (literal i-got) entered))))
 = (i-got 1 2 3)
 
-  -> Tests for shell command "/bin/echo -e '1\n2\n3\neof\n' | bin/robin %(test-file)"
+-> Tests for shell command "/bin/echo -e '1\n2\n3\n' | bin/robin -n %(test-file)"
 
-  Multiple lines of text may be input, and multiple messages will be sent.
+Multiple lines of text may be input, and multiple messages will be sent.
 
-  | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-  |   (bind input-loop
-  |         (fun (self)
-  |           (recv entered
-  |             (if (equal? entered (literal eof))
-  |               #f
-  |               (bind foo (call crude-output write (pair #t entered))
-  |                 (self self)))))
-  |     (send crude-input (myself)
-  |       (input-loop input-loop))))
-  = (#t . 1)
-  = (#t . 2)
-  = (#t . 3)
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+|   (bind input-loop
+|         (fun (self)
+|           (recv entered
+|             (if (equal? entered (literal eof))
+|               #f
+|               (bind foo (call crude-output write (pair #t entered))
+|                 (self self)))))
+|     (bind x (call crude-input subscribe ())
+|       (input-loop input-loop))))
+= (#t . 1)
+= (#t . 2)
+= (#t . 3)
 
-  -> Tests for shell command "echo -e '1\n#r\n3\nquit' | bin/robin %(test-file)"
+-> Tests for shell command "/bin/echo -e '1\n#r\n3\n' | bin/robin -n %(test-file)"
 
-  If an S-expression on a given line cannot be parsed, no message will be
-  sent.
+If an S-expression on a given line cannot be parsed, no message will be
+sent.
 
-  | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-  |   (bind input-loop
-  |         (fun (self)
-  |           (recv entered
-  |             (if (equal? entered (literal quit))
-  |               #f
-  |               (send crude-output (pair (myself) (pair #t entered))
-  |                 (recv response
-  |                   (self self))))))
-  |     (send crude-input (myself)
-  |       (input-loop input-loop))))
-  = (#t . 1)
-  = (#t . 3)
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+|   (bind input-loop
+|         (fun (self)
+|           (recv entered
+|             (if (equal? entered (literal eof))
+|               #f
+|               (bind foo (call crude-output write (pair #t entered))
+|                 (self self)))))
+|     (bind x (call crude-input subscribe ())
+|       (input-loop input-loop))))
+= (#t . 1)
+= (#t . 3)

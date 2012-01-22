@@ -2,11 +2,9 @@
   (bind input-loop
         (fun (self)
           (recv entered
-            (if (equal? entered (literal quit))
+            (if (equal? entered (literal eof))
               #f
-              (if (equal? entered (literal ok))
-                (self self)
-                (send crude-output (pair (myself) entered)
-                  (self self))))))
-    (send crude-input (myself)
+              (bind foo (call crude-output write (pair #t entered))
+                (self self)))))
+    (bind x (call crude-input subscribe ())
       (input-loop input-loop))))

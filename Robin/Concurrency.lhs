@@ -101,6 +101,7 @@ Now the functions exported by this Robin module.
 
 > recv env ienv (Pair id@(Symbol _) (Pair body Null)) cc = do
 >    message <- readChan $ getChan $ getPid ienv
+>    --putStrLn ((show $ getPid ienv) ++ " just recvd " ++ (show message))
 >    eval (Env.insert id message env) ienv body cc
 > recv env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
@@ -142,7 +143,7 @@ from the destination pid.
 >     case message of
 >          (Pair somePid (Pair (Pair someTag (Symbol "reply")) (Pair returnPayload Null))) -> do
 >              if (pid == somePid) && (tag == someTag) then do
->                  sendAll (getChan $ getPid ienv) queue
+>                  sendAll (getChan $ getPid ienv) (reverse queue)
 >                  cc returnPayload
 >                else
 >                  waitForResponse env ienv pid tag (message:queue) cc
@@ -152,6 +153,7 @@ from the destination pid.
 > sendAll chan [] = do
 >     return ()
 > sendAll chan (msg:msgs) = do
+>     --putStrLn ("resending " ++ show msg)
 >     writeChan chan msg
 >     sendAll chan msgs
 
