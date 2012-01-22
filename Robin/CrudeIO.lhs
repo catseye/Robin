@@ -29,15 +29,21 @@ checks to see if it has any new subscribers (and if so, registers them),
 parses the line of text, sends the result to all subscribers (it it could
 be parsed), and loops.
 
+If any I/O error is encountered, the virtual input device sends the
+symbol `eof` to all of its subscribers, and terminates.
+
 > inputHandler :: Chan Expr -> IO ()
 
 > inputHandler chan = do
 >     inputHandler' chan []
 
 > inputHandler' chan subscribers = do
->     line <- getLine `catch` (\e -> return "")
+>     line <- getLine `catch` (\e -> return "eof")
 >     subscribers' <- getNewSubscribers chan subscribers
 >     case parseRobin line of
+>         Right expr@(Symbol "eof") -> do
+>             sendToSubscribers chan expr subscribers'
+>             return ()
 >         Right expr -> do
 >             sendToSubscribers chan expr subscribers'
 >             inputHandler' chan subscribers'
@@ -55,6 +61,7 @@ be parsed), and loops.
 >             getNewSubscribers chan (newSubscriber:subscribers)
 
 > sendToSubscribers chan expr [] = do
+>     -- putStrLn ("just sent " ++ show expr)
 >     return ()
 > sendToSubscribers chan expr (subscriber:rest) = do
 >     writeChan (getChan subscriber) expr

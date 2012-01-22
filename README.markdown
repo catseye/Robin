@@ -119,6 +119,15 @@ Plans
   "tag" symbol, and a payload; `respond` would be like a case statement
   against the tags, and would know which pid to reply to.)
 
+  This is basically going to be necessary in order to deal with `crude-io`
+  as it stands so far, because you need to be able to distinguish input
+  messages from output confirmation messages, and this is the cleanest
+  way to do this.  Note that it will require re-queueing messages that
+  we don't understand, in `respond`, and this will require some care to
+  get right and not lead to self-sending busy loops.  We might want to
+  do this at the native level (not unlike Erlang, but simpler -- no full
+  pattern matching, just checking against the tag.)
+
 ### Standard Modules ###
 
 * Add `take-while`, `drop-while`, `first`, `rest`, `last`, and `flatten`
