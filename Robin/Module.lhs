@@ -67,8 +67,7 @@ Module Loading
 >     in do
 >         mod <- readFile filename
 >         ast <- return $ insistParse mod
->         expr <- evalRobin mc ast
->         return (mc, expr)
+>         evalRobin mc ast
 
 > loadModules :: ModuleCache -> Expr -> IO (ModuleCache, Expr)
 
@@ -76,22 +75,25 @@ Module Loading
 >     return (mc, Env.empty)
 > loadModules mc (Pair (Symbol name) (Pair version rest)) = do
 >     (major, minor) <- parseVersion version
->     nextEnv <- loadModules mc rest
->     thisEnv <- loadModule mc (name, major, minor)
->     return (mc, Env.union nextEnv thisEnv)
+>     (mc', nextEnv) <- loadModules mc rest
+>     (mc'', thisEnv) <- loadModule mc' (name, major, minor)
+>     return (mc'', Env.union nextEnv thisEnv)
 
 > parseVersion (Pair (Number major) (Number minor)) = do
 >     case (denominator major, denominator minor) of
 >         (1, 1) -> return (numerator major, numerator minor)
 >         _      -> error "version number components can't be fractions"
 
+> evalRobin :: ModuleCache -> Expr -> IO (ModuleCache, Expr)
+
 > evalRobin mc (Pair (Symbol "robin") (Pair version (Pair modules (Pair expr Null)))) = do
 >     (major, minor) <- parseVersion version
 >     case (major, minor) of
 >         (0, 1) -> do
->             initialEnv <- loadModules mc modules
+>             (mc', initialEnv) <- loadModules mc modules
 >             threadId <- myThreadId
 >             chan <- newChan
 >             let ienv = newIEnv (stop) threadId chan
->             eval initialEnv ienv expr (\x -> do return x)
+>             result <- eval initialEnv ienv expr (\x -> do return x)
+>             return (mc', result)
 >         _ -> error ("unsupported language version " ++ show version)

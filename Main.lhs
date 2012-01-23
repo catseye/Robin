@@ -3,7 +3,7 @@
 > import System
 
 > import Robin.Parser (parseRobin)
-> import Robin.Module (evalRobin)
+> import Robin.Module (evalRobin, mkModuleCache)
 
 Command-line Entry Point
 ------------------------
@@ -22,7 +22,7 @@ Command-line Entry Point
 >              program <- readFile filename
 >              case parseRobin program of
 >                  Right ast -> do
->                      result <- evalRobin nonBuiltinModules ast
+>                      (_, result) <- evalRobin (mkModuleCache nonBuiltinModules) ast
 >                      case printResult of
 >                          True -> do
 >                              putStrLn $ show result
