@@ -447,7 +447,7 @@ The `arith` module is documented in
 
 ### `crude-io` ###
 
-Robin's `crude-io` module exports a rudeimentary, process-based
+Robin's `crude-io` module exports a rudimentary, process-based
 interface to the operating system's idea of "standard input" and
 "standard output".  Textual S-expressions may be read and written,
 one per line.
@@ -457,3 +457,14 @@ in Robin.
 
 The `crude-io` module is documented in
 [module/CrudeIO.falderal](module/CrudeIO.falderal).
+
+### `random` ###
+
+Robin's `random` module exports a process-based interface to a pseudo-
+random number generator.
+
+`random` is an optional module.  It can be written in Robin, save for the
+fact that it is not deterministic (seeding is a problem.)
+
+The `random` module is documented in
+[module/Random.falderal](module/Random.falderal).

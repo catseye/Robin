@@ -1,6 +1,7 @@
 > module Robin.Random where
 
 > import Data.Ratio
+> import Control.Concurrent (myThreadId)
 > import System.Random (randomRIO)
 
 > import Robin.Chan
@@ -20,10 +21,22 @@ it is written in Haskell for now.
 
 > handler chan = do
 >     message <- readChan chan
->     let (Pair sender (Pair (Number low) (Pair (Number high) Null))) = message
->     x <- randomRIO ((ratFloor low), (ratFloor high))
->     writeChan (getChan sender) $ Number (x % 1)
->     handler chan
+>     case message of
+>         (Pair sender (Pair (Symbol "range") (Pair (Pair (Number low) (Pair (Number high) Null)) Null))) -> do
+>             x <- randomRIO ((ratFloor low), (ratFloor high))
+>             tid <- myThreadId
+>             let myPid = Pid tid chan
+>             let response = (Pair myPid (Pair (Pair (Symbol "range") (Symbol "reply")) (Pair (Number (x % 1)) Null)))
+>             writeChan (getChan sender) response
+>             handler chan
+>         (Pair sender (Pair tag rest)) -> do
+>             tid <- myThreadId
+>             let myPid = Pid tid chan
+>             let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>             writeChan (getChan sender) response
+>             handler chan
+>         _ -> do
+>             handler chan
 
 Module Definition
 -----------------
