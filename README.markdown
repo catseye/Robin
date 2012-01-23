@@ -181,9 +181,6 @@ Plans
 
 * Fuller tests for `call`.
 
-* Add tests for short-circuit behavior of `and` and `or`.  (Requires message
-  passing.)
-
 * Make the tests for `core` only ever import the `core` module -- rewrite
   those tests which currently import `small`, although they may be pretty
   ugly expressed purely in `core` terms.

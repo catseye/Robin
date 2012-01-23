@@ -93,6 +93,12 @@ Arguments to functions shadow any other bindings in effect.
 |     (b 7)))
 = (7 . 7)
 
+A function may have no arguments at all.
+
+| (robin (0 . 1) (small (0 . 1))
+|   ((fun () 7)))
+= 7
+
 `fun` is basically equivalent to Scheme's `lambda`.
 
 ### `bind` ###
