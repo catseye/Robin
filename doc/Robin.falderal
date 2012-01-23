@@ -416,3 +416,44 @@ and could be written in pure Robin, so it's likely to be available.
 
 The `env` module is documented in
 [module/Environment.falderal](module/Environment.falderal).
+
+### `boolean` ###
+
+Robin's `boolean` module exports macros and functions for working
+with Boolean values, including the traditional Boolean operators.
+
+All macros in this module can be expressed in Robin, but of course
+could also be implemented natively for efficiency.
+
+`boolean` is technically an optional module, but it's really handy,
+and could be written in pure Robin, so it's likely to be available.
+
+The `boolean` module is documented in
+[module/Boolean.falderal](module/Boolean.falderal).
+
+### `arith` ###
+
+Robin's `arith` module exports macros and functions for performing
+basic arithmetic and numeric comparison operations.
+
+All macros in this module can be expressed in Robin, but of course
+could also be implemented natively for efficiency.
+
+`arith` is technically an optional module, but it's really handy,
+and could be written in pure Robin, so it's likely to be available.
+
+The `arith` module is documented in
+[module/Arithmetic.falderal](module/Arithmetic.falderal).
+
+### `crude-io` ###
+
+Robin's `crude-io` module exports a rudeimentary, process-based
+interface to the operating system's idea of "standard input" and
+"standard output".  Textual S-expressions may be read and written,
+one per line.
+
+`crude-io` is an optional module.  It cannot be written directly
+in Robin.
+
+The `crude-io` module is documented in
+[module/CrudeIO.falderal](module/CrudeIO.falderal).

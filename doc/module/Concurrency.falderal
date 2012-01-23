@@ -300,3 +300,24 @@ may in fact hang instead of doing what our implementation does.
 |      (call worker this-tag (literal this-payload) reply
 |        (pair (literal reply-was) reply))))
 ? robin: thread blocked indefinitely in an MVar operation
+
+`call` expects its first argument to be a pid.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (call (literal worker) this-tag (literal this-payload) reply
+|      (pair (literal reply-was) reply)))
+? robin: uncaught exception: (expected-pid . worker)
+
+`call` expects its second argument to be a symbol.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (call (myself) #f (literal this-payload) reply
+|      (pair (literal reply-was) reply)))
+? robin: uncaught exception: (illegal-arguments (myself) #f (literal this-payload) reply (pair (literal reply-was) reply))
+
+`call` expects its fourth argument to be an identifier.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (call (myself) this-tag (literal this-payload) #f
+|      (pair (literal reply-was) reply)))
+? robin: uncaught exception: (illegal-arguments (myself) this-tag (literal this-payload) #f (pair (literal reply-was) reply))
