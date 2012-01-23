@@ -12,8 +12,11 @@
 Concurrency
 ===========
 
-First, some general utility functions.  These can be imported by other
-modules (especially built-in Robin modules which expose a process.)
+Helper Functions
+----------------
+
+These functions can be imported and used by other Haskell modules,
+especially built-in Robin modules which expose a process.
 
 Get a Pid representing the current process out of its IEnv.
 
@@ -74,7 +77,34 @@ too?
 >         writeChan (getChan pid) (Pair (Symbol "uncaught-exception") value)
 >         return Null
 
-Now the functions exported by this Robin module.
+Capture the "response" pattern for processes which handle `call`s.  This
+doesn't require that the process has a Robin pid.
+
+> respond :: Chan Expr -> [(String, Expr -> Expr -> IO Expr)] -> IO ()
+
+> respond chan handlers = do
+>     message <- readChan chan
+>     tid <- myThreadId
+>     let myPid = Pid tid chan
+>     case message of
+>         (Pair sender (Pair (Symbol tagText) (Pair payload Null))) ->
+>             case lookup tagText handlers of
+>                 Just handler -> do
+>                     reply <- handler sender payload
+>                     let response = (Pair myPid (Pair (Pair (Symbol tagText) (Symbol "reply")) (Pair reply Null)))
+>                     writeChan (getChan sender) response
+>                     respond chan handlers
+>                 Nothing -> do
+>                     let response = (Pair myPid (Pair (Pair (Symbol tagText) (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>                     writeChan (getChan sender) response
+>                     respond chan handlers
+>         _ -> do
+>             respond chan handlers
+
+Robin Functions
+---------------
+
+These are the functions exported by this Robin module.
 
 > robinMyself env ienv Null cc = do
 >     cc $ getPid ienv

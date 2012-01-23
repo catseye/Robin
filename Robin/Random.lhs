@@ -9,7 +9,7 @@
 > import qualified Robin.Env as Env
 
 > import Robin.Core (ratFloor)
-> import Robin.Concurrency (spawn, getChan)
+> import Robin.Concurrency (spawn, getChan, respond)
 
 Random
 ======
@@ -19,32 +19,16 @@ it is written in Haskell for now.
 
 > handler :: Chan Expr -> IO ()
 
-> handler chan = do
->     message <- readChan chan
->     case message of
->         (Pair sender (Pair (Symbol "range") (Pair (Pair (Number low) (Pair (Number high) Null)) Null))) -> do
+> handler chan = respond chan [
+>         ("range", \sender (Pair (Number low) (Pair (Number high) Null)) -> do
 >             x <- randomRIO ((ratFloor low), (ratFloor high))
->             tid <- myThreadId
->             let myPid = Pid tid chan
->             let response = (Pair myPid (Pair (Pair (Symbol "range") (Symbol "reply")) (Pair (Number (x % 1)) Null)))
->             writeChan (getChan sender) response
->             handler chan
->         (Pair sender (Pair tag rest)) -> do
->             tid <- myThreadId
->             let myPid = Pid tid chan
->             let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
->             writeChan (getChan sender) response
->             handler chan
->         _ -> do
->             handler chan
+>             return $ Number (x % 1))
+>     ]
 
 Module Definition
 -----------------
 
 > moduleRandom :: IO Expr
-
-TODO: only start the thread if it hasn't been started already.
-This is where we could use module caching.
 
 > moduleRandom = do
 >     randomPid <- spawn handler

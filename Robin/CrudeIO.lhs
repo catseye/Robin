@@ -7,7 +7,7 @@
 > import qualified Robin.Env as Env
 > import Robin.Parser
 
-> import Robin.Concurrency (spawn, getChan)
+> import Robin.Concurrency (spawn, getChan, respond)
 
 CrudeIO
 =======
@@ -19,24 +19,11 @@ representation of the message to standard output.
 
 > outputHandler :: Chan Expr -> IO ()
 
-> outputHandler chan = do
->     message <- readChan chan
->     case message of
->         (Pair sender (Pair (Symbol "write") (Pair output Null))) -> do
->             putStrLn $ show output
->             tid <- myThreadId
->             let myPid = Pid tid chan
->             let response = (Pair myPid (Pair (Pair (Symbol "write") (Symbol "reply")) (Pair (Symbol "ok") Null)))
->             writeChan (getChan sender) response
->             outputHandler chan
->         (Pair sender (Pair tag rest)) -> do
->             tid <- myThreadId
->             let myPid = Pid tid chan
->             let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
->             writeChan (getChan sender) response
->             outputHandler chan
->         _ -> do
->             outputHandler chan
+> outputHandler chan = respond chan [
+>         ("write", \sender payload -> do
+>             putStrLn $ show payload
+>             return $ Symbol "ok")
+>     ]
 
 The virtual input device waits for a line of input to become available,
 checks to see if it has any new subscribers (and if so, registers them),
@@ -66,7 +53,7 @@ otherwise we might lose input before anyone has subscribed to us.
 >     case parseRobin line of
 >         Right expr@(Symbol "eof") -> do
 >             sendToSubscribers chan expr subscribers'
->             blackHole chan
+>             respond chan [] -- 'black hole'
 >         Right expr -> do
 >             sendToSubscribers chan expr subscribers'
 >             inputHandler' chan subscribers'
@@ -108,25 +95,10 @@ otherwise we might lose input before anyone has subscribed to us.
 >     --putStrLn ("just sent " ++ (show expr) ++ " to " ++ (show subscriber))
 >     sendToSubscribers chan expr rest
 
-> blackHole chan = do
->     message <- readChan chan
->     case message of
->         (Pair sender (Pair tag rest)) -> do
->             tid <- myThreadId
->             let myPid = Pid tid chan
->             let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
->             writeChan (getChan sender) response
->             blackHole chan
->         _ -> do
->             blackHole chan
-
 Module Definition
 -----------------
 
 > moduleCrudeIO :: IO Expr
-
-TODO: only start the thread if it hasn't been started already.
-This is where we could use module caching.
 
 > moduleCrudeIO = do
 >     crudeOutputPid <- spawn outputHandler

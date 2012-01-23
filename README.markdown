@@ -193,11 +193,9 @@ Plans
 * Write a test adapter that allows modules to be specified inside
   Falderal tests (before a line that says "cut here").
 
-### Implementation ###
+* Test module caching.
 
-* Refactor module-handling code; put it in its own module, and add a
-  module cache (not just for performance, but also to ensure that objects
-  created by modules, e.g. processes, are singletons.)
+### Implementation ###
 
 * Add a "trace" flag to IEnv and a `-t` flag to the implementation, to
   trace the execution of a running Robin program.
