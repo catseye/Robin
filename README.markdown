@@ -190,11 +190,6 @@ Plans
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)
 
-* Write a test adapter that allows modules to be specified inside
-  Falderal tests (before a line that says "cut here").
-
-* Test module caching.
-
 ### Implementation ###
 
 * Add a "trace" flag to IEnv and a `-t` flag to the implementation, to

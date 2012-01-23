@@ -1,0 +1,26 @@
+-> encoding: UTF-8
+
+Miscellanous Module Tests
+=========================
+
+-> Functionality "Interpret Bundled Robin Program" is implemented by
+-> shell command "bin/unbundle_modules.py %(test-file)"
+
+-> Tests for functionality "Interpret Bundled Robin Program"
+
+This document contains miscellaneous tests for module functionality;
+tests that require multiple modules be loaded, and so forth.
+
+Modules are cached, so that a module referenced by two other modules
+is not loaded twice.
+
+| ----- module a 0.1
+| (robin (0 . 1) (small (0 . 1) random (0 . 1))
+|   (pair (pair (literal random-a) random) ()))
+| ----- module b 0.1
+| (robin (0 . 1) (small (0 . 1) random (0 . 1))
+|   (pair (pair (literal random-b) random) ()))
+| ----- main
+| (robin (0 . 1) (core (0 . 1) a (0 . 1) b (0 . 1))
+|   (equal? random-a random-b))
+= #t
