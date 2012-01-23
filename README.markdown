@@ -122,9 +122,10 @@ Plans
 
 ### Standard Modules ###
 
-* Add `take-while`, `drop-while`, `first`, `rest`, `last`, and `flatten`
-  to the `list` module.  Possibly add alist functions to it, or create a
-  new `alist` module for that purpose.
+* In the `list` module, rename `first` to `find`.  Add `first`, `rest`,
+  `last`, `prefix?`, and `flatten` to the `list` module.  Possibly add
+  alist functions to the module, or create a new `alist` module for that
+  purpose.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.

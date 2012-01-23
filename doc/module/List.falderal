@@ -183,3 +183,47 @@ the elements is reversed.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (index 8 (literal whatnot)))
 ? robin: uncaught exception: (expected-pair . whatnot)
+
+### `take-while` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (take-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+= (one two)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (take-while (fun (x) (symbol? x)) (literal (1 2 3 4 five six))))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (take-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+= (1 2 3 4 5 6)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (take-while (fun (x) (symbol? x)) ()))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (take-while (fun (x) (symbol? x)) #f))
+? robin: uncaught exception: (expected-pair . #f)
+
+### `drop-while` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (drop-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+= (3 4 five 6 seven)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (drop-while (fun (x) (symbol? x)) (literal (1 2 3 4 5 6))))
+= (1 2 3 4 5 6)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (drop-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (drop-while (fun (x) (symbol? x)) ()))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (drop-while (fun (x) (symbol? x)) #f))
+? robin: uncaught exception: (expected-pair . #f)
