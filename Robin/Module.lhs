@@ -23,9 +23,14 @@ Module Loading
 
 > type ModuleRef = (String, Integer, Integer)
 
-> data ModuleCache = ModuleCache [String] [(ModuleRef, IO Expr)]
+> data ModuleCache = ModuleCache [String] [(ModuleRef, Expr)]
 
 > mkModuleCache nonBuiltinModules = ModuleCache nonBuiltinModules []
+
+> cacheModule :: ModuleCache -> ModuleRef -> Expr -> ModuleCache
+
+> cacheModule mc@(ModuleCache n cachedModules) modRef modExpr =
+>     ModuleCache n ((modRef, modExpr):cachedModules)
 
 > builtinModules = [
 >             (("core",0,1), moduleCore),
@@ -38,48 +43,53 @@ Module Loading
 
 > loadModule :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
 
-> loadModule (ModuleCache nonBuiltinModules cachedModules) modRef@(name, major, minor) =
+> loadModule mc@(ModuleCache nonBuiltinModules cachedModules) modRef@(name, major, minor) =
 >     case lookup modRef cachedModules of
->         Just module -> module
+>         Just expr -> do
+>             return (mc, expr)
 >         Nothing ->
 >             if name `elem` nonBuiltinModules then
->                 loadModuleFromFilesystem nonBuiltinModules modRef
->             case lookup modRef builtinModules of
->                 Just builtinModule ->
->             if
->                 name `elem` nonBuiltinModules
->               then
->                 
->               else
->                 builtinModule
->         Nothing -> loadModuleFromFilesystem nonBuiltinModules name major minor
+>                 loadModuleFromFilesystem mc modRef
+>             else
+>                 case lookup modRef builtinModules of
+>                     Just builtinModule -> do
+>                         expr <- builtinModule
+>                         let mc' = cacheModule mc modRef expr
+>                         return (mc', expr)
+>                     Nothing ->
+>                         loadModuleFromFilesystem mc modRef
 
-> loadModuleFromFilesystem nonBuiltinModules name major minor =
+> loadModuleFromFilesystem :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
+
+> loadModuleFromFilesystem mc@(ModuleCache nonBuiltinModules cachedModules) modRef@(name, major, minor) =
 >     let
 >         filename = "module/" ++ name ++ "_" ++ (show major) ++ "_" ++ (show minor) ++ ".robin"
 >     in do
 >         mod <- readFile filename
 >         ast <- return $ insistParse mod
->         evalRobin nonBuiltinModules ast
+>         expr <- evalRobin mc ast
+>         return (mc, expr)
 
-> loadModules nonBuiltinModules Null = do
->     return Env.empty
-> loadModules nonBuiltinModules (Pair (Symbol name) (Pair version rest)) = do
+> loadModules :: ModuleCache -> Expr -> IO (ModuleCache, Expr)
+
+> loadModules mc Null = do
+>     return (mc, Env.empty)
+> loadModules mc (Pair (Symbol name) (Pair version rest)) = do
 >     (major, minor) <- parseVersion version
->     nextEnv <- loadModules nonBuiltinModules rest
->     thisEnv <- loadModule nonBuiltinModules name major minor
->     return $ Env.union nextEnv thisEnv
+>     nextEnv <- loadModules mc rest
+>     thisEnv <- loadModule mc (name, major, minor)
+>     return (mc, Env.union nextEnv thisEnv)
 
 > parseVersion (Pair (Number major) (Number minor)) = do
 >     case (denominator major, denominator minor) of
 >         (1, 1) -> return (numerator major, numerator minor)
 >         _      -> error "version number components can't be fractions"
 
-> evalRobin nonBuiltinModules (Pair (Symbol "robin") (Pair version (Pair modules (Pair expr Null)))) = do
+> evalRobin mc (Pair (Symbol "robin") (Pair version (Pair modules (Pair expr Null)))) = do
 >     (major, minor) <- parseVersion version
 >     case (major, minor) of
 >         (0, 1) -> do
->             initialEnv <- loadModules nonBuiltinModules modules
+>             initialEnv <- loadModules mc modules
 >             threadId <- myThreadId
 >             chan <- newChan
 >             let ienv = newIEnv (stop) threadId chan
