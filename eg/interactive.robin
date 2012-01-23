@@ -4,7 +4,7 @@
           (recv entered
             (if (equal? entered (literal eof))
               #f
-              (bind foo (call crude-output write (pair #t entered))
+              (call crude-output write (pair #t entered) foo
                 (self self)))))
-    (bind x (call crude-input subscribe ())
+    (call crude-input subscribe () x
       (input-loop input-loop))))

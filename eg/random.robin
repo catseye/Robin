@@ -5,7 +5,6 @@
         (literal done)
         (send random (list (myself) 1 6)
           (recv value
-            (send crude-output (pair (myself) value)
-              (recv response
-                (self self (subtract n 1))))))))
+            (call crude-output write value response
+              (self self (subtract n 1)))))))
     (output-loop output-loop 20)))
