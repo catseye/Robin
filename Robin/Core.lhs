@@ -11,16 +11,12 @@ Core
 
 > robinHead env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->
->         case x of
->             (Pair a _) -> cc $ a
->             other      -> raise ienv (Pair (Symbol "expected-pair") other))
+>         assertPair ienv x (\(Pair a _) -> cc a))
 > robinHead env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > robinTail env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->
->         case x of
->             (Pair _ b) -> cc $ b
->             other      -> raise ienv (Pair (Symbol "expected-pair") other))
+>         assertPair ienv x (\(Pair _ b) -> cc b))
 > robinTail env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > robinPair env ienv (Pair e1 (Pair e2 Null)) cc = do
@@ -43,55 +39,45 @@ Core
 
 > robinSubtract env ienv (Pair xexpr (Pair yexpr Null)) cc = do
 >     eval env ienv xexpr (\x ->
->         case x of
->             Number xv -> eval env ienv yexpr (\y ->
->                 case y of
->                     Number yv -> cc (Number (xv - yv))
->                     other -> raise ienv (Pair (Symbol "expected-number") other))
->             other -> raise ienv (Pair (Symbol "expected-number") other))
+>         assertNumber ienv x (\(Number xv) ->
+>             eval env ienv yexpr (\y ->
+>                 assertNumber ienv y (\(Number yv) ->
+>                     cc (Number (xv - yv))))))
 > robinSubtract env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > robinDivide env ienv (Pair xexpr (Pair yexpr Null)) cc = do
 >     eval env ienv xexpr (\x ->
->         case x of
->             Number xv -> eval env ienv yexpr (\y ->
->                 case y of
->                     Number yv ->
->                         if
->                             yv == (0%1)
->                           then
->                             raise ienv (Pair (Symbol "division-by-zero") x)
->                           else
->                             cc (Number (xv / yv))
->                     other -> raise ienv (Pair (Symbol "expected-number") other))
->             other -> raise ienv (Pair (Symbol "expected-number") other))
+>         assertNumber ienv x (\(Number xv) ->
+>             eval env ienv yexpr (\y ->
+>                 assertNumber ienv y (\(Number yv) ->
+>                     if yv == (0%1) then
+>                         raise ienv (Pair (Symbol "division-by-zero") x)
+>                       else
+>                         cc (Number (xv / yv))))))
 > robinDivide env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > robinFloor env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->
->         case x of
->             Number xv -> cc $ Number (ratFloor xv % 1)
->             other -> raise ienv (Pair (Symbol "expected-number") other))
+>         assertNumber ienv x (\(Number xv) ->
+>             cc $ Number (ratFloor xv % 1)))
 > robinFloor env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > ratFloor x = numerator x `div` denominator x
 
 > robinSign env ienv (Pair expr Null) cc = do
 >     eval env ienv expr (\x ->
->         case x of
->             Number xv -> cc $ Number $ sign xv
->             other -> raise ienv (Pair (Symbol "expected-number") other))
+>         assertNumber ienv x (\(Number xv) ->
+>             cc $ Number $ sign xv))
 > robinSign env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > sign x = if x == 0 then 0 else if x < 0 then -1 else 1
 
 > robinIf env ienv (Pair test (Pair texpr (Pair fexpr Null))) cc = do
 >     eval env ienv test (\x ->
->         case x of
->             Boolean True -> eval env ienv texpr cc
->             Boolean False -> eval env ienv fexpr cc
->             other ->
->                 raise ienv (Pair (Symbol "expected-boolean") other))
+>         assertBoolean ienv x (\(Boolean b) ->
+>             case b of
+>                 True -> eval env ienv texpr cc
+>                 False -> eval env ienv fexpr cc))
 > robinIf env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > robinEval env ienv (Pair envlist (Pair form Null)) cc = do
@@ -133,4 +119,3 @@ Module Definition
 >         ("if",       robinIf),
 >         ("raise",    robinRaise)
 >       ]
-

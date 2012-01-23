@@ -87,5 +87,7 @@ Assertions
 >         False -> raise ienv (Pair (Symbol msg) expr)
 
 > assertSymbol = assert (isSymbol) "expected-symbol"
-
 > assertBoolean = assert (isBoolean) "expected-boolean"
+> assertPair = assert (isPair) "expected-pair"
+> assertNumber = assert (isNumber) "expected-number"
+> assertMacro = assert (isMacro) "expected-macro"

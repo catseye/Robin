@@ -84,11 +84,9 @@ Now the functions exported by this Robin module.
 
 > robinSpawn env ienv (Pair e Null) cc = do
 >     eval env ienv e (\macro ->
->         case isMacro macro of
->             True -> do
->                 pid <- spawnMacro env ienv macro
->                 cc $ pid
->             other -> raise ienv (Pair (Symbol "expected-macro") macro))
+>         assertMacro ienv macro (\macro -> do
+>             pid <- spawnMacro env ienv macro
+>             cc $ pid))
 > robinSpawn env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > send env ienv (Pair pidExpr (Pair msgExpr (Pair body Null))) cc = do
@@ -121,15 +119,14 @@ messages in the meantime, and re-sends them to self when done.
 TODO: This should also handle any "finished" or "uncaught exception" response
 from the destination pid.
 
-> call env ienv (Pair pidExpr (Pair tag (Pair payloadExpr (Pair repsym (Pair body Null))))) cc = do
+> call env ienv (Pair pidExpr (Pair tag@(Symbol _) (Pair payloadExpr (Pair repsym@(Symbol _) (Pair body Null))))) cc = do
 >     eval env ienv pidExpr (\pid ->
 >         assertPid ienv pid (\pid ->
->             assertSymbol ienv tag (\tag ->
->                 eval env ienv payloadExpr (\payload -> do
->                 let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
->                 --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
->                 writeChan (getChan pid) msg
->                 waitForResponse env ienv pid tag repsym body [] cc))))
+>             eval env ienv payloadExpr (\payload -> do
+>             let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
+>             --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
+>             writeChan (getChan pid) msg
+>             waitForResponse env ienv pid tag repsym body [] cc)))
 > call env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > waitForResponse env ienv pid tag repsym body queue cc = do
