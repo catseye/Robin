@@ -104,6 +104,14 @@
               (self self (tail la) (tail lb))
               #f))))
         (prefix?-r prefix?-r la lb))))
+    (flatten (fun (li)
+      (bind flatten-r (fun (self li acc)
+        (if (empty? li)
+          acc
+          (if (list? (head li))
+            (self self (tail li) (self self (head li) acc))
+            (self self (tail li) (pair (head li) acc)))))
+        (reverse (flatten-r flatten-r li ())))))
     )
     (list
       (pair (literal list) list)
@@ -124,6 +132,7 @@
       (pair (literal rest) rest)
       (pair (literal last) last)
       (pair (literal prefix?) prefix?)
+      (pair (literal flatten) flatten)
     )
   )
 )

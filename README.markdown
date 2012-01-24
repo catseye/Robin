@@ -122,8 +122,6 @@ Plans
 
 ### Standard Modules ###
 
-* Add `flatten` to the `list` module.
-
 * Possibly add alist functions to the module, or create a new `alist`
   module for that purpose.
 
