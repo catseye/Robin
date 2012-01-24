@@ -122,7 +122,7 @@ Plans
 
 ### Standard Modules ###
 
-* Add `last`, `prefix?`, and `flatten` to the `list` module.  Possibly add
+* Add `prefix?`, and `flatten` to the `list` module.  Possibly add
   alist functions to the module, or create a new `alist` module for that
   purpose.
 
@@ -143,7 +143,7 @@ Plans
   doesn't evaluate anything after the first 0 result.)
 
 * Write a `trig` module which exports trigonometric functions `cos`,
-  `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Pixley,
+  `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Robin,
   but it's a good candidate for implementing natively.
 
 * Write a `set` module which exports functions which treat lists as
@@ -190,6 +190,9 @@ Plans
 
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)
+
+* Test that circular module imports produce an error message, and not
+  an infinite loop.
 
 ### Implementation ###
 

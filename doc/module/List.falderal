@@ -283,3 +283,36 @@ the elements is reversed.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (rest 0 (literal foo)))
 = foo
+
+### `last` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (last 0 (list 1 2 3 4 5)))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (head (last 1 (list 1 2 3 4 5))))
+= 5
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (last 3 (list 1 2 3 4 5)))
+= (3 4 5)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (last 6 (list 1 2 3 4 5)))
+? robin: uncaught exception: (expected-pair)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (last 6 (list 1 2 3 4 5 . 6)))
+? robin: uncaught exception: (expected-pair . 6)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (last 1 (literal foo)))
+? robin: uncaught exception: (expected-pair . foo)
+
+Unlike `first`, `last` does care if it's not a list, even when the count
+is zero.
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (last 0 (literal foo)))
+? robin: uncaught exception: (expected-pair . foo)

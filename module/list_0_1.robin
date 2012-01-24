@@ -92,6 +92,8 @@
           li
           (self self (subtract n 1) (tail li))))
         (rest-r rest-r n li))))
+    (last (fun (n li)
+      (reverse (first n (reverse li)))))
     )
     (list
       (pair (literal list) list)
@@ -110,6 +112,7 @@
       (pair (literal drop-while) drop-while)
       (pair (literal first) first)
       (pair (literal rest) rest)
+      (pair (literal last) last)
     )
   )
 )
