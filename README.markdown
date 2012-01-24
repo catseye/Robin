@@ -122,8 +122,7 @@ Plans
 
 ### Standard Modules ###
 
-* In the `list` module, rename `first` to `find`.  Add `first`, `rest`,
-  `last`, `prefix?`, and `flatten` to the `list` module.  Possibly add
+* Add `last`, `prefix?`, and `flatten` to the `list` module.  Possibly add
   alist functions to the module, or create a new `alist` module for that
   purpose.
 
@@ -150,6 +149,10 @@ Plans
 * Write a `set` module which exports functions which treat lists as
   sets, with each operation ensuring the set elements are unique in
   the list.
+
+* Add an `assert` module which exports both a general assertion, and
+  various type assertions (`assert-boolean`, etc.,) which raise exceptions
+  if the assertion is false.
 
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
