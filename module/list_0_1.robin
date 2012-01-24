@@ -94,6 +94,16 @@
         (rest-r rest-r n li))))
     (last (fun (n li)
       (reverse (first n (reverse li)))))
+    (prefix? (fun (la lb)
+      (bind prefix?-r (fun (self la lb)
+        (if (empty? la)
+          #t
+          (if (empty? lb)
+            #f
+            (if (equal? (head la) (head lb))
+              (self self (tail la) (tail lb))
+              #f))))
+        (prefix?-r prefix?-r la lb))))
     )
     (list
       (pair (literal list) list)
@@ -113,6 +123,7 @@
       (pair (literal first) first)
       (pair (literal rest) rest)
       (pair (literal last) last)
+      (pair (literal prefix?) prefix?)
     )
   )
 )

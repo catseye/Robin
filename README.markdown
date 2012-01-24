@@ -122,9 +122,10 @@ Plans
 
 ### Standard Modules ###
 
-* Add `prefix?`, and `flatten` to the `list` module.  Possibly add
-  alist functions to the module, or create a new `alist` module for that
-  purpose.
+* Add `flatten` to the `list` module.
+
+* Possibly add alist functions to the module, or create a new `alist`
+  module for that purpose.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
