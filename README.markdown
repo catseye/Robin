@@ -149,9 +149,6 @@ Plans
   sets, with each operation ensuring the set elements are unique in
   the list.
 
-* Add more assertions to the `assert` module, including number classes
-  (particularly `assert-integer`, `assert-natural`).
-
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)

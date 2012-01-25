@@ -70,6 +70,14 @@ Module `arith`
 |   (integer? 8))
 = #t
 
+| (robin (0 . 1) (arith (0 . 1))
+|   (integer? 0))
+= #t
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (integer? (- 0 8)))
+= #t
+
 ### `div` ###
 
 | (robin (0 . 1) (arith (0 . 1))
@@ -181,3 +189,21 @@ Module `arith`
 | (robin (0 . 1) (arith (0 . 1))
 |   (<= 6 6))
 = #t
+
+### `natural?` ###
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (natural? 6/5))
+= #f
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (natural? 8))
+= #t
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (natural? 0))
+= #t
+
+| (robin (0 . 1) (arith (0 . 1))
+|   (natural? (- 0 8)))
+= #f

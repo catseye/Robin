@@ -26,5 +26,7 @@
       (equal? (sign (- a b)) (- 0 1))))
     (<= (fun (a b)
       (if (equal? a b) #t (equal? (sign (- a b)) (- 0 1)))))
+    (natural? (fun (a)
+      (if (equal? (frac a) 0) (>= a 0) #f)))
     )
-    (export + - * / abs frac integer? div rem > >= < <=)))
+    (export + - * / abs frac integer? div rem > >= < <= natural?)))

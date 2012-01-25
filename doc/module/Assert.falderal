@@ -48,6 +48,16 @@ Module `assert`
 |   (assert-symbol 7 (literal what)))
 ? robin: uncaught exception: (expected-symbol . 7)
 
+### `assert-pair` ###
+
+| (robin (0 . 1) (small (0 . 1) assert (0 . 1))
+|   (assert-pair (pair 1 2) #t))
+= #t
+
+| (robin (0 . 1) (small (0 . 1) assert (0 . 1))
+|   (assert-pair #t (pair 1 2)))
+? robin: uncaught exception: (expected-pair . #t)
+
 ### `assert-macro` ###
 
 | (robin (0 . 1) (small (0 . 1) assert (0 . 1))
