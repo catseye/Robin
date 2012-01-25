@@ -24,6 +24,10 @@ conventional list type.
 |   (list (pair 2 3) (pair 6 7)))
 = ((2 . 3) (6 . 7))
 
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (list 1 2 3 4 . 5))
+? robin: uncaught exception: (expected-pair . 5)
+
 `list` need not have any arguments at all; the result is the empty list.
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
@@ -42,6 +46,10 @@ is the empty list, `#f` otherwise.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (empty? ()))
 = #t
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (empty? (list 1 2 3)))
+= #f
 
 ### `list?` ###
 
@@ -64,6 +72,10 @@ is a proper list, `#f` otherwise.
 |   (list? (pair 1 2)))
 = #f
 
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (list? (literal (a b c . d))))
+= #f
+
 ### `map` ###
 
 `map` evaluates its first argument to obtain a macro, and its second argument
@@ -74,6 +86,10 @@ to be a one-argument function.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (map (fun (x) (list x)) (literal (three dog night))))
 = ((three) (dog) (night))
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (map (fun (x) (list x)) (literal (three dog . night))))
+? robin: uncaught exception: (expected-pair . night)
 
 ### `fold` ###
 
