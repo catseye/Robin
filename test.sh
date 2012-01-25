@@ -18,6 +18,7 @@ falderal -m test doc/Robin.falderal \
               doc/module/Arithmetic.falderal \
               doc/module/CrudeIO.falderal \
               doc/module/Random.falderal \
+              doc/module/Assert.falderal \
               doc/module/Miscellany.falderal
 
 rm -f GeneratedFalderalTests.sh results*.txt

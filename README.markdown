@@ -149,9 +149,8 @@ Plans
   sets, with each operation ensuring the set elements are unique in
   the list.
 
-* Add an `assert` module which exports both a general assertion, and
-  various type assertions (`assert-boolean`, etc.,) which raise exceptions
-  if the assertion is false.
+* Add more assertions to the `assert` module, including number classes
+  (particularly `assert-integer`, `assert-natural`).
 
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
