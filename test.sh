@@ -4,10 +4,7 @@ if [ ! -e bin/robin ]; then
     ./build.sh
 fi
 
-# Workaround for Falderal hanging; if you run it in
-# "messy" mode, it doesn't.  No idea why, yet.
-
-falderal -m test doc/Robin.falderal \
+falderal test doc/Robin.falderal \
               doc/module/Core.falderal \
               doc/module/Small.falderal \
               doc/module/Exception.falderal \
@@ -20,5 +17,3 @@ falderal -m test doc/Robin.falderal \
               doc/module/Random.falderal \
               doc/module/Assert.falderal \
               doc/module/Miscellany.falderal
-
-rm -f GeneratedFalderalTests.sh results*.txt

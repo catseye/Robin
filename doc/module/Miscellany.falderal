@@ -25,6 +25,20 @@ is not loaded twice.
 |   (equal? random-a random-b))
 = #t
 
+Circular module imports produce an error rather than going into an infinite
+loop.
+
+| ----- module a 0.1
+| (robin (0 . 1) (small (0 . 1) b (0 . 1))
+|   (pair (pair (literal literal-a) literal-b) ()))
+| ----- module b 0.1
+| (robin (0 . 1) (small (0 . 1) a (0 . 1))
+|   (pair (pair (literal literal-b) literal-a) ()))
+| ----- main
+| (robin (0 . 1) (core (0 . 1) a (0 . 1))
+|   (equal? literal-a literal-b))
+? robin: circular reference in module a
+
 -> Tests for shell command "bin/robin %(test-file)"
 
 `and` is short-circuiting.

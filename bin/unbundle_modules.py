@@ -36,7 +36,9 @@ if __name__ == '__main__':
             f.write(line)
         f.close()
 
-    os.system("bin/robin unbundled.robin")
+    exitcode = (os.system("bin/robin unbundled.robin") / 256)
 
     for filename in stuff.keys():
         os.unlink(filename)
+
+    sys.exit(exitcode)

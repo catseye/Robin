@@ -186,9 +186,6 @@ Plans
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)
 
-* Test that circular module imports produce an error message, and not
-  an infinite loop.
-
 ### Implementation ###
 
 * Add a "trace" flag to IEnv and a `-t` flag to the implementation, to

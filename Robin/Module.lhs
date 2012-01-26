@@ -23,14 +23,23 @@ Module Loading
 
 > type ModuleRef = (String, Integer, Integer)
 
-> data ModuleCache = ModuleCache [String] [(ModuleRef, Expr)]
+> data ModuleCache = ModuleCache [String] [ModuleRef] [(ModuleRef, Expr)]
 
-> mkModuleCache nonBuiltinModules = ModuleCache nonBuiltinModules []
+> mkModuleCache nonBuiltinModules = ModuleCache nonBuiltinModules [] []
 
 > cacheModule :: ModuleCache -> ModuleRef -> Expr -> ModuleCache
 
-> cacheModule mc@(ModuleCache n cachedModules) modRef modExpr =
->     ModuleCache n ((modRef, modExpr):cachedModules)
+> cacheModule mc@(ModuleCache n p cachedModules) modRef modExpr =
+>     ModuleCache n p ((modRef, modExpr):cachedModules)
+
+> pushModuleInProgress mc@(ModuleCache n p c) modRef =
+>     ModuleCache n (modRef:p) c
+
+> popModuleInProgress mc@(ModuleCache n (_:p) c) =
+>     ModuleCache n p c
+
+> isModuleInProgress mc@(ModuleCache n p c) modRef =
+>     modRef `elem` p
 
 > builtinModules = [
 >             (("core",0,1), moduleCore),
@@ -43,7 +52,7 @@ Module Loading
 
 > loadModule :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
 
-> loadModule mc@(ModuleCache nonBuiltinModules cachedModules) modRef@(name, major, minor) =
+> loadModule mc@(ModuleCache nonBuiltinModules _ cachedModules) modRef@(name, major, minor) =
 >     case lookup modRef cachedModules of
 >         Just expr -> do
 >             return (mc, expr)
@@ -61,13 +70,18 @@ Module Loading
 
 > loadModuleFromFilesystem :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
 
-> loadModuleFromFilesystem mc@(ModuleCache nonBuiltinModules cachedModules) modRef@(name, major, minor) =
+> loadModuleFromFilesystem mc@(ModuleCache _ _ cachedModules) modRef@(name, major, minor) =
 >     let
 >         filename = "module/" ++ name ++ "_" ++ (show major) ++ "_" ++ (show minor) ++ ".robin"
->     in do
->         mod <- readFile filename
->         ast <- return $ insistParse mod
->         evalRobin mc ast
+>     in if isModuleInProgress mc modRef then
+>             error ("circular reference in module " ++ name)
+>          else do
+>             mod <- readFile filename
+>             ast <- return $ insistParse mod
+>             let mc' = pushModuleInProgress mc (name, major, minor)
+>             (mc'', expr) <- evalRobin mc' ast
+>             let mc''' = popModuleInProgress mc''
+>             return (mc''', expr)
 
 > loadModules :: ModuleCache -> Expr -> IO (ModuleCache, Expr)
 
