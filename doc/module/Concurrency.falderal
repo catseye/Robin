@@ -375,3 +375,12 @@ Typically, you would use it in a loop.
 |         (call worker monkey (literal shines) reply2
 |            (pair reply1 reply2))))))
 = (kong island . shines)
+
+...
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent) (send parent 23)))
+|     (respond
+|       ()
+|       (literal hi-there))))
+= hi-there

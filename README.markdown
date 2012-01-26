@@ -114,7 +114,13 @@ Plans
 
 ### Concurrency ###
 
-* Finish implementing `respond`.
+* Figure out what to do with `respond`.  As it stands, it cannot affect
+  the state or control of the current process -- it just returns a
+  reply and evaluates the body (in an unchanged environment).  It needs
+  to be able to, at least, affect the environment, although it may be
+  more useful for it to be able to directly affect control too (i.e.
+  evaluate something besides a body that is common to the whole
+  `respond` structure.)
 
 * Write both `call` and `respond` in pure Robin, taking care to queue
   unrecognized messages and re-send them to self while avoiding busy
