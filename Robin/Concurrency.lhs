@@ -179,6 +179,31 @@ from the destination pid.
 >     writeChan chan msg
 >     sendAll chan msgs
 
+> robinRespond env ienv (Pair branches (Pair body Null)) cc = do
+>     message <- readChan $ getChan $ getPid ienv
+>     case message of
+>         (Pair sender (Pair tag@(Symbol _) (Pair payload Null))) -> do
+>             case lookupRespondTag tag branches of
+>                 Just (bindVar, branch) -> do
+>                     eval (Env.insert bindVar payload env) ienv branch (\reply -> do
+>                         let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair reply Null)))
+>                         writeChan (getChan sender) response
+>                         eval env ienv body cc)
+>                 Nothing -> do
+>                     let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>                     writeChan (getChan sender) response
+>                     eval env ienv body cc
+>         _ -> do
+>             eval env ienv body cc
+> robinRespond env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
+> lookupRespondTag :: Expr -> Expr -> Maybe (Expr, Expr)
+
+> lookupRespondTag tag Null = Nothing
+> lookupRespondTag tag (Pair (Pair candidateTag (Pair (Pair bindVar Null) (Pair branch Null))) rest)
+>     | tag == candidateTag = Just (bindVar, branch)
+>     | otherwise           = lookupRespondTag tag rest
+
 Module Definition
 -----------------
 
@@ -193,5 +218,6 @@ Module Definition
 >         ("send",     send),
 >         ("recv",     recv),
 >         ("call",     call),
+>         ("respond",  robinRespond),
 >         ("msgs?",    msgsP)
 >       ]

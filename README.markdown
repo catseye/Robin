@@ -114,23 +114,25 @@ Plans
 
 ### Concurrency ###
 
-* Add `respond`, which assumes it's being called by `call` and acts like
-  a case statement against the tags, and knows which pid to reply to.
+* Finish implementing `respond`.
 
-* Write these both in pure Robin, taking care to queue unrecognized
-  messages and re-send them to self while avoiding busy looping.
+* Write both `call` and `respond` in pure Robin, taking care to queue
+  unrecognized messages and re-send them to self while avoiding busy
+  looping.
 
 ### Standard Modules ###
 
+* Establish a convention for "binary" versus "n-ary" functions:
+  `and` and `and-many`, `+` and `+-many`, and so forth.  This strikes
+  me as nicer (at this time) than making those operations always take
+  any number of arguments.
+
 * Possibly add alist functions to the module, or create a new `alist`
-  module for that purpose.
+  module for that purpose: `lookup`, `insert` (?), and `remove`.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.
-
-* In the `boolean` module, make `xor` able to take more than two
-  arguments.
 
 * Write a `functional` module which exports some functions for working
   with functions, such as `identity`, `compose`, and possibly `curry`
@@ -156,6 +158,8 @@ Plans
 * Some kind of macro for capturing the recursive function call pattern
   (like `letrec`, but not necessary to support mutual recursion.)  Possibly
   called `bind-recur`.  Also `let-recur` could build on that.
+
+* `let-symbol`, as a substitute for `quasiquote`.
 
 ### Documentation ###
 
