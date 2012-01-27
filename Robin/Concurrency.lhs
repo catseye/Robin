@@ -179,29 +179,41 @@ from the destination pid.
 >     writeChan chan msg
 >     sendAll chan msgs
 
-> robinRespond env ienv (Pair branches (Pair body Null)) cc = do
->     message <- readChan $ getChan $ getPid ienv
->     case message of
+> robinRespond env ienv branches cc = do
+>     validateRespond ienv branches (\ok -> do
+>       message <- readChan $ getChan $ getPid ienv
+>       -- putStrLn (show message)
+>       case message of
 >         (Pair sender (Pair tag@(Symbol _) (Pair payload Null))) -> do
 >             case lookupRespondTag tag branches of
->                 Just (bindVar, branch) -> do
->                     eval (Env.insert bindVar payload env) ienv branch (\reply -> do
+>                 Just x@(bindVar, responseExpr, continue) -> do
+>                     -- print (tag, x)
+>                     let newEnv = Env.insert bindVar payload env
+>                     eval newEnv ienv responseExpr (\reply -> do
 >                         let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair reply Null)))
 >                         writeChan (getChan sender) response
->                         eval env ienv body cc)
+>                         -- print continue
+>                         eval newEnv ienv continue cc)
+>                 -- TODO: this should not necessarily just loop
 >                 Nothing -> do
+>                     -- print ("what?", tag)
 >                     let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
 >                     writeChan (getChan sender) response
->                     eval env ienv body cc
+>                     robinRespond env ienv branches cc
+>         -- TODO: this should not necessarily just loop
 >         _ -> do
->             eval env ienv body cc
-> robinRespond env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+>             robinRespond env ienv branches cc)
 
-> lookupRespondTag :: Expr -> Expr -> Maybe (Expr, Expr)
+> validateRespond ienv Null cc = cc Null
+> validateRespond ienv (Pair (Pair (Symbol _) (Pair (Pair (Symbol _) Null) (Pair responseExpr (Pair continue Null)))) rest) cc =
+>     validateRespond ienv rest cc
+> validateRespond ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
+> lookupRespondTag :: Expr -> Expr -> Maybe (Expr, Expr, Expr)
 
 > lookupRespondTag tag Null = Nothing
-> lookupRespondTag tag (Pair (Pair candidateTag (Pair (Pair bindVar Null) (Pair branch Null))) rest)
->     | tag == candidateTag = Just (bindVar, branch)
+> lookupRespondTag tag (Pair (Pair candidateTag (Pair (Pair bindVar Null) (Pair responseExpr (Pair continue Null)))) rest)
+>     | tag == candidateTag = Just (bindVar, responseExpr, continue)
 >     | otherwise           = lookupRespondTag tag rest
 
 Module Definition

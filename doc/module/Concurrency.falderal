@@ -324,18 +324,17 @@ may in fact hang instead of doing what our implementation does.
 
 ### `respond` ###
 
-`respond` is the counterpart to `call`.  It assumes the curren proces is
+`respond` is the counterpart to `call`.  It assumes the curren process is
 waiting to be called by `call` from another process, and when it receives
 such a message, it acts like a case statement against the tag.  It evaluates
-the appropriate branch, and sends a reply message to the pid that `call`ed
-it.
+the appropriate branch, sends a reply message to the pid that `call`ed it,
+and evaluates the tail of the branch.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind worker (spawn (fun (parent)
 |     (respond
-|       ((donkey (x) (literal kong))
-|        (monkey (x) (literal island)))
-|       (literal ok))))
+|       (donkey (x) (literal kong)   (literal ok))
+|       (monkey (x) (literal island) (literal ok)))))
 |     (call worker donkey () reply reply)))
 = kong
 
@@ -344,9 +343,8 @@ The payload of the `call` is available in the bound variable.
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind worker (spawn (fun (parent)
 |     (respond
-|       ((donkey (x) (literal kong))
-|        (monkey (x) (pair (literal island) x)))
-|       (literal ok))))
+|       (donkey (x) (literal kong)            (literal ok))
+|       (monkey (x) (pair (literal island) x) (literal ok)))))
 |     (call worker monkey (literal shines) reply reply)))
 = (island . shines)
 
@@ -355,9 +353,8 @@ The payload of the `call` is available in the bound variable.
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind worker (spawn (fun (parent)
 |     (respond
-|       ((donkey (x) (literal kong))
-|        (monkey (x) (pair (literal island) x)))
-|       (literal ok))))
+|       (donkey (x) (literal kong)            (literal ok))
+|       (monkey (x) (pair (literal island) x) (literal ok)))))
 |     (call worker donkey () reply
 |       (call worker monkey (literal shines) reply reply))))
 ? robin: thread blocked indefinitely in an MVar operation
@@ -367,20 +364,21 @@ Typically, you would use it in a loop.
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind work-fun (fun (self)
 |     (respond
-|       ((donkey (x) (literal kong))
-|        (monkey (x) (pair (literal island) x)))
-|       (self)))
+|       (donkey (x) (literal kong)            (self))
+|       (monkey (x) (pair (literal island) x) (self))
+|       (stop   (x) (literal ok)              (literal ok))))
 |     (bind worker (spawn (fun (parent) (work-fun work-fun)))
 |       (call worker donkey () reply1
 |         (call worker monkey (literal shines) reply2
-|            (pair reply1 reply2))))))
-= (kong island . shines)
+|           (call worker stop 123 reply3
+|             (pair reply1 (pair reply2 (pair reply3 ())))))))))
+= (kong island shines ok)
 
-...
+`respond` evaluates to the appropriate tail.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent) (send parent 23)))
+|   (bind worker (spawn (fun (parent)
+|     (call parent take 71 reply (literal ok))))
 |     (respond
-|       ()
-|       (literal hi-there))))
-= hi-there
+|       (take (x) (literal ok) (pair 55 x)))))
+= (55 . 71)
