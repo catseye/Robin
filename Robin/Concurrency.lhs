@@ -67,7 +67,8 @@ too?
 >     launch chan = do
 >         thread <- myThreadId
 >         let parent = getPid ienv
->         let myIenv = newIEnv (makeMsgSendingExcHandler parent) thread chan
+>         let exch = makeMsgSendingExcHandler parent
+>         let myIenv = newIEnv exch thread chan (getTrace ienv)
 >         let expr = Pair macro $ Pair parent Null
 >         eval env myIenv expr (\x -> do return Null)
 >         return ()
@@ -154,14 +155,15 @@ from the destination pid.
 >         assertPid ienv pid (\pid ->
 >             eval env ienv payloadExpr (\payload -> do
 >             let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
->             --putStrLn ("calling " ++ (show pid) ++ " w/" ++ show msg)
+>             debug ienv ("calling", pid, "with", msg)
 >             writeChan (getChan pid) msg
 >             waitForResponse env ienv pid tag repsym body [] cc)))
 > call env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > waitForResponse env ienv pid tag repsym body queue cc = do
+>     debug ienv "waiting for reply"
 >     message <- readChan $ getChan $ getPid ienv
->     --putStrLn ("recvd back " ++ show message)
+>     debug ienv ("recvd back ", message)
 >     case message of
 >          (Pair somePid (Pair (Pair someTag (Symbol "reply")) (Pair returnPayload Null))) -> do
 >              if (pid == somePid) && (tag == someTag) then do
@@ -169,6 +171,8 @@ from the destination pid.
 >                  eval (Env.insert repsym returnPayload env) ienv body cc
 >                else
 >                  waitForResponse env ienv pid tag repsym body (message:queue) cc
+>          (Pair (Symbol "uncaught-exception") excval) ->
+>              raise ienv excval
 >          other ->
 >              waitForResponse env ienv pid tag repsym body (message:queue) cc
 
@@ -181,22 +185,23 @@ from the destination pid.
 
 > robinRespond env ienv branches cc = do
 >     validateRespond ienv branches (\ok -> do
+>       debug ienv "waiting to respond"
 >       message <- readChan $ getChan $ getPid ienv
->       -- putStrLn (show message)
+>       debug ienv ("responding to", message)
 >       case message of
 >         (Pair sender (Pair tag@(Symbol _) (Pair payload Null))) -> do
 >             case lookupRespondTag tag branches of
 >                 Just x@(bindVar, responseExpr, continue) -> do
->                     -- print (tag, x)
+>                     debug ienv (tag, x)
 >                     let newEnv = Env.insert bindVar payload env
 >                     eval newEnv ienv responseExpr (\reply -> do
 >                         let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair reply Null)))
 >                         writeChan (getChan sender) response
->                         -- print continue
+>                         debug ienv continue
 >                         eval newEnv ienv continue cc)
 >                 -- TODO: this should not necessarily just loop
 >                 Nothing -> do
->                     -- print ("what?", tag)
+>                     debug ienv ("what?", tag)
 >                     let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
 >                     writeChan (getChan sender) response
 >                     robinRespond env ienv branches cc
@@ -215,6 +220,14 @@ from the destination pid.
 > lookupRespondTag tag (Pair (Pair candidateTag (Pair (Pair bindVar Null) (Pair responseExpr (Pair continue Null)))) rest)
 >     | tag == candidateTag = Just (bindVar, responseExpr, continue)
 >     | otherwise           = lookupRespondTag tag rest
+
+> debug :: (Show a) => IEnv Expr -> a -> IO ()
+
+> debug ienv a =
+>     if getTrace ienv then
+>         print (getThreadId ienv, a)
+>       else
+>         return ()
 
 Module Definition
 -----------------

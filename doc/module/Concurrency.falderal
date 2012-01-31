@@ -301,6 +301,22 @@ may in fact hang instead of doing what our implementation does.
 |        (pair (literal reply-was) reply))))
 ? robin: thread blocked indefinitely in an MVar operation
 
+If `call` receives an exception message, it will `raise` that
+exception.  Note that I'm not sure if we actually want this
+behavior or what (it's an exception message from any process,
+currently!) but... we'll see.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (bind worker (spawn (fun (parent)
+|     (recv message
+|       (let ((sender  (head message))
+|             (tag     (head (tail message)))
+|             (payload (head (tail (tail message)))))
+|         (head (literal argh))))))
+|      (call worker this-tag (literal this-payload) reply
+|        (pair (literal reply-was) reply))))
+? robin: uncaught exception: (expected-pair . argh)
+
 `call` expects its first argument to be a pid.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
@@ -364,15 +380,15 @@ Typically, you would use it in a loop.
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind work-fun (fun (self)
 |     (respond
-|       (donkey (x) (literal kong)            (self))
-|       (monkey (x) (pair (literal island) x) (self))
+|       (donkey (x) (literal kong)            (self self))
+|       (monkey (x) (pair (literal island) x) (self self))
 |       (stop   (x) (literal ok)              (literal ok))))
 |     (bind worker (spawn (fun (parent) (work-fun work-fun)))
 |       (call worker donkey () reply1
 |         (call worker monkey (literal shines) reply2
 |           (call worker stop 123 reply3
 |             (pair reply1 (pair reply2 (pair reply3 ())))))))))
-= (kong island shines ok)
+= (kong (island . shines) ok)
 
 `respond` evaluates to the appropriate tail.
 

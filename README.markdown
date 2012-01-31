@@ -114,13 +114,11 @@ Plans
 
 ### Concurrency ###
 
-* Figure out what to do with `respond`.  As it stands, it cannot affect
-  the state or control of the current process -- it just returns a
-  reply and evaluates the body (in an unchanged environment).  It needs
-  to be able to, at least, affect the environment, although it may be
-  more useful for it to be able to directly affect control too (i.e.
-  evaluate something besides a body that is common to the whole
-  `respond` structure.)
+* Redesign `spawn` to not need a macro (it can evaluate an expression
+  directly because it's a macro itself -- and `parent` can be bound
+  to `(myself)` in the enclosing environment instead of passing it as
+  a parameter.)  Also, have it bind the spawned pid to an identifier,
+  just like `recv` and so forth, for consistency.
 
 * Write both `call` and `respond` in pure Robin, taking care to queue
   unrecognized messages and re-send them to self while avoiding busy
@@ -198,8 +196,8 @@ Plans
 
 ### Implementation ###
 
-* Add a "trace" flag to IEnv and a `-t` flag to the implementation, to
-  trace the execution of a running Robin program.
+* Finish implementing execution trace by adding a `-t` flag to the
+  implementation, and possibly making it prettier.
 
 ### Awesomeness ###
 

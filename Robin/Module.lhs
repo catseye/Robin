@@ -107,7 +107,8 @@ Module Loading
 >             (mc', initialEnv) <- loadModules mc modules
 >             threadId <- myThreadId
 >             chan <- newChan
->             let ienv = newIEnv (stop) threadId chan
+>             -- XXX get the following from cmdline opts
+>             let ienv = newIEnv (stop) threadId chan False
 >             result <- eval initialEnv ienv expr (\x -> do return x)
 >             return (mc', result)
 >         _ -> error ("unsupported language version " ++ show version)
