@@ -31,16 +31,11 @@
       (macro (self args env)
         (eval (filter (fun (binding) (elem (head binding) (head args))) env)
               (head (tail args)))))
-    (bindings-for
-      (macro (self args env)
-        (bind id (eval env (head args))
-          (map tail
-            (filter (fun (binding) (equal? (head binding) id)) env)))))
     (export
       (macro (self args env)
         (filter (fun (binding) (elem (head binding) args)) env)))
     )
-    (export env bind let env? unbind unshadow sandbox bindings-for export)
+    (export env bind let env? unbind unshadow sandbox export)
   )
 )
 
