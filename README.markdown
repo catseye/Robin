@@ -93,11 +93,6 @@ Goals
 Plans
 -----
 
-### Syntax ###
-
-* Add sugar for strings to the language (internally they would just be
-  lists of numbers, which are Unicode code points.)
-
 ### Fundamental Semantics ###
 
 * Add an opaque type -- opaque values have internals that can only be

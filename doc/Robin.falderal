@@ -333,6 +333,55 @@ environment in effect (such as in the third argument of a macro) and can
 be used to change the evaluation environment in effect (such as in the
 first argument to `eval`.)
 
+### Strings ###
+
+Strings are just lists of integers, where each integer refers to a
+particular Unicode codepoint.  Robin supports a sugared syntax for
+specifying literal strings.  The characters of the string are given
+between pairs of single quotes.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal ''Hello''))
+= (72 101 108 108 111)
+
+A single single quote may appear in string literals of this kind.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal ''He'llo''))
+= (72 101 39 108 108 111)
+
+Between the single quotes delimiting the string literal, a *sentinel*
+may be given.  The sentinel between the leading single quote pair must
+match the sentinel given between the trailing single quote pair.  The
+sentinel may consist of any text not containing a single quote.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal 'X'Hello'X'))
+= (72 101 108 108 111)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal '...@('Hello'...@('))
+= (72 101 108 108 111)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal 'X'Hello'Y'))
+? (line 3, column 1):
+? unexpected end of input
+? expecting "'"
+
+A sentinelized literal like this may embed a pair of single quotes.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal 'X'Hel''lo'X'))
+= (72 101 108 39 39 108 111)
+
+By choosing different sentinels, string literals may contain any other
+string literal.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal 'X'Hel'Y'bye'Y'lo'X'))
+= (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
+
 Comments
 --------
 
@@ -410,6 +459,14 @@ Comments need not be preceded by spaces.
 | (robin (0 . 1) ()
 |   (;north;by;north;west))
 = ()
+
+To put truly arbitrary text in a comment, the string sugar syntax may be
+used.
+
+| (robin (0 . 1) (core (0 . 1))
+|   ;''This program, it produces a pair of booleans. #k ?''
+|   (pair #f #f))
+= (#f . #f)
 
 Standard Modules
 ----------------

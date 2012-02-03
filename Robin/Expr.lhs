@@ -1,5 +1,6 @@
 > module Robin.Expr where
 
+> import Data.Char
 > import Data.Ratio
 
 > import Control.Concurrent (ThreadId)
@@ -67,6 +68,13 @@ A helper function to make Pair lists from Haskell lists.
 >     last
 > robinizeList (x:xs) last =
 >     Pair x (robinizeList xs last)
+
+A helper function to make Pair lists from Haskell strings.
+
+> robinizeString "" =
+>     Null
+> robinizeString (x:xs) =
+>     Pair (Number ((toInteger $ ord x) % 1)) (robinizeString xs)
 
 Predicates
 ----------

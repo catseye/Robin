@@ -66,6 +66,25 @@ TODO: document these productions.
 >     e <- many expr
 >     proper e <|> improper e
 
+> stringSugar = do
+>     string "'"
+>     sentinel <- many $ satisfy (\x -> x /= '\'')
+>     string "'"
+>     contents <- many $ satisfy (\x -> x /= '\'')
+>     string "'"
+>     (try $ stringTail sentinel contents) <|> (stringCont sentinel contents)
+
+> stringCont sentinel contents = do
+>     contents' <- many $ satisfy (\x -> x /= '\'')
+>     let contents'' = contents ++ "'" ++ contents'
+>     string "'"
+>     (try $ stringTail sentinel contents'') <|> (stringCont sentinel contents'')
+
+> stringTail sentinel contents = do
+>     string sentinel
+>     string "'"
+>     return $ robinizeString contents
+
 > comment = do
 >     string ";"
 >     spaces
@@ -77,7 +96,7 @@ type inferencer freaks out for some reason.
 
 > expr :: Parser Expr
 > expr = do
->     r <- (symbol <|> number <|> boolean <|> list)
+>     r <- (symbol <|> number <|> boolean <|> list <|> stringSugar)
 >     spaces
 >     many comment
 >     return r
