@@ -54,6 +54,7 @@ TODO: document these productions.
 > improper e = do
 >     string "."
 >     spaces
+>     many comment
 >     e2 <- expr
 >     string ")"
 >     return $ robinizeList e e2
@@ -61,8 +62,8 @@ TODO: document these productions.
 > list = do
 >     string "("
 >     spaces
->     e <- many expr
 >     many comment
+>     e <- many expr
 >     proper e <|> improper e
 
 > comment = do
@@ -76,9 +77,9 @@ type inferencer freaks out for some reason.
 
 > expr :: Parser Expr
 > expr = do
->     many comment
 >     r <- (symbol <|> number <|> boolean <|> list)
 >     spaces
+>     many comment
 >     return r
 
 Convenience functions for parsing Robin programs.

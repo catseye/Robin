@@ -371,13 +371,15 @@ Any number of comments may appear together.
 |   (pair ;what ;on ;earth #f #f))
 = (#f . #f)
 
-For now, comments may not appear before a closing parenthesis.
+Comments may appear before a closing parenthesis.
 
 | (robin (0 . 1) (core (0 . 1))
 |   (pair #f #f ;foo))
-? (line 2, column 19):
-? unexpected ")"
-? expecting ";", letter, "*", "-", "/", "+", "<", ">", "=", "?", "_", digit, "#" or "("
+= (#f . #f)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (pair #f #f ;peace ;(on) ;earth))
+= (#f . #f)
 
 Comments may appear in the tail of an improper list.
 
@@ -388,6 +390,26 @@ Comments may appear in the tail of an improper list.
 | (robin (0 . 1) (small (0 . 1))
 |   (literal (a . ;warp ;factor ;7 b)))
 = (a . b)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (a . b ;foo)))
+= (a . b)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (a . b ;warp ;factor ;7)))
+= (a . b)
+
+Comments may appear in an empty list.
+
+| (robin (0 . 1) ()
+|   ( ;hi ;there))
+= ()
+
+Comments need not be preceded by spaces.
+
+| (robin (0 . 1) ()
+|   (;north;by;north;west))
+= ()
 
 Standard Modules
 ----------------
