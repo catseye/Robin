@@ -382,6 +382,34 @@ string literal.
 |   (literal 'X'Hel'Y'bye'Y'lo'X'))
 = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
 
+No interpolation of escape sequences is done in a Robin string literal.
+(Functions to convert escape sequences commonly found in other languages
+may one day be available in a standard module.)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal ''Hello\nworld''))
+= (72 101 108 108 111 92 110 119 111 114 108 100)
+
+All characters which appear in the source text between the delimiters
+of the string literal are literally included in the string.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal ''Hello
+| world''))
+= (72 101 108 108 111 10 119 111 114 108 100)
+
+Adjacent string literals are not automatically concatenated.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (''Hello'' ''world'')))
+= ((72 101 108 108 111) (119 111 114 108 100))
+
+A string literal may appear in the tail of an improper list.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (a b c . ''123'')))
+= (a b c 49 50 51)
+
 Comments
 --------
 
