@@ -102,26 +102,16 @@ Plans
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
 
-### Concurrency ###
-
-* Redesign `spawn` to not need a macro (it can evaluate an expression
-  directly because it's a macro itself -- and `parent` can be bound
-  to `(myself)` in the enclosing environment instead of passing it as
-  a parameter.)  Also, have it bind the spawned pid to an identifier,
-  just like `recv` and so forth, for consistency.
-
-* Write both `call` and `respond` in pure Robin, taking care to queue
-  unrecognized messages and re-send them to self while avoiding busy
-  looping.
-
 ### Standard Modules ###
 
 * Establish a convention for "binary" versus "n-ary" functions:
   `and` and `and-many`, `+` and `+-many`, and so forth.  This strikes
   me as nicer (at this time) than making those operations always take
-  any number of arguments.
+  any number of arguments.  Actually, `sum`, `product`, `conj`,
+  `disj` are probably fine names for the n-ary versions of those
+  operations; they can each take a single list as their argument.
 
-* Possibly add alist functions to the module, or create a new `alist`
+* Possibly add alist functions to the `list` module, or create a new `alist`
   module for that purpose: `lookup`, `insert` (?), and `remove`.
 
 * Write a `timer` module which exports a process which can be asked
@@ -132,10 +122,11 @@ Plans
   with functions, such as `identity`, `compose`, and possibly `curry`
   and `uncurry`.
 
-* In the `arith` module, make `+` and `*` take any number of
-  arguments.  Possibly add `=`, and `!=`. Possibly add `exp`, `pow`,
-  `log`, and `sqrt`.  Possibly add a short-circuiting `*` (which
-  doesn't evaluate anything after the first 0 result.)
+* In the `arith` module, make `sum` and `product` that work on lists.
+  Possibly make `product` short-circuiting.  Possibly add `int-pow`.
+
+* Possibly make a `transcendental` module to contain `exp`, `pow`,
+  `log`, `sqrt`, and so forth.
 
 * Write a `trig` module which exports trigonometric functions `cos`,
   `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Robin,
@@ -163,7 +154,12 @@ Plans
 
 * Finish documenting the `list` module.
 
-* Document the "why" behind some of the design decisions.
+* Document the "why" behind some of the design decisions.  Particularly,
+  why S-expression based syntax, why import can only be done at the top
+  level, tension between "trivially serializable" S-expressions (esp.
+  when potentially shared between nodes, if messages and processes ever
+  get that far) and abstraction/modularity, how Robin might approach
+  static analysis, etc.
 
 * Document the literate Haskell implementation better -- right now it's
   pretty scant.

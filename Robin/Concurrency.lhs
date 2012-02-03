@@ -53,15 +53,15 @@ inform the child process who its parent process is.
 >         let chan' = setChanThread chan thread
 >         fun chan'
 
-Evaluate a Robin macro in a Robin process.  After the Haskell
+Evaluate a Robin expression in a Robin process.  After the Haskell
 process has started, we set up an appropriate IEnv and evaluate
 the macro in that.
 
 TODO: should the final continuation send a message to the parent
 too?
 
-> spawnMacro :: Expr -> IEnv Expr -> Expr -> IO Expr
-> spawnMacro env ienv macro = do
+> spawnExpr :: Expr -> IEnv Expr -> Expr -> IO Expr
+> spawnExpr env ienv expr = do
 >     spawn launch
 >   where
 >     launch chan = do
@@ -69,7 +69,6 @@ too?
 >         let parent = getPid ienv
 >         let exch = makeMsgSendingExcHandler parent
 >         let myIenv = newIEnv exch thread chan (getTrace ienv)
->         let expr = Pair macro $ Pair parent Null
 >         eval env myIenv expr (\x -> do return Null)
 >         return ()
 
@@ -113,11 +112,9 @@ These are the functions exported by this Robin module.
 
 > pidP = predP isPid
 
-> robinSpawn env ienv (Pair e Null) cc = do
->     eval env ienv e (\macro ->
->         assertMacro ienv macro (\macro -> do
->             pid <- spawnMacro env ienv macro
->             cc $ pid))
+> robinSpawn env ienv (Pair id@(Symbol _) (Pair expr (Pair body Null))) cc = do
+>     pid <- spawnExpr env ienv expr
+>     eval (Env.insert id pid env) ienv body cc
 > robinSpawn env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > send env ienv (Pair pidExpr (Pair msgExpr (Pair body Null))) cc = do

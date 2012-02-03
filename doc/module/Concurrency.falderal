@@ -70,31 +70,46 @@ must be exactly one argument.
 
 ### `spawn` ###
 
-`spawn` evaluates its argument to a macro, starts a concurrent process
-running that macro, and evaluates to the process identifier (pid) for
-that new process.
+`spawn` starts a concurrent process and evaluates its second argument in
+that new process.  It binds the the process identifier (pid) of the new
+process to its first argument, which should be an identifier.  It then
+proceeds to evaluate its third argument, in the current process, with
+that new binding.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (pid? (spawn (fun (parent) parent))))
+|   (spawn worker (literal ok)
+|     (pid? worker)))
 = #t
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (equal? (myself) (spawn (fun (parent) parent))))
+|   (spawn worker (literal ok)
+|     (equal? (myself) worker)))
 = #f
 
-`spawn` takes exactly one argument, which must be a macro.
-
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (spawn (literal cheesecake)))
-? robin: uncaught exception: (expected-macro . cheesecake)
+`spawn` takes exactly three arguments.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn))
 ? robin: uncaught exception: (illegal-arguments)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (spawn cheesecake))
+? robin: uncaught exception: (illegal-arguments cheesecake)
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn (fun (x) 0) (fun (x) 1)))
 ? robin: uncaught exception: (illegal-arguments (fun (x) 0) (fun (x) 1))
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (spawn (fun (x) 0) (fun (x) 1)
+|          (fun (x) 2) (fun (x) 3)))
+? robin: uncaught exception: (illegal-arguments (fun (x) 0) (fun (x) 1) (fun (x) 2) (fun (x) 3))
+
+The first argument to `spawn` must be a symbol.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+|   (spawn #f (literal ok) 123))
+? robin: uncaught exception: (illegal-arguments #f (literal ok) 123)
 
 ### `send` ###
 
@@ -104,7 +119,7 @@ the process identified by the pid, then evaluates its third argument
 and itself evaluates to that.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent) parent))
+|   (spawn worker (literal ok)
 |     (send worker (literal spam) (literal ok))))
 = ok
 
@@ -117,12 +132,12 @@ and itself evaluates to that.
 `send` expects exactly three arguments.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent) parent))
+|   (spawn worker (literal ok)
 |     (send worker worker)))
 ? robin: uncaught exception: (illegal-arguments worker worker)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent) parent))
+|   (spawn worker (literal ok)
 |     (send worker worker worker worker)))
 ? robin: uncaught exception: (illegal-arguments worker worker worker worker)
 
@@ -134,9 +149,9 @@ its first argument to the value so received, and evaluates its second
 argument, and itself evaluates to that.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                         (send parent (literal lettuce) (literal ok))))
-|     (recv message (pair message message))))
+|   (bind parent (myself)
+|     (spawn worker (send parent (literal lettuce) (literal ok))
+|       (recv message (pair message message)))))
 = (lettuce . lettuce)
 
 `recv` expects its first argument to be an identifier to be bound.  (This
@@ -144,23 +159,23 @@ is a case of illegal arguments, as the identifier is not an expression
 that must evaluate to a certain type.)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                         (send parent (literal lettuce) (literal ok))))
-|     (recv (pair 7 8) 9)))
+|   (bind parent (myself)
+|     (spawn worker (send parent (literal lettuce) (literal ok))
+|       (recv (pair 7 8) 9))))
 ? robin: uncaught exception: (illegal-arguments (pair 7 8) 9)
 
 `recv` expects exactly two arguments.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                         (send parent (literal lettuce) (literal ok))))
-|     (recv message)))
+|   (bind parent (myself)
+|     (spawn worker (send parent (literal lettuce) (literal ok))
+|       (recv message))))
 ? robin: uncaught exception: (illegal-arguments message)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                         (send parent (literal lettuce) (literal ok))))
-|     (recv message message message)))
+|   (bind parent (myself)
+|     (spawn worker (send parent (literal lettuce) (literal ok))
+|       (recv message message message))))
 ? robin: uncaught exception: (illegal-arguments message message message)
 
 Tests for both `send` and `recv` follow.
@@ -168,55 +183,59 @@ Tests for both `send` and `recv` follow.
 A process we spawned can send our message back to us.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                         (recv message (send parent message 123))))
-|     (send worker (literal whoopie)
-|       (recv message message))))
+|   (bind parent (myself)
+|     (spawn worker (recv message (send parent message 123))
+|       (send worker (literal whoopie)
+|         (recv message message)))))
 = whoopie
 
 A process we spawned can receive multiple messages.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                         (recv message1
-|                           (recv message2
-|                             (send parent (pair message1 message2) 0)))))
-|     (send worker (literal thats)
-|       (send worker (literal entertainment)
-|         (recv message message)))))
+|   (bind parent (myself)
+|     (spawn worker 
+|       (recv message1
+|         (recv message2
+|           (send parent (pair message1 message2) 0)))
+|       (send worker (literal thats)
+|         (send worker (literal entertainment)
+|           (recv message message))))))
 = (thats . entertainment)
 
 A process we spawned will terminate while waiting for a message, if the
 main process terminates.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                         (recv message1
-|                           (recv message2
-|                             (send parent (pair message1 message2) 0)))))
-|     (send worker (literal thats)
-|       (literal stop))))
+|   (bind parent (myself)
+|     (spawn worker
+|       (recv message1
+|         (recv message2
+|           (send parent (pair message1 message2) 0)))
+|       (send worker (literal thats)
+|         (literal stop)))))
 = stop
 
 A spawned process can spawn processes of its own.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                          (bind subworker (spawn (fun (subparent)
-|                            (send subparent (myself) 123)))
-|                            (recv message (send parent message 123)))))
-|     (recv subworker
-|        (pair (pid? subworker) (equal? worker subworker)))))
+|   (bind parent (myself)
+|     (spawn worker
+|       (bind subparent (myself)
+|         (spawn subworker (send subparent (myself) 123)
+|           (recv message (send parent message 123))))
+|       (recv subworker
+|          (pair (pid? subworker) (equal? worker subworker))))))
 = (#t . #f)
 
 A process can send messages to any process it knows about, not just
 its parent.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                          (spawn (fun (subparent)
-|                            (send parent (literal hello) 123)))))
-|     (recv message message)))
+|   (bind parent (myself)
+|     (spawn worker
+|       (spawn subworker
+|         (send parent (literal hello) 123) 12345)
+|     (recv message message))))
 = hello
 
 If an exception is raised, but not caught, in a process, that process
@@ -224,10 +243,11 @@ sends a message to this effect to the process that spawned it,
 immediately before terminating.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|                  (bind x (head ())
-|                    (send parent (literal hi) 0))))
-|     (recv message message)))
+|   (bind parent (myself)
+|     (spawn worker
+|       (bind x (head ())
+|         (send parent (literal hi) 0))
+|       (recv message message))))
 = (uncaught-exception expected-pair)
 
 ### `msgs?` ###
@@ -239,13 +259,13 @@ waiting in its queue, `#f` otherwise.
 |   (msgs?))
 = #f
 
-    Note: it's hard to write this test without a race condition...
-
-    | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-    |   (bind worker (spawn (fun (parent)
-    |                          (send parent (literal lettuce) (literal ok))))
-    |     (msgs?)))
-    = #t
+X Note: it's hard to write this test without a race condition...
+X
+X | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
+X |   (bind parent (myself)
+X |     (spawn (send parent (literal lettuce) (literal ok)) worker
+X |       (msgs?))))
+X = #t
 
 `msgs?` expects exactly zero arguments.
 
@@ -259,16 +279,16 @@ waiting in its queue, `#f` otherwise.
 with another process.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
+|   (spawn worker
 |     (recv message
 |       (let ((sender  (head message))
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
 |         (send sender (pair (myself)
 |                        (pair (pair tag (literal reply))
-|                          (pair (pair tag payload) ()))) 0)))))
-|      (call worker this-tag (literal this-payload) reply
-|        (pair (literal reply-was) reply))))
+|                          (pair (pair tag payload) ()))) 0)))
+|     (call worker this-tag (literal this-payload) reply
+|       (pair (literal reply-was) reply))))
 = (reply-was this-tag . this-payload)
 
 The pid and tag in the return message must match, or `call` will
@@ -276,29 +296,29 @@ not finish.  Note: this is an awful test, because an implementation
 may in fact hang instead of doing what our implementation does.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
+|   (bind parent (myself) (spawn worker
 |     (recv message
 |       (let ((sender  (head message))
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
 |         (send sender (pair parent
 |                        (pair (pair tag (literal reply))
-|                          (pair (pair tag payload) ()))) 0)))))
+|                          (pair (pair tag payload) ()))) 0)))
 |      (call worker this-tag (literal this-payload) reply
-|        (pair (literal reply-was) reply))))
+|        (pair (literal reply-was) reply)))))
 ? robin: thread blocked indefinitely in an MVar operation
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
+|   (bind parent (myself) (spawn worker
 |     (recv message
 |       (let ((sender  (head message))
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
 |         (send sender (pair (myself)
 |                        (pair (pair (literal some-other-tag) (literal reply))
-|                          (pair (pair tag payload) ()))) 0)))))
+|                          (pair (pair tag payload) ()))) 0)))
 |      (call worker this-tag (literal this-payload) reply
-|        (pair (literal reply-was) reply))))
+|        (pair (literal reply-was) reply)))))
 ? robin: thread blocked indefinitely in an MVar operation
 
 If `call` receives an exception message, it will `raise` that
@@ -307,14 +327,14 @@ behavior or what (it's an exception message from any process,
 currently!) but... we'll see.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
+|   (spawn worker
 |     (recv message
 |       (let ((sender  (head message))
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
-|         (head (literal argh))))))
-|      (call worker this-tag (literal this-payload) reply
-|        (pair (literal reply-was) reply))))
+|         (head (literal argh))))
+|     (call worker this-tag (literal this-payload) reply
+|       (pair (literal reply-was) reply))))
 ? robin: uncaught exception: (expected-pair . argh)
 
 `call` expects its first argument to be a pid.
@@ -347,35 +367,35 @@ the appropriate branch, sends a reply message to the pid that `call`ed it,
 and evaluates the tail of the branch.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
+|   (spawn worker
 |     (respond
 |       (donkey (x) (literal kong)   (literal ok))
-|       (monkey (x) (literal island) (literal ok)))))
+|       (monkey (x) (literal island) (literal ok)))
 |     (call worker donkey () reply reply)))
 = kong
 
 The payload of the `call` is available in the bound variable.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
+|   (spawn worker
 |     (respond
 |       (donkey (x) (literal kong)            (literal ok))
-|       (monkey (x) (pair (literal island) x) (literal ok)))))
+|       (monkey (x) (pair (literal island) x) (literal ok)))
 |     (call worker monkey (literal shines) reply reply)))
 = (island . shines)
 
 `respond` responds to only one message.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
+|   (spawn worker
 |     (respond
 |       (donkey (x) (literal kong)            (literal ok))
-|       (monkey (x) (pair (literal island) x) (literal ok)))))
+|       (monkey (x) (pair (literal island) x) (literal ok)))
 |     (call worker donkey () reply
 |       (call worker monkey (literal shines) reply reply))))
 ? robin: thread blocked indefinitely in an MVar operation
 
-Typically, you would use it in a loop.
+Typically, to write a server, you would use it in a loop.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind work-fun (fun (self)
@@ -383,7 +403,7 @@ Typically, you would use it in a loop.
 |       (donkey (x) (literal kong)            (self self))
 |       (monkey (x) (pair (literal island) x) (self self))
 |       (stop   (x) (literal ok)              (literal ok))))
-|     (bind worker (spawn (fun (parent) (work-fun work-fun)))
+|     (spawn worker (work-fun work-fun)
 |       (call worker donkey () reply1
 |         (call worker monkey (literal shines) reply2
 |           (call worker stop 123 reply3
@@ -393,8 +413,8 @@ Typically, you would use it in a loop.
 `respond` evaluates to the appropriate tail.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
-|   (bind worker (spawn (fun (parent)
-|     (call parent take 71 reply (literal ok))))
+|   (bind parent (myself) (spawn worker
+|     (call parent take 71 reply (literal ok))
 |     (respond
-|       (take (x) (literal ok) (pair 55 x)))))
+|       (take (x) (literal ok) (pair 55 x))))))
 = (55 . 71)
