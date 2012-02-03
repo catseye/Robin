@@ -62,7 +62,13 @@ TODO: document these productions.
 >     string "("
 >     spaces
 >     e <- many expr
+>     many comment
 >     proper e <|> improper e
+
+> comment = do
+>     string ";"
+>     spaces
+>     expr
 
 The top-level parsing function implements the overall grammar given above.
 Note that we need to give the type of this parser here -- otherwise the
@@ -70,6 +76,7 @@ type inferencer freaks out for some reason.
 
 > expr :: Parser Expr
 > expr = do
+>     many comment
 >     r <- (symbol <|> number <|> boolean <|> list)
 >     spaces
 >     return r

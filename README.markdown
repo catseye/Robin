@@ -95,13 +95,10 @@ Plans
 
 ### Syntax ###
 
-* Add comments to the language.
+* Improve comments (allow them to be placed before a closing parenthesis.)
 
 * Add sugar for strings to the language (internally they would just be
   lists of numbers, which are Unicode code points.)
-
-* Add decimal and proper-fractional sugar for rational numbers, i.e.
-  `2-1/5` and `2.2`.
 
 ### Fundamental Semantics ###
 

@@ -333,6 +333,62 @@ environment in effect (such as in the third argument of a macro) and can
 be used to change the evaluation environment in effect (such as in the
 first argument to `eval`.)
 
+Comments
+--------
+
+Any S-expression preceded by a `;` symbol is a comment.  It will still
+be parsed, but it will be ignored.
+
+| (robin (0 . 1) (core (0 . 1))
+|   ;(this program produces a pair of booleans)
+|   (pair #f #f))
+= (#f . #f)
+
+Because S-expressions may nest, and because comments may appear
+inside S-expressions, comments may nest.
+
+| (robin (0 . 1) (core (0 . 1))
+|   ;(this program produces
+|     ;(what you might call)
+|     a pair of booleans)
+|   (pair #f #f))
+= (#f . #f)
+
+Comments are still parsed.  A syntax error in a comment is an error.
+
+| (robin (0 . 1) (core (0 . 1))
+|   ;(this program produces
+|     #k
+|     a pair of booleans)
+|   (pair #f #f))
+? (line 3, column 6):
+? unexpected "k"
+? expecting "t" or "f"
+
+Any number of comments may appear together.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (pair ;what ;on ;earth #f #f))
+= (#f . #f)
+
+For now, comments may not appear before a closing parenthesis.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (pair #f #f ;foo))
+? (line 2, column 19):
+? unexpected ")"
+? expecting ";", letter, "*", "-", "/", "+", "<", ">", "=", "?", "_", digit, "#" or "("
+
+Comments may appear in the tail of an improper list.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (a . ;foo b)))
+= (a . b)
+
+| (robin (0 . 1) (small (0 . 1))
+|   (literal (a . ;warp ;factor ;7 b)))
+= (a . b)
+
 Standard Modules
 ----------------
 
