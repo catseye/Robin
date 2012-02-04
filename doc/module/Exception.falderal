@@ -71,3 +71,12 @@ caught by the next innermost exception handler.
 | (robin (0 . 1) (small (0 . 1) exception (0 . 1))
 |   (catch error error (head #f) 23))
 ? robin: uncaught exception: (illegal-arguments error error (head #f) 23)
+
+### Re-exported Functions ###
+
+Because it would be reasonable to find it here by categorization, this
+module re-exports the macro `raise` from `core`.
+
+| (robin (0 . 1) (exception (0 . 1))
+|   (catch error error (raise 799)))
+= 799

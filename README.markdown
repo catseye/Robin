@@ -93,6 +93,11 @@ Goals
 Plans
 -----
 
+### Concurrency ###
+
+* Finalize the semantics for exception and final-result messages, esp.
+  during `call` and `respond`.
+
 ### Fundamental Semantics ###
 
 * Add an opaque type -- opaque values have internals that can only be
@@ -168,8 +173,6 @@ Plans
   they should still be written down.)
 
 ### Tests ###
-
-* Fuller tests for exceptions.
 
 * Fuller tests for `call`.
 
