@@ -153,14 +153,6 @@ to manipulate the evaluation environment.  In practice, the bindings
 can be determined lexically, and a different identifier could always
 be chosen instead.
 
-### `subst-env` ###
-
-| (robin (0 . 1) (small (0 . 1) env (0 . 1))
-|   (let ((p 100) (q 200))
-|     (subst-env (export p q)
-|       (literal (a d (r p q) q (p (z q) p p) p z q)))))
-= (a d (r 100 200) 200 (100 (z 200) 100 100) 100 z 200)
-
 ### Re-exported Functions ###
 
 Because it would be reasonable to find them here by categorization,

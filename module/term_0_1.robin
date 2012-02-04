@@ -1,0 +1,26 @@
+(robin (0 . 1) (small (0 . 1) list (0 . 1))
+  (let (
+    (subst (fun (src dest sexp)
+      (bind subst-r (fun (self src dest sexp)
+        (choose
+          ((equal? sexp src)
+            dest)
+          ((empty? sexp)
+            ())
+          ((pair? sexp)
+            (pair (self self src dest (head sexp))
+                  (self self src dest (tail sexp))))
+          (else
+            sexp)))
+        (subst-r subst-r src dest sexp))))
+    (subst-many
+      (fun (alist sexp)
+        (fold (fun (binding sexp)
+                (subst (head binding) (tail binding) sexp)) sexp alist)))
+    )
+    (list
+      (pair (literal subst)      subst)
+      (pair (literal subst-many) subst-many)
+    )
+  )
+)

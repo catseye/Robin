@@ -112,19 +112,6 @@
             (self self (tail li) (self self (head li) acc))
             (self self (tail li) (pair (head li) acc)))))
         (reverse (flatten-r flatten-r li ())))))
-    (subst (fun (src dest sexp)
-      (bind subst-r (fun (self src dest sexp)
-        (choose
-          ((equal? sexp src)
-            dest)
-          ((empty? sexp)
-            ())
-          ((pair? sexp)
-            (pair (self self src dest (head sexp))
-                  (self self src dest (tail sexp))))
-          (else
-            sexp)))
-        (subst-r subst-r src dest sexp))))
     )
     (list
       (pair (literal list) list)
@@ -146,7 +133,6 @@
       (pair (literal last) last)
       (pair (literal prefix?) prefix?)
       (pair (literal flatten) flatten)
-      (pair (literal subst) subst)
     )
   )
 )
