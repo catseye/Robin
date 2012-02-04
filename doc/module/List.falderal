@@ -8,7 +8,7 @@ Module `list`
 
 -> Tests for functionality "Interpret Robin Program"
 
-The `lists` module exports macros and functions for working with data of
+The `list` module exports macros and functions for working with data of
 conventional list type.
 
 ### `list` ###
@@ -91,11 +91,45 @@ to be a one-argument function.
 |   (map (fun (x) (list x)) (literal (three dog . night))))
 ? robin: uncaught exception: (expected-pair . night)
 
+While it is possible to pass a macro that is not a function, it is not
+very productive.  (Also, it exposes the implementation of `map`, so this
+is not a very good test.)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (map (macro (self args env) args) (literal (three dog night))))
+= (((head li)) ((head li)) ((head li)))
+
 ### `fold` ###
+
+`fold` evaluates its first argument to obtain a macro, generally assumed to
+be a two-argument function, its second argument to obtain an initial value,
+and its third argument to obtain a list.  It then applies the function to
+successive elements of the list.  Each time the function is applied, an
+element from the list is passed as the first argument.  The first time the
+function is applied, the initial value is passed as the second argument;
+each subsequent time, the result of the previous application is passed as
+the second argument.  `fold` evaluates to the result of the the final
+application of the function.
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (fold (fun (x a) x) () (literal (three dog night))))
+= night
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (fold (fun (x a) a) 541 (literal (archie moffam))))
+= 541
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (fold (fun (x a) (pair a x)) () (literal (three dog night))))
 = (((() . three) . dog) . night)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (fold (fun (x a) a) 1/2 (literal (three dog . night))))
+? robin: uncaught exception: (expected-pair . night)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (fold 1/2 (fun (x a) a) (literal (three dog night))))
+? robin: uncaught exception: (inapplicable-object . 1/2)
 
 ### `reverse` ###
 
@@ -109,9 +143,23 @@ the elements is reversed.
 
 ### `filter` ###
 
+`filter` evaluates its first argument to obtain a macro, generally assumed
+to be a one-argument function which evaluates to a boolean, then evaluates
+its second argument to obtain a list.  It then evaluates to a list which
+contains all the elements of the given list, in the same order, for which
+the function evaluated to `#t`.
+
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (filter (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
 = (two four six)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (filter (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 . six))))
+? robin: uncaught exception: (expected-pair . six)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (filter (fun (x) x) (literal (#t #t #f banana #t #f))))
+? robin: uncaught exception: (expected-boolean . banana)
 
 ### `find` ###
 
@@ -133,6 +181,10 @@ the elements is reversed.
 
 ### `elem` ###
 
+`filter` evaluates its first argument to a value of any type, and its
+second argument to obtain a list.  It then evaluates to `#t` if the value
+is `equal?` to some element of the list, `#f` otherwise.
+
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (elem (literal p) (literal (a p e))))
 = #t
@@ -148,6 +200,14 @@ the elements is reversed.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (elem 7 (list 5 (list 6 7) 8)))
 = #f
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (elem (literal two) (literal (two four . six))))
+= #t
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (elem (literal eight) (literal (two four . six))))
+? robin: uncaught exception: (expected-pair . six)
 
 ### `append` ###
 
@@ -335,6 +395,12 @@ is zero.
 
 ### `prefix?` ###
 
+`prefix?` evaluates its first and second arguments to obtain lists.
+It then evaluates to `#t` if the first list is a prefix of the second
+list, `#f` otherwise.  A list A is a prefix of a list B if A is `empty?`,
+or the head of A is `equal?` to the head of B and the tail of A is a
+prefix of the tail of B.
+
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (prefix? (list 1 2 3) (list 1 2 3 4 5 6)))
 = #t
@@ -359,7 +425,31 @@ is zero.
 |   (prefix? (list 1 2 3 4) (list 1 2 3)))
 = #f
 
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (prefix? (literal (1 2 3)) (literal (1 2 3 4 5 . 6))))
+= #t
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (prefix? (literal (1 2 3 4 8)) (literal (1 2 3 4 5 . 6))))
+= #f
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (prefix? (literal (1 2 . 3)) (literal (1 2 . 3))))
+? robin: uncaught exception: (expected-pair . 3)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (prefix? (literal (1 2 4 8)) (literal (1 2 . 3))))
+? robin: uncaught exception: (expected-pair . 3)
+
 ### `flatten` ###
+
+`flatten` evaluates its first argument to obtain a list, then evaluates
+to the list obtained by interpolating all elements into a single list.
+By interpolating we mean that, if some element is itself a list, the
+individual elements of that list will be present, in the same order, in
+the corresponding position, in the resulting list, and that this process
+is applied recursively to any elements in sublists which are themselves
+sublists.
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (flatten ()))
@@ -388,3 +478,7 @@ is zero.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (flatten (list 1 (literal (2 3 . 4)) 5)))
 = (1 (2 3 . 4) 5)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (flatten (literal (1 2 . 3))))
+? robin: uncaught exception: (expected-pair . 3)
