@@ -31,11 +31,15 @@
       (macro (self args env)
         (eval (filter (fun (binding) (elem (head binding) (head args))) env)
               (head (tail args)))))
+    (subst-env
+      (fun (env sexp)
+        (fold (fun (binding sexp)
+                (subst (head binding) (tail binding) sexp)) sexp env)))
     (export
       (macro (self args env)
         (filter (fun (binding) (elem (head binding) args)) env)))
     )
-    (export env bind let env? unbind unshadow sandbox export)
+    (export env bind let env? unbind unshadow sandbox subst-env export)
   )
 )
 

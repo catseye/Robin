@@ -95,8 +95,8 @@ Plans
 
 ### Concurrency ###
 
-* Finalize the semantics for exception and final-result messages, esp.
-  during `call` and `respond`.
+* Finalize the semantics for exception and final-result and unknown-tag
+  reply messages, esp. during `call` and `respond`.
 
 ### Fundamental Semantics ###
 
@@ -149,7 +149,10 @@ Plans
   (like `letrec`, but not necessary to support mutual recursion.)  Possibly
   called `bind-recur`.  Also `let-recur` could build on that.
 
-* `let-symbol`, as a substitute for `quasiquote`.
+* Figure out where `subst` should actually go.
+
+* Use `subst-env` to implement `let-symbol`, as a substitute for
+  `quasiquote`.
 
 ### Documentation ###
 

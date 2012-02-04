@@ -519,3 +519,46 @@ sublists.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (flatten (literal (1 2 . 3))))
 ? robin: uncaught exception: (expected-pair . 3)
+
+### `subst` ###
+
+`subst` evaluates all three of its arguments to obtain values of any type.  It
+then returns a modification of the third value where all instances of the first
+value (even those deeply nested within subpairs) have been replaced with the
+second value.
+
+`subst` need not work on lists, so its location here in the `list` module is
+provisional.
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst 4 5 4))
+= 5
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst 4 5 (list 1 2 3 4 5)))
+= (1 2 3 5 5)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst 4 5 (literal (one two three four five))))
+= (one two three four five)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst 4 5 (list 4 1 4 1 4)))
+= (5 1 5 1 5)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst 4 5 (list 1 4 (list 1 4 (list 4 1) 4) 4)))
+= (1 5 (1 5 (5 1) 5) 5)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst 4 () (list 1 2 3 4)))
+= (1 2 3 ())
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst 4 () (literal (1 2 3 . 4))))
+= (1 2 3)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (subst (literal (turkey and cheese)) (literal (pastrami and rye))
+|     (pair (literal (turkey and bacon)) (literal (turkey and cheese)))))
+= ((turkey and bacon) pastrami and rye)
