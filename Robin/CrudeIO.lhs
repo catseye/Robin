@@ -20,10 +20,10 @@ representation of the message to standard output.
 > outputHandler :: Chan Expr -> IO ()
 
 > outputHandler chan = respond chan [
->         ("write", \sender payload -> do
+>         ("write", \state sender payload -> do
 >             putStrLn $ show payload
->             return $ Symbol "ok")
->     ]
+>             return (state, Symbol "ok"))
+>     ] ()
 
 The virtual input device waits for a line of input to become available,
 checks to see if it has any new subscribers (and if so, registers them),
@@ -53,7 +53,7 @@ otherwise we might lose input before anyone has subscribed to us.
 >     case parseRobin line of
 >         Right expr@(Symbol "eof") -> do
 >             sendToSubscribers chan expr subscribers'
->             respond chan [] -- 'black hole'
+>             respond chan [] () -- 'black hole'
 >         Right expr -> do
 >             sendToSubscribers chan expr subscribers'
 >             inputHandler' chan subscribers'

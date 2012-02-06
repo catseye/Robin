@@ -118,10 +118,10 @@ Plans
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.
 
-* Write a `console` module which exports a process with an interface
-  similar to `Console::Virtual`'s.  In the reference interpreter, this can
-  be implemented with `hscurses`.  (But don't make `hscurses` a strict
-  requirement for building the reference interpreter.)
+* Enhance the `console` module.  Write demo(s) for it.
+
+* Allow the reference implementation to be built without specified built-in
+  modules (specifically `console`, but also `concurrency`, etc.)
 
 * Write a `functional` module which exports some functions for working
   with functions, such as `identity`, `compose`, and possibly `curry`

@@ -15,8 +15,10 @@
 > import Robin.Small
 > import Robin.Concurrency
 > import Robin.Exception
-> import Robin.CrudeIO
 > import Robin.Random
+
+> import Robin.CrudeIO
+> import Robin.Console
 
 Module Loading
 --------------
@@ -46,8 +48,9 @@ Module Loading
 >             (("small",0,1), moduleSmall),
 >             (("concurrency",0,1), moduleConcurrency),
 >             (("exception",0,1), moduleException),
+>             (("random",0,1), moduleRandom),
 >             (("crude-io",0,1), moduleCrudeIO),
->             (("random",0,1), moduleRandom)
+>             (("console",0,1), moduleConsole)
 >           ]
 
 > loadModule :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)

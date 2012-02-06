@@ -20,10 +20,10 @@ it is written in Haskell for now.
 > handler :: Chan Expr -> IO ()
 
 > handler chan = respond chan [
->         ("range", \sender (Pair (Number low) (Pair (Number high) Null)) -> do
+>         ("range", \state sender (Pair (Number low) (Pair (Number high) Null)) -> do
 >             x <- randomRIO ((ratFloor low), (ratFloor high))
->             return $ Number (x % 1))
->     ]
+>             return (state, Number (x % 1)))
+>     ] ()
 
 Module Definition
 -----------------

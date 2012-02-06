@@ -80,9 +80,9 @@ too?
 Capture the "response" pattern for processes which handle `call`s.  This
 doesn't require that the process has a Robin pid.
 
-> respond :: Chan Expr -> [(String, Expr -> Expr -> IO Expr)] -> IO ()
+> respond :: Chan Expr -> [(String, a -> Expr -> Expr -> IO (a, Expr))] -> a -> IO ()
 
-> respond chan handlers = do
+> respond chan handlers state = do
 >     message <- readChan chan
 >     tid <- myThreadId
 >     let myPid = Pid tid chan
@@ -90,16 +90,16 @@ doesn't require that the process has a Robin pid.
 >         (Pair sender (Pair (Symbol tagText) (Pair payload Null))) ->
 >             case lookup tagText handlers of
 >                 Just handler -> do
->                     reply <- handler sender payload
+>                     (state', reply) <- handler state sender payload
 >                     let response = (Pair myPid (Pair (Pair (Symbol tagText) (Symbol "reply")) (Pair reply Null)))
 >                     writeChan (getChan sender) response
->                     respond chan handlers
+>                     respond chan handlers state'
 >                 Nothing -> do
 >                     let response = (Pair myPid (Pair (Pair (Symbol tagText) (Symbol "reply")) (Pair (Symbol "what?") Null)))
 >                     writeChan (getChan sender) response
->                     respond chan handlers
+>                     respond chan handlers state
 >         _ -> do
->             respond chan handlers
+>             respond chan handlers state
 
 Robin Functions
 ---------------
