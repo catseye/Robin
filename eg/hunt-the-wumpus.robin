@@ -25,7 +25,7 @@
         ( 3 11 13)
         (12 14 20)
         ( 4 13 15)
-        ( 6  4 16)
+        ( 6  4 16) ;(but 4 doesnt have a tunnel back here?)
         (15 17 20)
         ( 7 16 18)
         ( 9 17 19)
@@ -98,6 +98,18 @@
                     (if (elem? next-dest tunnels)
                       (self self next-dest (tail itinerary))
                       (literal wall)))))))
+            (wumpus-move (fun (arrows-now)
+              (call random range (list 1 4) die-roll
+                (bind wumpus-now
+                  (if (equal? die-roll 1)
+                    wumpus
+                    (print (you hear the wumpus moving)
+                      (call random range (list 0 2) wumpus-tunnel
+                        (index wumpus-tunnel (index wumpus caverns)))))
+                  (if (equal? wumpus-now room)
+                    (print (oh dear the wumpus saw you and it ATE YOU UP OM NOM NOM NOM)
+                      #f)
+                    (self self room wumpus-now bats pits arrows-now))))))
           )
           (print (you are in room (? room) with (? arrows) arrows --
                   tunnels lead to rooms (? tunnels))
@@ -112,9 +124,8 @@
                 (print (YIIIEEEEEE -- fell in a bottomless pit)
                   #f))
               ((equal? room wumpus)
-                ;(TODO wumpus move routine)
-                (print (you stumbled upon the wumpus and it ATE YOU UP)
-                  #f))
+                (print (egad the wumpus is right here)
+                  (wumpus-move arrows)))
               (else
                 (print (? whats-nearby)
                   (recv entered
@@ -144,12 +155,10 @@
                                             #t))
                                         ((equal? result (literal miss))
                                           (print (your arrow did not hit anything)
-                                            ;(TODO wumpus move routine)
-                                            (self self room wumpus bats pits (subtract arrows 1))))
+                                            (wumpus-move (subtract arrows 1))))
                                         ((equal? result (literal wall))
                                           (print (a miscalculation -- your arrow hit a wall)
-                                            ;(TODO wumpus move routine)
-                                            (self self room wumpus bats pits (subtract arrows 1))))))))))
+                                            (wumpus-move (subtract arrows 1))))))))))
                             (else
                               (unrecognized-command)))))
                       (else

@@ -149,10 +149,10 @@ Plans
   (like `letrec`, but not necessary to support mutual recursion.)  Possibly
   called `bind-recur`.  Also `let-recur` could build on that.
 
-* Figure out where `subst` should actually go.
-
-* Use `subst-env` to implement `let-symbol`, as a substitute for
-  `quasiquote`.
+* Use `subst-env` to implement `literal-with`, as a substitute for
+  `quasiquote`, which works more like `let` (cf. `let-symbol`).  Also
+  possibly `quasi-literal` which works more like Perl's embedded `$`
+  variables.  (Extending this to embedded expressions is also possible.)
 
 ### Documentation ###
 
@@ -196,5 +196,3 @@ Plans
 * Write a `pixley` module which exports only the identifiers supported
   by Pixley.  This could be imported, instead of `core`, to emulate
   Pixley in Robin.
-
-* Write _Hunt the Wumpus_ in Robin!
