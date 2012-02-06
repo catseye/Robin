@@ -29,11 +29,11 @@
             (head (tail args))))))
     (sandbox
       (macro (self args env)
-        (eval (filter (fun (binding) (elem (head binding) (head args))) env)
+        (eval (filter (fun (binding) (elem? (head binding) (head args))) env)
               (head (tail args)))))
     (export
       (macro (self args env)
-        (filter (fun (binding) (elem (head binding) args)) env)))
+        (filter (fun (binding) (elem? (head binding) args)) env)))
     )
     (export env bind let env? unbind unshadow sandbox export)
   )

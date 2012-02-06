@@ -188,37 +188,37 @@ element from the list which satisfies the predicate.
 `find` could be defined in terms of `filter`, but in practice it would
 be implemented in a way which need not examine the entire list.
 
-### `elem` ###
+### `elem?` ###
 
-`elem` evaluates its first argument to a value of any type, and its
+`elem?` evaluates its first argument to a value of any type, and its
 second argument to obtain a list.  It then evaluates to `#t` if the value
 is `equal?` to some element of the list, `#f` otherwise.
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
-|   (elem (literal p) (literal (a p e))))
+|   (elem? (literal p) (literal (a p e))))
 = #t
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
-|   (elem (literal p) (literal (a r k))))
+|   (elem? (literal p) (literal (a r k))))
 = #f
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
-|   (elem 7 ()))
+|   (elem? 7 ()))
 = #f
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
-|   (elem 7 (list 5 (list 6 7) 8)))
+|   (elem? 7 (list 5 (list 6 7) 8)))
 = #f
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
-|   (elem (literal two) (literal (two four . six))))
+|   (elem? (literal two) (literal (two four . six))))
 = #t
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
-|   (elem (literal eight) (literal (two four . six))))
+|   (elem? (literal eight) (literal (two four . six))))
 ? robin: uncaught exception: (expected-pair . six)
 
-`elem` can be defined in terms of `find`, in a manner such as:
+`elem?` can be defined in terms of `find`, in a manner such as:
 
     (not (empty? (find (fun (x) (equal? x y)) li)))
 
