@@ -8,7 +8,8 @@ Modules
   bindings (the same names bound to the same values) each time they
   are imported.
 
-* Don't do input or output in a module.
+* Don't do input or output in a module.  (Logging is a different matter,
+  or at least it will be, when Robin gets a `logging` module.)
 
 Naming
 ------
@@ -44,3 +45,27 @@ Naming
     same arguments *and* the same set of incoming messages.
 
   * Ends with `!`: this function may send and receive messages.
+
+* Multiple arguments: still working this out too.  When you have a
+  commutative, associative binary operator, you often want to be able
+  to apply it to more than two arguments.  There are actually three
+  cases here:
+  
+  * Plain old binary operation: `(and a b)`.  This should exist,
+    because it has the advantage of being of known arity, which could
+    be of help to analyzers and sugared syntax.  It should implement
+    short-circuiting, if that makes sense for the operation (not only
+    booleans, but `(multiply 0 j)` need not evaluate `j`.)  The other
+    cases below can reduce to repeated applications of this.
+
+  * Fold of operation over list: `(and-list (list a b c))`.  This
+    is not much more than sugar for the appropriate `fold`; in this
+    case, `(fold and #t (list a b c))`.  However, it will evaluate
+    all of the arguments and construct a list, which defeats short-
+    circuiting.  Often the name of this can be based on a different
+    English word (`conj` for `and`, `disj` for `or`, `sum` for `add`,
+    `product` for `multiply`.)
+
+  * Operation over mutilple arguments: `(and-many a b c)`.  This is
+    semantically equivalent to `(and-list (list a b c))`, but this
+    can support short-circuiting where the other cannot.

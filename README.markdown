@@ -109,15 +109,7 @@ Plans
 
 ### Standard Modules ###
 
-* Establish a convention for "binary" versus "n-ary" functions:
-  `and` and `and-many`, `+` and `+-many`, and so forth.  This strikes
-  me as nicer (at this time) than making those operations always take
-  any number of arguments.  Actually, `sum`, `product`, `conj`,
-  `disj` are probably fine names for the n-ary versions of those
-  operations; they can each take a single list as their argument.
-
-* Establish a convention for "side-effecting" operations and make all the
-  names in the standard modules follow it.
+* Establish (and enforce) conventions listed in the Style document.
 
 * Possibly add alist functions to the `list` module, or create a new `alist`
   module for that purpose: `lookup`, `insert` (?), and `remove`.
