@@ -32,18 +32,25 @@
         (11 18 20)
         (13 16 19)
       )))
-      (get-random-room (fun () (call random range (list 1 20) value value)))
-      (initial-room (get-random-room))
-      (initial-wumpus (get-random-room))
-      (initial-bats (list (get-random-room) (get-random-room)))
-      (initial-pits (list (get-random-room) (get-random-room)))
+      (get-random-room-r (fun (self unacceptable)
+        (call random range (list 1 20) room
+          (if (elem? room unacceptable)
+            (self self unacceptable)
+            room))))
+      (get-random-room (fun (unacceptable)
+        (get-random-room-r get-random-room-r unacceptable)))
+      (get-n-random-rooms-r (fun (self n acc)
+        (if (equal? n 0)
+          acc
+          (self self (subtract n 1)
+                     (pair (get-random-room acc) acc)))))
+      (get-n-random-rooms (fun (n acc)
+        (get-n-random-rooms-r get-n-random-rooms-r n acc)))
+      (initial-wumpus (get-random-room ()))
+      (initial-bats (get-n-random-rooms 2 ()))
+      (initial-pits (get-n-random-rooms 2 ()))
+      (initial-room (get-random-room (pair initial-wumpus (append initial-bats initial-pits))))
       (initial-arrows 5)
-      (union-elem (fun (e li)
-        (if (elem? e li)
-          li
-          (pair e li))))
-      (union (fun (a b)
-        (fold (fun (e li) (union-elem e li)) a b)))
       (print (macro (self args env)
         ;''If the thing to be printed turns out to be the empty list,
            nothing is printed''
@@ -56,19 +63,9 @@
             (subject (subst-many subst-env (head args)))
           )
           (if (not (equal? subject ()))
-            (call crude-output write
-              (pair subject subject) result
-                (eval env (head (tail args))))
+            (call crude-output write subject result
+              (eval env (head (tail args))))
             (eval env (head (tail args)))))))
-      (print (macro (self args env)
-        (bind subst-env
-          (map
-            (fun (binding)
-              (pair (list (literal ?) (head binding)) (tail binding)))
-            env)
-          (call crude-output write
-            (subst-many subst-env (head args)) result
-              (eval env (head (tail args)))))))
       (main (fun (self room wumpus bats pits arrows)
         (let
           (
@@ -86,8 +83,21 @@
             (report-nearby (fun (self rooms acc)
               (if (empty? rooms)
                 acc
-                (union acc (report-room (head rooms))))))
+                (self self (tail rooms) (append (report-room (head rooms)) acc)))))
             (whats-nearby (report-nearby report-nearby tunnels ()))
+            (fire (fun (self room itinerary)
+              (if (equal? room wumpus)
+                (literal hit)
+                (if (empty? itinerary)
+                  (literal miss)
+                  (let
+                    (
+                      (tunnels (index room caverns))
+                      (next-dest (head itinerary))
+                    )
+                    (if (elem? next-dest tunnels)
+                      (self self next-dest (tail itinerary))
+                      (literal wall)))))))
           )
           (print (you are in room (? room) with (? arrows) arrows --
                   tunnels lead to rooms (? tunnels))
@@ -97,7 +107,7 @@
                   #f))
               ((elem? room bats)
                 (print (ZAP super bat snatch -- elsewheresville for you)
-                  (self self (get-random-room) wumpus bats pits arrows)))
+                  (self self (get-random-room ()) wumpus bats pits arrows)))
               ((elem? room pits)
                 (print (YIIIEEEEEE -- fell in a bottomless pit)
                   #f))
@@ -126,9 +136,20 @@
                                 (if (> (length itinerary) 5)
                                   (print (your arrows have a maximum range of 5 rooms)
                                     (self self room wumpus bats pits arrows))
-                                  (print (todo lets fire that thing (? itinerary))
-                                    ;(TODO wumpus move routine)
-                                    (self self room wumpus bats pits (subtract arrows 1))))))
+                                  (print (firing an arrow into rooms (? itinerary) here we go)
+                                    (bind result (fire fire room itinerary)
+                                      (choose
+                                        ((equal? result (literal hit))
+                                          (print (great shot you got the wumpus)
+                                            #t))
+                                        ((equal? result (literal miss))
+                                          (print (your arrow did not hit anything)
+                                            ;(TODO wumpus move routine)
+                                            (self self room wumpus bats pits (subtract arrows 1))))
+                                        ((equal? result (literal wall))
+                                          (print (a miscalculation -- your arrow hit a wall)
+                                            ;(TODO wumpus move routine)
+                                            (self self room wumpus bats pits (subtract arrows 1))))))))))
                             (else
                               (unrecognized-command)))))
                       (else
