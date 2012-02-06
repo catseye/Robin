@@ -1,0 +1,89 @@
+(robin (0 . 1) (small (0 . 1)
+                list (0 . 1)
+                concurrency (0 . 1)
+                arith (0 . 1)
+                random (0 . 1)
+                crude-io (0 . 1)
+                term (0 . 1))
+  ;''Beginnings of an implementation of Hunt the Wumpus.''
+  (let
+    (
+      (caverns (literal (
+        ( 0  0  0) ;(to make it 1 based)
+        ( 2  5  8)
+        ( 1  3 10)
+        ( 2  4 12)
+        ( 3  5 14)
+        ( 1  4  6)
+        ( 5  7 15)
+        ( 6  8 17)
+        ( 1  7  9)
+        ( 8 10 18)
+        ( 2  9 11)
+        (10 12 19)
+        ( 3 11 13)
+        (12 14 20)
+        ( 4 13 15)
+        ( 6  4 16)
+        (15 17 20)
+        ( 7 16 18)
+        ( 9 17 19)
+        (11 18 20)
+        (13 16 19)
+      )))
+      (get-random-room (fun () (call random range (list 1 20) value value)))
+      (initial-room (get-random-room))
+      (initial-wumpus (get-random-room))
+      (initial-bats (list (get-random-room) (get-random-room)))
+      (initial-pits (list (get-random-room) (get-random-room)))
+      (initial-arrows 5)
+      (main (fun (self room wumpus bats pits arrows)
+        (let
+          (
+            (tunnels (index room caverns))
+            (message (subst-many (list (pair (literal r) room)
+                                       (pair (literal a) arrows)
+                                       (pair (literal t) tunnels))
+                       (literal ((you are in room r with a arrows)
+                                 (tunnels lead to rooms t)))))
+            (unrecognized-command (fun ()
+              (call crude-output write
+                (literal ((unrecognized command)
+                          (try (m room) or (s room1 room2 etc)))) result
+                (self self room wumpus bats pits arrows))))
+          )
+          (call crude-output write message result
+            (choose
+              ((elem? room bats)
+                (call crude-output write
+                  (literal (super bat snatch elsewheresville for you)) result
+                  (self self (get-random-room) wumpus bats pits arrows)))
+              ((elem? room pits)
+                (call crude-output write
+                  (literal (yiiieeeee fell in a bottomless pit)) result
+                  result))
+              ((equal? room pits)
+                (call crude-output write
+                  (literal (you stumbled upon the wumpus who ate you up)) result
+                  result))
+              (else
+                (recv entered
+                  (choose
+                    ((equal? entered (literal eof))
+                      (call crude-output write
+                        (literal (gave up eh? no wumpus for you)) result result))
+                    ((list? entered)
+                      (if (equal? (head entered) (literal m))
+                        (bind dest (head (tail entered))
+                          (if (elem? dest tunnels)
+                            (self self dest wumpus bats pits arrows)
+                            (call crude-output write
+                              (literal (no tunnel in that direction)) result
+                              (self self room wumpus bats pits arrows))))
+                        (unrecognized-command)))
+                    (else
+                      (unrecognized-command))))))))))
+    )
+    (call crude-input subscribe () x
+      (main main initial-room initial-wumpus initial-bats
+                 initial-pits initial-arrows))))
