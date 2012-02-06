@@ -38,6 +38,28 @@
       (initial-bats (list (get-random-room) (get-random-room)))
       (initial-pits (list (get-random-room) (get-random-room)))
       (initial-arrows 5)
+      (union-elem (fun (e li)
+        (if (elem? e li)
+          li
+          (pair e li))))
+      (union (fun (a b)
+        (fold (fun (e li) (union-elem e li)) a b)))
+      (print (macro (self args env)
+        ;''If the thing to be printed turns out to be the empty list,
+           nothing is printed''
+        (let (
+            (subst-env
+              (map
+                (fun (binding)
+                  (pair (list (literal ?) (head binding)) (tail binding)))
+                env))
+            (subject (subst-many subst-env (head args)))
+          )
+          (if (not (equal? subject ()))
+            (call crude-output write
+              (pair subject subject) result
+                (eval env (head (tail args))))
+            (eval env (head (tail args)))))))
       (print (macro (self args env)
         (bind subst-env
           (map
@@ -61,13 +83,11 @@
                   (if (equal? room wumpus) (literal (you smell a wumpus)) ())
                   (if (elem? room bats) (literal (fluttering of bat wings nearby)) ())
                   (if (elem? room pits) (literal (you feel a draft)) ())))))
-            (report-nearby (fun (self rooms)
+            (report-nearby (fun (self rooms acc)
               (if (empty? rooms)
-                ()
-                (bind report (report-room (head rooms))
-                  (if (empty? report)
-                    (self self (tail rooms))
-                    (print (? report) (self self (tail rooms))))))))
+                acc
+                (union acc (report-room (head rooms))))))
+            (whats-nearby (report-nearby report-nearby tunnels ()))
           )
           (print (you are in room (? room) with (? arrows) arrows --
                   tunnels lead to rooms (? tunnels))
@@ -86,7 +106,7 @@
                 (print (you stumbled upon the wumpus and it ATE YOU UP)
                   #f))
               (else
-                (bind whudeva (report-nearby report-nearby tunnels)
+                (print (? whats-nearby)
                   (recv entered
                     (choose
                       ((equal? entered (literal eof))
