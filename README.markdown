@@ -116,12 +116,20 @@ Plans
   `disj` are probably fine names for the n-ary versions of those
   operations; they can each take a single list as their argument.
 
+* Establish a convention for "side-effecting" operations and make all the
+  names in the standard modules follow it.
+
 * Possibly add alist functions to the `list` module, or create a new `alist`
   module for that purpose: `lookup`, `insert` (?), and `remove`.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.
+
+* Write a `console` module which exports a process with an interface
+  similar to `Console::Virtual`'s.  In the reference interpreter, this can
+  be implemented with `hscurses`.  (But don't make `hscurses` a strict
+  requirement for building the reference interpreter.)
 
 * Write a `functional` module which exports some functions for working
   with functions, such as `identity`, `compose`, and possibly `curry`
@@ -160,8 +168,6 @@ Plans
 
 * Document the `arith` module.
 
-* Finish documenting the `list` module.
-
 * Document the "why" behind some of the design decisions.  Particularly,
   why S-expression based syntax, why import can only be done at the top
   level, tension between "trivially serializable" S-expressions (esp.
@@ -196,3 +202,5 @@ Plans
 * Write a `pixley` module which exports only the identifiers supported
   by Pixley.  This could be imported, instead of `core`, to emulate
   Pixley in Robin.
+
+* Using the `console` module, write `robotfindskitten` in Robin!

@@ -247,6 +247,11 @@ The second list may be improper, but the first may not be.
 
 ### `length` ###
 
+`length` evaluates its single argument to obtain a proper list, then
+evaluates to a non-negative integer which is the length of the list
+(the number of pairs, not counting nested pairs and not counting the
+empty list at the very tail.)
+
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (length ()))
 = 0
@@ -254,6 +259,10 @@ The second list may be improper, but the first may not be.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (length (list 1 2 #t #f 3)))
 = 5
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (length (literal (1 2 #t #f . 3))))
+? robin: uncaught exception: (expected-pair . 3)
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (length (literal whatnot)))
@@ -299,6 +308,10 @@ Attempting to index beyond the end of the list will raise an exception.
 
 ### `take-while` ###
 
+`take-while` evaluates its first argument to obtain a predicate and its
+second argument to obtain a list.  It then evaluates to the longest prefix
+of the list whose elements all satisfy the predicate.
+
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (take-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
 = (one two)
@@ -312,6 +325,14 @@ Attempting to index beyond the end of the list will raise an exception.
 = (1 2 3 4 5 6)
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (take-while (fun (x) (number? x)) (literal (1 2 3 #f 5 . 6))))
+= (1 2 3)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (take-while (fun (x) (number? x)) (literal (1 2 3 4 5 . #f))))
+? robin: uncaught exception: (expected-pair . #f)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (take-while (fun (x) (symbol? x)) ()))
 = ()
 
@@ -320,6 +341,11 @@ Attempting to index beyond the end of the list will raise an exception.
 ? robin: uncaught exception: (expected-pair . #f)
 
 ### `drop-while` ###
+
+`drop-while` evaluates its first argument to obtain a predicate and its
+second argument to obtain a list.  It then evaluates to the suffix of the
+given list, starting at the first element which does not satisfy the
+predicate.
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (drop-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
@@ -334,6 +360,14 @@ Attempting to index beyond the end of the list will raise an exception.
 = ()
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (drop-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 . seven))))
+= (3 4 five 6 . seven)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (drop-while (fun (x) (symbol? x)) (literal (one two . three))))
+? robin: uncaught exception: (expected-pair . three)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (drop-while (fun (x) (symbol? x)) ()))
 = ()
 
@@ -342,6 +376,10 @@ Attempting to index beyond the end of the list will raise an exception.
 ? robin: uncaught exception: (expected-pair . #f)
 
 ### `first` ###
+
+`first` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired length, and its second argument to obtain a list.
+It then evaluates to the prefix of the given list of the desired length.
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (first 0 (list 1 2 3 4 5)))
@@ -368,6 +406,11 @@ Attempting to index beyond the end of the list will raise an exception.
 = ()
 
 ### `rest` ###
+
+`rest` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired position, and its second argument to obtain a
+list.  It then evaluates to the suffix of the given list starting at the
+desired position.  The position 0 indicates the beginning of the list.
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (rest 0 (list 1 2 3 4 5)))
@@ -398,6 +441,11 @@ Attempting to index beyond the end of the list will raise an exception.
 = foo
 
 ### `last` ###
+
+`rest` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired length, and its second argument to obtain a
+list.  It then evaluates to the suffix of the given list of the desired
+length.
 
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (last 0 (list 1 2 3 4 5)))
