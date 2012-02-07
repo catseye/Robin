@@ -1,6 +1,19 @@
 #!/bin/sh
 
-MODULES="Small Concurrency Exception Random CrudeIO Console"
+ALL_MODULES="Small Concurrency Exception Random CrudeIO Console"
+MODULES=""
+
+for MODULE in $ALL_MODULES; do
+  ADD_IT=yes
+  for EXCEPT in $WITHOUT; do
+    if [ "${EXCEPT}x" = "${MODULE}x" ]; then
+      ADD_IT=no
+    fi
+  done
+  if [ "${ADD_IT}" = "yes" ]; then
+    MODULES="${MODULES} ${MODULE}"
+  fi
+done
 
 cat >Robin/Builtins.hs <<EOF
 module Robin.Builtins (builtinModules) where

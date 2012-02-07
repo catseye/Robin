@@ -41,6 +41,47 @@ The current version of Robin under development is version 0.1.  Even it
 is unreleased, so what you're looking at here is pure "technology
 preview" stuff.  Expect everything to change, perhaps drastically.
 
+Installation
+------------
+
+Step 1: Obtain the sources.
+
+    $ hg clone https://bitbucket.org/catseye/robin
+
+*or*
+
+    $ git clone git://github.com/catseye/Robin.git
+
+Step 2: Make sure you have `ghc` and `Parsec` and (optionally) `hscurses`.
+The following instructions are for Ubuntu; equivalents for other operating
+systems are left as an exercise for the reader.
+
+    $ sudo apt-get install ghc cabal-install
+    $ cabal install parsec
+    $ cabal install hscurses   # if you want to use the console module
+
+Step 3: Build the sources.
+
+    $ cd robin
+    $ ./build.sh
+
+All built-in modules are built by default.  If you want to exclude some
+modules (for example `console`), you can list them in the `WITHOUT`
+environment variable.  For example,
+
+    $ WITHOUT="CrudeIO Console" ./build.sh
+
+Note that if you exclude the built-in `small` module, `robin` will fall back
+to the `small` module written in Robin, but expect it to be *much* slower.
+
+Step 4: Run the tests.
+
+    $ ./test.sh
+
+Installation of the compiled `robin` executable so that it can be run from
+any workin directory isn't supported yet; you'll need to be in your clone's
+root directory to run `bin/robin` for now.
+
 Documentation
 -------------
 
@@ -120,9 +161,6 @@ Plans
 
 * Enhance the `console` module.  Write demo(s) for it.
 
-* Allow the reference implementation to be built without specified built-in
-  modules (specifically `console`, but also `concurrency`, etc.)
-
 * Write a `functional` module which exports some functions for working
   with functions, such as `identity`, `compose`, and possibly `curry`
   and `uncurry`.
@@ -181,10 +219,16 @@ Plans
   those tests which currently import `small`, although they may be pretty
   ugly expressed purely in `core` terms.
 
+* Have the tests only test those built-in modules which were selected for
+  inclusion during the build step.
+
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)
 
 ### Implementation ###
+
+* Allow the `robin` binary to be installed on your `PATH`, and let it be
+  configured to understand how to find modules for loading.
 
 * Finish implementing execution trace by adding a `-t` flag to the
   implementation, and possibly making it prettier.
