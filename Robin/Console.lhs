@@ -63,9 +63,10 @@ state of the virtual console based on those messages.
 Module Definition
 -----------------
 
-> moduleConsole :: IO Expr
+> moduleId = ("console", 0, 1)
 
-> moduleConsole = do
+> moduleDef :: IO Expr
+> moduleDef = do
 >     consoleOutputPid <- spawn outputHandler
 >     return $ Env.fromList (
 >       [

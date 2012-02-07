@@ -229,9 +229,10 @@ from the destination pid.
 Module Definition
 -----------------
 
-> moduleConcurrency :: IO Expr
+> moduleId = ("concurrency", 0, 1)
 
-> moduleConcurrency = do
+> moduleDef :: IO Expr
+> moduleDef = do
 >     return $ Env.fromList $ map (\(name,bif) -> (name, Builtin name bif))
 >       [
 >         ("myself",   robinMyself),

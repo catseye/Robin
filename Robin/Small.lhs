@@ -4,7 +4,7 @@
 > import Robin.Expr
 > import Robin.Eval
 
-> import Robin.Core
+> import qualified Robin.Core
 
 Small
 =====
@@ -70,10 +70,11 @@ Module Definition
 >              ("fun",      robinFun)
 >            ]
 
-> moduleSmall :: IO Expr
+> moduleId = ("small", 0, 1)
 
-> moduleSmall = do
->     core <- moduleCore
+> moduleDef :: IO Expr
+> moduleDef = do
+>     core <- Robin.Core.moduleDef
 >     let small = Env.fromList $ map (\(name,bif) -> (name, Builtin name bif)) bindings
 >     return $ Env.union core small
 

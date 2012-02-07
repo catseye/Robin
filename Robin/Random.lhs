@@ -28,9 +28,10 @@ it is written in Haskell for now.
 Module Definition
 -----------------
 
-> moduleRandom :: IO Expr
+> moduleId = ("random", 0, 1)
 
-> moduleRandom = do
+> moduleDef :: IO Expr
+> moduleDef = do
 >     randomPid <- spawn handler
 >     return $ Env.fromList (
 >       [

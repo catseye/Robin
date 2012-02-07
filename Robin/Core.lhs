@@ -96,9 +96,10 @@ Core
 Module Definition
 -----------------
 
-> moduleCore :: IO Expr
+> moduleId = ("core", 0, 1)
 
-> moduleCore = do
+> moduleDef :: IO Expr
+> moduleDef = do
 >     return $ Env.fromList $ map (\(name,bif) -> (name, Builtin name bif))
 >       [
 >         ("head",     robinHead),

@@ -98,9 +98,10 @@ otherwise we might lose input before anyone has subscribed to us.
 Module Definition
 -----------------
 
-> moduleCrudeIO :: IO Expr
+> moduleId = ("crude-io", 0, 1)
 
-> moduleCrudeIO = do
+> moduleDef :: IO Expr
+> moduleDef = do
 >     crudeOutputPid <- spawn outputHandler
 >     crudeInputPid  <- spawn inputHandler
 >     return $ Env.fromList (

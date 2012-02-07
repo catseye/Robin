@@ -22,9 +22,10 @@ Exception
 Module Definition
 -----------------
 
-> moduleException :: IO Expr
+> moduleId = ("exception", 0, 1)
 
-> moduleException =
+> moduleDef :: IO Expr
+> moduleDef =
 >     return $ Env.fromList $ map (\(name,bif) -> (name, Builtin name bif))
 >       [
 >         ("catch", robinCatch),
