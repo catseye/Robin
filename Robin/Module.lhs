@@ -11,14 +11,7 @@
 > import qualified Robin.Env as Env
 > import Robin.Eval
 
-> import Robin.Core
-> import Robin.Small
-> import Robin.Concurrency
-> import Robin.Exception
-> import Robin.Random
-
-> import Robin.CrudeIO
-> import Robin.Console
+> import Robin.Builtins (builtinModules)
 
 Module Loading
 --------------
@@ -42,16 +35,6 @@ Module Loading
 
 > isModuleInProgress mc@(ModuleCache n p c) modRef =
 >     modRef `elem` p
-
-> builtinModules = [
->             (("core",0,1), moduleCore),
->             (("small",0,1), moduleSmall),
->             (("concurrency",0,1), moduleConcurrency),
->             (("exception",0,1), moduleException),
->             (("random",0,1), moduleRandom),
->             (("crude-io",0,1), moduleCrudeIO),
->             (("console",0,1), moduleConsole)
->           ]
 
 > loadModule :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
 

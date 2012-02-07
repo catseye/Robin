@@ -7,7 +7,7 @@
     (loop (fun (self x)
       (if (equal? x 10000)
         (call console deactivate () result ())
-        (call console position (list (rem x 20) (rem x 20)) result
+        (call console position (list (rem x 60) (rem x 19)) result
           (call console display (literal ''hi'') result
             (call console update () result
               (self self (+ x 1))))))))
