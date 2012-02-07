@@ -52,7 +52,8 @@ Step 1: Obtain the sources.
 
     $ git clone git://github.com/catseye/Robin.git
 
-Step 2: Make sure you have `ghc` and `Parsec` and (optionally) `hscurses`.
+Step 2: Make sure you have `ghc`, and the Haskell packages `parsec` and
+(optionally) `hscurses` installed (these can both be instaled via `cabal`).
 The following instructions are for Ubuntu; equivalents for other operating
 systems are left as an exercise for the reader.
 
@@ -74,13 +75,27 @@ environment variable.  For example,
 Note that if you exclude the built-in `small` module, `robin` will fall back
 to the `small` module written in Robin, but expect it to be *much* slower.
 
-Step 4: Run the tests.
+Step 4: Get Falderal, so that you can run the tests.
 
+    $ cd ..
+    $ hg clone https://bitbucket.org/catseye/falderal
+    $ cd falderal
+    $ ./install.sh
+    $ cd ..
+
+Step 5: Run the tests.
+
+    $ cd robin
     $ ./test.sh
 
 Installation of the compiled `robin` executable so that it can be run from
-any workin directory isn't supported yet; you'll need to be in your clone's
+any working directory isn't supported yet; you'll need to be in your clone's
 root directory to run `bin/robin` for now.
+
+It is possible to build `robin` under Windows, using `ghc` from the Haskell
+Platform for Windows, and Cygwin to run the shell scripts; however, there
+are various minor considerations which are currently outside the scope of
+this README.  If you're really motivated, you'll figure it out.
 
 Documentation
 -------------
