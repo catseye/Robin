@@ -1,0 +1,16 @@
+(robin (0 . 1) (small (0 . 1)
+                arith (0 . 1)
+                list (0 . 1)
+                concurrency (0 . 1)
+                console (0 . 1))
+  (let (
+    (loop (fun (self x)
+      (if (equal? x 10000)
+        (call console deactivate () result ())
+        (call console position (list (rem x 20) (rem x 20)) result
+          (call console display (literal ''hi'') result
+            (call console update () result
+              (self self (+ x 1))))))))
+    )
+    (call console activate () result
+      (loop loop 0))))
