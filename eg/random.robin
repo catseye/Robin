@@ -3,7 +3,7 @@
     (fun (self n)
       (if (equal? n 0)
         (literal done)
-        (call random range (list 1 6) value
-          (call crude-output write value response
+        (call! random range (list 1 6) value
+          (call! crude-output write value response
             (self self (subtract n 1))))))
     (output-loop output-loop 20)))

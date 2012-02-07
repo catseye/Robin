@@ -10,13 +10,13 @@
               literal fun bind let choose env))
     (input-loop
         (fun (self)
-          (recv entered
+          (recv! entered
             (if (equal? entered (literal eof))
               (literal bye)
               (bind result (catch error (pair (literal error) error)
                              (eval restricted-env entered))
-                (call crude-output write result foo
+                (call! crude-output write result foo
                   (self self)))))))
     )
-    (call crude-input subscribe () x
+    (call! crude-input subscribe () x
       (input-loop input-loop))))

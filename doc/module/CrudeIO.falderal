@@ -16,19 +16,19 @@ The `crude-output` identifier is bound to a process which accepts messages
 sent to it, and outputs the content of those messages to the operating
 system's "standard output".
 
-Each message should be in the `call` format, which is a list of three items:
+Each message should be in the `call!` format, which is a list of three items:
 the pid of the sender, the tag (which should be the symbol `write`), and
 the payload (which is the value which we intend to output.)
 
 The payload will be formatted as a textual S-expression, and this text will
 be written, as a line, to the standard output.  After the text has been
-written, a confirmation message (in the standard `call` response format)
+written, a confirmation message (in the standard `call!` response format)
 consisting of the symbol `ok` will be sent back to the process that sent
 the message.
 
 To ensure that the text is written, the sending process should wait for
 this confirmation message.  The simplest way to do this is to use the
-`call` macro.  If the program terminates before this confirmation message
+`call!` macro.  If the program terminates before this confirmation message
 is received, the text might not be written to the standard output.
 
 -> Tests for shell command "bin/robin %(test-file)"
@@ -38,7 +38,7 @@ be written to the standard output, and an `ok` message sent back to the
 sending process as a confirmation.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (call crude-output write (literal hello-world) reply reply))
+|   (call! crude-output write (literal hello-world) reply reply))
 = hello-world
 = ok
 
@@ -49,7 +49,7 @@ implementation need not write the result of the main process to the
 standard output.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (call crude-output write (literal hello-world) reply 0))
+|   (call! crude-output write (literal hello-world) reply 0))
 = hello-world
 
 Multiple messages may be sent to `crude-output`; the content of each
@@ -57,8 +57,8 @@ message will be formatted as a textual S-expression, and written out on
 its own line.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (call crude-output write (literal hello) x
-|     (call crude-output write (literal (world 1 2 3)) y
+|   (call! crude-output write (literal hello) x
+|     (call! crude-output write (literal (world 1 2 3)) y
 |       0)))
 = hello
 = (world 1 2 3)
@@ -66,7 +66,7 @@ its own line.
 ### `crude-input` ###
 
 The `crude-input` identifier is bound to a process which accepts
-subscription messages sent to it.  A subscription message is in `call`
+subscription messages sent to it.  A subscription message is in `call!`
 format, with the tag `subscribe`; the payload is ignored.  The process
 which sent the subscription message is the process that will be
 subscribed to receive data from lines read on the program's "standard
@@ -86,8 +86,8 @@ entered and parsed correctly.
 messages when input occurs.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (call crude-input subscribe () x
-|     (recv entered
+|   (call! crude-input subscribe () x
+|     (recv! entered
 |       (pair (literal i-got) entered))))
 = (i-got . hello)
 
@@ -96,8 +96,8 @@ messages when input occurs.
 Arbitrary S-expressions may occur on each line; they are parsed.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
-|   (call crude-input subscribe () x
-|     (recv entered
+|   (call! crude-input subscribe () x
+|     (recv! entered
 |       (pair (literal i-got) entered))))
 = (i-got 1 2 3)
 
@@ -108,12 +108,12 @@ Multiple lines of text may be input, and multiple messages will be sent.
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
 |   (bind input-loop
 |         (fun (self)
-|           (recv entered
+|           (recv! entered
 |             (if (equal? entered (literal eof))
 |               #f
-|               (call crude-output write (pair #t entered) foo
+|               (call! crude-output write (pair #t entered) foo
 |                 (self self)))))
-|     (call crude-input subscribe () x
+|     (call! crude-input subscribe () x
 |       (input-loop input-loop))))
 = (#t . 1)
 = (#t . 2)
@@ -127,12 +127,12 @@ sent.
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
 |   (bind input-loop
 |         (fun (self)
-|           (recv entered
+|           (recv! entered
 |             (if (equal? entered (literal eof))
 |               #f
-|               (call crude-output write (pair #t entered) foo
+|               (call! crude-output write (pair #t entered) foo
 |                 (self self)))))
-|     (call crude-input subscribe () x
+|     (call! crude-input subscribe () x
 |       (input-loop input-loop))))
 = (#t . 1)
 = (#t . 3)

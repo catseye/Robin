@@ -237,10 +237,10 @@ Module Definition
 >       [
 >         ("myself",   robinMyself),
 >         ("pid?",     pidP),
->         ("spawn",    robinSpawn),
->         ("send",     send),
->         ("recv",     recv),
->         ("call",     call),
->         ("respond",  robinRespond),
+>         ("spawn!",   robinSpawn),
+>         ("send!",    send),
+>         ("recv!",    recv),
+>         ("call!",    call),
+>         ("respond!", robinRespond),
 >         ("msgs?",    msgsP)
 >       ]

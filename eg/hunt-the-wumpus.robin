@@ -6,7 +6,8 @@
                 random (0 . 1)
                 crude-io (0 . 1)
                 term (0 . 1))
-  ;''Beginnings of an implementation of Hunt the Wumpus.''
+  ;''Beginnings of an implementation of Hunt the Wumpus.
+  The !'s aren't quite consistent in this yet.''
   (let
     (
       (caverns (literal (
@@ -32,26 +33,26 @@
         (11 18 20)
         (13 16 19)
       )))
-      (get-random-room-r (fun (self unacceptable)
-        (call random range (list 1 20) room
+      (get-random-room-r! (fun (self unacceptable)
+        (call! random range (list 1 20) room
           (if (elem? room unacceptable)
             (self self unacceptable)
             room))))
-      (get-random-room (fun (unacceptable)
-        (get-random-room-r get-random-room-r unacceptable)))
-      (get-n-random-rooms-r (fun (self n acc)
+      (get-random-room! (fun (unacceptable)
+        (get-random-room-r! get-random-room-r! unacceptable)))
+      (get-n-random-rooms-r! (fun (self n acc)
         (if (equal? n 0)
           acc
           (self self (subtract n 1)
-                     (pair (get-random-room acc) acc)))))
-      (get-n-random-rooms (fun (n acc)
-        (get-n-random-rooms-r get-n-random-rooms-r n acc)))
-      (initial-wumpus (get-random-room ()))
-      (initial-bats (get-n-random-rooms 2 ()))
-      (initial-pits (get-n-random-rooms 2 ()))
-      (initial-room (get-random-room (pair initial-wumpus (append initial-bats initial-pits))))
+                     (pair (get-random-room! acc) acc)))))
+      (get-n-random-rooms! (fun (n acc)
+        (get-n-random-rooms-r! get-n-random-rooms-r! n acc)))
+      (initial-wumpus (get-random-room! ()))
+      (initial-bats (get-n-random-rooms! 2 ()))
+      (initial-pits (get-n-random-rooms! 2 ()))
+      (initial-room (get-random-room! (pair initial-wumpus (append initial-bats initial-pits))))
       (initial-arrows 5)
-      (print (macro (self args env)
+      (print! (macro (self args env)
         ;''If the thing to be printed turns out to be the empty list,
            nothing is printed''
         (let (
@@ -63,7 +64,7 @@
             (subject (subst-many subst-env (head args)))
           )
           (if (not (equal? subject ()))
-            (call crude-output write subject result
+            (call! crude-output write subject result
               (eval env (head (tail args))))
             (eval env (head (tail args)))))))
       (main (fun (self room wumpus bats pits arrows)
@@ -71,7 +72,7 @@
           (
             (tunnels (index room caverns))
             (unrecognized-command (fun ()
-              (print (unrecognized command --
+              (print! (unrecognized command --
                       try (m room) or (s room1 room2 etc))
                 (self self room wumpus bats pits arrows))))
             (report-room (fun (room)
@@ -99,39 +100,39 @@
                       (self self next-dest (tail itinerary))
                       (literal wall)))))))
             (wumpus-move (fun (arrows-now)
-              (call random range (list 1 4) die-roll
+              (call! random range (list 1 4) die-roll
                 (bind wumpus-now
                   (if (equal? die-roll 1)
                     wumpus
-                    (print (you hear the wumpus moving)
-                      (call random range (list 0 2) wumpus-tunnel
+                    (print! (you hear the wumpus moving)
+                      (call! random range (list 0 2) wumpus-tunnel
                         (index wumpus-tunnel (index wumpus caverns)))))
                   (if (equal? wumpus-now room)
-                    (print (oh dear the wumpus saw you and it ATE YOU UP OM NOM NOM NOM)
+                    (print! (oh dear the wumpus saw you and it ATE YOU UP OM NOM NOM NOM)
                       #f)
                     (self self room wumpus-now bats pits arrows-now))))))
           )
-          (print (you are in room (? room) with (? arrows) arrows --
+          (print! (you are in room (? room) with (? arrows) arrows --
                   tunnels lead to rooms (? tunnels))
             (choose
               ((equal? arrows 0)
-                (print (no arrows left mister sitting duck)
+                (print! (no arrows left mister sitting duck)
                   #f))
               ((elem? room bats)
-                (print (ZAP super bat snatch -- elsewheresville for you)
+                (print! (ZAP super bat snatch -- elsewheresville for you)
                   (self self (get-random-room ()) wumpus bats pits arrows)))
               ((elem? room pits)
-                (print (YIIIEEEEEE -- fell in a bottomless pit)
+                (print! (YIIIEEEEEE -- fell in a bottomless pit)
                   #f))
               ((equal? room wumpus)
-                (print (egad the wumpus is right here)
+                (print! (egad the wumpus is right here)
                   (wumpus-move arrows)))
               (else
-                (print (? whats-nearby)
-                  (recv entered
+                (print! (? whats-nearby)
+                  (recv! entered
                     (choose
                       ((equal? entered (literal eof))
-                        (print (gave up eh? no wumpus for you)
+                        (print! (gave up eh? no wumpus for you)
                           #f))
                       ((list? entered)
                         (bind command (head entered)
@@ -140,30 +141,30 @@
                               (bind dest (head (tail entered))
                                 (if (elem? dest tunnels)
                                   (self self dest wumpus bats pits arrows)
-                                  (print (no tunnel in that direction)
+                                  (print! (no tunnel in that direction)
                                     (self self room wumpus bats pits arrows)))))
                             ((equal? command (literal s))
                               (bind itinerary (tail entered)
                                 (if (> (length itinerary) 5)
-                                  (print (your arrows have a maximum range of 5 rooms)
+                                  (print! (your arrows have a maximum range of 5 rooms)
                                     (self self room wumpus bats pits arrows))
-                                  (print (firing an arrow into rooms (? itinerary) here we go)
+                                  (print! (firing an arrow into rooms (? itinerary) here we go)
                                     (bind result (fire fire room itinerary)
                                       (choose
                                         ((equal? result (literal hit))
-                                          (print (great shot you got the wumpus)
+                                          (print! (great shot you got the wumpus)
                                             #t))
                                         ((equal? result (literal miss))
-                                          (print (your arrow did not hit anything)
+                                          (print! (your arrow did not hit anything)
                                             (wumpus-move (subtract arrows 1))))
                                         ((equal? result (literal wall))
-                                          (print (a miscalculation -- your arrow hit a wall)
+                                          (print! (a miscalculation -- your arrow hit a wall)
                                             (wumpus-move (subtract arrows 1))))))))))
                             (else
                               (unrecognized-command)))))
                       (else
                         (unrecognized-command)))))))))))
     )
-    (call crude-input subscribe () x
+    (call! crude-input subscribe () x
       (main main initial-room initial-wumpus initial-bats
                  initial-pits initial-arrows))))

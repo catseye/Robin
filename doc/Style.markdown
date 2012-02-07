@@ -31,7 +31,7 @@ Naming
 * Referential transparency: still working this out, and probably
   deserves a document to itself.  Robin isn't an imperative language,
   so the convention of ending an identifier with `!` doesn't really
-  apply; but it can have side effects.  Maybe:
+  apply; but it can have side-effects.  Maybe:
 
   * No symbol at end: this function always evaluates to the same
     value, given the same arguments.
@@ -45,6 +45,15 @@ Naming
     same arguments *and* the same set of incoming messages.
 
   * Ends with `!`: this function may send and receive messages.
+
+  For the nonce, I'm going to go with `!` indicating that the macro
+  may have side-effects.  However, this should ultimately be handled at
+  a more semantic level.  Functions should be able to be defined as
+  not having side-effects, and the function-definition macro should
+  check this is the case (i.e. that the function never calls anything
+  [which calls anything] which may have side-effects), and certain
+  call sites should not allow functions to be called which may have
+  side-effects.
 
 * Multiple arguments: still working this out too.  When you have a
   commutative, associative binary operator, you often want to be able

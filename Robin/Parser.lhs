@@ -14,13 +14,15 @@ The overall grammar of the language is:
     Expr ::= (symbol | number | boolean | "(" {Expr} ["." Expr] ")")
 
 A symbol is denoted by a string which may contain only alphanumeric
-characters, hyphens, underscores, and question marks.  (TODO: this set
-of characters is provisional.)
+characters and certain other characters.
+
+(TODO: this set of characters is provisional.  It might be easier to specify
+which characters are *not* allowed.)
 
 > legalSymbolic = (char '*' <|> char '-' <|> char '/' <|>
 >                  char '+' <|> char '<' <|> char '>' <|>
 >                  char '<' <|> char '=' <|> char '?' <|>
->                  char '_')
+>                  char '_' <|> char '!' <|> char '$')
 
 > symbol = do
 >     c <- (letter <|> legalSymbolic)
