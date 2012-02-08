@@ -149,11 +149,6 @@ Goals
 Plans
 -----
 
-### Concurrency ###
-
-* Finalize the semantics for exception and final-result and unknown-tag
-  reply messages, esp. during `call` and `respond`.
-
 ### Fundamental Semantics ###
 
 * Add an opaque type -- opaque values have internals that can only be
@@ -163,7 +158,18 @@ Plans
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
 
+* Change the format of environments to allow the inclusion of an alist
+  on each binding which may hold *metadata* for that binding.  I suspect
+  this will serve as the groundwork for Robin's approach to static analysis:
+  static analysis is abstract interpretation, and abstract interpretation
+  is interpretation, simply over a different value domain (types, or what
+  have you.)
+
 ### Standard Modules ###
+
+* In the `concurrency` module, finalize the semantics for exception and
+  final-result and unknown-tag reply messages, particularly during `call`
+  and `respond`.
 
 * Establish (and enforce) conventions listed in the Style document.
 
@@ -243,7 +249,9 @@ Plans
 ### Implementation ###
 
 * Allow the `robin` binary to be installed on your `PATH`, and let it be
-  configured to understand how to find modules for loading.
+  configured to understand how to find modules for loading.  This will
+  likely involve a `.robinrc` file (or directory) in the user's home
+  directory, which maps module names to filenames.
 
 * Finish implementing execution trace by adding a `-t` flag to the
   implementation, and possibly making it prettier.
