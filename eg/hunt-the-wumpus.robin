@@ -67,11 +67,11 @@
             (call! crude-output write subject result
               (eval env (head (tail args))))
             (eval env (head (tail args)))))))
-      (main (fun (self room wumpus bats pits arrows)
+      (main! (fun (self room wumpus bats pits arrows)
         (let
           (
             (tunnels (index room caverns))
-            (unrecognized-command (fun ()
+            (unrecognized-command! (fun ()
               (print! (unrecognized command --
                       try (m room) or (s room1 room2 etc))
                 (self self room wumpus bats pits arrows))))
@@ -85,7 +85,6 @@
               (if (empty? rooms)
                 acc
                 (self self (tail rooms) (append (report-room (head rooms)) acc)))))
-            (whats-nearby (report-nearby report-nearby tunnels ()))
             (fire (fun (self room itinerary)
               (if (equal? room wumpus)
                 (literal hit)
@@ -99,7 +98,7 @@
                     (if (elem? next-dest tunnels)
                       (self self next-dest (tail itinerary))
                       (literal wall)))))))
-            (wumpus-move (fun (arrows-now)
+            (move-wumpus! (fun (arrows-now)
               (call! random range (list 1 4) die-roll
                 (bind wumpus-now
                   (if (equal? die-roll 1)
@@ -116,19 +115,20 @@
                   tunnels lead to rooms (? tunnels))
             (choose
               ((equal? arrows 0)
-                (print! (no arrows left mister sitting duck)
+                (print! (no arrows left! how does it feel to be a sitting duck?)
                   #f))
               ((elem? room bats)
-                (print! (ZAP super bat snatch -- elsewheresville for you)
+                (print! (ZAP super bat snatch! elsewheresville for you!)
                   (self self (get-random-room ()) wumpus bats pits arrows)))
               ((elem? room pits)
                 (print! (YIIIEEEEEE -- fell in a bottomless pit)
                   #f))
               ((equal? room wumpus)
                 (print! (egad the wumpus is right here)
-                  (wumpus-move arrows)))
+                  (move-wumpus! arrows)))
               (else
-                (print! (? whats-nearby)
+                (bind whats-nearby (report-nearby report-nearby tunnels ())
+                 (print! (? whats-nearby)
                   (recv! entered
                     (choose
                       ((equal? entered (literal eof))
@@ -152,19 +152,19 @@
                                     (bind result (fire fire room itinerary)
                                       (choose
                                         ((equal? result (literal hit))
-                                          (print! (great shot you got the wumpus)
+                                          (print! (great shot! you got the wumpus!)
                                             #t))
                                         ((equal? result (literal miss))
                                           (print! (your arrow did not hit anything)
-                                            (wumpus-move (subtract arrows 1))))
+                                            (move-wumpus! (subtract arrows 1))))
                                         ((equal? result (literal wall))
                                           (print! (a miscalculation -- your arrow hit a wall)
-                                            (wumpus-move (subtract arrows 1))))))))))
+                                            (move-wumpus! (subtract arrows 1))))))))))
                             (else
-                              (unrecognized-command)))))
+                              (unrecognized-command!)))))
                       (else
-                        (unrecognized-command)))))))))))
+                        (unrecognized-command!))))))))))))
     )
     (call! crude-input subscribe () x
-      (main main initial-room initial-wumpus initial-bats
+      (main! main! initial-room initial-wumpus initial-bats
                  initial-pits initial-arrows))))
