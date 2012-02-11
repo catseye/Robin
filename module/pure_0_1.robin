@@ -28,7 +28,7 @@
       (choose
         ((elem? expr args) #t)
         ((number? expr)    #t)
-        ((macro? expr)     #t)
+        ((macro? expr)     (has? (literal pure) expr))
         ((boolean? expr)   #t)
         ((empty? expr)     #t)
         ((pair? expr)
@@ -39,7 +39,7 @@
           (bind val (lookup expr env)
             (if (equal? val ())
               #f
-              (self self env args (head val)))))
+              (self self env args (tail (head val))))))
         (else            #f))))
     (pure? (fun (env args expr) (pure?-r pure?-r env args expr)))
     )
