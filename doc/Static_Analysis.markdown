@@ -60,14 +60,20 @@ that evaluation as we would any argument to any function.  A static
 analyzer can detect this case by checking what it knows about the values
 of the bindings we are passing to `eval`.
 
+And of course, it is always an option to punt.  There will always be
+terms that have some property, but which no static analyzer can prove
+have that property.  If it is simply too complex to prove some property
+of `macro` expressions, the static analyzer can always say it doesn't
+know; it is still useful on programs, or parts of programs, which do
+not contain `macro` expresions.
+
 Constructing Static Analyzers
 -----------------------------
 
 We can take the "static analyses are modules" paradigm quite far in
-Robin.  Since Robin allows metadata to be associated with each binding
-in an environment, we may record properties we have proved about names
-or values in the environment, and use these established properties to
-check further proofs of properties.
+Robin.  Since Robin allows metadata to be associated with every value,
+we may record properties we have proved about a value on that value,
+and use these established properties to check further proofs of properties.
 
 In other words, we can write Robin macros which statically check their
 contents, and only evaluate to a value if their contents pass that
@@ -91,8 +97,8 @@ between flexibility and confidence in correctness.
 I don't expect this will be easy, of course, but I do hope it is somehow
 possible.
 
-Where to Start?
----------------
+`pure`
+------
 
 Probably the most sensible place to start with all this is a macro which
 defines a function if and only if it can prove that the function has no
@@ -100,9 +106,7 @@ side-effects.  (Otherwise, it presumably raises an exception.)
 
 This goes along with the convention that the names of such functions end
 with `!`.  However, we'd like to ensure this at the level of values rather
-than names; in Robin, values have types, but names do not.  (It might be
-possible to use environment metadata to assign properties to names, as well
-as values, but I have not yet given this much thought.)
+than names; in Robin, values have types, but names do not.
 
 As described in the Style document, the only "side-effects" in Robin are
 spawning a process, sending a message to a process, and receiving a message
@@ -133,7 +137,18 @@ problem with this function per se.)  Having thus proven the expression
 to be pure, it evaluates the function value in the exact same way that
 `fun` would, then marks that value as `pure`.
 
-(Problem!  It's actually `bind` that's changing the environment here, so
-it's `bind` that has to know that the value is `pure`.  Either `pure-fun`
-has to communicate this fact to `bind`, or it's *values*, not just
-environments, that need to have metadata.)
+Then `bind` binds the identifier `perimeter` to this value, which has
+been marked as `pure`; so when we look up `perimeter` in this environment,
+we know it refers to a pure function.  We can use this information in
+subsequent checks, like:
+
+    (bind perimeter (pure-fun (w h) (* 2 (+ w h)))
+      (bind psquare (pure-fun (w) (perimeter w w))
+        ...))
+
+`constant`
+----------
+
+On top of this we can easily build another level of static analysis,
+`constant`.  An expression is constant if it is a literal, or if it
+an application of a pure, constant function to constant arguments.
