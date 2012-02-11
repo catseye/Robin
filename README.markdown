@@ -152,18 +152,14 @@ Plans
 ### Fundamental Semantics ###
 
 * Add an opaque type -- opaque values have internals that can only be
-  accessed inside the module in which they were created.
+  accessed inside the module in which they were created.  Actually, we
+  already have function values, and they're traditionally opaque; but
+  I'm not sure that solves the problem of them only being accessible
+  from the module in which they're defined.
 
 * Support qualifiers during module import.  Have identifiers be imported
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
-
-* Change the format of environments to allow the inclusion of an alist
-  on each binding which may hold *metadata* for that binding.  I suspect
-  this will serve as the groundwork for Robin's approach to static analysis:
-  static analysis is abstract interpretation, and abstract interpretation
-  is interpretation, simply over a different value domain (types, or what
-  have you.)
 
 ### Standard Modules ###
 
@@ -206,12 +202,36 @@ Plans
 
 * Some kind of macro for capturing the recursive function call pattern
   (like `letrec`, but not necessary to support mutual recursion.)  Possibly
-  called `bind-recur`.  Also `let-recur` could build on that.
+  called `bind-recur`.  Also `let-recur` could build on that.  Turn:
+
+    (bind-recur foo (fun (a b c)
+                      (if a
+                        (b c)
+                        (foo (bar a) b c))) ...)
+
+into
+
+    (bind foo
+      (bind foo-r (fun (self a b c)
+                    (if a
+                      (b c)
+                      (self self (bar a) b c)))
+        (fun (a b c) (foo-r foo-r a b c))) ...)
+
+Lack of a `gensym` will make this tricky.  We don't really have to
+bind `foo-r`, we can just repeat the definition of the recursive
+function; but I don't know how we can add the `self` parameter without
+potentially shadowing a user parameter also named `self`.
 
 * Use `subst-env` to implement `literal-with`, as a substitute for
   `quasiquote`, which works more like `let` (cf. `let-symbol`).  Also
   possibly `quasi-literal` which works more like Perl's embedded `$`
   variables.  (Extending this to embedded expressions is also possible.)
+
+* Work out the static analysis modules, `pure` and `constant` and `total`
+  and `typed` and so forth.  This is pretty difficult and open-ended, but
+  relies on the idea that static analysis is abstract interpretation, and
+  abstract interpretation is just interpretation over a different domain.
 
 ### Documentation ###
 
