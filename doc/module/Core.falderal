@@ -660,6 +660,17 @@ system.  For the sake of usability, the error should include a message which
 refers to the exception that triggered it, but this is not a strict
 requirement.
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
-|   (raise (literal (nasty-value . 999999))))
-? robin: uncaught exception: (nasty-value . 999999)
+| (robin (0 . 1) (core (0 . 1))
+|   (raise 999999))
+? robin: uncaught exception: 999999
+
+`raise`'s single argument may be any kind of value, but `raise` expects
+exactly one argument.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (raise))
+? robin: uncaught exception: (illegal-arguments)
+
+| (robin (0 . 1) (core (0 . 1))
+|   (raise 2 3 4))
+? robin: uncaught exception: (illegal-arguments 2 3 4)

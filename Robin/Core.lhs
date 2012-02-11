@@ -92,6 +92,7 @@ Core
 
 > robinRaise env ienv (Pair expr Null) cc =
 >     eval env ienv expr (\v -> raise ienv v)
+> robinRaise env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 Module Definition
 -----------------
