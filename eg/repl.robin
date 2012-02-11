@@ -6,7 +6,7 @@
   (let (
     (restricted-env
       (export pair head tail if equal? pair? macro? symbol? boolean?
-              number? subtract divide floor sign eval macro raise
+              number? subtract divide floor sign eval macro raise with has?
               literal fun bind let choose env))
     (input-loop
         (fun (self)
