@@ -1,0 +1,51 @@
+-> encoding: UTF-8
+
+Module `pure`
+=============
+
+-> Functionality "Interpret Robin Program" is implemented by
+-> shell command "bin/robin %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program"
+
+The `pure` module is an EXPERIMENTAL module for EXPERIMENTING with
+static analysis, namely to determine if functions cannot possibly have
+side-effects (are "pure") or not.
+
+`pure` re-exports everything in `core`, and a few things from `small`,
+but marked with `pure` in the metadata (except `eval` where this is far
+from a guarantee.)
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (has? (literal pure) head))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (has? (literal pure) tail))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (has? (literal pure) macro))
+= #t
+
+### `pure?` ###
+
+The first argument is an environment.  The second argument is a list
+of symbols which are the formal parameters of the function.  The third
+argument is a literal term which is the body of the function.
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure? (env) () (literal 4)))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure? (env) () (literal (subtract 4 5))))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure? (env) (literal (a b)) (literal (subtract a b))))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure? (env) (literal (a b)) (literal (send! (myself) 3))))
+= #f

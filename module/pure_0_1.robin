@@ -1,0 +1,50 @@
+(robin (0 . 1) (small (0 . 1) list (0 . 1) env (0 . 1))
+  ;''This is an EXPERIMENTAL module for EXPERIMENTING with
+     static analysis in Robin using metadata on values.''
+  (let (
+    (head     (with (literal pure) head))
+    (tail     (with (literal pure) tail))
+    (pair     (with (literal pure) pair))
+    (pair?    (with (literal pure) pair?))
+    (symbol?  (with (literal pure) symbol?))
+    (number?  (with (literal pure) number?))
+    (boolean? (with (literal pure) boolean?))
+    (macro?   (with (literal pure) macro?))
+    (subtract (with (literal pure) subtract))
+    (divide   (with (literal pure) divide))
+    (floor    (with (literal pure) floor))
+    (sign     (with (literal pure) sign))
+    (macro    (with (literal pure) macro))
+    (if       (with (literal pure) if))
+    (with     (with (literal pure) with))
+    (has?     (with (literal pure) has?))
+    (literal  (with (literal pure) literal))
+    (env      (with (literal pure) env))
+    (lookup (fun (x li)
+      (find
+        (fun (pr) (equal? (head pr) x))
+        li)))
+    (pure?-r (fun (self env args expr)
+      (choose
+        ((elem? expr args) #t)
+        ((number? expr)    #t)
+        ((macro? expr)     #t)
+        ((boolean? expr)   #t)
+        ((empty? expr)     #t)
+        ((pair? expr)
+          (if (self self env args (head expr))
+            (self self env args (tail expr))
+            #f))
+        ((symbol? expr)
+          (bind val (lookup expr env)
+            (if (equal? val ())
+              #f
+              (self self env args (head val)))))
+        (else            #f))))
+    (pure? (fun (env args expr) (pure?-r pure?-r env args expr)))
+    )
+    (export head tail pair pair? symbol? number? macro? boolean?
+            subtract divide floor sign macro if with has?
+            eval
+            literal env
+            pure?)))
