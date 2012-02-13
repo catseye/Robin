@@ -45,12 +45,31 @@
            value.  It should not make that assumption.  It could be a
            macro which does whatever with its arguments.  That makes the
            general case hard.  For now, we might need to be satisfied with
-           special-casing `macro` and `fun` here.''
+           special-casing `macro` and `fun` here.
+           
+           XXX This is badly written.''
         ((pair? expr)
-          ;''XXX do more special-casing here''
-          (if (self self env args (head expr))
-            (pure-args?-r pure-args?-r self env args (tail expr))
-            #f))
+          (let ((apply-expr    (head expr))
+                (maybe-applier (lookup apply-expr env))
+                (applier       (if (empty? maybe-applier) () (head maybe-applier))))
+            (choose
+              ((equal? applier ())
+                #f)
+              ((equal? apply-expr (literal macro)) ;XXX
+                ;''An expression which evaluates to a macro is pure,
+                   but see note on functions directly below.''
+                #t)
+              ((equal? apply-expr (literal fun)) ;XXX
+                ;''An expression which evaluates to a function is pure,
+                   but we may want to evaluate the function's body to see
+                   if it evaluates to a pure function.  This would be
+                   valuable in case the function is used later in the
+                   larger expression, i.e. (bind x (fun ...) (x y z))''
+                #t)
+              ((self self env args apply-expr)
+                (pure-args?-r pure-args?-r self env args (tail expr)))
+              (else
+                #f))))
         ((symbol? expr)
           (bind val (lookup expr env)
             (if (equal? val ())

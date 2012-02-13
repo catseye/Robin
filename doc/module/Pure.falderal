@@ -58,7 +58,13 @@ argument is a literal term which is the body of the function.
 |   (pure? (env) (literal (a b)) (literal (send! (myself) 3))))
 = #f
 
-A function which evaluates to an pure macro is pure.
+A function which evaluates to a pure built-in macro is pure.
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure? (env) (literal (foo)) (literal head)))
+= #t
+
+A function which evaluates to a pure macro is pure.
 
 | (robin (0 . 1) (pure (0 . 1))
 |   (pure? (env) (literal (foo)) (literal (macro (self args env) foo))))
@@ -70,4 +76,27 @@ function.  But, our purity prover doesn't understand this yet.
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
 |   (pure? (env) (literal (pid)) (literal (macro (self args env) (send! pid 3)))))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure? (env) (literal (pid)) (literal
+|     (pair (macro (self args env) pid)
+|           (macro (self args env) (send! pid 3))))))
+= #t
+
+An otherwise pure function which calls a pure function that it defines
+within itself is pure.
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure? (env) (literal (x)) (literal
+|     (bind y (macro (self args env) x)
+|       (y 123)))))
+= #t
+
+A function which applies one of its arguments is not pure, because its
+argument might not be pure.
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure? (env) (literal (x)) (literal
+|     (x 123))))
 = #f
