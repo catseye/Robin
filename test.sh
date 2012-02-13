@@ -17,4 +17,5 @@ falderal test doc/Robin.falderal \
               doc/module/CrudeIO.falderal \
               doc/module/Random.falderal \
               doc/module/Assert.falderal \
+              doc/module/Pure.falderal \
               doc/module/Miscellany.falderal
