@@ -44,15 +44,21 @@ passing it the tail of the pair.
 
 > eval env ienv (Pair applierExpr actuals) cc = do
 >     eval env ienv applierExpr (\applier ->
->         case applier of
+>         case (stripMetadata applier) of
 >             m@(Macro _ _ body) -> do
 >                 trace ienv m
->                 eval (makeMacroEnv env actuals m) ienv body cc
+>                 eval (makeMacroEnv env actuals (stripMetadata m)) ienv body cc
 >             b@(Builtin _ fun) -> do
 >                 trace ienv b
 >                 fun env ienv actuals cc
 >             other ->
 >                 raise ienv (Pair (Symbol "inapplicable-object") other))
+
+Evaluating something with metadata is the same as evaluating the same
+thing without metadata.
+
+> eval env ienv (Metadata _ e) cc =
+>     eval env ienv e cc
 
 Everything else just evaluates to itself.  Continue the current
 continuation with that value.
@@ -95,9 +101,12 @@ Assertions
 ----------
 
 > assert pred msg ienv expr cc =
->     case pred expr of
->         True -> cc expr
->         False -> raise ienv (Pair (Symbol msg) expr)
+>     let
+>         expr' = stripMetadata expr
+>     in
+>         case pred expr' of
+>             True -> cc expr'
+>             False -> raise ienv (Pair (Symbol msg) expr')
 
 > assertSymbol = assert (isSymbol) "expected-symbol"
 > assertBoolean = assert (isBoolean) "expected-boolean"

@@ -28,7 +28,7 @@ Core
 > equalP env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > predP pred env ienv (Pair e Null) cc = do
->     eval env ienv e (\x -> cc $ Boolean (pred x))
+>     eval env ienv e (\x -> cc $ Boolean $ pred $ stripMetadata x)
 > predP pred env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
 > symbolP = predP isSymbol
@@ -94,6 +94,18 @@ Core
 >     eval env ienv expr (\v -> raise ienv v)
 > robinRaise env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
 
+> robinWith env ienv (Pair metadataExpr (Pair expr Null)) cc =
+>     eval env ienv metadataExpr (\metadata ->
+>         eval env ienv expr (\value ->
+>             cc $ Metadata metadata value))
+> robinWith env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
+> hasP env ienv (Pair metadataExpr (Pair expr Null)) cc =
+>     eval env ienv metadataExpr (\metadata ->
+>         eval env ienv expr (\value ->
+>             cc $ Boolean $ hasMetadata metadata value))
+> hasP env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+
 Module Definition
 -----------------
 
@@ -119,5 +131,7 @@ Module Definition
 >         ("macro",    macro),
 >         ("eval",     robinEval),
 >         ("if",       robinIf),
+>         ("with",     robinWith),
+>         ("has?",     hasP),
 >         ("raise",    robinRaise)
 >       ]
