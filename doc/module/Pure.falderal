@@ -25,6 +25,14 @@ from a guarantee.)
 = #t
 
 | (robin (0 . 1) (pure (0 . 1))
+|   (has? (literal pure) pair))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (has? (literal pure) if))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1))
 |   (has? (literal pure) macro))
 = #t
 
@@ -49,6 +57,12 @@ argument is a literal term which is the body of the function.
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
 |   (pure? (env) (literal (a b)) (literal (send! (myself) 3))))
 = #f
+
+A function which evaluates to an pure macro is pure.
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure? (env) (literal (foo)) (literal (macro (self args env) foo))))
+= #t
 
 A function which evaluates to an impure macro is still pure, as long as
 the impure macro is determined entirely by the parameters to the pure
