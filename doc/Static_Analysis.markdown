@@ -129,13 +129,14 @@ of arguments as `fun`:
 
 `pure-fun` however, examines its second argument in detail before
 evaluating to a function value which implements this function.  It looks up
-the metadata for `*` in its environment, sees that `*` is pure, and
-continues.  It descends into the term, and sees that `2`, being a literal
-value, is pure; it sees that `+` is also pure; and it sees that `w` and
-`h` are arguments to the function.  (If these aren't pure, that's not a
-problem with this function per se.)  Having thus proven the expression
-to be pure, it evaluates the function value in the exact same way that
-`fun` would, then marks that value as `pure`.
+`*` in its environment, sees that there is metadata on the value referred
+to `*` that indicates that it is pure, and continues.  It descends into the
+term, and sees that `2`, being a literal value, is pure; it sees that `+`
+is also pure; and it sees that `w` and `h` are arguments to the function.
+(If these aren't pure, that's not a problem with this function per se.)
+Having thus proven the expression to be pure, it evaluates the function
+value in the exact same way that `fun` would, then adds metadata to that
+value that marks it as `pure`.
 
 Then `bind` binds the identifier `perimeter` to this value, which has
 been marked as `pure`; so when we look up `perimeter` in this environment,
@@ -146,9 +147,20 @@ subsequent checks, like:
       (bind psquare (pure-fun (w) (perimeter w w))
         ...))
 
+This is all well and good for functions, but for other macros, we may
+need to do more work.  Specifically, a macro like `fun` itself, which
+defines a custom syntax, might need to describe what their syntax is
+like, in their metadata, so that the purity analyzer can recognize them
+and process them correctly.
+
 `constant`
 ----------
 
 On top of this we can easily build another level of static analysis,
 `constant`.  An expression is constant if it is a literal, or if it
 an application of a pure, constant function to constant arguments.
+
+`constant` and `pure` actually feed back into each other, which makes
+this even more complex: the `eval`ing of a `constant` value inside a
+function may make that function `pure`, whereas if it is not a `constant`
+value, there might be no way to prove this.

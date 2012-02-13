@@ -24,6 +24,16 @@
       (find
         (fun (pr) (equal? (head pr) x))
         li)))
+    (pure-args?-r (fun (self pure?-r env args li)
+      (choose
+        ((empty? li)
+          #t)
+        ((pair? li)
+          (if (pure?-r pure?-r env args (head li))
+            (self self pure?-r env args (tail li))
+            #f))
+        (else
+          #f))))
     (pure?-r (fun (self env args expr)
       (choose
         ((elem? expr args) #t)
@@ -37,8 +47,9 @@
            general case hard.  For now, we might need to be satisfied with
            special-casing `macro` and `fun` here.''
         ((pair? expr)
+          ;''XXX do more special-casing here''
           (if (self self env args (head expr))
-            (self self env args (tail expr))
+            (pure-args?-r pure-args?-r self env args (tail expr))
             #f))
         ((symbol? expr)
           (bind val (lookup expr env)
