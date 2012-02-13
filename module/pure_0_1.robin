@@ -31,6 +31,11 @@
         ((macro? expr)     (has? (literal pure) expr))
         ((boolean? expr)   #t)
         ((empty? expr)     #t)
+        ;''XXX This assumes that this is an application of a functional
+           value.  It should not make that assumption.  It could be a
+           macro which does whatever with its arguments.  That makes the
+           general case hard.  For now, we might need to be satisfied with
+           special-casing `macro` and `fun` here.''
         ((pair? expr)
           (if (self self env args (head expr))
             (self self env args (tail expr))
