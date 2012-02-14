@@ -25,9 +25,15 @@ That is, functions have no side-effects, with the single exception of
 being able to send messages to, and receive messages from, other processes.
 All facilities of the operating system are modelled as such processes.
 
-Lastly, Robin supports a simple system of raising and handling exceptions.
-This helps define the semantics of otherwise undefined operations, such as
-trying to obtain the tail of a non-pair.
+Robin supports a simple system of raising and handling exceptions.  This
+helps define the semantics of otherwise undefined operations, such as trying
+to obtain the tail of a non-pair.
+
+Lastly, Robin unifies (to a degree) programming and static analysis.  The
+language itself defines very few rules of static correctness.  Static
+analyses are available in modules, just like any other kind of functionality,
+letting the programmer choose what level of pre-execution checking is applied
+to their code.
 
 [Erlang]:   http://erlang.org/
 [PicoLisp]: http://picolisp.com/
@@ -101,8 +107,8 @@ Documentation
 -------------
 
 Robin's fundamental semantics are documented in
-[doc/module/Robin.falderal](doc/module/Robin.falderal).  From there you
-will find links to documentation on each of the standard modules as well.
+[doc/Robin.falderal](doc/Robin.falderal).  From there you will find links
+to documentation on each of the standard modules as well.
 
 Goals
 -----
@@ -169,8 +175,7 @@ Plans
 
 * Establish (and enforce) conventions listed in the Style document.
 
-* Possibly add alist functions to the `list` module, or create a new `alist`
-  module for that purpose: `lookup`, `insert` (?), and `remove`.
+* Add more alist functions to the `list` module: `extend` and `remove`.
 
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
@@ -239,12 +244,13 @@ potentially shadowing a user parameter also named `self`.
 
 * Document the `arith` module.
 
+* Document `lookup` in the `list` module.
+
 * Document the "why" behind some of the design decisions.  Particularly,
   why S-expression based syntax, why import can only be done at the top
   level, tension between "trivially serializable" S-expressions (esp.
   when potentially shared between nodes, if messages and processes ever
-  get that far) and abstraction/modularity, how Robin might approach
-  static analysis, etc.
+  get that far) and abstraction/modularity, etc.
 
 * Document the literate Haskell implementation better -- right now it's
   pretty scant.
@@ -260,8 +266,9 @@ potentially shadowing a user parameter also named `self`.
   those tests which currently import `small`, although they may be pretty
   ugly expressed purely in `core` terms.
 
-* Have the tests only test those built-in modules which were selected for
-  inclusion during the build step.
+* Have the test runner know to only test those built-in modules which were
+  selected for inclusion during the build step.  (Write those options to
+  a text file which the test runner script reads.)
 
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)

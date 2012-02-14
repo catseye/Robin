@@ -1,7 +1,9 @@
 Robin's Approach to Static Analysis
 ===================================
 
-This document is a draft.
+This document is a draft.  It contains a bunch of not-necessarily
+well-integrated notes on how Robin approaches the problem of static
+analysis.
 
 Static Analysis
 ---------------
@@ -97,66 +99,70 @@ between flexibility and confidence in correctness.
 I don't expect this will be easy, of course, but I do hope it is somehow
 possible.
 
+Some Implications of this Approach
+----------------------------------
+
+The "static" in "static analysis" means that the code is analyzed without
+running it; it does not strictly mean that it happens *before the code is
+run*.  Since, in Robin, you (the programmer) write static analyzers in
+Robin, then it's your responsibility to make sure they run when you want
+them to run (and yes, typically this will be before the code itself is
+run; otherwise you might as well just not have any static analysis, and
+wait for incorrect code to crash when it runs.)
+
+Fortuitously, there is a convenient time to run static analyses on a
+module -- when that module is imported.  The code to construct the
+environment exported by the module needs to run at that point anyway, and
+the static analysis might as well run then too.  This also means that
+statically analyzing a set of a modules is as simple as constructing a
+test program which simply imports all of those modules; if any of them
+fail static analysis, an exception will be thrown at import time:
+
+    (robin (0 . 1) (foo (0 . 1) bar (0 . 1) baz (0 . 1))
+      #t)
+
+Another implication of running static analyzers "in" the code they are
+statically analyzing -- and this relates to having the option to punt --
+is that they, like the rest of your program, may not be perfect.  In the
+end, they are constructed from the same goo as the rest of your program,
+and to have confidence that those goo formations do what you expect them
+to, you should have tests for them.  If a static analyzer is imperfect,
+this just means you can't rely on it as heavily as you could if it was
+perfect; it doesn't mean you can't still use it.  When you think about it,
+the static analyzer in some Java compiler you're using might contain a bug,
+too, but such a bug might be harder for you to fix, what with that compiler
+possibly being written in a different language.  (The flip side of this is
+that Robin's static analyzers ought, in some cases at least, to be able to
+analyze themselves easily -- leading to better confidence that the analyzers
+themselves are correct.)
+
+Concrete Applications
+---------------------
+
+Let's provide an overview of some of the possible concrete applications of
+static analysis in Robin.
+
 `pure`
 ------
 
-Probably the most sensible place to start with all this is a macro which
-defines a function if and only if it can prove that the function has no
-side-effects.  (Otherwise, it presumably raises an exception.)
+A macro is referentially transparent if, for every set of possible particular
+actual arguments, it always evaluates to the same particular result value.
 
-This goes along with the convention that the names of such functions end
-with `!`.  However, we'd like to ensure this at the level of values rather
-than names; in Robin, values have types, but names do not.
+"Referentially transparent" is a bit of a mouthful, so in Robin, we (for
+better or worse) call macros with this property *pure*.
 
-As described in the Style document, the only "side-effects" in Robin are
-spawning a process, sending a message to a process, and receiving a message
-from a process, and these can be distinguished at a lower level than simply
-"might this have side-effects or not".  But for now, for simplicitly, I'm
-going to glom them all together under this banner.
+There is a convention that macros that are not pure are bound to names that
+end with an exclamation point (`!`).  However, this is a convention, and so
+is not enforced; also, purity analysis deals with the values themselves, not
+the names they may or may not be bound to.
 
-One problem I've faced is finding a succinct adjective to describe functions
-which can not possibly cause side-effects.  "Referentially transparent" is
-one of the more official adjectives, but it's far too long.  I've
-provisionally settled on *pure*, even though it is far from the most
-descriptive word.
-
-So we can imagine our static analyzer, with its provisional name, like so.
-We can define a macro called, say, `pure-fun`.  It accepts the same kinds
-of arguments as `fun`:
-
-    (bind perimeter (pure-fun (w h) (* 2 (+ w h)))
-        ...)
-
-`pure-fun` however, examines its second argument in detail before
-evaluating to a function value which implements this function.  It looks up
-`*` in its environment, sees that there is metadata on the value referred
-to `*` that indicates that it is pure, and continues.  It descends into the
-term, and sees that `2`, being a literal value, is pure; it sees that `+`
-is also pure; and it sees that `w` and `h` are arguments to the function.
-(If these aren't pure, that's not a problem with this function per se.)
-Having thus proven the expression to be pure, it evaluates the function
-value in the exact same way that `fun` would, then adds metadata to that
-value that marks it as `pure`.
-
-Then `bind` binds the identifier `perimeter` to this value, which has
-been marked as `pure`; so when we look up `perimeter` in this environment,
-we know it refers to a pure function.  We can use this information in
-subsequent checks, like:
-
-    (bind perimeter (pure-fun (w h) (* 2 (+ w h)))
-      (bind psquare (pure-fun (w) (perimeter w w))
-        ...))
-
-This is all well and good for functions, but for other macros, we may
-need to do more work.  Specifically, a macro like `fun` itself, which
-defines a custom syntax, might need to describe what their syntax is
-like, in their metadata, so that the purity analyzer can recognize them
-and process them correctly.
+For more information on `pure`, see [the documentation for the `pure`
+module](module/Pure.falderal).
 
 `constant`
 ----------
 
-On top of this we can easily build another level of static analysis,
+On top of `pure` we can easily build another level of static analysis,
 `constant`.  An expression is constant if it is a literal, or if it
 an application of a pure, constant function to constant arguments.
 
@@ -164,3 +170,11 @@ an application of a pure, constant function to constant arguments.
 this even more complex: the `eval`ing of a `constant` value inside a
 function may make that function `pure`, whereas if it is not a `constant`
 value, there might be no way to prove this.
+
+`total`
+-------
+
+A macro is total if it always terminates.  In the general case, this is
+undecidable.  However, it is not too difficult to analyze a macro and
+determine that it is primitive recursive, and all primitive recursive
+functions are total.
