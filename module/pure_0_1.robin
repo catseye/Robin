@@ -1,5 +1,4 @@
-(robin (0 . 1) (small (0 . 1) list (0 . 1) env (0 . 1)
-                concurrency (0 . 1) crude-io (0 . 1))
+(robin (0 . 1) (small (0 . 1) list (0 . 1) env (0 . 1))
   ;''This is an EXPERIMENTAL module for EXPERIMENTING with
      static analysis in Robin using metadata on values.''
   (let (
@@ -22,10 +21,6 @@
     (literal  (with (literal pure) literal))
     (env      (with (literal pure) env))
     (fun      (with (literal definer) (with (literal pure) fun)))
-    (lookup (fun (x li)
-      (find
-        (fun (pr) (equal? (head pr) x))
-        li)))
     (pure-args?-r (fun (self pure?-r env args li)
       (choose
         ((empty? li)
@@ -45,12 +40,8 @@
         ((empty? expr)     #t)
         ;''XXX The following is badly written.''
         ((pair? expr)
-          (let ((apply-expr    (head expr))
-                (maybe-applier (lookup apply-expr env))
-                (applier       (if (empty? maybe-applier) () (head maybe-applier))))
-            ;(call! crude-output write
-              (list apply-expr applier (has? (literal pure) applier))
-              foo)
+          (let ((apply-expr (head expr))
+                (applier    (lookup apply-expr () env)))
             (choose
               ((equal? applier ())
                 #f)
@@ -72,10 +63,10 @@
               (else
                 #f))))
         ((symbol? expr)
-          (bind val (lookup expr env)
+          (bind val (lookup expr () env)
             (if (equal? val ())
               #f
-              (self self env args (tail (head val))))))
+              (self self env args val))))
         (else            #f))))
     (pure? (fun (env args expr) (pure?-r pure?-r env args expr)))
     (pure? (with (literal pure) pure?))

@@ -112,6 +112,14 @@
             (self self (tail li) (self self (head li) acc))
             (self self (tail li) (pair (head li) acc)))))
         (reverse (flatten-r flatten-r li ())))))
+    (lookup (fun (id def li)
+      (bind lookup-r (fun (self id def li)
+        (if (empty? li)
+          def
+          (if (equal? id (head (head li)))
+            (tail (head li))
+            (self self id def (tail li)))))
+        (lookup-r lookup-r id def li))))
     )
     (list
       (pair (literal list) list)
@@ -133,6 +141,7 @@
       (pair (literal last) last)
       (pair (literal prefix?) prefix?)
       (pair (literal flatten) flatten)
+      (pair (literal lookup) lookup)
     )
   )
 )

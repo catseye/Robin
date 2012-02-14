@@ -801,7 +801,7 @@ Metadata is retained in macros.
 |   (bind whee
 |     (macro (self args env)
 |       (pair (head (head env))
-|             (has? 7 (head (head env)))))
+|             (has? 7 (tail (head env)))))
 |     (bind r (with 7 #f)
 |       (whee))))
 = (r . #t)
