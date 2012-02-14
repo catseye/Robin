@@ -97,6 +97,23 @@ within itself is pure.
 |       (y 123)))))
 = #t
 
+An otherwise pure function which calls an impure function that it defines
+within itself is not pure.
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure? (env) (literal (pid)) (literal
+|     (bind y (macro (self args env) (send! pid 3))
+|       (y)))))
+= #f
+
+An otherwise pure function which simply binds something that it does not use
+is still pure.
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure? (env) (literal (x)) (literal
+|     (bind y 23 x))))
+= #t
+
 A function which applies one of its arguments is not pure, because its
 argument might not be pure.
 

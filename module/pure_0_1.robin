@@ -19,6 +19,7 @@
     (with     (with (literal pure) with))
     (has?     (with (literal pure) has?))
     (literal  (with (literal pure) literal))
+    (bind     (with (literal binder) (with (literal pure) bind)))
     (env      (with (literal pure) env))
     (fun      (with (literal definer) (with (literal pure) fun)))
     (pure-args?-r (fun (self pure?-r env args li)
@@ -45,15 +46,33 @@
             (choose
               ((equal? applier ())
                 #f)
+              ((has? (literal binder) applier)
+                ;''When analyzing a `bind` expression, we analyze the value
+                   being bound to see if it, too, is pure or not.  We then
+                   extend the environment with a value for the bound
+                   identifier; this value is a dummy value, but it does
+                   carry the appropriate metadata, so it correctly detects
+                   if the value is pure or not, if it subsequently used.''
+                (let
+                  ((ident       (head (tail expr)))
+                   (bound-expr  (head (tail (tail expr))))
+                   (body-expr   (head (tail (tail (tail expr)))))
+                   (bound-pure  (self self env args bound-expr))
+                   (placeholder (if bound-pure (with (literal pure) 888) 888))
+                   (new-env     (pair (pair ident placeholder) env))
+                  )
+                  (self self new-env args body-expr)))
               ((has? (literal definer) applier)
-                ;''An expression which evaluates to a function (or macro)
-                   is pure, but we may want to evaluate the function's (or
-                   macro's) body to see if it evaluates to a pure function
+                ;''A "definer" expression (such as `macro` or `fun`), which
+                   simply evaluates to a macro value of some kind, is pure.
+                   
+                   XXX We will still want to evaluate the body of the
+                   definition, to see if it evaluates to a pure function
                    (or macro).  This will be valuable in case the function
                    (or macro) is used later in the larger expression, i.e.
-                   (bind x (fun ...) (x y z))  I guess we might do that in
+                   (bind x (fun ...) (x y z))  We might do that in
                    bind itself, though.''
-                #t)
+                (self self env args apply-expr))
               ((self self env args apply-expr)
                 ;''XXX We should only do this if the applier in question
                    is a function (or function-like.)  It may be a macro
@@ -74,5 +93,5 @@
     (export head tail pair pair? symbol? number? macro? boolean?
             subtract divide floor sign macro if with has?
             eval
-            literal env fun
+            literal env fun bind
             pure?)))
