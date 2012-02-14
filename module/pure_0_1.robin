@@ -1,4 +1,5 @@
-(robin (0 . 1) (small (0 . 1) list (0 . 1) env (0 . 1))
+(robin (0 . 1) (small (0 . 1) list (0 . 1) env (0 . 1)
+                concurrency (0 . 1) crude-io (0 . 1))
   ;''This is an EXPERIMENTAL module for EXPERIMENTING with
      static analysis in Robin using metadata on values.''
   (let (
@@ -14,12 +15,13 @@
     (divide   (with (literal pure) divide))
     (floor    (with (literal pure) floor))
     (sign     (with (literal pure) sign))
-    (macro    (with (literal pure) macro))
+    (macro    (with (literal definer) (with (literal pure) macro)))
     (if       (with (literal pure) if))
     (with     (with (literal pure) with))
     (has?     (with (literal pure) has?))
     (literal  (with (literal pure) literal))
     (env      (with (literal pure) env))
+    (fun      (with (literal definer) (with (literal pure) fun)))
     (lookup (fun (x li)
       (find
         (fun (pr) (equal? (head pr) x))
@@ -41,32 +43,31 @@
         ((macro? expr)     (has? (literal pure) expr))
         ((boolean? expr)   #t)
         ((empty? expr)     #t)
-        ;''XXX This assumes that this is an application of a functional
-           value.  It should not make that assumption.  It could be a
-           macro which does whatever with its arguments.  That makes the
-           general case hard.  For now, we might need to be satisfied with
-           special-casing `macro` and `fun` here.
-           
-           XXX This is badly written.''
+        ;''XXX The following is badly written.''
         ((pair? expr)
           (let ((apply-expr    (head expr))
                 (maybe-applier (lookup apply-expr env))
                 (applier       (if (empty? maybe-applier) () (head maybe-applier))))
+            ;(call! crude-output write
+              (list apply-expr applier (has? (literal pure) applier))
+              foo)
             (choose
               ((equal? applier ())
                 #f)
-              ((equal? apply-expr (literal macro)) ;XXX
-                ;''An expression which evaluates to a macro is pure,
-                   but see note on functions directly below.''
-                #t)
-              ((equal? apply-expr (literal fun)) ;XXX
-                ;''An expression which evaluates to a function is pure,
-                   but we may want to evaluate the function's body to see
-                   if it evaluates to a pure function.  This would be
-                   valuable in case the function is used later in the
-                   larger expression, i.e. (bind x (fun ...) (x y z))''
+              ((has? (literal definer) applier)
+                ;''An expression which evaluates to a function (or macro)
+                   is pure, but we may want to evaluate the function's (or
+                   macro's) body to see if it evaluates to a pure function
+                   (or macro).  This will be valuable in case the function
+                   (or macro) is used later in the larger expression, i.e.
+                   (bind x (fun ...) (x y z))  I guess we might do that in
+                   bind itself, though.''
                 #t)
               ((self self env args apply-expr)
+                ;''XXX We should only do this if the applier in question
+                   is a function (or function-like.)  It may be a macro
+                   which does anything it wants to the args.  This would
+                   be harder to analyze in the general case.''
                 (pure-args?-r pure-args?-r self env args (tail expr)))
               (else
                 #f))))
@@ -77,9 +78,10 @@
               (self self env args (tail (head val))))))
         (else            #f))))
     (pure? (fun (env args expr) (pure?-r pure?-r env args expr)))
+    (pure? (with (literal pure) pure?))
     )
     (export head tail pair pair? symbol? number? macro? boolean?
             subtract divide floor sign macro if with has?
             eval
-            literal env
+            literal env fun
             pure?)))

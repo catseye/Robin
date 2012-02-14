@@ -787,3 +787,21 @@ Testing for equality ignores metadata.
 | (robin (0 . 1) (core (0 . 1))
 |   (has? #t (head (pair (with #t 4) 5))))
 = #t
+
+Binding retains metatdata.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind q (with (literal gee) 77)
+|     (has? (literal gee) q)))
+= #t
+
+Metadata is retained in macros.
+
+| (robin (0 . 1) (small (0 . 1))
+|   (bind whee
+|     (macro (self args env)
+|       (pair (head (head env))
+|             (has? 7 (head (head env)))))
+|     (bind r (with 7 #f)
+|       (whee))))
+= (r . #t)

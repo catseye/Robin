@@ -36,6 +36,10 @@ from a guarantee.)
 |   (has? (literal pure) macro))
 = #t
 
+| (robin (0 . 1) (pure (0 . 1))
+|   (has? (literal pure) fun))
+= #t
+
 ### `pure?` ###
 
 The first argument is an environment.  The second argument is a list
@@ -87,7 +91,7 @@ function.  But, our purity prover doesn't understand this yet.
 An otherwise pure function which calls a pure function that it defines
 within itself is pure.
 
-| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+| (robin (0 . 1) (pure (0 . 1))
 |   (pure? (env) (literal (x)) (literal
 |     (bind y (macro (self args env) x)
 |       (y 123)))))
@@ -96,7 +100,7 @@ within itself is pure.
 A function which applies one of its arguments is not pure, because its
 argument might not be pure.
 
-| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+| (robin (0 . 1) (pure (0 . 1))
 |   (pure? (env) (literal (x)) (literal
 |     (x 123))))
 = #f
