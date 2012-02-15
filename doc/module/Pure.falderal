@@ -55,7 +55,7 @@ from a guarantee.)
 
 Purity analysis is implemented with two main predicates.  The first,
 `pure-expr?`, checks if an expression is pure -- that no side-effects
-occur during its evaluation.  The second, `pure-macro?`, checks if an
+occur during its evaluation.  The second, `pure-macro-defn?`, checks if an
 expression evaluates to a macro which is pure.
 
 These two functions call each other in mutual recursion.  An expression
@@ -123,7 +123,8 @@ the impure macro is determined entirely by the parameters to the pure
 function.
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
-|   (pure-expr? (env) (literal (pid)) (literal (macro (self args env) (send! pid 3)))))
+|   (pure-expr? (env) (literal (pid)) (literal
+|      (macro (self args env) (send! pid 3)))))
 = #t
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
@@ -164,6 +165,14 @@ Even if it was bound to a name first.
 |       (y)))))
 = #f
 
+If we bind a name to an impure expression, the function is not pure, even
+if it doesn't use the name.
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure-expr? (env) (literal (pid)) (literal
+|      (bind n (send! pid 3) pid))))
+= #f
+
 A function which applies one of its arguments is not pure, because its
 argument might not be pure.
 
@@ -172,7 +181,7 @@ argument might not be pure.
 |     (x 123))))
 = #f
 
-### `pure-macro?` ###
+### `pure-macro-defn?` ###
 
 TBW
 
