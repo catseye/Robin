@@ -22,17 +22,17 @@
     (bind     (with (literal binder) (with (literal pure) bind)))
     (env      (with (literal pure) env))
     (fun      (with (literal definer) (with (literal pure) fun)))
-    (pure-args?-r (fun (self pure?-r env args li)
+    (pure-args?-r (fun (self pure-expr?-r env args li)
       (choose
         ((empty? li)
           #t)
         ((pair? li)
-          (if (pure?-r pure?-r env args (head li))
-            (self self pure?-r env args (tail li))
+          (if (pure-expr?-r pure-expr?-r env args (head li))
+            (self self pure-expr?-r env args (tail li))
             #f))
         (else
           #f))))
-    (pure?-r (fun (self env args expr)
+    (pure-expr?-r (fun (self env args expr)
       (choose
         ((elem? expr args) #t)
         ((number? expr)    #t)
@@ -87,11 +87,10 @@
               #f
               (self self env args val))))
         (else            #f))))
-    (pure? (fun (env args expr) (pure?-r pure?-r env args expr)))
-    (pure? (with (literal pure) pure?))
+    (pure-expr? (fun (env args expr) (pure-expr?-r pure-expr?-r env args expr)))
     )
     (export head tail pair pair? symbol? number? macro? boolean?
             subtract divide floor sign macro if with has?
             eval
             literal env fun bind
-            pure?)))
+            pure-expr?)))
