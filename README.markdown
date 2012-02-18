@@ -175,8 +175,6 @@ Plans
 
 * Establish (and enforce) conventions listed in the Style document.
 
-* Add more alist functions to the `list` module: `extend` and `remove`.
-
 * Write a `timer` module which exports a process which can be asked
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.
@@ -244,7 +242,7 @@ potentially shadowing a user parameter also named `self`.
 
 * Document the `arith` module.
 
-* Document `lookup` in the `list` module.
+* Document the alist functions in the `list` module.
 
 * Document the "why" behind some of the design decisions.  Particularly,
   why S-expression based syntax, why import can only be done at the top

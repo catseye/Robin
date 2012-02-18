@@ -45,12 +45,12 @@
         ((empty? expr)     #t)
         ;''XXX The following is badly written.''
         ((pair? expr)
-          (let ((apply-expr (head expr))
-                (applier    (lookup apply-expr () env)))
+          (let ((apply-expr    (head expr))
+                (maybe-applier (lookup apply-expr env)))
             (choose
-              ((equal? applier ())
+              ((equal? maybe-applier ())
                 #f)
-              ((has? (literal binder) applier)
+              ((has? (literal binder) (head maybe-applier))
                 ;''When analyzing a `bind` expression, we analyze the value
                    being bound to see if it, too, is pure or not.  We then
                    extend the environment with a value for the bound
@@ -70,7 +70,7 @@
                    (new-env     (pair (pair ident placeholder) env))
                   )
                   (self self new-env args body-expr)))
-              ((has? (literal definer) applier)
+              ((has? (literal definer) (head maybe-applier))
                 ;''A "definer" expression (such as `macro` or `fun`), which
                    simply evaluates to a macro value of some kind, is pure.
                    
@@ -78,8 +78,7 @@
                    definition, to see if it evaluates to a pure function
                    (or macro).  This will be valuable in case the function
                    (or macro) is used later in the larger expression, i.e.
-                   (bind x (fun ...) (x y z))  We might do that in
-                   bind itself, though.''
+                   (bind x (fun ...) (x y z))''
                 (self self env args apply-expr))
               ((self self env args apply-expr)
                 ;''XXX We should only do this if the applier in question
@@ -90,11 +89,12 @@
               (else
                 #f))))
         ((symbol? expr)
-          (bind val (lookup expr () env)
-            (if (equal? val ())
+          (bind maybe-val (lookup expr env)
+            (if (equal? maybe-val ())
               #f
-              (self self env args val))))
-        (else            #f))))
+              (self self env args (head maybe-val)))))
+        (else
+          #f))))
     (pure-expr? (fun (env args expr) (pure-expr?-r pure-expr?-r env args expr)))
     )
     (export head tail pair pair? symbol? number? macro? boolean?

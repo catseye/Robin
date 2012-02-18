@@ -567,3 +567,77 @@ sublists.
 | (robin (0 . 1) (small (0 . 1) list (0 . 1))
 |   (flatten (literal (1 2 . 3))))
 ? robin: uncaught exception: (expected-pair . 3)
+
+### `lookup` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (lookup (literal b) (literal ((a . 1) (b . 2) (c . 3)))))
+= (2)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (lookup (literal a) (literal ((a . 1) (a . 2) (a . 3)))))
+= (1)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (lookup (literal r) (literal ((a . 1) (b . 2) (c . 3)))))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (lookup (literal q) ()))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (lookup (literal q) 55))
+? robin: uncaught exception: (expected-pair . 55)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (lookup (literal q) (literal ((a . 7) 99 (q . 4)))))
+? robin: uncaught exception: (expected-pair . 99)
+
+### `extend` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (extend (literal b) 6 (literal ((a . 1) (b .2) (c .3)))))
+= ((b . 6) (a . 1) (b . 2) (c . 3))
+
+The following should be true for any identifier i and alist x.
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (let ((i (literal a))
+|         (x (literal ((f . 5) (g . 7)))))
+|     (lookup i (extend i 1 x))))
+= (1)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (extend (literal b) 6 81))
+= ((b . 6) . 81)
+
+### `delete` ###
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (delete (literal b) (literal ((a . 1) (b . 2) (c . 3)))))
+= ((a . 1) (c . 3))
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (delete (literal b) (literal ((a . 1) (b . 2) (c . 3) (b . 4)))))
+= ((a . 1) (c . 3))
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (delete (literal r) (literal ((a . 1) (b . 2) (c . 3)))))
+= ((a . 1) (b . 2) (c . 3))
+
+The following should be true for any identifier i and alist x.
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (let ((i (literal a))
+|         (x (literal ((a . 5) (b . 7)))))
+|     (lookup i (delete i x))))
+= ()
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (delete (literal q) 55))
+? robin: uncaught exception: (expected-pair . 55)
+
+| (robin (0 . 1) (small (0 . 1) list (0 . 1))
+|   (delete (literal q) (literal ((a . 7) 99 (q . 4)))))
+? robin: uncaught exception: (expected-pair . 99)
