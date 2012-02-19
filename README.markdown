@@ -199,6 +199,8 @@ Plans
   sets, with each operation ensuring the set elements are unique in
   the list.
 
+* Trying to `export` an unbound identifier should raise an exception.
+
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)

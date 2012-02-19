@@ -199,6 +199,34 @@ argument might not be pure.
 
 TBW
 
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure-macro-defn? (env) (literal
+|     (fun (a) a))))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure-macro-defn? (env) (literal
+|     head)))
+= #t
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure-macro-defn? (env) (literal
+|     (fun (a) (send! a a)))))
+= #f
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure-macro-defn? (env) (literal
+|     send!)))
+= #f
+
+This is actually pure, but too complex for us to analyze right now,
+so we pessimistically say no.
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure-macro-defn? (env) (literal
+|     ((head (pair fun ())) (a) a))))
+= #f
+
 ### `pure-fun` ###
 
 (This was copied from the Static Analysis doc and needs rewriting.)

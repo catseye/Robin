@@ -24,9 +24,6 @@
     (fun      (with (literal definer) (with (literal pure) fun)))
     (pure-macro-defn?-r (fun (self pure-expr?-r env expr)
       ;''XXX The following is badly written.''
-      ;''(fun (a) a) -> #t
-         head        -> #t
-         ((head (list fun) (a) a) -> too complex; we give an #f''
       (choose
         ((macro? expr)
           (has? (literal pure) expr))
@@ -125,6 +122,9 @@
         (else
           #f))))
     (pure-expr? (fun (env args expr) (pure-expr?-r pure-expr?-r env args expr)))
+    ;''The following is mainly for testing''
+    (pure-macro-defn? (fun (env expr)
+      (pure-macro-defn?-r pure-macro-defn?-r pure-expr?-r env expr)))
     )
     (export head tail pair pair? symbol? number? macro? boolean?
             subtract divide floor sign macro if with has?
