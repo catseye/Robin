@@ -22,11 +22,10 @@
     (bind     (with (literal binder) (with (literal pure) bind)))
     (env      (with (literal pure) env))
     (fun      (with (literal definer) (with (literal pure) fun)))
+    (dummy-fun (fun (x) x))
     (pure-fun-defn?-r (fun (self pure-expr?-r env expr)
       ;''XXX The following is badly written.''
       (choose
-        ((macro? expr)
-          (has? (literal pure) expr))
         ((pair? expr)
           (let ((apply-expr    (head expr))
                 (maybe-applier (lookup apply-expr env)))
@@ -39,9 +38,13 @@
                 #f))))
         ((symbol? expr)
           (bind maybe-val (lookup expr env)
-            (if (equal? maybe-val ())
-              #f
-              (self self pure-expr?-r env (head maybe-val)))))
+            (choose
+              ((equal? maybe-val ())
+                #f)
+              ((macro? (head maybe-val))
+                (has? (literal pure) (head maybe-val)))
+              (else
+                #f))))
         (else
           #f))))
     ;''TODO: can we replace this with an `all` fold?''
@@ -68,12 +71,13 @@
         ((empty? expr)     #t)
         ;''XXX The following is badly written.''
         ((pair? expr)
+          ;''If the head of the pair is an S-expr which represents a
+             pure fun, such as 'head' or '(fun (x) x)', then this
+             expression is pure if all of the actual arguments are
+             pure.  BUT -- first we must special-case some things.''
           (let ((apply-expr    (head expr))
-                ;''XXX we really shouldn't be lookup'ing here''
                 (maybe-applier (lookup apply-expr env)))
             (choose
-              ((pure-fun-defn?-r pure-fun-defn?-r self env apply-expr)
-                #t)
               ((equal? maybe-applier ())
                 #f)
               ((has? (literal binder) (head maybe-applier))
@@ -94,13 +98,13 @@
                        iff `pure-fun-defn?` is true for the
                        bound expression.''
                     (let
-                      ((bound-pure-macro
-                        ((pure-fun-defn?-r pure-fun-defn?-r
-                            self env bound-expr)))
+                      ((bound-pure-fun
+                        (pure-fun-defn?-r pure-fun-defn?-r
+                            self env bound-expr))
                        (placeholder
-                        (if bound-pure-macro
-                          (with (literal pure) 888)
-                          888))
+                        (if bound-pure-fun
+                          (with (literal pure) dummy-fun)
+                          dummy-fun))
                        (new-env
                          (extend ident placeholder env))
                        (body-expr
@@ -117,6 +121,8 @@
                    (or macro) is used later in the larger expression, i.e.
                    (bind x (fun ...) (x y z))''
                 (self self env args apply-expr))
+              ((pure-fun-defn?-r pure-fun-defn?-r self env apply-expr)
+                (pure-args?-r pure-args?-r self env args (tail expr)))
               ((self self env args apply-expr)
                 ;''XXX We should only do this if the applier in question
                    is a function (or function-like.)  It may be a macro

@@ -156,6 +156,13 @@ within itself is pure.
 |       ((fun (y) y) 123))))
 = #t
 
+(Unless of course, one of its actual arguments is not.)
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure-expr? (env) (literal (x)) (literal
+|       ((fun (y) y) (send! x 14)))))
+= #f
+
 Even if it uses closed-over identifiers.
 
 | (robin (0 . 1) (pure (0 . 1))
@@ -187,7 +194,7 @@ within itself is not pure.
 |     ((fun (j) (send! j 3)) pid))))
 = #f
 
-Even if that impure functions was bound to a name first.
+Even if that impure function was bound to a name first.
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
 |   (pure-expr? (env) (literal (pid)) (literal
@@ -219,6 +226,13 @@ TBW
 |   (pure-fun-defn? (env) (literal
 |     (fun (a) a))))
 = #t
+
+We don't do macros yet.
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure-fun-defn? (env) (literal
+|     (macro (self args env) args))))
+= #f
 
 | (robin (0 . 1) (pure (0 . 1))
 |   (pure-fun-defn? (env) (literal
