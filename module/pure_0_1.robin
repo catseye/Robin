@@ -85,17 +85,28 @@
                    if the value is pure or not, if it subsequently used.''
                 (let
                   ((ident       (head (tail expr)))
-                   (bound-expr  (head (tail (tail expr))))
-                   (body-expr   (head (tail (tail (tail expr)))))
-                   ;''XXX this should be: if the expr being bound isn't pure,
-                      return #f.  Otherwise, create the new environment with
-                      the placeholder; mark the placeholder as pure if
-                      `pure-macro-defn?` is true for the bound expr.''
-                   (bound-pure  (self self env args bound-expr))
-                   (placeholder (if bound-pure (with (literal pure) 888) 888))
-                   (new-env     (pair (pair ident placeholder) env))
-                  )
-                  (self self new-env args body-expr)))
+                   (bound-expr  (head (tail (tail expr)))))
+                  ;''If the expr being bound is pure...''
+                  (if (self self env args bound-expr)
+                    ;''Analyze the body in a new environment
+                       in which this identifier is bound to a
+                       placeholder; mark the placeholder as pure
+                       iff `pure-macro-defn?` is true for the
+                       bound expression.''
+                    (let
+                      ((bound-pure-macro
+                        ((pure-macro-defn?-r pure-macro-defn?-r
+                            self env bound-expr)))
+                       (placeholder
+                        (if bound-pure-macro
+                          (with (literal pure) 888)
+                          888))
+                       (new-env
+                         (extend ident placeholder env))
+                       (body-expr
+                        (head (tail (tail (tail expr))))))
+                      (self self new-env args body-expr))
+                    #f)))
               ((has? (literal definer) (head maybe-applier))
                 ;''A "definer" expression (such as `macro` or `fun`), which
                    simply evaluates to a macro value of some kind, is pure.
