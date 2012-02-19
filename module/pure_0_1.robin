@@ -22,7 +22,7 @@
     (bind     (with (literal binder) (with (literal pure) bind)))
     (env      (with (literal pure) env))
     (fun      (with (literal definer) (with (literal pure) fun)))
-    (pure-macro-defn?-r (fun (self pure-expr?-r env expr)
+    (pure-fun-defn?-r (fun (self pure-expr?-r env expr)
       ;''XXX The following is badly written.''
       (choose
         ((macro? expr)
@@ -72,7 +72,7 @@
                 ;''XXX we really shouldn't be lookup'ing here''
                 (maybe-applier (lookup apply-expr env)))
             (choose
-              ((pure-macro-defn?-r pure-macro-defn?-r self env apply-expr)
+              ((pure-fun-defn?-r pure-fun-defn?-r self env apply-expr)
                 #t)
               ((equal? maybe-applier ())
                 #f)
@@ -91,11 +91,11 @@
                     ;''Analyze the body in a new environment
                        in which this identifier is bound to a
                        placeholder; mark the placeholder as pure
-                       iff `pure-macro-defn?` is true for the
+                       iff `pure-fun-defn?` is true for the
                        bound expression.''
                     (let
                       ((bound-pure-macro
-                        ((pure-macro-defn?-r pure-macro-defn?-r
+                        ((pure-fun-defn?-r pure-fun-defn?-r
                             self env bound-expr)))
                        (placeholder
                         (if bound-pure-macro
@@ -134,11 +134,11 @@
           #f))))
     (pure-expr? (fun (env args expr) (pure-expr?-r pure-expr?-r env args expr)))
     ;''The following is mainly for testing''
-    (pure-macro-defn? (fun (env expr)
-      (pure-macro-defn?-r pure-macro-defn?-r pure-expr?-r env expr)))
+    (pure-fun-defn? (fun (env expr)
+      (pure-fun-defn?-r pure-fun-defn?-r pure-expr?-r env expr)))
     )
     (export head tail pair pair? symbol? number? macro? boolean?
             subtract divide floor sign macro if with has?
             eval
             literal env fun bind
-            pure-expr? pure-macro-defn?)))
+            pure-expr? pure-fun-defn?)))

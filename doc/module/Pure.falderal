@@ -12,8 +12,14 @@ The `pure` module is an EXPERIMENTAL module for EXPERIMENTING with
 static analysis, namely to determine if functions cannot possibly have
 side-effects (are "pure") or not.
 
-A macro is considered pure if, for every set of possible particular actual
-arguments, it always evaluates to the same particular result value.
+A function is considered pure if, for every set of possible particular
+actual arguments, it always evaluates to the same particular result value.
+
+We start by assuming most of the functions and macros in the `core` and
+`small` modules are pure (a justified assumption), and we analyze
+functions which are built up of those functions and macros.  (We will
+not try to analyze user-defined macros that aren't functions yet, because
+that is franklya little more difficult.)
 
 As described in the Style document, the only "side-effects" in Robin are
 spawning a process, sending a message to a process, and receiving a message
@@ -55,14 +61,14 @@ from a guarantee.)
 
 Purity analysis is implemented with two main predicates.  The first,
 `pure-expr?`, checks if an expression is pure -- that no side-effects
-occur during its evaluation.  The second, `pure-macro-defn?`, checks if an
-expression evaluates to a macro which is pure.
+occur during its evaluation.  The second, `pure-fun-defn?`, checks if an
+expression evaluates to a function which is pure.
 
 These two functions call each other in mutual recursion.  An expression
-which evaluates to an impure macro can still be pure, when no side-effects
-occur during the evaluation that results in the macro.  However, if an
-expression applies a macro that it defines, we need to check whether the
-macro has any side effects, to determine if the expression is pure.
+which evaluates to an impure function can still be pure, when no side-effects
+occur during the evaluation that results in the function.  However, if an
+expression applies a function that it defines, we need to check whether the
+function has any side effects, to determine if the expression is pure.
 
 Typically, user code would not call these predicates directly; instead
 it would use `pure-fun` to define functions, which would check them for
@@ -106,31 +112,40 @@ pure.
 |     (bind y (subtract x 23) (bind r 5 (subtract y r))))))
 = #t
 
-A function which evaluates to a pure built-in macro is pure.
+A function which evaluates to a pure built-in function is pure.
 
 | (robin (0 . 1) (pure (0 . 1))
 |   (pure-expr? (env) (literal (foo)) (literal head)))
 = #t
 
-A function which evaluates to a pure macro is pure.
+A function which evaluates to a pure function is pure.
 
 | (robin (0 . 1) (pure (0 . 1))
-|   (pure-expr? (env) (literal (foo)) (literal (macro (self args env) foo))))
+|   (pure-expr? (env) (literal (foo)) (literal (fun (x) x))))
 = #t
 
-A function which evaluates to an impure macro is still pure, as long as
-the impure macro is determined entirely by the parameters to the pure
+A function which evaluates to an impure function is still pure, as long as
+the impure function is determined entirely by the parameters to the pure
 function.
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
-|   (pure-expr? (env) (literal (pid)) (literal
-|      (macro (self args env) (send! pid 3)))))
+|   (pure-expr? (env) () (literal
+|      (fun (x) (send! x 3)))))
 = #t
+
+Even if it uses a closed-over identifier.
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
 |   (pure-expr? (env) (literal (pid)) (literal
-|     (pair (macro (self args env) pid)
-|           (macro (self args env) (send! pid 3))))))
+|      (fun (x) (send! pid x)))))
+= #t
+
+Even if it evaluates to multiple functions.
+
+| (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
+|   (pure-expr? (env) (literal (pid)) (literal
+|     (pair (fun () pid)
+|           (fun (x) (send! pid x))))))
 = #t
 
 An otherwise pure function which calls a pure function that it defines
@@ -141,25 +156,11 @@ within itself is pure.
 |       ((fun (y) y) 123))))
 = #t
 
-Even if it is a macro.
-
-| (robin (0 . 1) (pure (0 . 1))
-|   (pure-expr? (env) (literal (x)) (literal
-|       ((macro (self args env) args) 123))))
-= #t
-
 Even if it uses closed-over identifiers.
 
 | (robin (0 . 1) (pure (0 . 1))
 |   (pure-expr? (env) (literal (x)) (literal
 |       ((fun (y) x) 123))))
-= #t
-
-Even if it uses closed-over identifiers, and is a macro.
-
-| (robin (0 . 1) (pure (0 . 1))
-|   (pure-expr? (env) (literal (x)) (literal
-|       ((macro (self args env) x) 123))))
 = #t
 
 Even if it was bound to a name first.
@@ -170,11 +171,11 @@ Even if it was bound to a name first.
 |       (y 123)))))
 = #t
 
-Even if it was bound to a name first, and is a macro.
+Even if it was bound to a name first, and uses closed-over identifiers.
 
 | (robin (0 . 1) (pure (0 . 1))
 |   (pure-expr? (env) (literal (x)) (literal
-|     (bind y (macro (self args env) x)
+|     (bind y (fun (z) (pair x z))
 |       (y 123)))))
 = #t
 
@@ -183,15 +184,15 @@ within itself is not pure.
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
 |   (pure-expr? (env) (literal (pid)) (literal
-|     ((macro (self args env) (send! pid 3))))))
+|     ((fun (j) (send! j 3)) pid))))
 = #f
 
 Even if that impure functions was bound to a name first.
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
 |   (pure-expr? (env) (literal (pid)) (literal
-|     (bind y (macro (self args env) (send! pid 3))
-|       (y)))))
+|     (bind zap! (fun (j) (send! j 3))
+|       (zap! pid)))))
 = #f
 
 If we bind a name to an impure expression, the function is not pure, even
@@ -210,27 +211,27 @@ argument might not be pure.
 |     (x 123))))
 = #f
 
-### `pure-macro-defn?` ###
+### `pure-fun-defn?` ###
 
 TBW
 
 | (robin (0 . 1) (pure (0 . 1))
-|   (pure-macro-defn? (env) (literal
+|   (pure-fun-defn? (env) (literal
 |     (fun (a) a))))
 = #t
 
 | (robin (0 . 1) (pure (0 . 1))
-|   (pure-macro-defn? (env) (literal
+|   (pure-fun-defn? (env) (literal
 |     head)))
 = #t
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
-|   (pure-macro-defn? (env) (literal
+|   (pure-fun-defn? (env) (literal
 |     (fun (a) (send! a a)))))
 = #f
 
 | (robin (0 . 1) (pure (0 . 1) concurrency (0 . 1))
-|   (pure-macro-defn? (env) (literal
+|   (pure-fun-defn? (env) (literal
 |     send!)))
 = #f
 
@@ -238,7 +239,7 @@ This is actually pure, but too complex for us to analyze right now,
 so we pessimistically say no.
 
 | (robin (0 . 1) (pure (0 . 1))
-|   (pure-macro-defn? (env) (literal
+|   (pure-fun-defn? (env) (literal
 |     ((head (pair fun ())) (a) a))))
 = #f
 
