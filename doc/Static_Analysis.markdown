@@ -121,6 +121,15 @@ fail static analysis, an exception will be thrown at import time:
     (robin (0 . 1) (foo (0 . 1) bar (0 . 1) baz (0 . 1))
       #t)
 
+There is also room here for optimization.  If static analysis for a module
+happens at module-import time, the implementation, after successfully
+importing a module, can create an equivalent version of the module by
+replacing each instance of a checked function definition with an unchecked
+function definition.  This version will be weaker from an analysis
+perspective, but that won't matter, since the equivalent module has already
+been checked; and the weaker module will be more efficient, at least during
+import.
+
 Another implication of running static analyzers "in" the code they are
 statically analyzing -- and this relates to having the option to punt --
 is that they, like the rest of your program, may not be perfect.  In the
@@ -136,11 +145,36 @@ that Robin's static analyzers ought, in some cases at least, to be able to
 analyze themselves easily -- leading to better confidence that the analyzers
 themselves are correct.)
 
+Yet another implication is the impact this splitting off of static analysis
+from the language per se has on coding style.  Often, the simplest way to
+code a function does not handle errors well, or consistently.  Take, for
+example, `export`.  It would be useful, from a software engineering stand-
+point, to be made aware of when you're trying to `export` a binding which
+doesn't exist (maybe you made a typo.)  But the most straightforward way
+to implement `export` is as a `filter` over the environment.  Making
+`export` raise an exception if one of the identifiers you listed doesn't
+exist in the environment would mean adding a dynamic check to the
+implementation of `export` that roughly doubles its complexity.  It seems
+that the Robin approach would be to avoid that complexity and keep the
+definition of `export` simple, even though it is not quite as useful as it
+could be; and make up for it with a static analysis to catch such problems
+later on in the game.
+
 Concrete Applications
 ---------------------
 
 Let's provide an overview of some of the possible concrete applications of
 static analysis in Robin.
+
+`consistent`
+------------
+
+An expression is consistent if each identifier used in the expression is
+bound to some value in the environment in effect in the place that it is
+used.
+
+This is a fairly simple analysis (and probably should have been the one
+I started working on first, instead of `pure`.)
 
 `pure`
 ------

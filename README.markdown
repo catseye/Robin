@@ -199,8 +199,6 @@ Plans
   sets, with each operation ensuring the set elements are unique in
   the list.
 
-* Trying to `export` an unbound identifier should raise an exception.
-
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)
@@ -237,6 +235,12 @@ potentially shadowing a user parameter also named `self`.
   and `typed` and so forth.  This is pretty difficult and open-ended, but
   relies on the idea that static analysis is abstract interpretation, and
   abstract interpretation is just interpretation over a different domain.
+
+* Write a `bound` static analysis module which simply checks that
+  each identifier is bound in the environment in which it is used.
+
+* Write a static analyzer which detects trying to `export` an unbound
+  identifier, and raises an exception.
 
 ### Documentation ###
 

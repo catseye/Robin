@@ -123,6 +123,13 @@ expects its first argument to be a boolean.
 |   (if #t 7 8 9))
 ? robin: uncaught exception: (illegal-arguments #t 7 8 9)
 
+The identifiers named in the branch which is not evaluated need not be
+properly bound to values in the environment.
+
+| (robin (0 . 1) (core (0 . 1))
+|   (if #t 1 (pair fred ethel)))
+= 1
+
 ### `equal?` ###
 
 `equal?` evaluates both of its arguments to arbitrary S-expressions
