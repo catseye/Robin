@@ -22,10 +22,34 @@
     (bind     (with (literal binder) (with (literal pure) bind)))
     (env      (with (literal pure) env))
     (fun      (with (literal definer) (with (literal pure) fun)))
-    (pure-macro-defn?-r (fun (self pure-expr?-r env args expr)
-      ;''XXX to be written''
-      #t))
+    (pure-macro-defn?-r (fun (self pure-expr?-r env expr)
+      ;''XXX The following is badly written.''
+      ;''(fun (a) a) -> #t
+         head        -> #t
+         ((head (list fun) (a) a) -> too complex; we give an #f''
+      (choose
+        ((macro? expr)
+          (has? (literal pure) expr))
+        ((pair? expr)
+          (let ((apply-expr    (head expr))
+                (maybe-applier (lookup apply-expr env)))
+            (choose
+              ((equal? maybe-applier (list fun))
+                (let ((args (head (tail expr)))
+                      (body (head (tail (tail expr)))))
+                  (pure-expr?-r pure-expr?-r env args body)))
+              (else
+                #f))))
+        ((symbol? expr)
+          (bind maybe-val (lookup expr env)
+            (if (equal? maybe-val ())
+              #f
+              (self self pure-expr?-r env (head maybe-val)))))
+        (else
+          #f))))
     ;''TODO: can we replace this with an `all` fold?''
+    ;''TODO: instead of passing `args` here we should pre-extend
+       `env` with some dummy values with appropriate metadata''
     (pure-args?-r (fun (self pure-expr?-r env args li)
       (choose
         ((empty? li)
@@ -36,6 +60,8 @@
             #f))
         (else
           #f))))
+    ;''TODO: instead of passing `args` here we should pre-extend
+       `env` with some dummy values with appropriate metadata''
     (pure-expr?-r (fun (self env args expr)
       (choose
         ((elem? expr args) #t)
@@ -46,8 +72,11 @@
         ;''XXX The following is badly written.''
         ((pair? expr)
           (let ((apply-expr    (head expr))
+                ;''XXX we really shouldn't be lookup'ing here''
                 (maybe-applier (lookup apply-expr env)))
             (choose
+              ((pure-macro-defn?-r pure-macro-defn?-r self env apply-expr)
+                #t)
               ((equal? maybe-applier ())
                 #f)
               ((has? (literal binder) (head maybe-applier))

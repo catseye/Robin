@@ -138,6 +138,20 @@ within itself is pure.
 
 | (robin (0 . 1) (pure (0 . 1))
 |   (pure-expr? (env) (literal (x)) (literal
+|       ((fun (y) y) 123))))
+= #t
+
+Even if it is a macro.
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure-expr? (env) (literal (x)) (literal
+|       ((macro (self args env) args) 123))))
+= #t
+
+Even if it uses closed-over identifiers.
+
+| (robin (0 . 1) (pure (0 . 1))
+|   (pure-expr? (env) (literal (x)) (literal
 |       ((macro (self args env) x) 123))))
 = #t
 
