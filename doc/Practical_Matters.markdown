@@ -100,17 +100,29 @@ The basic principle here is that the existing APIs of most libraries are
 some other language (such as C), and instead of blindly wrapping them in a
 new language, the designer should at least *try* to make something nicer.
 
-This applies to very basic facilities as well as what are usually thought
-of as external libraries.  In particular, date and time manipulation should
-not, by default, simply copycat interfaces like `strftime`, and string
-formatting should not simply copycat `printf`.  (The programmer who really
-wants interfaces like these can always implement them as "compatibility
-modules" if they wish.)
+The abstractions should also recognize that modern computer systems are
+generally not resource-starved (or at least that truly high-level
+programming languages should not treat them that way.)
 
-The abstractions should recognize that modern computer systems are generally
-not resource-starved (or at least that truly high-level programming languages
-should not treat them that way.)  Specifically for date and time, all time
-data should be stored consistently, in GMT, always with a time zone.
+This applies to very basic facilities as well as what are usually thought
+of as external libraries.  Specifically,
+
+* Date and time: We can do better than simply copycatting interfaces like
+  `strftime`.  All time data should be stored consistently, in GMT, always
+  with a time zone.
+
+* String formatting: We can do better than simply copycatting interfaces
+  like `printf`.  We can use visual formatting strings, where fixed-size
+  slots appear as fixed-sized placeholders (of the same size) in the
+  formatting string.  (See also the scathing prog21 criticism of the
+  vertical tab character.)
+
+* Line-oriented communication: We can look at line-oriented communication
+  more generally, as a form of record-oriented communication where the
+  "delimiter set" for each record is {LF, CR, CRLF}.
+
+The programmer who really wants atavistic interfaces like those mentioned
+above can always implement them as "compatibility modules" if they wish.
 
 Serialization
 -------------
@@ -136,3 +148,16 @@ Multiple Environments
 - Lots of software runs in multiple environments - "development", "qa",
   "production"
 - Inherently support that idea
+
+Assertions
+----------
+
+(This section needs to be rewritten)
+
+- Software engineering is more about defining invariants than writing code.
+- An "assert" command which produces details errors in development, but only
+  logs warnings in production environments
+- Very lightweight so that programmers use it without thinking
+  (Python's `self.assertEqual()` is *not* lightweight)
+  (Erlang's `A = {foo,B}` IS lightweight)
+- So a conditional, by itself, is an assertion. (?)
