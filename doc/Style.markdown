@@ -26,6 +26,9 @@ Naming
 
 * Avoid jargon unless there is no clearer option.
 
+* Avoid bland, generic names unless your function is truly generic
+  itself.  Examples: `data`, `index`, `pick`, `content`.
+
 * Don't abbreviate unless the abbreviation is essentially unambiguous.
 
 * Referential transparency: still working this out, and probably
