@@ -22,11 +22,46 @@ Having had to make the design decisions behind Robin, I will try to document
 the major ones here, and the reasons behind them.  Of course, since Robin's
 design is still under development, many of these are subject to change.
 
-#### Should Robin be formally specified?
+#### Should Robin be rigorously specified?
 
 Decision: Absolutely.
 
+A rigorous specification of a language allows two things:
+
+* Proofs of properties of programs in the language.  Without a formal
+  semantics, this just isn't possible.  It should also be standardized
+  (that is, there should be an "official" definition): it's all well and
+  good to independently define "a formal semantics" for some programming
+  language, but if different programmers are using different formal
+  semantics for the same language, they can't exchange their proofs.
+
+* Commodification of implementations of the language.  Allowing
+  implementors to independently implement the same language leads to a
+  "marketplace" of implementations, which (under prevailing economic
+  theories, anyway) leads to higher quality implementations through
+  competition.
+
+#### Should Robin be defined with denotational semantics?
+
+Decision: No.
+
+It's inaccessible to most programmers, and it is essentially just
+another programming language, which is itself not perfectly well
+standardized.
+
 (Write more here)
+
+#### Should Robin be defined using multiple definition languages?
+
+Decision: Yes.
+
+The method of description should employ at least two descriptions in two
+language-describing languages.  This way, a form of "error-detecting
+code" applies: each description can be checked for consistency against the
+other.  (Using three languages would permit a form of "error-correcting
+code": whichever behavior is in at least two of the descriptions is
+considered official, and the third is considered erroneous.  But this is
+possibly too burdensome in practice.)
 
 #### Should Robin's syntax be based on S-expressions?
 
@@ -114,8 +149,12 @@ Decision: No.
 It's good to have roots, but there are limits.
 
 Lisp/Scheme names posess a lot of awfulness due to their legacy.
-'cdr' absolutely sucks as a name.  Unfortunately, things like 'tail'
-and 'snd' aren't standard replacements for it, yet.
+`cdr` absolutely sucks as a name.  Unfortunately, things like `tail`
+and `snd` aren't standard replacements for it, yet.  `lambda` is
+less offensive, but only because it's a widespread standard; there is
+nothing except Church's work that ties the Greek letter lambda to
+the idea of a function, and even that is, if you believe the folklore,
+mainly due to typesetting limitations he encountered in publishing.
 
 (Write more here)
 
