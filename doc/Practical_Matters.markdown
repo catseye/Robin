@@ -161,3 +161,19 @@ Assertions
   (Python's `self.assertEqual()` is *not* lightweight)
   (Erlang's `A = {foo,B}` IS lightweight)
 - So a conditional, by itself, is an assertion. (?)
+
+Interfaces
+----------
+
+(This section needs to be rewritten)
+
+One way or another, it should be possible to discover (programmatically,
+through reflection of some sort) the set of operations that a value supports --
+its interface.  Each operation has a name and a signature of some sort.
+
+Collections are interfaces.
+
+Some parts of an interface might be "private".  This -- information hiding --
+is obviously a somewhat complex topic.  The obvious bit is that information
+hiding is useful to prevent unintended changes to program state, but it also
+hinders debugging and testing.

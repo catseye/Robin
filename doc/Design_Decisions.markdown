@@ -22,10 +22,14 @@ Having had to make the design decisions behind Robin, I will try to document
 the major ones here, and the reasons behind them.  Of course, since Robin's
 design is still under development, many of these are subject to change.
 
-Syntax
-------
+#### Should Robin be formally specified?
 
-Question: Should Robin's syntax be based on S-expressions?  
+Decision: Absolutely.
+
+(Write more here)
+
+#### Should Robin's syntax be based on S-expressions?
+
 Decision: Yes -- but it should not be the *only* syntax.
 
 Robin, as it stands currently, is a "sugar-free" language.  Programs and
@@ -82,6 +86,43 @@ It would be translated by a pre-processing step to something like:
             1
             (bind r (self self (- x 1)) (* r x))))
           (* (fac fac 7) pi))))
+
+#### What should be in the core?
+
+Decision: A semantically minimal set of macros.
+
+I went back and forth before deciding what should be in the core and
+why.  One possibility was to make it the same as Pixley.  But macros
+would be added to it, and macros would need to be in the core (as they
+can't be written directly in Pixley), and once you have macros, a lot
+of the Pixley functions, like `let*` and `cond`, *can* be written in
+the language.  So, should they remain in the core?
+
+I decided no: the core would be simpler to implement and analyze
+without them.
+
+The only place where I waver on this currently is `fun`.  While `fun`
+*can* be defined as a macro, it is so basic to writing modules in
+Robin, that it is very tempting to place it in the core.  (The version
+defined as a macro is very inefficient, but of course the `small`
+module need not be implemented in Robin itself.)
+
+#### Should function names follow in the Lisp/Scheme tradition?
+
+Decision: No.
+
+It's good to have roots, but there are limits.
+
+Lisp/Scheme names posess a lot of awfulness due to their legacy.
+'cdr' absolutely sucks as a name.  Unfortunately, things like 'tail'
+and 'snd' aren't standard replacements for it, yet.
+
+(Write more here)
+
+If the programmer really wants Lisp/Scheme names, they can always
+define them in a "compatibility module".  In fact, I should probably
+expect this as inevitable, and accomodate it with an established
+convention...
 
 - - - - -
 
