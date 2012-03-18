@@ -124,6 +124,44 @@ of as external libraries.  Specifically,
 The programmer who really wants atavistic interfaces like those mentioned
 above can always implement them as "compatibility modules" if they wish.
 
+Seperation from the Implementation
+----------------------------------
+
+This is just a repeat of the above section in slightly different terms.
+
+A language should avoid tying any language construct (e.g. imports,
+include files) to the file system or the operating system.  Instead,
+have mappings between e.g. module names and where they live in the file
+system, and between our model of a running computer and a real OS.
+These mapping could be  specified in configuration files which are
+in the domain of the implementation and outside the domain of the
+language, i.e. they never appear in programs.
+
+Standard modules supplied with the language should expose *models* of
+commonplace artefacts out in the world, for example operating systems.
+The models are similar to the artefacts, in order that the burden of
+implementing an interface from the model to any given artefact is not
+too great.  However, the models are *not* the artefacts.  Programs
+should be written to the model, not to the artefact.
+
+People who construct bindings to the language should be encouraged
+(only because they can't effectively be required) to create models
+more abstract than the libraries that they are binding.
+
+Insofar as possible, we can have a compiler optimize things so that they
+match the underlying architecture.  The language should allows and even
+encourage definitions in the most general sense; special cases are to be
+detected and optimized when they occur, instead of instituting those
+special cases into the language itself.
+
+Another aspect of this point of philosophy is that it should be possible
+to specify and change the performance characteristics of the program
+(but ideally not its behaviour) from outside the program, using
+configuration files.
+
+This counts as a practical matter because maintaining code which is
+cluttered with implementation-specific artefacts is burdensome.
+
 Serialization
 -------------
 
@@ -177,3 +215,22 @@ Some parts of an interface might be "private".  This -- information hiding --
 is obviously a somewhat complex topic.  The obvious bit is that information
 hiding is useful to prevent unintended changes to program state, but it also
 hinders debugging and testing.
+
+Usability
+---------
+
+Memorization is not a good thing to make programmers do.  This can be
+addressed by either copying things from an existing language that the
+programmer base can be expected to already have memorized, or by providing
+a more orthogonal set of things which maps to the culture which programmers,
+as people, already live in.  (For example, few people in the Western world
+do not know that `&` means "and".)
+
+Non-alphabetic symbols should, idealy, have the same meaning regardless of
+the context they're used in -- in other words, the language should avoid
+using the same symbol for different purposes in different contexts.
+
+(Lots of languages are lacking here.  In C, `*` is both multiplication and
+dereferencing. In Python, `.` is both object attribute access and package
+hierarchy -- although packages are, at least, kind of like objects.  In Lua,
+`=` is both assignment and key value association.)

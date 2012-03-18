@@ -44,6 +44,25 @@ A rigorous specification of a language allows two things:
   theories, anyway) leads to higher quality implementations through
   competition.
 
+#### Should Robin's core language have a simple definition?
+
+Decision: Yes.
+
+Keeping the definition simple contributes to the same commodification goal
+listed above: it lowers the barriers to implementation.
+
+Providing a lot of useful things in the core does make some things handier
+for the programmer, but it does increase the effort to implement the
+langage (think of all the nooks and crannies of Perl.)  Instead, all these
+handy things should be packages in modules, which need not always be
+imported or used.
+
+Approaching this naively can lead to inefficiencies, however, as more
+advanced functionalities must be built up from simpler functionalities,
+and the "sufficiently clever compiler" that can optimize these is hard to
+come by.  So, if there are any measures we can take to mitigate this
+effect, without destroying simplicity -- we should investigate them.
+
 #### Should Robin be defined with denotational semantics?
 
 Decision: No.
@@ -72,6 +91,24 @@ possibly too burdensome in practice.)
 Given Haskell as one of the definition lanaguges, the logical choice here
 is Literate Haskell, with each part of the Haskell definition accompanied
 by a definition in (relatively formal) English.
+
+#### Should the language also be defined with conformancy tests?
+
+Decision: Yes.
+
+Of course, it's very difficult to compose tests which actually define a
+language.  You can't effectively test that such-and-such a program leads
+to an infinite loop, and you can't effectively test that such-and-such a
+program has the same behaviour on *any* of an infinite possible set of
+inputs.
+
+But, you can write tests that detect a finite number of points where an
+erroneous implementation fails to meet the definition.  And, you can
+execute these tests on a computer -- in the process of developing a new
+implementation, this can help a lot.  And, this brings the definition
+closer to being "in triplicate" and thus having some properties of an
+error-corrcting code.  So, conformancy tests should definitely be part of
+the language's documentation.
 
 Design Proper
 -------------
@@ -215,8 +252,8 @@ add it here.
 
 #### Should importing be done in the header, or by a function?
 
-Decision: In the header.
-Chance of changing: non-zero.
+Decision: In the header.  
+Chance of changing: Non-zero.
 
 Importing modules in the header is a form of statically declaring the
 dependencies of a program; if one of the modules isn't available on
@@ -274,3 +311,78 @@ the evaluator and/or type system.  Having an explicit, separate `if`
 lets `#t` and `#f` be more like plain symbols.  In fact, one day, they
 might be classified as such -- if I can grapple other design decisions
 in the way of that.
+
+#### Should Robin allow improper lists?
+
+Decision: Yes
+Chance of changing: Moderate.
+
+Drawing directly from the Lisp/Scheme tradition, and being supported by the
+idea that the core semantics should admit as much "goo" as possible ("it's
+not a language so much as it's a building material"), with static analysis,
+if desired, being layered on top of that -- improper lists are currently
+allowed in Robin.
+
+However, there are several points not in their favour, and I might remove
+them.
+
+* We may want to base everything on "goo", but we should want clean "goo".
+
+* You can always simulate an improper list with a proper list with some
+  kind of marker term at the end.
+
+* The very name "improper" should be a big hint that these constructs are
+  not clean.  (However, this argument could be regarded as sophistry.)
+
+* Various functions in the `list` module currently have slightly different
+  behaviour on proper versus improper lists.  Proper lists only would make
+  them more orthogonal.
+
+* Improper lists maybe have a place in history; when resources like memory
+  were scarce, they were a way of saving a cons cell.  However, this now
+  goes against treating resources as not scarce in order to have a more
+  abstract and elegant description of programs.
+
+* When you have both proper and improper lists, `list?` is O(n); with only
+  proper lists, `list?` is O(1), basically the same as `pair? or null?`.
+
+#### Should we require lists in syntax where they aren't strictly necessary?
+
+Decision: Sometimes yes, sometimes no.
+Chance of changing: High.
+
+This wasn't really a conscious decision, so much as something that should
+probably be cleaned up.
+
+By example: Scheme's `let*` requires that you put all the bindings in a list:
+
+    (let* ((a 1)
+           (b 2)
+           (c 3))
+       (foo a b c))
+
+That intermediate list isn't really necessary; the implementation of `let*`
+could just treat the last term as the expression to be evaluated in the new
+environment:
+
+    (let* (a 1)
+          (b 2)
+          (c 3)
+      (foo a b c))
+
+This is good under the theory "the fewer parentheses, the better", and this
+is not a bad theory.  Also, it is perhaps less efficient (because the
+implementation must look ahead to see if something is a binding or not), but
+again, resources should not be considered scarce; it can always be converted
+internally to something more efficient.
+
+But, Robin will one day have a more humane syntax, so that programmers won't
+have to deal with these forms unless they want to.  The intermediate list
+could also be seen as more orthogonal to the semantics (you really are
+working with a list of bindings, and you shouldn't overload the meanings of
+things in the list.)
+
+So: in the `(robin (0 1) ...)` form, there is no seperate list of module
+imports; but Robin's `let*` does have an intermediate list.  (On the other
+hand, `bind` doesn't need a list at all, obviating the issue.)  Generally,
+there is no consistency here yet, and one should probably be established.
