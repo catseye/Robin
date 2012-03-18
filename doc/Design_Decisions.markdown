@@ -22,6 +22,9 @@ Having had to make the design decisions behind Robin, I will try to document
 the major ones here, and the reasons behind them.  Of course, since Robin's
 design is still under development, many of these are subject to change.
 
+Meta-Design
+-----------
+
 #### Should Robin be rigorously specified?
 
 Decision: Absolutely.
@@ -49,7 +52,10 @@ It's inaccessible to most programmers, and it is essentially just
 another programming language, which is itself not perfectly well
 standardized.
 
-(Write more here)
+A much better choice is the programming language Haskell.  It is
+quite well defined, quite close to denotational semantics (in its
+pure form, anyway), and above all, executable -- leading immediately
+to a usable reference interpreter.
 
 #### Should Robin be defined using multiple definition languages?
 
@@ -62,6 +68,13 @@ other.  (Using three languages would permit a form of "error-correcting
 code": whichever behavior is in at least two of the descriptions is
 considered official, and the third is considered erroneous.  But this is
 possibly too burdensome in practice.)
+
+Given Haskell as one of the definition lanaguges, the logical choice here
+is Literate Haskell, with each part of the Haskell definition accompanied
+by a definition in (relatively formal) English.
+
+Design Proper
+-------------
 
 #### Should Robin's syntax be based on S-expressions?
 
@@ -142,6 +155,97 @@ Robin, that it is very tempting to place it in the core.  (The version
 defined as a macro is very inefficient, but of course the `small`
 module need not be implemented in Robin itself.)
 
+#### Should all programs be contained in some kind of header form?
+
+Decision: Yes.
+
+We want to be able to quickly identify what S-expressions are
+Robin programs, and what aren't, especially if we're using some of the
+same identifiers as other languages, like Scheme.  Also, this is a
+good place to specify the version of Robin in use, and a good place
+to import required modules.
+
+An alternative idea was some kind of meta-format called "Parts":
+
+    (parts (import (robin 1 0) ...)
+
+But "Parts" would not establish the deep semantics of the language
+(reduction order, etc.)  And subsequent imports might rely (heavily)
+on those semantics.  Meaning, imports would have to import fundamental
+semantics, and imports would depend on that being imported first,
+and, the result is just ugly.
+
+#### Should you have to import the core?
+
+Decision: Yes.
+
+This is actually a special case of a more general design decision,
+namely:
+
+#### Should modules be fine-grained?
+
+Decision: Yes.
+
+If modules are fine-grained, and only a few are truly required, the task
+of implementing (or porting) the language is much simpler.
+
+This applies as well to architectures that don't support all functions
+in all modules.  For example, clockless systems won't have a way to
+retrieve the current time of day.  *But*, such systems would still be
+capable of manipulate date and time values.  Therefore, those two sets
+of functions, though closely related, should not be bundled into the
+same module.
+
+It's true that it's annoying for the programmer to remember which
+module a function is in.  For this reason, we can have "umbrella modules"
+which simply re-export all the functions in a large set of standard
+modules -- assuming there are no name conflicts amongst them.
+
+More philosophically: if something is part of the core semantics of
+the language (like error codes,) should it be put in a module?  Largely
+I've been able to arrange things to avoid this issue.  For example, if
+`head` fails, it raises an exception if the implementation supports
+exceptions, otherwise it just aborts execution.  But, when when support
+for exceptions exists, if a raised exception is not caught, execution
+is aborted -- so the behaviour is compatible.  However, there are
+potentially other instances of "semantics for this are in the core, but
+you have to import this module to get at thim" -- I've seen them in
+other languages, and when I remember or re-find an example of it, I'll
+add it here.
+
+#### Should importing be done in the header, or by a function?
+
+Decision: In the header.
+Chance of changing: non-zero.
+
+Importing modules in the header is a form of statically declaring the
+dependencies of a program; if one of the modules isn't available on
+some system, it can instantly say "no, I can't run this."
+
+If there was instead a function to import modules, such a system would
+need to statically analyze the program to see if dependencies are met
+(see Python's `setuptools`).  When it can't figure that out exactly,
+which is inevitable, the program will break at some arbitrary point
+during execution.
+
+Also, importing via a function would require that the function to do
+the importing would be exported before everything else; in other words,
+`(robin (1 0) ...)` would need to export one function, `import`.  This
+is slightly un-orthogonal.
+
+The downside of statically declaring the modules in the header is that
+you might want to write a program which is somewhat flexible: if a
+particular module is available, it will take advantage of it, but if not,
+it will fall back to something perhaps less optimal but still usable.
+You can't do that in the current regime.
+
+However, there may be better ways to think about this, and they go back
+to ideas I had about Robin when it was in my mind more like an operating
+system.  The issue is often not the availability of a module but rather
+the availability of a resource; modules are, at best, definitions,
+rather than suppliers, of resources.  But, I will have to think about
+this more.
+
 #### Should function names follow in the Lisp/Scheme tradition?
 
 Decision: No.
@@ -156,13 +260,17 @@ nothing except Church's work that ties the Greek letter lambda to
 the idea of a function, and even that is, if you believe the folklore,
 mainly due to typesetting limitations he encountered in publishing.
 
-(Write more here)
-
 If the programmer really wants Lisp/Scheme names, they can always
-define them in a "compatibility module".  In fact, I should probably
-expect this as inevitable, and accomodate it with an established
-convention...
+define them in a "compatibility module".  (In fact, I should probably
+anticipate this, and accomodate it with an established convention.)
 
-- - - - -
+#### Should `#t` and `#f` be Church booleans?
 
-...more to come!...watch this space...
+Decision: No.
+
+While it's tempting in that it would allow us to not have `if` in the
+core, it just moves that complexity from `if`, a built-in macro, to
+the evaluator and/or type system.  Having an explicit, separate `if`
+lets `#t` and `#f` be more like plain symbols.  In fact, one day, they
+might be classified as such -- if I can grapple other design decisions
+in the way of that.
