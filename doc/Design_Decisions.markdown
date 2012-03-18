@@ -113,6 +113,15 @@ the language's documentation.
 Design Proper
 -------------
 
+#### Should Robin be a general-purpose language?
+
+Decision: Yes.
+
+Not much to say about this.  A general-purpose language with a module
+system, not to mention macros, can be customized for specific purposes.
+(We need to do more investigation into how "teleological contexts" and
+metadata on values can be leveraged for such purposes.)
+
 #### Should Robin's syntax be based on S-expressions?
 
 Decision: Yes -- but it should not be the *only* syntax.
@@ -297,6 +306,11 @@ nothing except Church's work that ties the Greek letter lambda to
 the idea of a function, and even that is, if you believe the folklore,
 mainly due to typesetting limitations he encountered in publishing.
 
+Just because programmers are familiar with a notation or concept is not
+enough of a reason to incorporate it into the language's foundation. At
+the same time, we'd obviously prefer not to alienate programmers
+completely (that's what esolangs are for!)
+
 If the programmer really wants Lisp/Scheme names, they can always
 define them in a "compatibility module".  (In fact, I should probably
 anticipate this, and accomodate it with an established convention.)
@@ -386,3 +400,24 @@ So: in the `(robin (0 1) ...)` form, there is no seperate list of module
 imports; but Robin's `let*` does have an intermediate list.  (On the other
 hand, `bind` doesn't need a list at all, obviating the issue.)  Generally,
 there is no consistency here yet, and one should probably be established.
+
+#### Should the language define static analyses?
+
+Decision: No, but it should accomodate it.
+
+This is a pretty subtle issue, which is explained more fully in the
+Static Analysis document.  But in short, to work towards the goal of
+keeping the language simple, we want to move things out of it, to modules
+and/or to implementation issues (such as configuration files), and one
+of the things we can move out is static analysis.
+
+At the same time, the language should be designed to accomodate static
+analyzers that are built on top of it, and some of those static analyzers
+should be standard.
+
+A language can define a type system without specifying that types should
+be checked statically.  However, if no thought is put into how easily the
+types of a program can be statically analyzed, this raises barriers to
+actually doing it.  Static analyzers in the world of scripting languages
+in particular are often an afterthought, and we want to try to minimize
+that effect.
