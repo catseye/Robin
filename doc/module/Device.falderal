@@ -1,0 +1,58 @@
+-> encoding: UTF-8
+
+Module `device`
+===============
+
+The `device` module (currently non-existant) exposes functionality for
+accessing devices on the running system.  The devices so acquired may
+be real or virtual (abstraction layers over real devices).  Virtual
+devices may include services which are not normally thought of as devices;
+they may have no direct real-world counterpart.
+
+The `device` module is probably going to be the sanctioned way to access
+all devices on the running system, from Robin.  Existing modules such as
+`crude-io` and `console` may be deprecated, or at least have their status
+changed (they may only describe the devices, not provide access to them.)
+
+-> Tests for shell command "bin/robin %(test-file)"
+
+### `acquire!` ###
+
+The `acquire!` macro accepts a list of device descriptors, and binds the
+given identifiers to pids.  Each pid identifies the process handling the
+device that was requested.  The devices are acquired atomically; if the
+system was not able to acquire any of the requested devices, none of the
+requested devices are acquired, and an exception is raised.
+
+A device descriptor is an identifier followed by a set (unordered list)
+of capabilities.  Each capability is (for now) a symbol, which refers to
+a required capability of the device.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) device (0 . 1))
+|   (acquire! (console (ascii colour addressable)
+|              foo ())
+|     (pair (pid? console) (pid? foo))))
+= #t
+
+Issues to consider: sharing of device access.  In both senses: does the
+device allow shared access, and can we copy this pid to another process
+and can it talk to it too.
+
+### `release!` ###
+
+The `release!` macro evaluates its one argument to a pid, then signals
+the device that it will no longer be used by this process.  Subsequent
+messages sent to the device pid from this process will be ignored.
+
+| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) device (0 . 1))
+|   (acquire! (console (ascii colour addressable))
+|     (release! console
+|       123)))
+= 123
+
+### `register!` ###
+
+The `register!` macro evaluates its arguments.  The first should be a
+pid of a running process; the second should be a set of capabilities
+that this process supports.  This allows Robin code to create new devices
+that can be accessed through the system.

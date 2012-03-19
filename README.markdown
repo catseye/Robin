@@ -17,23 +17,23 @@ Robin programs are homoiconic, and presented in a S-expression-based syntax.
 
 Instead of function values, Robin supplies _macros_ as the primitive
 abstraction.  Robin's macros are somewhat like PicoLisp's one-argument
-lambas -- they do not automatically evaluate their arguments.  Function
+lambdas -- they do not automatically evaluate their arguments.  Function
 values are built on top of macros, using the built-in macro `eval`.
 
 Like Erlang, Robin is purely functional except for message-passing.
 That is, functions have no side-effects, with the single exception of
 being able to send messages to, and receive messages from, other processes.
-All facilities of the operating system are modelled as such processes.
+All facilities of the underlying system are modelled as such processes.
 
 Robin supports a simple system of raising and handling exceptions.  This
 helps define the semantics of otherwise undefined operations, such as trying
 to obtain the tail of a non-pair.
 
 Lastly, Robin unifies (to a degree) programming and static analysis.  The
-language itself defines very few rules of static correctness.  Static
-analyses are available in modules, just like any other kind of functionality,
-letting the programmer choose what level of pre-execution checking is applied
-to their code.
+language itself defines essentially no rules of static correctness beyond
+the basic rules about syntax.  Static analyses are available in modules,
+just like any other kind of functionality, letting the programmer choose
+what level of pre-execution checking is applied to their code.
 
 [Erlang]:   http://erlang.org/
 [PicoLisp]: http://picolisp.com/
@@ -167,6 +167,12 @@ Plans
   from modules qualified by default, and have something to turn this off.
   Possibly support "only" and "hiding" qualifiers.
 
+* Have exceptions, by default, be chained together, to avoid "exception
+  translation".  If a program raises an exception while catching another
+  exception, the old exception(s) should be linked to from to the new
+  one.  This is to give more sensible error messages at the top level,
+  by dumping them all, giving the operator a deeper idea of what happened.
+
 ### Standard Modules ###
 
 * In the `concurrency` module, finalize the semantics for exception and
@@ -181,23 +187,8 @@ Plans
 
 * Enhance the `console` module.  Write demo(s) for it.
 
-* Write a `functional` module which exports some functions for working
-  with functions, such as `identity`, `compose`, and possibly `curry`
-  and `uncurry`.
-
 * In the `arith` module, make `sum` and `product` that work on lists.
   Possibly make `product` short-circuiting.  Possibly add `int-pow`.
-
-* Possibly make a `transcendental` module to contain `exp`, `pow`,
-  `log`, `sqrt`, and so forth.
-
-* Write a `trig` module which exports trigonometric functions `cos`,
-  `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Robin,
-  but it's a good candidate for implementing natively.
-
-* Write a `set` module which exports functions which treat lists as
-  sets, with each operation ensuring the set elements are unique in
-  the list.
 
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
@@ -226,6 +217,11 @@ bind `foo-r`, we can just repeat the definition of the recursive
 function; but I don't know how we can add the `self` parameter without
 potentially shadowing a user parameter also named `self`.
 
+An alternative which might be easier (but less elegant) would be to
+introduce a primitive `(self)` which evaluates to the function currently
+being evaluated.  This might make the `self` parameter to macros redundant,
+though.
+
 * Use `subst-env` to implement `literal-with`, as a substitute for
   `quasiquote`, which works more like `let` (cf. `let-symbol`).  Also
   possibly `quasi-literal` which works more like Perl's embedded `$`
@@ -242,11 +238,22 @@ potentially shadowing a user parameter also named `self`.
 * Write a static analyzer which detects trying to `export` an unbound
   identifier, and raises an exception.
 
-* Have exceptions, by default, be chained together, to avoid "exception
-  translation".  If a program raises an exception while catching another
-  exception, the old exception(s) should be linked to from to the new
-  one.  This is to give more sensible error messages at the top level,
-  by dumping them all, giving the operator a deeper idea of what happened.
+### Possible Future Modules ###
+
+* Write a `functional` module which exports some functions for working
+  with functions, such as `identity`, `compose`, and possibly `curry`
+  and `uncurry`.
+
+* Possibly make a `transcendental` module to contain `exp`, `pow`,
+  `log`, `sqrt`, and so forth.
+
+* Write a `trig` module which exports trigonometric functions `cos`,
+  `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Robin,
+  but it's a good candidate for implementing natively.
+
+* Write a `set` module which exports functions which treat lists as
+  sets, with each operation ensuring the set elements are unique in
+  the list.
 
 ### Documentation ###
 
@@ -289,6 +296,13 @@ potentially shadowing a user parameter also named `self`.
 
 * Allow the implementation to use a configuration file to specify which
   files (and where) to load for which modules.
+
+* Upon an uncaught exception, dump a backtrace.  This should be based
+  on the current continuation at the time the exception was raised.
+  Currently that is implemented as a function value in Haskell, which
+  is not examinable, so that will have to change.  Currently, also,
+  line numbers are not recorded for each application, so that will
+  have to change too.
 
 ### Awesomeness ###
 
