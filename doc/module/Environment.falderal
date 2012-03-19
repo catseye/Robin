@@ -44,7 +44,7 @@ second argument in that reduced environment.
 
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (unbind if (if #t (literal x) (literal y))))
-? robin: uncaught exception: (unbound-identifier . if)
+? uncaught exception: (unbound-identifier . if)
 
 If the identifier doesn't exist in the environment, no change is made to
 the environment.
@@ -62,7 +62,7 @@ in effect.
 |     (let ((x 8))
 |       (unbind x
 |         x))))
-? robin: uncaught exception: (unbound-identifier . x)
+? uncaught exception: (unbound-identifier . x)
 
 ### `sandbox` ###
 
@@ -78,7 +78,7 @@ for the listed identifiers have been unbound.
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (sandbox (pair tail)
 |     (head (pair 8 9))))
-? robin: uncaught exception: (unbound-identifier . head)
+? uncaught exception: (unbound-identifier . head)
 
 ### `export` ###
 
@@ -116,7 +116,7 @@ will be visible instead.
 
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (unshadow if (if #t (literal x) (literal y))))
-? robin: uncaught exception: (unbound-identifier . if)
+? uncaught exception: (unbound-identifier . if)
 
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (bind if (literal what)
@@ -126,7 +126,7 @@ will be visible instead.
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (bind q 400
 |     (unshadow q q)))
-? robin: uncaught exception: (unbound-identifier . q)
+? uncaught exception: (unbound-identifier . q)
 
 | (robin (0 . 1) (small (0 . 1) env (0 . 1))
 |   (bind q 200

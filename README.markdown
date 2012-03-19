@@ -255,6 +255,10 @@ though.
   sets, with each operation ensuring the set elements are unique in
   the list.
 
+* Write a `pixley` module which exports only the identifiers supported
+  by Pixley.  This could be imported, instead of `core`, to emulate
+  Pixley in Robin.
+
 ### Documentation ###
 
 * Document the `boolean` module.
@@ -305,9 +309,5 @@ though.
   have to change too.
 
 ### Awesomeness ###
-
-* Write a `pixley` module which exports only the identifiers supported
-  by Pixley.  This could be imported, instead of `core`, to emulate
-  Pixley in Robin.
 
 * Using the `console` module, write `robotfindskitten` in Robin!

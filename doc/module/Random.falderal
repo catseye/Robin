@@ -8,7 +8,10 @@ the generated numbers are random.
 
 ### `random` ###
 
--> Tests for shell command "bin/robin %(test-file)"
+-> Functionality "Interpret Robin Program" is implemented by
+-> shell command "bin/robin %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program"
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) arith (0 . 1) random (0 . 1))
 |   (call! random range (pair 1 (pair 6 ())) value

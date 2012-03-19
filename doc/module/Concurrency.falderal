@@ -42,7 +42,7 @@ running process.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (myself 123))
-? robin: uncaught exception: (illegal-arguments 123)
+? uncaught exception: (illegal-arguments 123)
 
 ### `pid?` ###
 
@@ -62,11 +62,11 @@ must be exactly one argument.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (pid?))
-? robin: uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (pid? 200 500))
-? robin: uncaught exception: (illegal-arguments 200 500)
+? uncaught exception: (illegal-arguments 200 500)
 
 ### `spawn!` ###
 
@@ -90,26 +90,26 @@ that new binding.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn!))
-? robin: uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn! cheesecake))
-? robin: uncaught exception: (illegal-arguments cheesecake)
+? uncaught exception: (illegal-arguments cheesecake)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn! (fun (x) 0) (fun (x) 1)))
-? robin: uncaught exception: (illegal-arguments (fun (x) 0) (fun (x) 1))
+? uncaught exception: (illegal-arguments (fun (x) 0) (fun (x) 1))
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn! (fun (x) 0) (fun (x) 1)
 |          (fun (x) 2) (fun (x) 3)))
-? robin: uncaught exception: (illegal-arguments (fun (x) 0) (fun (x) 1) (fun (x) 2) (fun (x) 3))
+? uncaught exception: (illegal-arguments (fun (x) 0) (fun (x) 1) (fun (x) 2) (fun (x) 3))
 
 The first argument to `spawn!` must be a symbol.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn! #f (literal ok) 123))
-? robin: uncaught exception: (illegal-arguments #f (literal ok) 123)
+? uncaught exception: (illegal-arguments #f (literal ok) 123)
 
 ### `send!` ###
 
@@ -127,19 +127,19 @@ and itself evaluates to that.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (send! (literal eggs) (literal spam) (literal ok)))
-? robin: uncaught exception: (expected-pid . eggs)
+? uncaught exception: (expected-pid . eggs)
 
 `send!` expects exactly three arguments.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn! worker (literal ok)
 |     (send! worker worker)))
-? robin: uncaught exception: (illegal-arguments worker worker)
+? uncaught exception: (illegal-arguments worker worker)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (spawn! worker (literal ok)
 |     (send! worker worker worker worker)))
-? robin: uncaught exception: (illegal-arguments worker worker worker worker)
+? uncaught exception: (illegal-arguments worker worker worker worker)
 
 ### `recv!` ###
 
@@ -162,7 +162,7 @@ that must evaluate to a certain type.)
 |   (bind parent (myself)
 |     (spawn! worker (send! parent (literal lettuce) (literal ok))
 |       (recv! (pair 7 8) 9))))
-? robin: uncaught exception: (illegal-arguments (pair 7 8) 9)
+? uncaught exception: (illegal-arguments (pair 7 8) 9)
 
 `recv!` expects exactly two arguments.
 
@@ -170,13 +170,13 @@ that must evaluate to a certain type.)
 |   (bind parent (myself)
 |     (spawn! worker (send! parent (literal lettuce) (literal ok))
 |       (recv! message))))
-? robin: uncaught exception: (illegal-arguments message)
+? uncaught exception: (illegal-arguments message)
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind parent (myself)
 |     (spawn! worker (send! parent (literal lettuce) (literal ok))
 |       (recv! message message message))))
-? robin: uncaught exception: (illegal-arguments message message message)
+? uncaught exception: (illegal-arguments message message message)
 
 Tests for both `send!` and `recv!` follow.
 
@@ -271,7 +271,7 @@ X = #t
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (msgs? #t))
-? robin: uncaught exception: (illegal-arguments #t)
+? uncaught exception: (illegal-arguments #t)
 
 ### `call!` ###
 
@@ -306,7 +306,7 @@ may in fact hang instead of doing what our implementation does.
 |                          (pair (pair tag payload) ()))) 0)))
 |      (call! worker this-tag (literal this-payload) reply
 |        (pair (literal reply-was) reply)))))
-? robin: thread blocked indefinitely in an MVar operation
+? thread blocked indefinitely in an MVar operation
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (bind parent (myself) (spawn! worker
@@ -319,7 +319,7 @@ may in fact hang instead of doing what our implementation does.
 |                          (pair (pair tag payload) ()))) 0)))
 |      (call! worker this-tag (literal this-payload) reply
 |        (pair (literal reply-was) reply)))))
-? robin: thread blocked indefinitely in an MVar operation
+? thread blocked indefinitely in an MVar operation
 
 If `call!` receives an exception message, it will `raise` that
 exception.  Note that I'm not sure if we actually want this
@@ -335,28 +335,28 @@ currently!) but... we'll see.
 |         (head (literal argh))))
 |     (call! worker this-tag (literal this-payload) reply
 |       (pair (literal reply-was) reply))))
-? robin: uncaught exception: (expected-pair . argh)
+? uncaught exception: (expected-pair . argh)
 
 `call!` expects its first argument to be a pid.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (call! (literal worker) this-tag (literal this-payload) reply
 |      (pair (literal reply-was) reply)))
-? robin: uncaught exception: (expected-pid . worker)
+? uncaught exception: (expected-pid . worker)
 
 `call!` expects its second argument to be a symbol.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (call! (myself) #f (literal this-payload) reply
 |      (pair (literal reply-was) reply)))
-? robin: uncaught exception: (illegal-arguments (myself) #f (literal this-payload) reply (pair (literal reply-was) reply))
+? uncaught exception: (illegal-arguments (myself) #f (literal this-payload) reply (pair (literal reply-was) reply))
 
 `call!` expects its fourth argument to be an identifier.
 
 | (robin (0 . 1) (small (0 . 1) concurrency (0 . 1))
 |   (call! (myself) this-tag (literal this-payload) #f
 |      (pair (literal reply-was) reply)))
-? robin: uncaught exception: (illegal-arguments (myself) this-tag (literal this-payload) #f (pair (literal reply-was) reply))
+? uncaught exception: (illegal-arguments (myself) this-tag (literal this-payload) #f (pair (literal reply-was) reply))
 
 ### `respond!` ###
 
@@ -393,7 +393,7 @@ The payload of the `call!` is available in the bound variable.
 |       (monkey (x) (pair (literal island) x) (literal ok)))
 |     (call! worker donkey () reply
 |       (call! worker monkey (literal shines) reply reply))))
-? robin: thread blocked indefinitely in an MVar operation
+? thread blocked indefinitely in an MVar operation
 
 Typicall!y, to write a server, you would use it in a loop.
 

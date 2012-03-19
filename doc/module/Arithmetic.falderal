@@ -102,7 +102,7 @@ Module `arith`
 
 | (robin (0 . 1) (arith (0 . 1))
 |   (div 10 0))
-? robin: uncaught exception: (division-by-zero . 10)
+? uncaught exception: (division-by-zero . 10)
 
 ### `rem` ###
 
@@ -132,7 +132,7 @@ Module `arith`
 
 | (robin (0 . 1) (arith (0 . 1))
 |   (rem 10 0))
-? robin: uncaught exception: (division-by-zero . 10)
+? uncaught exception: (division-by-zero . 10)
 
 ### `>` ###
 

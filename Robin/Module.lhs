@@ -36,6 +36,11 @@ Module Loading
 > isModuleInProgress mc@(ModuleCache n p c) modRef =
 >     modRef `elem` p
 
+> qualifyModuleEnv name Null =
+>     Null
+> qualifyModuleEnv name (Pair (Pair (Symbol id) val) rest) =
+>     Pair (Pair (Symbol (name ++ ":" ++ id)) val) $ qualifyModuleEnv name rest
+
 > loadModule :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
 
 > loadModule mc@(ModuleCache nonBuiltinModules _ cachedModules) modRef@(name, major, minor) =
@@ -50,7 +55,8 @@ Module Loading
 >                     Just builtinModule -> do
 >                         expr <- builtinModule
 >                         let mc' = cacheModule mc modRef expr
->                         return (mc', expr)
+>                         let expr' = expr -- qualifyModuleEnv name expr
+>                         return (mc', expr')
 >                     Nothing ->
 >                         loadModuleFromFilesystem mc modRef
 
@@ -66,8 +72,10 @@ Module Loading
 >             ast <- return $ insistParse mod
 >             let mc' = pushModuleInProgress mc (name, major, minor)
 >             (mc'', expr) <- evalRobin mc' ast
+>             let expr' = expr -- qualifyModuleEnv name expr
 >             let mc''' = popModuleInProgress mc''
->             return (mc''', expr)
+>             -- XXX don't we need to call cacheModule here?
+>             return (mc''', expr')
 
 > loadModules :: ModuleCache -> Expr -> IO (ModuleCache, Expr)
 
