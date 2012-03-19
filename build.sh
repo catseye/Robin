@@ -39,5 +39,12 @@ cat >>Robin/Builtins.hs <<EOF
   ]
 EOF
 
-ghc -package hscurses --make Main.lhs -o bin/robin
+PACKAGES=""
+for MODULE in $MODULES; do
+  if [ "${MODULE}x" = "Consolex" ]; then
+    PACKAGES="${PACKAGES} -package hscurses"
+  fi
+done
+
+ghc ${PACKAGES} --make Main.lhs -o bin/robin
 rm -f *.o *.hi Robin/*.o Robin/*.hi
