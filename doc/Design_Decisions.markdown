@@ -421,3 +421,22 @@ types of a program can be statically analyzed, this raises barriers to
 actually doing it.  Static analyzers in the world of scripting languages
 in particular are often an afterthought, and we want to try to minimize
 that effect.
+
+#### How should serializability be handled?
+
+Decision: ...
+
+OK, so: one reason to choose an S-expression based syntax is that terms
+so represented are, for the most part, "trivially serializable", because
+many forms simply evaluate to themselves, and when they don't, they can
+be wrapped in `literal`.
+
+This is useful because, where-ever values are serialized (disk files,
+messages between nodes, etc.,) they look just like they would in a program
+text.
+
+However, there are two impediments to this:
+
+* Function values.
+
+* Objects.

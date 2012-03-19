@@ -81,3 +81,12 @@ Naming
   * Operation over mutilple arguments: `(and-many a b c)`.  This is
     semantically equivalent to `(and-list (list a b c))`, but this
     can support short-circuiting where the other cannot.
+
+Conditionals
+------------
+
+* As much as possible, write `choose` structures where the branches
+  are all _disjoint_: whenever one branch is true, all other branches
+  must necessarily be false.  Also comment the conditions under which
+  the `else` branch will be true.  (This style guideline is in lieu
+  of a program analysis which can determine this for you.)

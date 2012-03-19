@@ -242,6 +242,12 @@ potentially shadowing a user parameter also named `self`.
 * Write a static analyzer which detects trying to `export` an unbound
   identifier, and raises an exception.
 
+* Have exceptions, by default, be chained together, to avoid "exception
+  translation".  If a program raises an exception while catching another
+  exception, the old exception(s) should be linked to from to the new
+  one.  This is to give more sensible error messages at the top level,
+  by dumping them all, giving the operator a deeper idea of what happened.
+
 ### Documentation ###
 
 * Document the `boolean` module.
@@ -249,12 +255,6 @@ potentially shadowing a user parameter also named `self`.
 * Document the `arith` module.
 
 * Document the alist functions in the `list` module.
-
-* Document the "why" behind some of the design decisions.  Particularly,
-  why S-expression based syntax, why import can only be done at the top
-  level, tension between "trivially serializable" S-expressions (esp.
-  when potentially shared between nodes, if messages and processes ever
-  get that far) and abstraction/modularity, etc.
 
 * Document the literate Haskell implementation better -- right now it's
   pretty scant.
@@ -286,6 +286,9 @@ potentially shadowing a user parameter also named `self`.
 
 * Finish implementing execution trace by adding a `-t` flag to the
   implementation, and possibly making it prettier.
+
+* Allow the implementation to use a configuration file to specify which
+  files (and where) to load for which modules.
 
 ### Awesomeness ###
 

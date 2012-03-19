@@ -176,6 +176,13 @@ used.
 This is a fairly simple analysis (and probably should have been the one
 I started working on first, instead of `pure`.)
 
+`non-shadowing`
+---------------
+
+An expression is non-shadowing if it does not redefine any names, i.e.
+it does not bind a value to an identifier to which a value is already
+bound.
+
 `pure`
 ------
 
@@ -212,3 +219,11 @@ A macro is total if it always terminates.  In the general case, this is
 undecidable.  However, it is not too difficult to analyze a macro and
 determine that it is primitive recursive, and all primitive recursive
 functions are total.
+
+`non-raising`
+-------------
+
+An expression is non-raising if executing it cannot possibly raise an
+exception.  (The simplest way to achieve this is to catch everything at
+a high level, and not raise anything in the exception handler.)
+Java does an analysis similar to this.
