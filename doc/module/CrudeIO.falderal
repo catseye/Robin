@@ -31,7 +31,10 @@ this confirmation message.  The simplest way to do this is to use the
 `call!` macro.  If the program terminates before this confirmation message
 is received, the text might not be written to the standard output.
 
--> Tests for shell command "bin/robin %(test-file)"
+-> Functionality "Interpret Robin Program" is implemented by
+-> shell command "bin/robin %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program"
 
 Sending a message to `crude-output` causes the contents of the message to
 be written to the standard output, and an `ok` message sent back to the
@@ -42,7 +45,10 @@ sending process as a confirmation.
 = hello-world
 = ok
 
--> Tests for shell command "bin/robin -n %(test-file)"
+-> Functionality "Interpret Robin Program without output" is implemented by
+-> shell command "bin/robin -n %(test-file)"
+
+-> Tests for functionality "Interpret Robin Program without output"
 
 The sending process need not do anything with the response.  The
 implementation need not write the result of the main process to the

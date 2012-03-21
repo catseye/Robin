@@ -17,18 +17,22 @@ FILES="doc/Robin.falderal \
       doc/module/Arithmetic.falderal \
       doc/module/Random.falderal \
       doc/module/Assert.falderal \
-      doc/module/Pure.falderal"
+      doc/module/Pure.falderal \
+      doc/module/CrudeIO.falderal \
+      doc/module/Miscellany.falderal"
 
 # Hack for Robin & Falderal built with the ghc from Haskell Platform on Windows
 if [ -e bin/robin.exe ]; then
     falderal test -b \
                   -c "Interpret Robin Program" \
+                  -c "Interpret Bundled Robin Program" \
+                  -c "Interpret Robin Program without output" \
                   -f 'Interpret Robin Program:shell command "bin\\robin.exe %(test-file)"' \
+                  -f 'Interpret Bundled Robin Program:shell command "python bin\\unbundle_modules.py %(test-file)"' \
+                  -f 'Interpret Robin Program without output:shell command "bin\\robin.exe -n %(test-file)"' \
                   ${FILES}
+    rm -f results*
 else
-    FILES="${FILES} \
-           doc/module/CrudeIO.falderal \
-           doc/module/Miscellany.falderal"
     falderal test -b ${FILES}
 fi
 
