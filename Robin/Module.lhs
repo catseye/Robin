@@ -36,33 +36,35 @@ Module Loading
 > isModuleInProgress mc@(ModuleCache n p c) modRef =
 >     modRef `elem` p
 
-> qualifyModuleEnv name Null =
+> qualifyModuleEnv False _ expr =
+>     expr
+> qualifyModuleEnv True name Null =
 >     Null
-> qualifyModuleEnv name (Pair (Pair (Symbol id) val) rest) =
->     Pair (Pair (Symbol (name ++ ":" ++ id)) val) $ qualifyModuleEnv name rest
+> qualifyModuleEnv True name (Pair (Pair (Symbol id) val) rest) =
+>     Pair (Pair (Symbol (name ++ ":" ++ id)) val) $ qualifyModuleEnv True name rest
 
-> loadModule :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
+> loadModule :: ModuleCache -> ModuleRef -> Bool -> IO (ModuleCache, Expr)
 
-> loadModule mc@(ModuleCache nonBuiltinModules _ cachedModules) modRef@(name, major, minor) =
+> loadModule mc@(ModuleCache nonBuiltinModules _ cachedModules) modRef@(name, major, minor) qualified =
 >     case lookup modRef cachedModules of
 >         Just expr -> do
 >             return (mc, expr)
 >         Nothing ->
 >             if name `elem` nonBuiltinModules then
->                 loadModuleFromFilesystem mc modRef
+>                 loadModuleFromFilesystem mc modRef qualified
 >             else
 >                 case lookup modRef builtinModules of
 >                     Just builtinModule -> do
 >                         expr <- builtinModule
 >                         let mc' = cacheModule mc modRef expr
->                         let expr' = expr -- qualifyModuleEnv name expr
+>                         let expr' = qualifyModuleEnv qualified name expr
 >                         return (mc', expr')
 >                     Nothing ->
->                         loadModuleFromFilesystem mc modRef
+>                         loadModuleFromFilesystem mc modRef qualified
 
-> loadModuleFromFilesystem :: ModuleCache -> ModuleRef -> IO (ModuleCache, Expr)
+> loadModuleFromFilesystem :: ModuleCache -> ModuleRef -> Bool -> IO (ModuleCache, Expr)
 
-> loadModuleFromFilesystem mc@(ModuleCache _ _ cachedModules) modRef@(name, major, minor) =
+> loadModuleFromFilesystem mc@(ModuleCache _ _ cachedModules) modRef@(name, major, minor) qualified =
 >     let
 >         filename = "module/" ++ name ++ "_" ++ (show major) ++ "_" ++ (show minor) ++ ".robin"
 >     in if isModuleInProgress mc modRef then
@@ -72,7 +74,7 @@ Module Loading
 >             ast <- return $ insistParse mod
 >             let mc' = pushModuleInProgress mc (name, major, minor)
 >             (mc'', expr) <- evalRobin mc' ast
->             let expr' = expr -- qualifyModuleEnv name expr
+>             let expr' = qualifyModuleEnv qualified name expr
 >             let mc''' = popModuleInProgress mc''
 >             -- XXX don't we need to call cacheModule here?
 >             return (mc''', expr')
@@ -81,10 +83,18 @@ Module Loading
 
 > loadModules mc Null = do
 >     return (mc, Env.empty)
+> loadModules mc (Pair (Symbol name) (Pair version (Pair qualifiers rest))) = do
+>     let (rest', qualified) = case qualifiers of
+>                                 (Symbol _) -> ((Pair qualifiers rest), False)
+>                                 _          -> (rest, True)
+>     loadModuleBySpec mc name version qualified rest'
 > loadModules mc (Pair (Symbol name) (Pair version rest)) = do
+>     loadModuleBySpec mc name version False rest
+
+> loadModuleBySpec mc name version qualified rest = do
 >     (major, minor) <- parseVersion version
 >     (mc', nextEnv) <- loadModules mc rest
->     (mc'', thisEnv) <- loadModule mc' (name, major, minor)
+>     (mc'', thisEnv) <- loadModule mc' (name, major, minor) qualified
 >     return (mc'', Env.union nextEnv thisEnv)
 
 > parseVersion (Pair (Number major) (Number minor)) = do
