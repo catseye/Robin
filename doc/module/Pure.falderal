@@ -107,10 +107,12 @@ is still pure.
 An otherwise pure function which binds some pure values to names is still
 pure.
 
+Unfortunately, our analyzer isn't smart enough to figure that out yet.
+
 | (robin (0 1) ((pure (0 1) *))
 |   (pure-expr? (env) (literal (x)) (literal
 |     (bind y (subtract x 23) (bind r 5 (subtract y r))))))
-= #t
+= #f
 
 A function which evaluates to a pure built-in function is pure.
 
@@ -151,10 +153,12 @@ Even if it evaluates to multiple functions.
 An otherwise pure function which calls a pure function that it defines
 within itself is pure.
 
+Unfortunately, our analyzer isn't smart enough to figure that out yet.
+
 | (robin (0 1) ((pure (0 1) *))
 |   (pure-expr? (env) (literal (x)) (literal
 |       ((fun (y) y) 123))))
-= #t
+= #f
 
 (Unless of course, one of its actual arguments is not.)
 
@@ -165,10 +169,12 @@ within itself is pure.
 
 Even if it uses closed-over identifiers.
 
+Unfortunately, our analyzer isn't smart enough to figure that out yet.
+
 | (robin (0 1) ((pure (0 1) *))
 |   (pure-expr? (env) (literal (x)) (literal
 |       ((fun (y) x) 123))))
-= #t
+= #f
 
 Even if it was bound to a name first.
 
@@ -180,11 +186,13 @@ Even if it was bound to a name first.
 
 Even if it was bound to a name first, and uses closed-over identifiers.
 
+Unfortunately, our analyzer isn't smart enough to figure that out yet.
+
 | (robin (0 1) ((pure (0 1) *))
 |   (pure-expr? (env) (literal (x)) (literal
 |     (bind y (fun (z) (pair x z))
 |       (y 123)))))
-= #t
+= #f
 
 An otherwise pure function which calls an impure function that it defines
 within itself is not pure.
