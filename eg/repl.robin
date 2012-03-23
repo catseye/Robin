@@ -1,8 +1,8 @@
-(robin (0 . 1) (small (0 . 1)
-                exception (0 . 1)
-                concurrency (0 . 1)
-                crude-io (0 . 1)
-                env (0 . 1))
+(robin (0 1) ((small (0 1) *)
+              (exception (0 1) *)
+              (concurrency (0 1) *)
+              (crude-io (0 1) *)
+              (env (0 1) *))
   (let (
     (restricted-env
       (export pair head tail if equal? pair? macro? symbol? boolean?

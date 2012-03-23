@@ -10,37 +10,37 @@ Module `boolean`
 
 ### `and` ###
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and #t #t))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and #t #f))
 = #f
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and #f #t))
 = #f
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and #f #f))
 = #f
 
 `and` can take any number of arguments.
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and #f))
 = #f
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and #t #t #t #t #t))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and #t #t #t #f))
 = #f
 
@@ -50,37 +50,37 @@ these tests in the concurrency module?)
 
 ### `or` ###
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or #t #t))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or #t #f))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or #f #t))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or #f #f))
 = #f
 
 `or` can take any number of arguments.
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or))
 = #f
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or #t))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or #f #f #f #f #f))
 = #f
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (or #f #f #f #t))
 = #t
 
@@ -90,39 +90,39 @@ these tests in the concurrency module?)
 
 ### `not` ###
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (not #t))
 = #f
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (not #f))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (not #t #f))
 ? uncaught exception: (illegal-arguments #f)
 
 ### `xor` ###
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (xor #t #t))
 = #f
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (xor #t #f))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (xor #f #t))
 = #t
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (xor #f #f))
 = #f
 
 This test demonstrates that these functions really do evaluate their
 arguments.
 
-| (robin (0 . 1) (boolean (0 . 1))
+| (robin (0 1) ((boolean (0 1) *))
 |   (and (or (xor (and #t #t) #f) #f) #t))
 = #t

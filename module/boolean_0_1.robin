@@ -1,4 +1,4 @@
-(robin (0 . 1) (small (0 . 1) env (0 . 1))
+(robin (0 1) ((small (0 1) *) (env (0 1) *))
   (let (
     (and (macro (self args env)
       (if (equal? args ())

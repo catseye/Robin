@@ -1,4 +1,4 @@
-(robin (0 . 1) (core (0 . 1))
+(robin (0 1) ((core (0 1) *))
   (eval
     (pair
       (pair ((macro (self args env) (head args)) literal) (macro (self args env) (head args)))

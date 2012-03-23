@@ -1,4 +1,8 @@
-(robin (0 . 1) (small (0 . 1) list (0 . 1) concurrency (0 . 1) crude-io (0 . 1) random (0 . 1))
+(robin (0 1) ((small (0 1) *)
+              (list (0 1) *)
+              (concurrency (0 1) *)
+              (crude-io (0 1) *)
+              (random (0 1) *))
   (bind output-loop
     (fun (self n)
       (if (equal? n 0)

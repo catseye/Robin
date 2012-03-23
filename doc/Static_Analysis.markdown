@@ -118,7 +118,7 @@ statically analyzing a set of a modules is as simple as constructing a
 test program which simply imports all of those modules; if any of them
 fail static analysis, an exception will be thrown at import time:
 
-    (robin (0 . 1) (foo (0 . 1) bar (0 . 1) baz (0 . 1))
+    (robin (0 1) ((foo (0 1) *) (bar (0 1) *) (baz (0 1) *))
       #t)
 
 There is also room here for optimization.  If static analysis for a module

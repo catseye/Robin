@@ -1,8 +1,8 @@
-(robin (0 . 1) (small (0 . 1)
-                arith (0 . 1)
-                list (0 . 1)
-                concurrency (0 . 1)
-                console (0 . 1))
+(robin (0 1) ((small (0 1) *)
+              (arith (0 1) *)
+              (list (0 1) *)
+              (concurrency (0 1) *)
+              (console (0 1) *))
   (let (
     (loop! (fun (self x)
       (if (equal? x 10000)

@@ -22,16 +22,16 @@ Every Robin program is contained in a `robin` form.  It has the syntax:
 The `VERSION` gives the version of the Robin semantics in use.  It has
 the syntax:
 
-    (NAT . NAT)
+    (NAT NAT)
 
 ...where `NAT` is a natural number (an integer not less than zero.)
 More on versions later; the only version of Robin that currently
-exists is 0.1 (aka `(0 . 1)`), so we'll use that.
+exists is 0.1 (aka `(0 1)`), so we'll use that.
 
 The list of `MODULE-SPEC`s may be empty.  So, without further ado,
 here is one of the simplest Robin programs one can write:
 
-| (robin (0 . 1) () #t)
+| (robin (0 1) () #t)
 = #t
 
 Versioning
@@ -59,8 +59,8 @@ fall into this grey area.
 An implementation might, obviously, provide or not provide any
 particular version of the language.
 
-| (robin (0 . 781) () #t)
-? robin: unsupported language version (0 . 781)
+| (robin (0 781) () #t)
+? unsupported language version (0 781)
 
 The Robin semantics brought in by the version number in the `robin`
 form include things like datatypes and evaluation rules, and are not
@@ -102,7 +102,7 @@ literal of one of the built-in datatypes that can be expressed directly.
 Here is an example of importing a module (but not doing anything
 with it.)
 
-| (robin (0 . 1) (core (0 . 1)) #t)
+| (robin (0 1) ((core (0 1))) #t)
 = #t
 
 A particular version of a module might, naturally, not be available.
@@ -110,21 +110,41 @@ A particular version of a module might, naturally, not be available.
 (TODO: The particular error message produced here may differ.  Falderal
 needs a forigiving-error-message option.)
 
-| (robin (0 . 1) (small (0 . 781)) #t)
-? robin: module/small_0_781.robin: openFile: does not exist (No such file or directory)
+| (robin (0 1) ((small (0 781))) #t)
+? module/small_0_781.robin: openFile: does not exist (No such file or directory)
 
 And a particular module might, naturally, not even be available.
 
-| (robin (0 . 1) (gzgptzgztxxky (1 . 0)) #t)
-? robin: module/gzgptzgztxxky_1_0.robin: openFile: does not exist (No such file or directory)
+| (robin (0 1) ((gzgptzgztxxky (1 0))) #t)
+? module/gzgptzgztxxky_1_0.robin: openFile: does not exist (No such file or directory)
 
 And a particular version of a module may rely on a particular version
 of the fundamental semantics, so some combinations may not make sense.
 For example, if `small` 3.0 relies on Robin 2.0, this will fail
 (with a more appropriate error message like "Robin 2.0 required"):
 
-| (robin (1 . 0) (small (3 . 0)) #t)
-? robin: unsupported language version (1 . 0)
+| (robin (1 0) ((small (3 0))) #t)
+? unsupported language version (1 . 0)
+
+By default, identifiers are imported qualified.
+
+| (robin (0 1) ((core (0 1)))
+|   (core:number? 3/5))
+= #t
+
+| (robin (0 1) ((core (0 1)))
+|   (number? 3/5))
+? undefined identifier number?
+
+The `*` qualifier imports a module unqualified.
+
+| (robin (0 1) ((core (0 1) *))
+|   (number? 3/5))
+= #t
+
+| (robin (0 1) ((core (0 1) *))
+|   (core:number? 3/5))
+? undefined identifier core:number?
 
 Intrinsic Data Types
 --------------------
@@ -166,8 +186,8 @@ illustrative purposes, we shall import the macro `literal` from the `small`
 module for this purpose, as it is the most straightforward way to create
 a literal symbol in a Robin program.
 
-| (robin (0 . 1) (small (0 . 1))
-|   (literal hello))
+| (robin (0 1) ((small (0 1) *))
+|   (small:literal hello))
 = hello
 
 A Robin program is not expected to be able to generate new symbols
@@ -202,13 +222,13 @@ later.)
 
 For example, 5 is a rational number:
 
-| (robin (0 . 1) () 5)
+| (robin (0 1) () 5)
 = 5
 
 The literal syntax for rational numbers allows one to use `/` to
 denote a fraction:
 
-| (robin (0 . 1) () 4/5)
+| (robin (0 1) () 4/5)
 = 4/5
 
 Rational numbers always evaluate to themselves.
@@ -251,22 +271,22 @@ Macros are defined with the `macro` macro in the `core` module.
 Macros are represented as the S-expression expansion of their
 implementation, except in the case of built-in macros.
 
-| (robin (0 . 1) (core (0 . 1))
-|   (macro (self args env) args))
+| (robin (0 1) ((core (0 1)))
+|   (core:macro (self args env) args))
 = (macro (self args env) args)
 
 A built-in macro is represented thusly.  (TODO: this representation
 has problems; see section on pairs below.)
 
-| (robin (0 . 1) (core (0 . 1))
-|   pair)
+| (robin (0 1) ((core (0 1)))
+|   core:pair)
 = (builtin pair)
 
 One upshot of built-in macros is that *all* intrinsic Robin functionality,
 even things that in Scheme are special forms, can be passed around as
 values.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (pair if head))
 = ((builtin if) . (builtin head))
 
@@ -280,15 +300,15 @@ convention, the first of the two values in the pair is referred to as the
 
 TODO: write more about this.
 
-| (robin (0 . 1) (small (0 . 1))
-|    (literal (7 . 8)))
+| (robin (0 1) ((small (0 1)))
+|    (small:literal (7 . 8)))
 = (7 . 8)
 
 Representations of some types (like built-in macros) look funny because they
 don't follow the rules for depicting pairs with a dot and lists without --
 effectively, the parens are "fake" on these things.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (pair #f boolean?))
 = (#f . (builtin boolean?))
 
@@ -314,7 +334,7 @@ proper vs improper lists, and so forth.
 Unlike Scheme, you do not need to quote `()`; it evaluates to itself
 rather than indicating an illegal empty application.
 
-| (robin (0 . 1) () ())
+| (robin (0 1) () ())
 = ()
 
 ### Alists ###
@@ -340,13 +360,13 @@ particular Unicode codepoint.  Robin supports a sugared syntax for
 specifying literal strings.  The characters of the string are given
 between pairs of single quotes.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal ''Hello''))
 = (72 101 108 108 111)
 
 A single single quote may appear in string literals of this kind.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal ''He'llo''))
 = (72 101 39 108 108 111)
 
@@ -355,15 +375,15 @@ may be given.  The sentinel between the leading single quote pair must
 match the sentinel given between the trailing single quote pair.  The
 sentinel may consist of any text not containing a single quote.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal 'X'Hello'X'))
 = (72 101 108 108 111)
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal '...@('Hello'...@('))
 = (72 101 108 108 111)
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal 'X'Hello'Y'))
 ? (line 3, column 1):
 ? unexpected end of input
@@ -371,14 +391,14 @@ sentinel may consist of any text not containing a single quote.
 
 A sentinelized literal like this may embed a pair of single quotes.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal 'X'Hel''lo'X'))
 = (72 101 108 39 39 108 111)
 
 By choosing different sentinels, string literals may contain any other
 string literal.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal 'X'Hel'Y'bye'Y'lo'X'))
 = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
 
@@ -386,27 +406,27 @@ No interpolation of escape sequences is done in a Robin string literal.
 (Functions to convert escape sequences commonly found in other languages
 may one day be available in a standard module.)
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal ''Hello\nworld''))
 = (72 101 108 108 111 92 110 119 111 114 108 100)
 
 All characters which appear in the source text between the delimiters
 of the string literal are literally included in the string.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal ''Hello
 | world''))
 = (72 101 108 108 111 10 119 111 114 108 100)
 
 Adjacent string literals are not automatically concatenated.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal (''Hello'' ''world'')))
 = ((72 101 108 108 111) (119 111 114 108 100))
 
 A string literal may appear in the tail of an improper list.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((small (0 1) *))
 |   (literal (a b c . ''123'')))
 = (a b c 49 50 51)
 
@@ -416,7 +436,7 @@ Comments
 Any S-expression preceded by a `;` symbol is a comment.  It will still
 be parsed, but it will be ignored.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   ;(this program produces a pair of booleans)
 |   (pair #f #f))
 = (#f . #f)
@@ -424,7 +444,7 @@ be parsed, but it will be ignored.
 Because S-expressions may nest, and because comments may appear
 inside S-expressions, comments may nest.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   ;(this program produces
 |     ;(what you might call)
 |     a pair of booleans)
@@ -433,7 +453,7 @@ inside S-expressions, comments may nest.
 
 Comments are still parsed.  A syntax error in a comment is an error.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   ;(this program produces
 |     #k
 |     a pair of booleans)
@@ -444,54 +464,54 @@ Comments are still parsed.  A syntax error in a comment is an error.
 
 Any number of comments may appear together.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (pair ;what ;on ;earth #f #f))
 = (#f . #f)
 
 Comments may appear before a closing parenthesis.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (pair #f #f ;foo))
 = (#f . #f)
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (pair #f #f ;peace ;(on) ;earth))
 = (#f . #f)
 
 Comments may appear in the tail of an improper list.
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (literal (a . ;foo b)))
 = (a . b)
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (literal (a . ;warp ;factor ;7 b)))
 = (a . b)
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (literal (a . b ;foo)))
 = (a . b)
 
-| (robin (0 . 1) (small (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   (literal (a . b ;warp ;factor ;7)))
 = (a . b)
 
 Comments may appear in an empty list.
 
-| (robin (0 . 1) ()
+| (robin (0 1) ()
 |   ( ;hi ;there))
 = ()
 
 Comments need not be preceded by spaces.
 
-| (robin (0 . 1) ()
+| (robin (0 1) ()
 |   (;north;by;north;west))
 = ()
 
 To put truly arbitrary text in a comment, the string sugar syntax may be
 used.
 
-| (robin (0 . 1) (core (0 . 1))
+| (robin (0 1) ((core (0 1) *))
 |   ;''This program, it produces a pair of booleans. #k ?''
 |   (pair #f #f))
 = (#f . #f)

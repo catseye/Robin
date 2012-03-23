@@ -28,7 +28,7 @@ if [ -e bin/robin.exe ]; then
                   -c "Interpret Bundled Robin Program" \
                   -c "Interpret Robin Program without output" \
                   -f 'Interpret Robin Program:shell command "bin\\robin.exe %(test-file)"' \
-                  -f 'Interpret Bundled Robin Program:shell command "python bin\\unbundle_modules.py %(test-file)"' \
+                  -f 'Interpret Bundled Robin Program:shell command "c:\\Python27\\python.exe bin\\unbundle_modules.py %(test-file)"' \
                   -f 'Interpret Robin Program without output:shell command "bin\\robin.exe -n %(test-file)"' \
                   ${FILES}
     rm -f results*

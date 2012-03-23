@@ -22,7 +22,8 @@ which characters are *not* allowed.)
 > legalSymbolic = (char '*' <|> char '-' <|> char '/' <|>
 >                  char '+' <|> char '<' <|> char '>' <|>
 >                  char '<' <|> char '=' <|> char '?' <|>
->                  char '_' <|> char '!' <|> char '$')
+>                  char '_' <|> char '!' <|> char '$' <|>
+>                  char ':')
 
 > symbol = do
 >     c <- (letter <|> legalSymbolic)

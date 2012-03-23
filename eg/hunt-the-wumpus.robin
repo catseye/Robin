@@ -1,11 +1,11 @@
-(robin (0 . 1) (small (0 . 1)
-                list (0 . 1)
-                boolean (0 . 1)
-                concurrency (0 . 1)
-                arith (0 . 1)
-                random (0 . 1)
-                crude-io (0 . 1)
-                term (0 . 1))
+(robin (0 1) ((small (0 1) *)
+              (list (0 1) *)
+              (boolean (0 1) *)
+              (concurrency (0 1) *)
+              (arith (0 1) *)
+              (random (0 1) *)
+              (crude-io (0 1) *)
+              (term (0 1) *))
   ;''Beginnings of an implementation of Hunt the Wumpus.
   The !'s aren't quite consistent in this yet.''
   (let

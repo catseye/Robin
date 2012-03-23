@@ -1,4 +1,4 @@
-(robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+(robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
   (bind input-loop
         (fun (self)
           (recv! entered

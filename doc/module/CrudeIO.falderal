@@ -40,7 +40,7 @@ Sending a message to `crude-output` causes the contents of the message to
 be written to the standard output, and an `ok` message sent back to the
 sending process as a confirmation.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
 |   (call! crude-output write (literal hello-world) reply reply))
 = hello-world
 = ok
@@ -54,7 +54,7 @@ The sending process need not do anything with the response.  The
 implementation need not write the result of the main process to the
 standard output.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
 |   (call! crude-output write (literal hello-world) reply 0))
 = hello-world
 
@@ -62,7 +62,7 @@ Multiple messages may be sent to `crude-output`; the content of each
 message will be formatted as a textual S-expression, and written out on
 its own line.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
 |   (call! crude-output write (literal hello) x
 |     (call! crude-output write (literal (world 1 2 3)) y
 |       0)))
@@ -91,7 +91,7 @@ entered and parsed correctly.
 `crude-input` can be subscribed to, and the subscriber will receive
 messages when input occurs.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
 |   (call! crude-input subscribe () x
 |     (recv! entered
 |       (pair (literal i-got) entered))))
@@ -101,7 +101,7 @@ messages when input occurs.
 
 Arbitrary S-expressions may occur on each line; they are parsed.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
 |   (call! crude-input subscribe () x
 |     (recv! entered
 |       (pair (literal i-got) entered))))
@@ -111,7 +111,7 @@ Arbitrary S-expressions may occur on each line; they are parsed.
 
 Multiple lines of text may be input, and multiple messages will be sent.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
 |   (bind input-loop
 |         (fun (self)
 |           (recv! entered
@@ -130,7 +130,7 @@ Multiple lines of text may be input, and multiple messages will be sent.
 If an S-expression on a given line cannot be parsed, no message will be
 sent.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) crude-io (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
 |   (bind input-loop
 |         (fun (self)
 |           (recv! entered

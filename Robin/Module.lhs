@@ -83,21 +83,16 @@ Module Loading
 
 > loadModules mc Null = do
 >     return (mc, Env.empty)
-> loadModules mc (Pair (Symbol name) (Pair version (Pair qualifiers rest))) = do
->     let (rest', qualified) = case qualifiers of
->                                 (Symbol _) -> ((Pair qualifiers rest), False)
->                                 _          -> (rest, True)
->     loadModuleBySpec mc name version qualified rest'
-> loadModules mc (Pair (Symbol name) (Pair version rest)) = do
->     loadModuleBySpec mc name version False rest
-
-> loadModuleBySpec mc name version qualified rest = do
+> loadModules mc (Pair (Pair (Symbol name) (Pair version qualifiers)) rest) = do
+>     let qualified = case qualifiers of
+>                         (Pair (Symbol "*") Null) -> False
+>                         Null                     -> True
 >     (major, minor) <- parseVersion version
 >     (mc', nextEnv) <- loadModules mc rest
 >     (mc'', thisEnv) <- loadModule mc' (name, major, minor) qualified
 >     return (mc'', Env.union nextEnv thisEnv)
 
-> parseVersion (Pair (Number major) (Number minor)) = do
+> parseVersion (Pair (Number major) (Pair (Number minor) Null)) = do
 >     case (denominator major, denominator minor) of
 >         (1, 1) -> return (numerator major, numerator minor)
 >         _      -> error "version number components can't be fractions"

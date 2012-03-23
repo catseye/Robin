@@ -28,7 +28,7 @@ A device descriptor is an identifier followed by a set (unordered list)
 of capabilities.  Each capability is (for now) a symbol, which refers to
 a required capability of the device.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) device (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (device (0 1) *))
 |   (acquire! (console (ascii colour addressable)
 |              foo ())
 |     (pair (pid? console) (pid? foo))))
@@ -44,7 +44,7 @@ The `release!` macro evaluates its one argument to a pid, then signals
 the device that it will no longer be used by this process.  Subsequent
 messages sent to the device pid from this process will be ignored.
 
-| (robin (0 . 1) (small (0 . 1) concurrency (0 . 1) device (0 . 1))
+| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (device (0 1) *))
 |   (acquire! (console (ascii colour addressable))
 |     (release! console
 |       123)))

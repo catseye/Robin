@@ -1,4 +1,4 @@
-(robin (0 . 1) (small (0 . 1) list (0 . 1))
+(robin (0 1) ((small (0 1) *) (list (0 1) *))
   (let (
     (subst (fun (src dest sexp)
       (bind subst-r (fun (self src dest sexp)

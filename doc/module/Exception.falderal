@@ -26,21 +26,21 @@ If an exception is raised when evaluating the final argument of
 first argument of `catch`, and the second argument of `catch` is
 evaluated in that new environment.
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
+| (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error (pair error #f)
 |     (raise (literal (nasty-value . 999999)))))
 = ((nasty-value . 999999) . #f)
 
 `catch` can catch exceptions raised by core macros.
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
+| (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error (pair error 5)
 |     (head #f)))
 = ((expected-pair . #f) . 5)
 
 The innermost `catch` will catch the exception.
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
+| (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error (pair error 5)
 |     (catch error (pair error 9)
 |       (head #f))))
@@ -49,7 +49,7 @@ The innermost `catch` will catch the exception.
 An exception raised from within an exception handler is
 caught by the next innermost exception handler.
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
+| (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error (pair error 5)
 |     (catch error (pair error 9)
 |       (catch error (raise (pair error error))
@@ -58,17 +58,17 @@ caught by the next innermost exception handler.
 
 `catch` expects its first argument to be an identifier.
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
+| (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch #f 23 (head #f)))
 ? uncaught exception: (illegal-arguments #f 23 (head #f))
 
 `catch` expects exactly three arguments.
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
+| (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error error))
 ? uncaught exception: (illegal-arguments error error)
 
-| (robin (0 . 1) (small (0 . 1) exception (0 . 1))
+| (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error error (head #f) 23))
 ? uncaught exception: (illegal-arguments error error (head #f) 23)
 
@@ -77,6 +77,6 @@ caught by the next innermost exception handler.
 Because it would be reasonable to find it here by categorization, this
 module re-exports the macro `raise` from `core`.
 
-| (robin (0 . 1) (exception (0 . 1))
+| (robin (0 1) ((exception (0 1) *))
 |   (catch error error (raise 799)))
 = 799
