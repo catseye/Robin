@@ -186,7 +186,7 @@ illustrative purposes, we shall import the macro `literal` from the `small`
 module for this purpose, as it is the most straightforward way to create
 a literal symbol in a Robin program.
 
-| (robin (0 1) ((small (0 1) *))
+| (robin (0 1) ((small (0 1)))
 |   (small:literal hello))
 = hello
 
@@ -480,19 +480,19 @@ Comments may appear before a closing parenthesis.
 
 Comments may appear in the tail of an improper list.
 
-| (robin (0 1) ((core (0 1) *))
+| (robin (0 1) ((small (0 1) *))
 |   (literal (a . ;foo b)))
 = (a . b)
 
-| (robin (0 1) ((core (0 1) *))
+| (robin (0 1) ((small (0 1) *))
 |   (literal (a . ;warp ;factor ;7 b)))
 = (a . b)
 
-| (robin (0 1) ((core (0 1) *))
+| (robin (0 1) ((small (0 1) *))
 |   (literal (a . b ;foo)))
 = (a . b)
 
-| (robin (0 1) ((core (0 1) *))
+| (robin (0 1) ((small (0 1) *))
 |   (literal (a . b ;warp ;factor ;7)))
 = (a . b)
 
