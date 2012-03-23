@@ -58,6 +58,24 @@ Naming
   call sites should not allow functions to be called which may have
   side-effects.
 
+* Identifiers for macros which take their argument, analyze its
+  structure, then either raise an exception if the structure is
+  unacceptable, or evaluate it as an expression if it is acceptable,
+  should end with `:`.  So we might have:
+
+    (pure: (total: (fun (a b) (+ (list:length a) (list:length b)))))
+
+  Unfortunately, this clashes with `:` as a module seperator.  Like,
+
+    (foo:pure: (bar:total: ... ))
+
+  So, we'll maybe switch to `.` as the module seperator, assuming that
+  improper lists go away:
+
+    (foo.pure: (bar.total:
+      (fun (a b)
+        (+ (list.length a) (list.length b)))))
+
 * Multiple arguments: still working this out too.  When you have a
   commutative, associative binary operator, you often want to be able
   to apply it to more than two arguments.  There are actually three

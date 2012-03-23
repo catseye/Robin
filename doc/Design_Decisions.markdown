@@ -403,7 +403,7 @@ there is no consistency here yet, and one should probably be established.
 
 #### Should the language define static analyses?
 
-Decision: No, but it should accomodate it.
+Decision: No, but it should accomodate them.
 
 This is a pretty subtle issue, which is explained more fully in the
 Static Analysis document.  But in short, to work towards the goal of
@@ -435,8 +435,89 @@ This is useful because, where-ever values are serialized (disk files,
 messages between nodes, etc.,) they look just like they would in a program
 text.
 
-However, there are two impediments to this:
+However, there is an inherent tension between concrete representations and
+abstract types.
 
-* Function values.
+In the following, _erroneous access_ means transformations of data that
+result in a non-conformant structure.  _Interchangeability_ means only
+allowing a set of operations whose implementations can be changed.
 
-* Objects.
+Concrete representations serialize trivially, and can be pattern-matched,
+but they do not prevent erroneous access, nor support interchangeability.
+
+Abstract types prevent erroneous access and support interchangeability,
+but they do not serialize trivially, nor can they be pattern-matched.
+
+(Abstract types are also traditionally desirable because they allow
+optimizations, but since performance is a non-goal of Robin, we won't
+discuss that here.)
+
+A solution is to ensure every abstract type has two operations, `to-repr`
+and `from-repr`, which convert the abstract value into a concrete
+representation and vice-versa.  `to-repr` should be deterministic; for all
+values _v_ of some abstract type _t_, all implementations of _t_ should
+produce the same value for `to-repr` _v_.  For example, an abstract type
+of dictionaries might have as its representation a sorted, non-redundant
+alist.
+
+This permits serialization, pattern-matching, equality testing, etc.,
+simply by (implicitly) calling `to-repr` on the value first.
+
+These two functions should be round-trippable, in that for all _v_,
+`(from-repr (to-repr v))` = v.  Some information may be lost, but
+such information should not be critical information (e.g. caching most
+recently used values for the sake of performance, etc.)
+
+You can still try to perform erroneous access by converting the abstract
+value to a concrete representation, mucking with the representation, then
+converting it back to the abstract value.  However, the representation
+should be defined at the level of properties of the abstraction, and trying
+to convert it to an abstract value should raise an exception if those
+properties do not hold (i.e. if the concrete value is "corrupt".)
+
+We could treat macro values as abstract values.  The representation of a
+macro value is its definition, plus any values that might be closed over in
+it (represented as a `let` wrapping the definition.)  But there is one
+desired property that does not hold -- the representation of a macro is not
+deterministic; there are an infinite number of equivalent representations of
+any macro, and no effective procedure to select the "simplest" one (or any
+other way to effectively order possible representations.)
+
+We could treat pids as abstract values.  One might hope to do information
+hiding with pids; you should be unable to send a message to a process unless
+you got its pid from it or its parent (perhaps indirectly).  However,
+`from-repr` lets you make up pids "from scratch" (from arbitrary concrete
+representations) and even if the pid structures contains an obscure
+fingerprint or the like, you might accidentally hit upon an existing pid.
+
+However, maybe that is not so bad; we could call it the "how did you get
+this phone number" problem.  Even if pids are abstract, a process can't
+really rely on its parent not somehow sharing its pid with some process it
+knows nothing about, barring some really involved proofs.  And, even with an
+abstract pid, you can't guarantee e.g. that sending it a message has some
+meaning; the process might have died, maybe long enough ago that the pid was
+recycled and a new process lives there now.  (Though, of course, we should
+take measures to reduce the chances of all these things.)
+
+Can we implement abstract values as functions?  Take a queue for instance:
+
+    (bind q (queue:empty)
+      (((q enqueue 33) enqueue 66) deqpeek))
+
+...should evaluate to 33.  This is pretty good.  What would the
+implementation look like?
+
+    (bind empty
+      (bind contents ()
+        (macro (self args env)
+          ; if args#0 is 'enqueue', return a macro like 'self'
+          ; closed over (pair args#1 contents)
+          ; else if args#0 is 'deqpeek', return (list:last contents)
+        )
+
+But it looks like this might involve mucking with the closed-over
+environment of the macro -- which we could make possible.  But I'm not
+sure we want to.  Anyway, this macro would also need to implement the
+operations `(q to-repr)` and `(q from-repr (list 1 2 3))`.  The latter
+is actually a "class method" and doesn't need to be on an existing
+instance; but that is its own, fairly involved design decision.
