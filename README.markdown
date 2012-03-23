@@ -163,10 +163,6 @@ Plans
   I'm not sure that solves the problem of them only being accessible
   from the module in which they're defined.
 
-* Support qualifiers during module import.  Have identifiers be imported
-  from modules qualified by default, and have something to turn this off.
-  Possibly support "only" and "hiding" qualifiers.
-
 * Have exceptions, by default, be chained together, to avoid "exception
   translation".  If a program raises an exception while catching another
   exception, the old exception(s) should be linked to from to the new
