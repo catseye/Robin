@@ -46,10 +46,8 @@ passing it the tail of the pair.
 >     eval env ienv applierExpr (\applier ->
 >         case (stripMetadata applier) of
 >             m@(Macro _ _ body) -> do
->                 trace ienv m
 >                 eval (makeMacroEnv env actuals (stripMetadata m)) ienv body cc
 >             b@(Builtin _ fun) -> do
->                 trace ienv b
 >                 fun env ienv actuals cc
 >             other ->
 >                 raise ienv (Pair (Symbol "inapplicable-object") other))
@@ -64,7 +62,6 @@ Everything else just evaluates to itself.  Continue the current
 continuation with that value.
 
 > eval env ienv e cc = do
->     trace ienv e
 >     cc e
 
 Helper function
@@ -86,16 +83,6 @@ Exception Handler
 > raise :: IEnv Expr -> Expr -> IO Expr
 > raise ienv expr =
 >     (getExceptionHandler ienv) expr
-
-Tracing
--------
-
-> trace :: IEnv Expr -> Expr -> IO ()
-> trace ienv expr =
->     if getTrace ienv then
->         do print (getThreadId ienv, expr)
->       else
->         return ()
 
 Assertions
 ----------

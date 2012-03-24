@@ -14,19 +14,17 @@ we keep things like:
 * the ThreadId and Chan of the current Pid
 * whether tracing is enabled or not
 
-> data IEnv t = IEnv (t -> IO t) ThreadId (Chan t) Bool
+> data IEnv t = IEnv (t -> IO t) ThreadId (Chan t)
 
 > stop expr =
 >     error ("uncaught exception: " ++ show expr)
 
-> newIEnv eh tid chan trace =
->     IEnv eh tid chan trace
+> newIEnv eh tid chan =
+>     IEnv eh tid chan
 
-> getExceptionHandler (IEnv handler _ _ _) = handler
-> setExceptionHandler handler (IEnv _ tid chan trace) =
->     (IEnv handler tid chan trace)
+> getExceptionHandler (IEnv handler _ _) = handler
+> setExceptionHandler handler (IEnv _ tid chan) =
+>     (IEnv handler tid chan)
 
-> getThreadId (IEnv _ tid _ _) = tid
-> getChannel (IEnv _ _ chan _) = chan
-
-> getTrace (IEnv _ _ _ trace) = trace
+> getThreadId (IEnv _ tid _) = tid
+> getChannel (IEnv _ _ chan) = chan

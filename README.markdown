@@ -293,8 +293,6 @@ though.
   this to where-ever you keep your modules; in which case, the executable
   itself doesn't even need to be on your `PATH`.)
 
-* Remove execution trace facility.
-
 ### Other Implementations ###
 
 * Build another implementation of Robin.  This should probably wait,
