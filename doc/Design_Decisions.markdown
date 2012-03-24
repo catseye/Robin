@@ -521,3 +521,25 @@ sure we want to.  Anyway, this macro would also need to implement the
 operations `(q to-repr)` and `(q from-repr (list 1 2 3))`.  The latter
 is actually a "class method" and doesn't need to be on an existing
 instance; but that is its own, fairly involved design decision.
+
+#### Should there be a distinction between processes and devices?
+
+Decision: Yes.
+
+It's tempting to unify the two, and say that there are only devices,
+and that every concurrent process you spawn is a device of some sort.
+
+But devices represent resources beyond just cycles and memory, while
+you can have a "compute" process which just uses cycles and memory.
+It doesn't need to be acquired, or released, or registered for access
+by some other, anonymous program.
+
+#### Should the `random` facility be a device?
+
+Decision: No.
+
+Following the decision immediately above, and the decision to have
+fine-grained modules -- the `random` module itself is simply doing
+computation.  *However*, it may be seeded with a source of entropy
+from the system -- which implies that there should, indeed, be an
+`entropy` device.

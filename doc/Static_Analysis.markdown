@@ -5,6 +5,9 @@ This document is a draft.  It contains a bunch of not-necessarily
 well-integrated notes on how Robin approaches the problem of static
 analysis.
 
+> Static analysis is abstract interpretation, and abstract
+> interpretation is just interpretation over a different domain.
+
 Static Analysis
 ---------------
 
@@ -176,6 +179,8 @@ used.
 This is a fairly simple analysis (and probably should have been the one
 I started working on first, instead of `pure`.)
 
+A better(?) name for this analysis might be `bound`.
+
 `non-shadowing`
 ---------------
 
@@ -227,3 +232,9 @@ An expression is non-raising if executing it cannot possibly raise an
 exception.  (The simplest way to achieve this is to catch everything at
 a high level, and not raise anything in the exception handler.)
 Java does an analysis similar to this.
+
+`consistent-export`
+-------------------
+
+A module has consistent exports if it does not try to `export` an unbound
+identifier.  This is more-or-less a special case of `consistent`.

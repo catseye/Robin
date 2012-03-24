@@ -163,11 +163,8 @@ Plans
   I'm not sure that solves the problem of them only being accessible
   from the module in which they're defined.
 
-* Have exceptions, by default, be chained together, to avoid "exception
-  translation".  If a program raises an exception while catching another
-  exception, the old exception(s) should be linked to from to the new
-  one.  This is to give more sensible error messages at the top level,
-  by dumping them all, giving the operator a deeper idea of what happened.
+* Remove improper lists from the language.  This is starting to look
+  like the more attractive route.
 
 ### Standard Modules ###
 
@@ -181,7 +178,8 @@ Plans
   (via a message) to send back a message after a given time has passed.
   This could be used to build a version of `recv` which can time out.
 
-* Enhance the `console` module.  Write demo(s) for it.
+* Enhance the `console` module.  Write a version of `robotfindskitten`
+  using it.
 
 * In the `arith` module, make `sum` and `product` that work on lists.
   Possibly make `product` short-circuiting.  Possibly add `int-pow`.
@@ -223,16 +221,18 @@ though.
   possibly `quasi-literal` which works more like Perl's embedded `$`
   variables.  (Extending this to embedded expressions is also possible.)
 
-* Work out the static analysis modules, `pure` and `constant` and `total`
-  and `typed` and so forth.  This is pretty difficult and open-ended, but
-  relies on the idea that static analysis is abstract interpretation, and
-  abstract interpretation is just interpretation over a different domain.
+* Work out the static analysis modules.  See the Static Analysis document
+  for more information.
 
-* Write a `bound` static analysis module which simply checks that
-  each identifier is bound in the environment in which it is used.
-
-* Write a static analyzer which detects trying to `export` an unbound
-  identifier, and raises an exception.
+* Either extend the `exception` module and semantics, or create a new
+  module for exception semantics extended as follows.  Allow the backtrace
+  of an exception to be accessed as a Robin object, and, to some extent,
+  manipulated.  When an exception is raised in a context where another
+  exception is being caught, allow the backtraces to be chained together.
+  When an exception is raised during (say) the reading of a text file,
+  allow the backtrace to be amended with the position within the text
+  file to which the problem can be traced.  The purpose of all this is
+  to allow producing more complete error messages at the top level.
 
 ### Possible Future Modules ###
 
@@ -284,26 +284,32 @@ though.
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)
 
-### Implementation ###
+### Reference Implementation ###
 
-* Allow the `robin` binary to be installed on your `PATH`, and let it be
-  configured to understand how to find modules for loading.  This will
-  likely involve a `.robinrc` file (or directory) in the user's home
-  directory, which maps module names to filenames.
+* Allow the `robin` executable to be installed on your `PATH`, and let it be
+  configured to understand how to find modules for loading, probably by
+  requiring a "module path" passed on the command line.  (You would 
+  probably typically write a little wrapper script, or alias, that sets
+  this to where-ever you keep your modules; in which case, the executable
+  itself doesn't even need to be on your `PATH`.)
 
-* Finish implementing execution trace by adding a `-t` flag to the
-  implementation, and possibly making it prettier.
+* Remove execution trace facility.
 
-* Allow the implementation to use a configuration file to specify which
-  files (and where) to load for which modules.
+### Other Implementations ###
+
+* Build another implementation of Robin.  This should probably wait,
+  as even the fundamental semantics are still a moving target, and
+  having to maintain two implementations is not so desirable.  However,
+  this will let me have a place to implement "practical" things that
+  arguably don't belong in the reference implementation.
+
+* Allow the implementation to use a configuration file (likely a `.robinrc`
+  file (or directory) in the user's home directory) to specify which files
+  (and where) to load for which modules.
+
+* Implement a selective execution trace facility (configured in the
+  configuration file, probably) which starts and stops tracing at
+  configured points during program execution.
 
 * Upon an uncaught exception, dump a backtrace.  This should be based
   on the current continuation at the time the exception was raised.
-  Currently that is implemented as a function value in Haskell, which
-  is not examinable, so that will have to change.  Currently, also,
-  line numbers are not recorded for each application, so that will
-  have to change too.
-
-### Awesomeness ###
-
-* Using the `console` module, write `robotfindskitten` in Robin!
