@@ -94,9 +94,20 @@ Step 5: Run the tests.
     $ cd robin
     $ ./test.sh
 
-Installation of the compiled `robin` executable so that it can be run from
-any working directory isn't supported yet; you'll need to be in your clone's
-root directory to run `bin/robin` for now.
+The `robin` executable so built is the reference interpreter; it is not
+intended for production use, so much as to be a model for how to implement
+Robin.  It can, however, be used for light-duty tasks.  We suggest creating
+the following driver script and putting it on your executable search path:
+
+    #!/bin/sh
+    ROBIN_PATH=/path/to/robin/repo
+    ${ROBIN_PATH}/bin/robin -m ${ROBIN_PATH}/module $*
+
+Of course, replace `/path/to/robin/repo` with the actual path to the clone
+you created with Mercurial or git.  If you write your own modules, you can
+place them in a directory of your choosing, and pass it after another `-m`
+option in the driver script (before the existing `-m` option, if you want
+your modules to override the standard ones.)
 
 It is possible to build `robin` under Windows, using `ghc` from the Haskell
 Platform for Windows, and Cygwin to run the shell scripts; however, there
@@ -284,14 +295,11 @@ though.
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)
 
-### Reference Implementation ###
+* Find another way (one that works on Windows) to do what
+  `unbundle-modules.py` currently does.
 
-* Allow the `robin` executable to be installed on your `PATH`, and let it be
-  configured to understand how to find modules for loading, probably by
-  requiring a "module path" passed on the command line.  (You would 
-  probably typically write a little wrapper script, or alias, that sets
-  this to where-ever you keep your modules; in which case, the executable
-  itself doesn't even need to be on your `PATH`.)
+* Improve Falderal to let tests take some text as input; use this for the
+  tests for `crude-input`.
 
 ### Other Implementations ###
 

@@ -14,7 +14,7 @@ all devices on the running system, from Robin.  Existing modules such as
 `crude-io` and `console` may be deprecated, or at least have their status
 changed (they may only describe the devices, not provide access to them.)
 
--> Tests for shell command "bin/robin %(test-file)"
+-> Tests for functionality "Interpret Robin Program"
 
 ### `acquire!` ###
 

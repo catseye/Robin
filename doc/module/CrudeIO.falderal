@@ -31,9 +31,6 @@ this confirmation message.  The simplest way to do this is to use the
 `call!` macro.  If the program terminates before this confirmation message
 is received, the text might not be written to the standard output.
 
--> Functionality "Interpret Robin Program" is implemented by
--> shell command "bin/robin %(test-file)"
-
 -> Tests for functionality "Interpret Robin Program"
 
 Sending a message to `crude-output` causes the contents of the message to

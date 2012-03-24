@@ -3,9 +3,6 @@
 Module `core`
 =============
 
--> Functionality "Interpret Robin Program" is implemented by
--> shell command "bin/robin %(test-file)"
-
 -> Tests for functionality "Interpret Robin Program"
 
 Robin's `core` module exports the set of intrinsic macros on top of which

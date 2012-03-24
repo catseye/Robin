@@ -3,9 +3,6 @@
 Robin - Concurrency Module
 ==========================
 
--> Functionality "Interpret Robin Program" is implemented by
--> shell command "bin/robin %(test-file)"
-
 -> Tests for functionality "Interpret Robin Program"
 
 The `concurrency` module exports macros for working with concurrently-

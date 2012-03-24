@@ -4,9 +4,6 @@ Module `small`
 ==============
 
 -> Functionality "Interpret Robin Program" is implemented by
--> shell command "bin/robin %(test-file)"
-
--> Functionality "Interpret Robin Program" is implemented by
 -> shell command "bin/robin -B small %(test-file)"
 
 -> Tests for functionality "Interpret Robin Program"
