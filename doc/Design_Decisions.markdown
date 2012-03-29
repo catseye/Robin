@@ -522,6 +522,36 @@ operations `(q to-repr)` and `(q from-repr (list 1 2 3))`.  The latter
 is actually a "class method" and doesn't need to be on an existing
 instance; but that is its own, fairly involved design decision.
 
+Also, Robin potentially has the ability to use different implementations
+(representations) of the same abstract data type in different modules,
+independent of the program: the module configuration file could point
+one module to an alist-backed dictionary data type, and another module
+at a hash-table-backed dictionary data type.  Those two modules ought to
+still be able to pass objects of the dictionary data type back and forth
+to each other.
+
+#### Should environments be abstract data types?
+
+Decision: Currently they aren't, but they should be.
+
+Currently, all macros in the standard modules accept and return alist
+representations of environments.  But there are mismatches between this
+representation, and what environments actually support.  There can be
+multiple entries for the same key in an alist, and alists expose an order
+to their entries, neither of which is a necessity of environments.  There
+are potentially many ways to represent an environment.  So, environments
+should be encapsulated in an abstract data type that supports the
+operations `lookup` and `extend`.
+
+#### Should strings be abstract data types?
+
+Decision: Again, currently they aren't, but they should be.
+
+Again, there are multiple possible ways to represent a string: a naive
+list of integers (representing characters) suffices for many applications,
+but other applications may benefit from using a "rope" representation, or
+some other representation.
+
 #### Should there be a distinction between processes and devices?
 
 Decision: Yes.
@@ -540,6 +570,50 @@ Decision: No.
 
 Following the decision immediately above, and the decision to have
 fine-grained modules -- the `random` module itself is simply doing
-computation.  *However*, it may be seeded with a source of entropy
-from the system -- which implies that there should, indeed, be an
-`entropy` device.
+computation (generating ever-more pseudo-random numbers from a seed.)
+*However*, it may be seeded with a source of entropy from the system --
+which implies that there should, indeed, be an `entropy` device.
+
+But considering naming conventions -- possibly, for the same reason,
+the `random` module should be called `pseudo-random` or similar.  And
+`entropy` might likewise be better named `random`.  Not sure.
+
+#### Should all messaging transactions be synchronous?
+
+Decision: Not sure.  I'm starting to think yes.
+
+While the Erlang paradigm for message-passing is very simple -- just
+`Pid ! msg` and you've sent a message -- it's also very low-level.  For
+Erlang/OTP, things like `gen_server` are built on top of this, using
+sets of functions to abstract away the details.  Robin does something
+similar with `call!` and `respond!`.  This lets you write code where you
+can be reasonably sure that the other processes you are sending messages
+to are in the state that you expect.
+
+Being able to send a message to a process and not expect a reply does
+let you write potentially more efficient code; you don't have to wait for
+your message to be acknowledged.  But combining this with `call!`/`respond!`
+can lead to complex patterns of communication, where it is difficult to
+reason about whether the other processes are in the state you expect.
+(If the server process uses `respond!`, what should it do about messages
+that don't require an acknowledgement?  How sophisticated does `respond!`
+need to be?)
+
+Also, requiring synchronous communication between processes does not
+preclude asynchonous processing -- it's just that your "start doing this"
+message needs to be acknowledged by the other process, and your process
+needs to wait for that acknowledgement.  The activity itself still goes
+on independent of the current process.
+
+Also, race conditions are among the hardest bugs to detect, isolate and
+fix, and unacknowledged asynchronous messages probably lead to them (though
+not so much as shared updatable storage leads to them.)  Doing what we can
+to encourage programmers to avoid race conditions in design is probably
+called for.
+
+#### Should all messaging consist of message structures (with envelopes)?
+
+Decision: Again, not sure, leaning towards yes.
+
+Again, `Pid ! Msg` where `Msg` is anything is very simple, but again, it
+is very low-level.  Need to think about this more.
