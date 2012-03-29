@@ -69,13 +69,13 @@ too?
 >         let parent = getPid ienv
 >         let exch = makeMsgSendingExcHandler parent
 >         let myIenv = newIEnv exch thread chan
->         eval env myIenv expr (\x -> do return Null)
+>         eval env myIenv expr (\x -> do return (List []))
 >         return ()
 
 > makeMsgSendingExcHandler pid =
 >     \value -> do
->         writeChan (getChan pid) (Pair (Symbol "uncaught-exception") value)
->         return Null
+>         writeChan (getChan pid) (errMsg "uncaught-exception" value)
+>         return (List [])
 
 Capture the "response" pattern for processes which handle `call`s.  This
 doesn't require that the process has a Robin pid.
@@ -87,15 +87,15 @@ doesn't require that the process has a Robin pid.
 >     tid <- myThreadId
 >     let myPid = Pid tid chan
 >     case message of
->         (Pair sender (Pair (Symbol tagText) (Pair payload Null))) ->
+>         (List [sender, (Symbol tagText), payload]) ->
 >             case lookup tagText handlers of
 >                 Just handler -> do
 >                     (state', reply) <- handler state sender payload
->                     let response = (Pair myPid (Pair (Pair (Symbol tagText) (Symbol "reply")) (Pair reply Null)))
+>                     let response = List [myPid, (List [(Symbol tagText), (Symbol "reply")]), reply]
 >                     writeChan (getChan sender) response
 >                     respond chan handlers state'
 >                 Nothing -> do
->                     let response = (Pair myPid (Pair (Pair (Symbol tagText) (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>                     let response = List [myPid, (List [(Symbol tagText), (Symbol "reply")]), (Symbol "what?")]
 >                     writeChan (getChan sender) response
 >                     respond chan handlers state
 >         _ -> do
@@ -106,35 +106,35 @@ Robin Functions
 
 These are the functions exported by this Robin module.
 
-> robinMyself env ienv Null cc = do
+> robinMyself env ienv (List []) cc = do
 >     cc $ getPid ienv
-> robinMyself env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinMyself env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > pidP = predP isPid
 
-> robinSpawn env ienv (Pair id@(Symbol _) (Pair expr (Pair body Null))) cc = do
+> robinSpawn env ienv (List [id@(Symbol _), expr, body]) cc = do
 >     pid <- spawnExpr env ienv expr
 >     eval (Env.insert id pid env) ienv body cc
-> robinSpawn env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinSpawn env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> send env ienv (Pair pidExpr (Pair msgExpr (Pair body Null))) cc = do
+> send env ienv (List [pidExpr, msgExpr, body]) cc = do
 >     eval env ienv pidExpr (\pid ->
 >         assertPid ienv pid (\pid ->
 >             eval env ienv msgExpr (\msg -> do
 >                 writeChan (getChan pid) msg
 >                 eval env ienv body cc)))
-> send env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> send env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> recv env ienv (Pair id@(Symbol _) (Pair body Null)) cc = do
+> recv env ienv (List [id@(Symbol _), body]) cc = do
 >    message <- readChan $ getChan $ getPid ienv
 >    --putStrLn ((show $ getPid ienv) ++ " just recvd " ++ (show message))
 >    eval (Env.insert id message env) ienv body cc
-> recv env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> recv env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> msgsP env ienv Null cc = do
+> msgsP env ienv (List []) cc = do
 >    isEmpty <- isEmptyChan $ getChan $ getPid ienv
 >    cc $ Boolean $ not isEmpty
-> msgsP env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> msgsP env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 This might, one day, be implemented in Robin, in some other module.
 For now, for simplicity, it's here.
@@ -147,25 +147,25 @@ messages in the meantime, and re-sends them to self when done.
 TODO: This should also handle any "finished" or "uncaught exception" response
 from the destination pid.
 
-> call env ienv (Pair pidExpr (Pair tag@(Symbol _) (Pair payloadExpr (Pair repsym@(Symbol _) (Pair body Null))))) cc = do
+> call env ienv (List [pidExpr, tag@(Symbol _), payloadExpr, repsym@(Symbol _), body]) cc = do
 >     eval env ienv pidExpr (\pid ->
 >         assertPid ienv pid (\pid ->
 >             eval env ienv payloadExpr (\payload -> do
->             let msg = (Pair (getPid ienv) (Pair tag (Pair payload Null)))
+>             let msg = List [(getPid ienv), tag, payload]
 >             writeChan (getChan pid) msg
 >             waitForResponse env ienv pid tag repsym body [] cc)))
-> call env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> call env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > waitForResponse env ienv pid tag repsym body queue cc = do
 >     message <- readChan $ getChan $ getPid ienv
 >     case message of
->          (Pair somePid (Pair (Pair someTag (Symbol "reply")) (Pair returnPayload Null))) -> do
+>          (List [somePid, (List [someTag, (Symbol "reply")]), returnPayload]) -> do
 >              if (pid == somePid) && (tag == someTag) then do
 >                  sendAll (getChan $ getPid ienv) (reverse queue)
 >                  eval (Env.insert repsym returnPayload env) ienv body cc
 >                else
 >                  waitForResponse env ienv pid tag repsym body (message:queue) cc
->          (Pair (Symbol "uncaught-exception") excval) ->
+>          (List [(Symbol "uncaught-exception"), excval]) ->
 >              raise ienv excval
 >          other ->
 >              waitForResponse env ienv pid tag repsym body (message:queue) cc
@@ -180,34 +180,34 @@ from the destination pid.
 >     validateRespond ienv branches (\ok -> do
 >       message <- readChan $ getChan $ getPid ienv
 >       case message of
->         (Pair sender (Pair tag@(Symbol _) (Pair payload Null))) -> do
+>         (List [sender, tag@(Symbol _), payload]) -> do
 >             case lookupRespondTag tag branches of
 >                 Just x@(bindVar, responseExpr, continue) -> do
 >                     let newEnv = Env.insert bindVar payload env
 >                     eval newEnv ienv responseExpr (\reply -> do
->                         let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair reply Null)))
+>                         let response = List [(getPid ienv), (List [tag, (Symbol "reply")]), reply]
 >                         writeChan (getChan sender) response
 >                         eval newEnv ienv continue cc)
 >                 -- TODO: this should not necessarily just loop
 >                 Nothing -> do
->                     let response = (Pair (getPid ienv) (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>                     let response = List [(getPid ienv), (List [tag, (Symbol "reply")]), (Symbol "what?")]
 >                     writeChan (getChan sender) response
 >                     robinRespond env ienv branches cc
 >         -- TODO: this should not necessarily just loop
 >         _ -> do
 >             robinRespond env ienv branches cc)
 
-> validateRespond ienv Null cc = cc Null
-> validateRespond ienv (Pair (Pair (Symbol _) (Pair (Pair (Symbol _) Null) (Pair responseExpr (Pair continue Null)))) rest) cc =
->     validateRespond ienv rest cc
-> validateRespond ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> validateRespond ienv (List []) cc = cc (List [])
+> validateRespond ienv (List ((List [(Symbol _), (List [(Symbol _)]), responseExpr, continue]):rest)) cc =
+>     validateRespond ienv (List rest) cc
+> validateRespond ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > lookupRespondTag :: Expr -> Expr -> Maybe (Expr, Expr, Expr)
 
-> lookupRespondTag tag Null = Nothing
-> lookupRespondTag tag (Pair (Pair candidateTag (Pair (Pair bindVar Null) (Pair responseExpr (Pair continue Null)))) rest)
+> lookupRespondTag tag (List []) = Nothing
+> lookupRespondTag tag (List ((List [candidateTag, (List [bindVar]), responseExpr, continue]):rest))
 >     | tag == candidateTag = Just (bindVar, responseExpr, continue)
->     | otherwise           = lookupRespondTag tag rest
+>     | otherwise           = lookupRespondTag tag (List rest)
 
 Module Definition
 -----------------

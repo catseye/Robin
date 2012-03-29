@@ -25,32 +25,32 @@ value.  Then continue the current continuation with that value.
 
 > eval :: Bif
 
-> eval Null ienv s@(Symbol _) cc =
->     raise ienv (Pair (Symbol "unbound-identifier") s)
-> eval (Pair b@(Pair id@(Symbol _) value) env) ienv s@(Symbol _) cc
+> eval (List []) ienv s@(Symbol _) cc =
+>     raise ienv (errMsg "unbound-identifier" s)
+> eval (List (b@(List [id@(Symbol _), value]):env)) ienv s@(Symbol _) cc
 >     | id == s   = cc value
->     | otherwise = eval env ienv s cc
-> eval (Pair (Pair other _) env) ienv s@(Symbol _) cc =
->     raise ienv (Pair (Symbol "expected-symbol") other)
-> eval (Pair head tail) ienv s@(Symbol _) cc =
->     raise ienv (Pair (Symbol "expected-pair") head)
+>     | otherwise = eval (List env) ienv s cc
+> eval (List ((List (other:_)):env)) ienv s@(Symbol _) cc =
+>     raise ienv (errMsg "expected-symbol" other)
+> eval (List (head:tail)) ienv s@(Symbol _) cc =
+>     raise ienv (errMsg "expected-pair" head)
 > eval env ienv s@(Symbol _) cc =
->     raise ienv (Pair (Symbol "expected-pair") env)
+>     raise ienv (errMsg "expected-pair" env)
 
 Evaluating a pair means we must make several evaluations.  We
 evaluate the head to obtain something to apply (which must be a
 macro, built-in or not.)  We then apply the body of the macro,
 passing it the tail of the pair.
 
-> eval env ienv (Pair applierExpr actuals) cc = do
+> eval env ienv (List (applierExpr:actuals)) cc = do
 >     eval env ienv applierExpr (\applier ->
 >         case (stripMetadata applier) of
 >             m@(Macro _ _ body) -> do
->                 eval (makeMacroEnv env actuals (stripMetadata m)) ienv body cc
+>                 eval (makeMacroEnv env (List actuals) (stripMetadata m)) ienv body cc
 >             b@(Builtin _ fun) -> do
->                 fun env ienv actuals cc
+>                 fun env ienv (List actuals) cc
 >             other ->
->                 raise ienv (Pair (Symbol "inapplicable-object") other))
+>                 raise ienv (errMsg "inapplicable-object" other))
 
 Evaluating something with metadata is the same as evaluating the same
 thing without metadata.
@@ -64,13 +64,16 @@ continuation with that value.
 > eval env ienv e cc = do
 >     cc e
 
-Helper function
----------------
+Helper functions
+----------------
+
+> errMsg msg term =
+>     List [(Symbol msg), term]
 
 > makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
 >     let
->         (Pair argSelf@(Symbol _) (Pair argFormal@(Symbol _)
->          (Pair envFormal@(Symbol _) Null))) = argList
+>         (List [argSelf@(Symbol _), argFormal@(Symbol _),
+>                envFormal@(Symbol _)]) = argList
 >         newEnv = Env.insert argSelf m closedEnv
 >         newEnv' = Env.insert argFormal actuals newEnv
 >         newEnv'' = Env.insert envFormal env newEnv'
@@ -93,10 +96,10 @@ Assertions
 >     in
 >         case pred expr' of
 >             True -> cc expr'
->             False -> raise ienv (Pair (Symbol msg) expr')
+>             False -> raise ienv (errMsg msg expr')
 
 > assertSymbol = assert (isSymbol) "expected-symbol"
 > assertBoolean = assert (isBoolean) "expected-boolean"
-> assertPair = assert (isPair) "expected-pair"
+> assertList = assert (isList) "expected-list"
 > assertNumber = assert (isNumber) "expected-number"
 > assertMacro = assert (isMacro) "expected-macro"

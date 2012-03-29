@@ -1,5 +1,6 @@
 > module Robin.Parser (parseRobin, insistParse) where
 
+> import Data.Char
 > import Data.Ratio
 
 > import Text.ParserCombinators.Parsec
@@ -50,24 +51,13 @@ TODO: document these productions.
 >     c <- (char 't' <|> char 'f')
 >     return (if c == 't' then (Boolean True) else (Boolean False))
 
-> proper e = do
->     string ")"
->     return $ robinizeList e Null
-
-> improper e = do
->     string "."
->     spaces
->     many comment
->     e2 <- expr
->     string ")"
->     return $ robinizeList e e2
-
 > list = do
 >     string "("
 >     spaces
 >     many comment
 >     e <- many expr
->     proper e <|> improper e
+>     string ")"
+>     return $ List e
 
 > stringSugar = do
 >     string "'"
@@ -86,7 +76,9 @@ TODO: document these productions.
 > stringTail sentinel contents = do
 >     string sentinel
 >     string "'"
->     return $ robinizeString contents
+>     return $ List (map charToNum contents)
+>  where
+>     charToNum x = Number ((toInteger $ ord x) % 1)
 
 > comment = do
 >     string ";"

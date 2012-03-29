@@ -38,12 +38,17 @@ Module Loading
 > isModuleInProgress mc@(ModuleCache _ _ ip _) modRef =
 >     modRef `elem` ip
 
+> qualifyModuleEnv :: Bool -> String -> Expr -> Expr
+
 > qualifyModuleEnv False _ expr =
 >     expr
-> qualifyModuleEnv True name Null =
->     Null
-> qualifyModuleEnv True name (Pair (Pair (Symbol id) val) rest) =
->     Pair (Pair (Symbol (name ++ ":" ++ id)) val) $ qualifyModuleEnv True name rest
+> qualifyModuleEnv True name (List exprs) =
+>     qualifyModuleEnv' name exprs
+
+> qualifyModuleEnv' name [] =
+>     List []
+> qualifyModuleEnv' name ((List [(Symbol id), val]):rest) =
+>     append (List [(Symbol (name ++ ":" ++ id)), val]) (qualifyModuleEnv' name rest)
 
 > loadModule :: ModuleCache -> ModuleRef -> Bool -> IO (ModuleCache, Expr)
 
@@ -94,25 +99,28 @@ Module Loading
 
 > loadModules :: ModuleCache -> Expr -> IO (ModuleCache, Expr)
 
-> loadModules mc Null = do
+> loadModules mc (List exprs) =
+>     loadModules' mc exprs
+
+> loadModules' mc [] = do
 >     return (mc, Env.empty)
-> loadModules mc (Pair (Pair (Symbol name) (Pair version qualifiers)) rest) = do
+> loadModules' mc ((List ((Symbol name):version:qualifiers)):rest) = do
 >     let qualified = case qualifiers of
->                         (Pair (Symbol "*") Null) -> False
->                         Null                     -> True
+>                         [(Symbol "*")] -> False
+>                         []             -> True
 >     (major, minor) <- parseVersion version
->     (mc', nextEnv) <- loadModules mc rest
+>     (mc', nextEnv) <- loadModules' mc rest
 >     (mc'', thisEnv) <- loadModule mc' (name, major, minor) qualified
 >     return (mc'', Env.union nextEnv thisEnv)
 
-> parseVersion (Pair (Number major) (Pair (Number minor) Null)) = do
+> parseVersion (List [(Number major), (Number minor)]) = do
 >     case (denominator major, denominator minor) of
 >         (1, 1) -> return (numerator major, numerator minor)
 >         _      -> error "version number components can't be fractions"
 
 > evalRobin :: ModuleCache -> Expr -> IO (ModuleCache, Expr)
 
-> evalRobin mc (Pair (Symbol "robin") (Pair version (Pair modules (Pair expr Null)))) = do
+> evalRobin mc (List [(Symbol "robin"), version, modules, expr]) = do
 >     (major, minor) <- parseVersion version
 >     case (major, minor) of
 >         (0, 1) -> do
