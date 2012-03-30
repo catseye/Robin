@@ -176,35 +176,35 @@ two arguments will raise an exception.
 |   (equal? 7 8 9))
 ? uncaught exception: (illegal-arguments 7 8 9)
 
-### `pair?` ###
+### `list?` ###
 
-`pair?` evaluates its argument, then evaluates to `#t` if it is a pair,
+`list?` evaluates its argument, then evaluates to `#t` if it is a list,
 `#f` otherwise.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? ((macro (self args env) (head args)) (a b))))
+|   (list? ((macro (self args env) (head args)) (a b))))
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? ((macro (self args env) (head args)) (a b c d e f))))
+|   (list? ((macro (self args env) (head args)) (a b c d e f))))
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? (pair 4 (pair 5 ()))))
+|   (list? (pair 4 (pair 5 ()))))
 = #t
 
 Symbols are not pairs.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? ((macro (self args env) (head args)) b)))
+|   (list? ((macro (self args env) (head args)) b)))
 = #f
 
 The argument to `pair?` may (naturally) be any type, but there must be
 exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? (pair 4 5) (pair 6 7)))
-? uncaught exception: (illegal-arguments (pair 4 5) (pair 6 7))
+|   (list? (pair 4 ()) (pair 6 ())))
+? uncaught exception: (illegal-arguments (pair 4 ()) (pair 6 ()))
 
 ### `macro?` ###
 
@@ -490,9 +490,10 @@ precedence.
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind bindings (pair
-|                    (pair (literal foo) (literal yes))
-|                    (pair (pair (literal foo) (literal no))
-|                       (literal ())))
+|                    (pair (literal foo) (pair (literal yes) ()))
+|                    (pair
+|                       (pair (literal foo) (pair (literal no) ()))
+|                       ()))
 |     (eval bindings (literal foo))))
 = yes
 
@@ -595,7 +596,7 @@ will look awful.)
 |   (bind qqq
 |     (macro (self args env)
 |       (if (equal? args ())
-|         (eval env (literal (pair b d)))
+|         (eval env (literal (pair b (pair d ()))))
 |         (eval (pair (pair (head args) (pair 0 ())) env)
 |           (pair self (tail args)))))
 |     (bind b 1 (bind d 4 (qqq b c d)))))
@@ -605,8 +606,8 @@ will look awful.)
 |   (bind qqq
 |     (macro (self args env)
 |       (if (equal? args ())
-|         (eval env (literal (pair b d)))
-|         (eval (pair (pair (head args) 0) env)
+|         (eval env (literal (pair b (pair d ()))))
+|         (eval (pair (pair (head args) (pair 0 ())) env)
 |           (pair self (tail args)))))
 |     (bind b 1 (bind d 4 (qqq x y z)))))
 = (1 4)
@@ -618,7 +619,8 @@ Your recursive `macro` application doesn't have to be tail-recursive.
 |     (macro (self args env)
 |       (if (equal? args ())
 |         ()
-|         (pair (pair (head args) (eval env (head args)))
+|         (pair (pair (head args)
+|                     (pair (eval env (head args)) ()))
 |           (eval env
 |             (pair self (tail args))))))
 |     (bind b 1 (bind d 4 (make-env b d macro)))))
@@ -717,7 +719,7 @@ macros.
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? (with #t (pair 2 3))))
+|   (list? (with #t (pair 2 (pair 3 ())))))
 = #t
 
 | (robin (0 1) ((core (0 1) *))

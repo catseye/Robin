@@ -119,7 +119,6 @@ Module Definition
 >         ("tail",     robinTail),
 >         ("pair",     robinPair),
 >         ("list?",    listP),
->         ("pair?",    listP),
 >         ("symbol?",  symbolP),
 >         ("boolean?", booleanP),
 >         ("macro?",   macroP),
