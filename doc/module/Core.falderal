@@ -14,12 +14,12 @@ all other Robin macros and programs are built.
 contains both of those values, in the same order.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair #t #f))
-= (#t #f)
+|   (pair () ()))
+= (())
 
 | (robin (0 1) ((core (0 1) *))
 |   (pair #t (pair #f ())))
-= (#t (#f ()))
+= (#t #f)
 
 Arguments to `pair` can be any type, but fewer than or more than
 two arguments will raise an exception.
@@ -34,15 +34,13 @@ two arguments will raise an exception.
 
 `pair` is basically equivalent to Scheme's `cons`.
 
-It's gonna have to change to `list`!
-
 ### `head` ###
 
 `head` evaluates its argument to a pair, and evaluates to the first element
 of that pair.
 
 | (robin (0 1) ((core (0 1) *))
-|   (head (pair #t #f)))
+|   (head (pair #t ())))
 = #t
 
 `head` expects its argument to be a pair.
@@ -69,7 +67,7 @@ of that pair.
 of that pair.
 
 | (robin (0 1) ((core (0 1) *))
-|   (tail (pair #t #f)))
+|   (tail (pair #t (pair #f ()))))
 = (#f)
 
 `tail` expects its argument to be a pair.
@@ -192,7 +190,7 @@ two arguments will raise an exception.
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? (pair 4 5)))
+|   (pair? (pair 4 (pair 5 ()))))
 = #t
 
 Symbols are not pairs.
@@ -248,7 +246,7 @@ exactly one argument.
 Pairs are not symbols.
 
 | (robin (0 1) ((core (0 1) *))
-|   (symbol? (pair 1 2)))
+|   (symbol? (pair 1 ())))
 = #f
 
 The argument to `symbol?` may (naturally) be any type, but there must be
@@ -470,7 +468,7 @@ sake of purity, that dependency should be removed (but the tests
 will look awful.)
 
 | (robin (0 1) ((small (0 1) *))
-|   (eval (env) (literal (pair (literal a) (literal b)))))
+|   (eval (env) (literal (pair (literal a) (pair (literal b) ())))))
 = (a b)
 
 | (robin (0 1) ((small (0 1) *))
@@ -479,8 +477,10 @@ will look awful.)
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind bindings (pair
-|                    (pair (literal same) equal?)
-|                    (pair (pair (literal x) #f) (literal ())))
+|                    (pair (literal same) (pair equal? ()))
+|                    (pair
+|                      (pair (literal x) (pair #f ()))
+|                      ()))
 |     (eval bindings (literal (same x x)))))
 = #t
 
@@ -561,7 +561,7 @@ even if they are no longer lexically in scope.
 |      ((a (literal these-are))
 |       (m (macro (self args env) (pair a args))))
 |     m) my args))
-= (these-are (my args))
+= (these-are my args)
 
 Macros can return macros.
 
@@ -572,7 +572,7 @@ Macros can return macros.
 |           (pair (head argsb) argsa))))
 |      (mk2 (mk vindaloo)))
 |     (mk2 chicken)))
-= (chicken (vindaloo))
+= (chicken vindaloo)
 
 Arguments to macros shadow any other bindings in effect.
 
@@ -581,37 +581,35 @@ Arguments to macros shadow any other bindings in effect.
 |     ((args (literal a))
 |      (b (macro (self args env) (pair args args))))
 |     (b 7)))
-= ((7) (7))
+= ((7) 7)
 
-    `self` is there to let you write recursive macros.  The following
-    example demonstrates this; it evaluates `(pair b d)` in an environment
-    where all the identifiers you list after `qqq` have been bound to 0.
+`self` is there to let you write recursive macros.  The following
+example demonstrates this; it evaluates `(pair b d)` in an environment
+where all the identifiers you list after `qqq` have been bound to 0.
 
-    TODO: these tests use things from the `small` module; for the
-    sake of purity, that dependency should be removed (but the tests
-    will look awful.)
+TODO: these tests use things from the `small` module; for the
+sake of purity, that dependency should be removed (but the tests
+will look awful.)
 
-    XXX FIXME: these tests now go into infinite loops...
+| (robin (0 1) ((small (0 1) *))
+|   (bind qqq
+|     (macro (self args env)
+|       (if (equal? args ())
+|         (eval env (literal (pair b d)))
+|         (eval (pair (pair (head args) (pair 0 ())) env)
+|           (pair self (tail args)))))
+|     (bind b 1 (bind d 4 (qqq b c d)))))
+= (0 0)
 
-    | (robin (0 1) ((small (0 1) *))
-    |   (bind qqq
-    |     (macro (self args env)
-    |       (if (equal? args ())
-    |         (eval env (literal (pair b d)))
-    |         (eval (pair (pair (head args) 0) env)
-    |           (pair self (tail args)))))
-    |     (bind b 1 (bind d 4 (qqq b c d)))))
-    = (0 0)
-
-    | (robin (0 1) ((small (0 1) *))
-    |   (bind qqq
-    |     (macro (self args env)
-    |       (if (equal? args ())
-    |         (eval env (literal (pair b d)))
-    |         (eval (pair (pair (head args) 0) env)
-    |           (pair self (tail args)))))
-    |     (bind b 1 (bind d 4 (qqq x y z)))))
-    = (1 4)
+| (robin (0 1) ((small (0 1) *))
+|   (bind qqq
+|     (macro (self args env)
+|       (if (equal? args ())
+|         (eval env (literal (pair b d)))
+|         (eval (pair (pair (head args) 0) env)
+|           (pair self (tail args)))))
+|     (bind b 1 (bind d 4 (qqq x y z)))))
+= (1 4)
 
 Your recursive `macro` application doesn't have to be tail-recursive.
 
@@ -695,19 +693,15 @@ Passing values with metadata attached shouldn't break any of the core
 macros.
 
 | (robin (0 1) ((core (0 1) *))
-|   (head (with #t (pair 1 2))))
+|   (head (with #t (pair 1 ()))))
 = 1
 
 | (robin (0 1) ((core (0 1) *))
-|   (tail (with #t (pair 1 2))))
-= (2)
+|   (tail (with #t (pair 1 ()))))
+= ()
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair (with #t 1) (with #t 2)))
-= (1 2)
-
-| (robin (0 1) ((core (0 1) *))
-|   (pair (with #t 1) (with #t 2)))
+|   (pair (with #t 1) (pair (with #t 2) ())))
 = (1 2)
 
 | (robin (0 1) ((core (0 1) *))
@@ -793,7 +787,7 @@ Testing for equality ignores metadata.
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (has? #t (head (pair (with #t 4) 5))))
+|   (has? #t (head (pair (with #t 4) (pair 5 ())))))
 = #t
 
 Binding retains metatdata.
@@ -809,7 +803,7 @@ Metadata is retained in macros.
 |   (bind whee
 |     (macro (self args env)
 |       (pair (head (head env))
-|             (has? 7 (tail (head env)))))
+|             (pair (has? 7 (tail (head env))) ())))
 |     (bind r (with 7 #f)
 |       (whee))))
 = (r #t)
