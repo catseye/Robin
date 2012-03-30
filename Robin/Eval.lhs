@@ -33,9 +33,9 @@ value.  Then continue the current continuation with that value.
 > eval (List ((List (other:_)):env)) ienv s@(Symbol _) cc =
 >     raise ienv (errMsg "expected-symbol" other)
 > eval (List (head:tail)) ienv s@(Symbol _) cc =
->     raise ienv (errMsg "expected-pair" head)
+>     raise ienv (errMsg "expected-env-entry" head)
 > eval env ienv s@(Symbol _) cc =
->     raise ienv (errMsg "expected-pair" env)
+>     raise ienv (errMsg "expected-env-alist" env)
 
 Evaluating a pair means we must make several evaluations.  We
 evaluate the head to obtain something to apply (which must be a

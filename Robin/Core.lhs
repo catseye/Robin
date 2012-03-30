@@ -86,7 +86,7 @@ Core
 >             eval newEnv ienv body cc))
 > robinEval env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> macro env ienv (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), (List [body])]) cc = do
+> macro env ienv (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc = do
 >     cc $ Macro env args body
 > macro env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
@@ -119,6 +119,7 @@ Module Definition
 >         ("tail",     robinTail),
 >         ("pair",     robinPair),
 >         ("list?",    listP),
+>         ("pair?",    listP),
 >         ("symbol?",  symbolP),
 >         ("boolean?", booleanP),
 >         ("macro?",   macroP),
