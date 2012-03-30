@@ -39,12 +39,8 @@ any S-expression.
 = symbol
 
 | (robin (0 1) ((small (0 1) *))
-|   (literal (a . pair)))
-= (a . pair)
-
-| (robin (0 1) ((small (0 1) *))
-|   (literal (hello world)))
-= (hello world)
+|   (literal (hello (there) world)))
+= (hello (there) world)
 
 `literal` is basically equivalent to Scheme's `quote`.
 
@@ -65,7 +61,7 @@ even if they are no longer lexically in scope.
 |      ((a (literal (hi)))
 |       (f (fun (x) (pair x a))))
 |     f) (literal oh)))
-= (oh hi)
+= (oh (hi))
 
 Functions can take functions.
 
@@ -73,7 +69,7 @@ Functions can take functions.
 |   (let
 |     ((apply (fun (x) (x (literal a)))))
 |     (apply (fun (r) (pair r (literal ()))))))
-= (a)
+= (a ())
 
 Functions can return functions.
 
@@ -82,7 +78,7 @@ Functions can return functions.
 |     ((mk (fun (x) (fun (y) (pair y x))))
 |      (mk2 (mk (literal (vindaloo)))))
 |     (mk2 (literal chicken))))
-= (chicken vindaloo)
+= (chicken (vindaloo))
 
 Arguments to functions shadow any other bindings in effect.
 
@@ -91,7 +87,7 @@ Arguments to functions shadow any other bindings in effect.
 |     ((a (literal a))
 |      (b (fun (a) (pair a a))))
 |     (b 7)))
-= (7 . 7)
+= (7 7)
 
 A function may have no arguments at all.
 
@@ -110,22 +106,22 @@ it evaluates.
 | (robin (0 1) ((small (0 1) *))
 |   (bind x (literal hello)
 |     (pair x x)))
-= (hello . hello)
+= (hello hello)
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind dup (fun (x) (pair x x))
 |     (dup (literal g))))
-= (g . g)
+= (g g)
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind dup (fun (x) (pair x x))
 |     (dup (dup (literal g)))))
-= ((g . g) g . g)
+= ((g g) (g g))
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind smoosh (fun (x y) (pair y x))
 |     (smoosh #t #f)))
-= (#f . #t)
+= (#f #t)
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind find (fun (self alist key)
@@ -133,8 +129,8 @@ it evaluates.
 |                    (if (equal? key (head (head alist)))
 |                       (head alist)
 |                       (self self (tail alist) key))))
-|     (find find (literal ((c . d) (e . f) (a . b))) (literal a))))
-= (a . b)
+|     (find find (literal ((c d) (e f) (a b))) (literal a))))
+= (a b)
 
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
@@ -160,7 +156,7 @@ An identifier can be bound to a symbol.
 | (robin (0 1) ((small (0 1) *))
 |   (let ((a (fun (x y) (pair x y))))
 |         (a (literal foo) (literal ()))))
-= (foo)
+= (foo ())
 
 Bindings established in a `let` remain in effect when evaluating
 the arguments things in the body of the `let`.
@@ -168,14 +164,14 @@ the arguments things in the body of the `let`.
 | (robin (0 1) ((small (0 1) *))
 |   (let ((dup (fun (x) (pair x x))))
 |     (dup (dup (literal g)))))
-= ((g . g) g . g)
+= ((g g) (g g))
 
 Bindings established in a binding in a `let` can be seen in
 subsequent bindings in the same `let`.
 
 | (robin (0 1) ((small (0 1) *))
 |   (let ((a (literal hello)) (b (pair a (literal ())))) b))
-= (hello)
+= (hello ())
 
 Shadowing happens.
 
@@ -234,4 +230,4 @@ where this form is encountered, as an alist.
 |                       (self self (tail alist) key))))
 |     (pair
 |       (find find (env) (literal boolean?)) (find find (env) (literal pair)))))
-= ((boolean? . (builtin boolean?)) pair . (builtin pair))
+= ((boolean? (builtin boolean?)) (pair (builtin pair)))
