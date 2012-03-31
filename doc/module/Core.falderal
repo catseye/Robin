@@ -193,13 +193,19 @@ two arguments will raise an exception.
 |   (list? (pair 4 (pair 5 ()))))
 = #t
 
-Symbols are not pairs.
+The empty list is a list.
+
+| (robin (0 1) ((core (0 1) *))
+|   (list? ()))
+= #t
+
+Symbols are not lists.
 
 | (robin (0 1) ((core (0 1) *))
 |   (list? ((macro (self args env) (head args)) b)))
 = #f
 
-The argument to `pair?` may (naturally) be any type, but there must be
+The argument to `list?` may (naturally) be any type, but there must be
 exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))

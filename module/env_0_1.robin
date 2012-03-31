@@ -4,9 +4,9 @@
       (bind env?-r (fun (self li)
         (if (empty? li)
           #t
-          (if (pair? li)
+          (if (list? li)
             (bind binding (head li)
-              (if (pair? binding)
+              (if (list? binding)
                 (if (symbol? (head binding))
                   (self self (tail li))
                   #f)

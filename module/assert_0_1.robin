@@ -16,10 +16,10 @@
     (assert-boolean (mk-assert boolean? (literal expected-boolean)))
     (assert-number (mk-assert number? (literal expected-number)))
     (assert-symbol (mk-assert symbol? (literal expected-symbol)))
-    (assert-pair (mk-assert pair? (literal expected-pair)))
+    (assert-list (mk-assert list? (literal expected-list)))
     (assert-macro (mk-assert macro? (literal expected-macro)))
     (assert-integer (mk-assert integer? (literal expected-integer)))
     (assert-natural (mk-assert natural? (literal expected-natural)))
     )
     (export assert assert-boolean assert-number assert-symbol
-            assert-macro assert-pair)))
+            assert-macro assert-list)))
