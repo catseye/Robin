@@ -1,0 +1,2 @@
+(robin (0 1) ((small (0 1) *) (random (0 1) *))
+   (pair (pair (literal random-a) (pair random ())) ()))
