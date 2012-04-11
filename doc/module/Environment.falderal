@@ -15,15 +15,15 @@ binding alists.
 and only if it is a well-formed binding alist.
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
-|   (env? (literal ((a . 1) (b . 2) (c . 3)))))
+|   (env? (literal ((a 1) (b 2) (c 3)))))
 = #t
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
-|   (env? (literal ((a . 1) (999 . 2) (c . 3)))))
+|   (env? (literal ((a 1) (999 2) (c 3)))))
 = #f
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
-|   (env? (literal ((a . 1) (b . 2) . c))))
+|   (env? (literal ((a 1) (b 2) c))))
 = #f
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
@@ -41,7 +41,7 @@ second argument in that reduced environment.
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (unbind if (if #t (literal x) (literal y))))
-? uncaught exception: (unbound-identifier . if)
+? uncaught exception: (unbound-identifier if)
 
 If the identifier doesn't exist in the environment, no change is made to
 the environment.
@@ -59,7 +59,7 @@ in effect.
 |     (let ((x 8))
 |       (unbind x
 |         x))))
-? uncaught exception: (unbound-identifier . x)
+? uncaught exception: (unbound-identifier x)
 
 ### `sandbox` ###
 
@@ -69,13 +69,13 @@ for the listed identifiers have been unbound.
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (sandbox (pair tail)
-|     (tail (pair 8 9))))
-= 9
+|     (tail (pair 8 (pair 9 ())))))
+= (9)
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (sandbox (pair tail)
-|     (head (pair 8 9))))
-? uncaught exception: (unbound-identifier . head)
+|     (head (pair 8 (pair 9 ())))))
+? uncaught exception: (unbound-identifier head)
 
 ### `export` ###
 
@@ -95,11 +95,11 @@ these tests should be rewritten to search the resulting alist.
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (let ((a 1) (b 2))
 |     (export a b)))
-= ((b . 2) (a . 1))
+= ((b 2) (a 1))
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (export pair tail))
-= ((tail . (builtin tail)) (pair . (builtin pair)))
+= ((tail (builtin tail)) (pair (builtin pair)))
 
 ### `unshadow` ###
 
@@ -113,7 +113,7 @@ will be visible instead.
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (unshadow if (if #t (literal x) (literal y))))
-? uncaught exception: (unbound-identifier . if)
+? uncaught exception: (unbound-identifier if)
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (bind if (literal what)
@@ -123,7 +123,7 @@ will be visible instead.
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (bind q 400
 |     (unshadow q q)))
-? uncaught exception: (unbound-identifier . q)
+? uncaught exception: (unbound-identifier q)
 
 | (robin (0 1) ((small (0 1) *) (env (0 1) *))
 |   (bind q 200

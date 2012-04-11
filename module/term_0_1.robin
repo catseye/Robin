@@ -16,7 +16,7 @@
     (subst-many
       (fun (alist sexp)
         (fold (fun (binding sexp)
-                (subst (head binding) (tail binding) sexp)) sexp alist)))
+                (subst (head binding) (head (tail binding)) sexp)) sexp alist)))
     )
     (list
       (list (literal subst)      subst)
