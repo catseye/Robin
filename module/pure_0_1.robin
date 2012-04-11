@@ -5,7 +5,7 @@
     (head     (with (literal pure) head))
     (tail     (with (literal pure) tail))
     (pair     (with (literal pure) pair))
-    (pair?    (with (literal pure) pair?))
+    (list?    (with (literal pure) list?))
     (symbol?  (with (literal pure) symbol?))
     (number?  (with (literal pure) number?))
     (boolean? (with (literal pure) boolean?))
@@ -26,7 +26,7 @@
     (pure-fun-defn?-r (fun (self pure-expr?-r env expr)
       ;''XXX The following is badly written.''
       (choose
-        ((pair? expr)
+        ((list? expr)
           (let ((apply-expr    (head expr))
                 (maybe-applier (lookup apply-expr env)))
             (choose
@@ -54,7 +54,7 @@
       (choose
         ((empty? li)
           #t)
-        ((pair? li)
+        ((list? li)
           (if (pure-expr?-r pure-expr?-r env args (head li))
             (self self pure-expr?-r env args (tail li))
             #f))
@@ -70,7 +70,7 @@
         ((boolean? expr)   #t)
         ((empty? expr)     #t)
         ;''XXX The following is badly written.''
-        ((pair? expr)
+        ((list? expr)
           ;''If the head of the pair is an S-expr which represents a
              pure fun, such as 'head' or '(fun (x) x)', then this
              expression is pure if all of the actual arguments are
@@ -143,7 +143,7 @@
     (pure-fun-defn? (fun (env expr)
       (pure-fun-defn?-r pure-fun-defn?-r pure-expr?-r env expr)))
     )
-    (export head tail pair pair? symbol? number? macro? boolean?
+    (export head tail pair list? symbol? number? macro? boolean?
             subtract divide floor sign macro if with has?
             eval
             literal env fun bind
