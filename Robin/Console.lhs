@@ -50,7 +50,7 @@ state of the virtual console based on those messages.
 >             wMove stdScr y x
 >             clrToEol
 >             return ((x, y), Symbol "ok")),
->         ("position", \(x, y) sender (Pair (Number xr) (Pair (Number yr) Null))  -> do
+>         ("position", \(x, y) sender (List [Number xr, Number yr])  -> do
 >             let x' = fromIntegral (ratFloor xr) :: Int
 >             let y' = fromIntegral (ratFloor yr) :: Int
 >             return ((x', y'), Symbol "ok")),

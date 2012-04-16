@@ -48,7 +48,10 @@ Module Loading
 > qualifyModuleEnv' name [] =
 >     List []
 > qualifyModuleEnv' name ((List [(Symbol id), val]):rest) =
->     append (List [(Symbol (name ++ ":" ++ id)), val]) (qualifyModuleEnv' name rest)
+>     let
+>         List l = qualifyModuleEnv' name rest
+>     in
+>         List ((List [(Symbol (name ++ ":" ++ id)), val]):l)
 
 > loadModule :: ModuleCache -> ModuleRef -> Bool -> IO (ModuleCache, Expr)
 
