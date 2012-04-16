@@ -104,16 +104,13 @@ with it.)
 
 A particular version of a module might, naturally, not be available.
 
-(TODO: The particular error message produced here may differ.  Falderal
-needs a forigiving-error-message option.)
-
 | (robin (0 1) ((small (0 781))) #t)
-? module/small_0_781.robin: openFile: does not exist (No such file or directory)
+? could not locate module file
 
 And a particular module might, naturally, not even be available.
 
 | (robin (0 1) ((gzgptzgztxxky (1 0))) #t)
-? module/gzgptzgztxxky_1_0.robin: openFile: does not exist (No such file or directory)
+? could not locate module file
 
 And a particular version of a module may rely on a particular version
 of the fundamental semantics, so some combinations may not make sense.
@@ -131,7 +128,7 @@ By default, identifiers are imported qualified.
 
 | (robin (0 1) ((core (0 1)))
 |   (number? 3/5))
-? undefined identifier number?
+? uncaught exception: (unbound-identifier number?)
 
 The `*` qualifier imports a module unqualified.
 
@@ -141,7 +138,7 @@ The `*` qualifier imports a module unqualified.
 
 | (robin (0 1) ((core (0 1) *))
 |   (core:number? 3/5))
-? undefined identifier core:number?
+? uncaught exception: (unbound-identifier core:number?)
 
 Intrinsic Data Types
 --------------------
