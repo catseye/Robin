@@ -21,7 +21,13 @@ contains both of those values, in the same order.
 |   (pair #t (pair #f ())))
 = (#t #f)
 
-Arguments to `pair` can be any type, but fewer than or more than
+The second argument to `pair` must be a list.
+
+| (robin (0 1) ((core (0 1) *))
+|   (pair #t #f))
+? uncaught exception: (expected-list #f)
+
+The first argument to `pair` can be any type, but fewer than or more than
 two arguments will raise an exception.
 
 | (robin (0 1) ((core (0 1) *))

@@ -312,8 +312,8 @@ may in fact hang instead of doing what our implementation does.
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
 |         (send! sender (pair (myself)
-|                        (pair (pair (literal some-other-tag) (literal reply))
-|                          (pair (pair tag payload) ()))) 0)))
+|                        (pair (pair (literal some-other-tag) (pair (literal reply) ()))
+|                          (pair (pair tag (pair payload ())) ()))) 0)))
 |      (call! worker this-tag (literal this-payload) reply
 |        (pair (literal reply-was) (pair reply ()))))))
 ? thread blocked indefinitely in an MVar operation
