@@ -82,15 +82,6 @@ Metadata Helpers
 > stripMetadata x =
 >     x
 
-> stripMetadataDeep (Metadata _ x) =
->     stripMetadataDeep x
-> stripMetadataDeep (List x) =
->     List (map (stripMetadataDeep) x)
-> stripMetadataDeep (Macro x y z) =
->     Macro (stripMetadataDeep x) (stripMetadataDeep y) (stripMetadataDeep x)
-> stripMetadataDeep x =
->     x
-
 Predicates
 ----------
 

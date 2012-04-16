@@ -46,7 +46,7 @@ passing it the tail of the pair.
 >     eval env ienv applierExpr (\applier ->
 >         case (stripMetadata applier) of
 >             m@(Macro _ _ body) -> do
->                 eval (makeMacroEnv env (List actuals) (stripMetadata m)) ienv body cc
+>                 eval (makeMacroEnv env (List actuals) m) ienv body cc
 >             b@(Builtin _ fun) -> do
 >                 fun env ienv (List actuals) cc
 >             other ->
