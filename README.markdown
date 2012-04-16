@@ -295,9 +295,6 @@ though.
 * Informally test tail-recursive behavior (does an infinite loop
   leak memory?)
 
-* Find another way (one that works on Windows) to do what
-  `unbundle-modules.py` currently does.
-
 * Improve Falderal to let tests take some text as input; use this for the
   tests for `crude-input`.
 

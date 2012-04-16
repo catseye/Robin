@@ -11,50 +11,50 @@ Small
 
 This implementation of the `small` module is non-normative.
 
-> literal env ienv (Pair expr Null) cc =
+> literal env ienv (List [expr]) cc =
 >   cc expr
-> literal env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> literal env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinEnv env ienv Null cc =
+> robinEnv env ienv (List []) cc =
 >   cc env
-> robinEnv env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinEnv env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinFun closedEnv ienv (Pair formals (Pair body Null)) cc = do
+> robinFun closedEnv ienv (List [(List formals), body]) cc = do
 >     cc $ Builtin "<lambda>" fun
 >   where
->     fun env ienv actuals cc = do
+>     fun env ienv (List actuals) cc = do
 >         evalArgs formals actuals env ienv (\argEnv ->
 >             eval (Env.union argEnv closedEnv) ienv body cc)
->     evalArgs Null Null _ _ cc = do
+>     evalArgs [] [] _ _ cc = do
 >         cc Env.empty
->     evalArgs (Pair sym@(Symbol _) formals) (Pair actual actuals) env ienv cc = do
+>     evalArgs (formal@(Symbol _):formals) (actual:actuals) env ienv cc = do
 >         eval env ienv actual (\value ->
 >             evalArgs formals actuals env ienv (\rest ->
->                 cc $ Env.insert sym value rest))
+>                 cc $ Env.insert formal value rest))
 >     evalArgs _ other _ ienv cc = do
->         raise ienv (Pair (Symbol "illegal-arguments") other)
+>         raise ienv (errMsg "illegal-arguments" (List other))
 
-> choose env ienv (Pair (Pair (Symbol "else") (Pair branch Null)) Null) cc =
+> choose env ienv (List [(List [(Symbol "else"), branch])]) cc =
 >     eval env ienv branch cc
-> choose env ienv (Pair (Pair test (Pair branch Null)) rest) cc = do
+> choose env ienv (List ((List [test, branch]):rest)) cc = do
 >     eval env ienv test (\x ->
 >         case x of
 >             Boolean True ->
 >                 eval env ienv branch cc
 >             Boolean False ->
->                 choose env ienv rest cc)
+>                 choose env ienv (List rest) cc)
 
-> bind env ienv (Pair name@(Symbol _) (Pair expr (Pair body Null))) cc =
+> bind env ienv (List [name@(Symbol _), expr, body]) cc =
 >     eval env ienv expr (\value ->
 >         eval (Env.insert name value env) ienv body cc)
 
-> robinLet env ienv (Pair bindings (Pair body Null)) cc =
+> robinLet env ienv (List [(List bindings), body]) cc =
 >     bindAll bindings env ienv (\newEnv ->
 >         eval newEnv ienv body cc)
 >   where
->     bindAll Null env ienv cc =
+>     bindAll [] env ienv cc =
 >         cc env
->     bindAll (Pair (Pair name@(Symbol _) (Pair sexpr Null)) rest) env ienv cc =
+>     bindAll (List [name@(Symbol _), sexpr]:rest) env ienv cc =
 >         eval env ienv sexpr (\value ->
 >             bindAll rest (Env.insert name value env) ienv cc)
 

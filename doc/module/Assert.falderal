@@ -13,7 +13,7 @@ Module `assert`
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
 |   (assert (equal? 5 6) 7))
-? uncaught exception: (assertion-failed equal? 5 6)
+? uncaught exception: (assertion-failed (equal? 5 6))
 
 ### `assert-boolean` ###
 
@@ -23,7 +23,7 @@ Module `assert`
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
 |   (assert-boolean 4 #f))
-? uncaught exception: (expected-boolean . 4)
+? uncaught exception: (expected-boolean 4)
 
 ### `assert-number` ###
 
@@ -33,7 +33,7 @@ Module `assert`
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
 |   (assert-number #f 4))
-? uncaught exception: (expected-number . #f)
+? uncaught exception: (expected-number #f)
 
 ### `assert-symbol` ###
 
@@ -43,17 +43,21 @@ Module `assert`
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
 |   (assert-symbol 7 (literal what)))
-? uncaught exception: (expected-symbol . 7)
+? uncaught exception: (expected-symbol 7)
 
-### `assert-pair` ###
+### `assert-list` ###
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
-|   (assert-pair (pair 1 2) #t))
+|   (assert-list () #t))
 = #t
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
-|   (assert-pair #t (pair 1 2)))
-? uncaught exception: (expected-pair . #t)
+|   (assert-list (pair 1 ()) #t))
+= #t
+
+| (robin (0 1) ((small (0 1) *) (assert (0 1) *))
+|   (assert-list #t (literal zunk)))
+? uncaught exception: (expected-list #t)
 
 ### `assert-macro` ###
 
@@ -67,4 +71,4 @@ Module `assert`
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
 |   (assert-macro 7 (literal what)))
-? uncaught exception: (expected-macro . 7)
+? uncaught exception: (expected-macro 7)

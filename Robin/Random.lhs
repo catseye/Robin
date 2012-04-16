@@ -20,7 +20,7 @@ it is written in Haskell for now.
 > handler :: Chan Expr -> IO ()
 
 > handler chan = respond chan [
->         ("range", \state sender (Pair (Number low) (Pair (Number high) Null)) -> do
+>         ("range", \state sender (List [(Number low), (Number high)]) -> do
 >             x <- randomRIO ((ratFloor low), (ratFloor high))
 >             return (state, Number (x % 1)))
 >     ] ()

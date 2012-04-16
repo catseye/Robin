@@ -14,23 +14,29 @@ all other Robin macros and programs are built.
 contains both of those values, in the same order.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair #t #f))
-= (#t . #f)
+|   (pair () ()))
+= (())
 
 | (robin (0 1) ((core (0 1) *))
 |   (pair #t (pair #f ())))
 = (#t #f)
 
-Arguments to `pair` can be any type, but fewer than or more than
+The second argument to `pair` must be a list.
+
+| (robin (0 1) ((core (0 1) *))
+|   (pair #t #f))
+? uncaught exception: (expected-list #f)
+
+The first argument to `pair` can be any type, but fewer than or more than
 two arguments will raise an exception.
 
 | (robin (0 1) ((core (0 1) *))
 |   (pair #t))
-? uncaught exception: (illegal-arguments #t)
+? uncaught exception: (illegal-arguments (#t))
 
 | (robin (0 1) ((core (0 1) *))
 |   (pair #f #t #f))
-? uncaught exception: (illegal-arguments #f #t #f)
+? uncaught exception: (illegal-arguments (#f #t #f))
 
 `pair` is basically equivalent to Scheme's `cons`.
 
@@ -40,24 +46,24 @@ two arguments will raise an exception.
 of that pair.
 
 | (robin (0 1) ((core (0 1) *))
-|   (head (pair #t #f)))
+|   (head (pair #t ())))
 = #t
 
 `head` expects its argument to be a pair.
 
 | (robin (0 1) ((core (0 1) *))
 |   (head #f))
-? uncaught exception: (expected-pair . #f)
+? uncaught exception: (expected-list #f)
 
 `head` expects exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (head (pair #t #f) (pair #f #t)))
-? uncaught exception: (illegal-arguments (pair #t #f) (pair #f #t))
+? uncaught exception: (illegal-arguments ((pair #t #f) (pair #f #t)))
 
 | (robin (0 1) ((core (0 1) *))
 |   (head))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 `head` is basically equivalent to Scheme's `car`.
 
@@ -67,24 +73,24 @@ of that pair.
 of that pair.
 
 | (robin (0 1) ((core (0 1) *))
-|   (tail (pair #t #f)))
-= #f
+|   (tail (pair #t (pair #f ()))))
+= (#f)
 
 `tail` expects its argument to be a pair.
 
 | (robin (0 1) ((core (0 1) *))
 |   (tail #f))
-? uncaught exception: (expected-pair . #f)
+? uncaught exception: (expected-list #f)
 
 `tail` expects exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (tail (pair #t #f) (pair #f #t)))
-? uncaught exception: (illegal-arguments (pair #t #f) (pair #f #t))
+? uncaught exception: (illegal-arguments ((pair #t #f) (pair #f #t)))
 
 | (robin (0 1) ((core (0 1) *))
 |   (tail))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 `tail` is basically equivalent to Scheme's `cdr`.
 
@@ -108,17 +114,17 @@ expects its first argument to be a boolean.
 
 | (robin (0 1) ((core (0 1) *))
 |   (if 5 7 9))
-? uncaught exception: (expected-boolean . 5)
+? uncaught exception: (expected-boolean 5)
 
 `if` expects exactly three arguments.
 
 | (robin (0 1) ((core (0 1) *))
 |   (if #t 7))
-? uncaught exception: (illegal-arguments #t 7)
+? uncaught exception: (illegal-arguments (#t 7))
 
 | (robin (0 1) ((core (0 1) *))
 |   (if #t 7 8 9))
-? uncaught exception: (illegal-arguments #t 7 8 9)
+? uncaught exception: (illegal-arguments (#t 7 8 9))
 
 The identifiers named in the branch which is not evaluated need not be
 properly bound to values in the environment.
@@ -170,41 +176,47 @@ two arguments will raise an exception.
 
 | (robin (0 1) ((core (0 1) *))
 |   (equal? 7))
-? uncaught exception: (illegal-arguments 7)
+? uncaught exception: (illegal-arguments (7))
 
 | (robin (0 1) ((core (0 1) *))
 |   (equal? 7 8 9))
-? uncaught exception: (illegal-arguments 7 8 9)
+? uncaught exception: (illegal-arguments (7 8 9))
 
-### `pair?` ###
+### `list?` ###
 
-`pair?` evaluates its argument, then evaluates to `#t` if it is a pair,
+`list?` evaluates its argument, then evaluates to `#t` if it is a list,
 `#f` otherwise.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? ((macro (self args env) (head args)) (a . b))))
+|   (list? ((macro (self args env) (head args)) (a b))))
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? ((macro (self args env) (head args)) (a b c d e f))))
+|   (list? ((macro (self args env) (head args)) (a b c d e f))))
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? (pair 4 5)))
+|   (list? (pair 4 (pair 5 ()))))
 = #t
 
-Symbols are not pairs.
+The empty list is a list.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? ((macro (self args env) (head args)) b)))
+|   (list? ()))
+= #t
+
+Symbols are not lists.
+
+| (robin (0 1) ((core (0 1) *))
+|   (list? ((macro (self args env) (head args)) b)))
 = #f
 
-The argument to `pair?` may (naturally) be any type, but there must be
+The argument to `list?` may (naturally) be any type, but there must be
 exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? (pair 4 5) (pair 6 7)))
-? uncaught exception: (illegal-arguments (pair 4 5) (pair 6 7))
+|   (list? (pair 4 ()) (pair 6 ())))
+? uncaught exception: (illegal-arguments ((pair 4 ()) (pair 6 ())))
 
 ### `macro?` ###
 
@@ -232,7 +244,7 @@ exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (macro? macro macro))
-? uncaught exception: (illegal-arguments macro macro)
+? uncaught exception: (illegal-arguments (macro macro))
 
 ### `symbol?` ###
 
@@ -246,7 +258,7 @@ exactly one argument.
 Pairs are not symbols.
 
 | (robin (0 1) ((core (0 1) *))
-|   (symbol? (pair 1 2)))
+|   (symbol? (pair 1 ())))
 = #f
 
 The argument to `symbol?` may (naturally) be any type, but there must be
@@ -254,7 +266,7 @@ exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (symbol? 77 88))
-? uncaught exception: (illegal-arguments 77 88)
+? uncaught exception: (illegal-arguments (77 88))
 
 ### `boolean?` ###
 
@@ -278,7 +290,7 @@ exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (boolean? #t #f))
-? uncaught exception: (illegal-arguments #t #f)
+? uncaught exception: (illegal-arguments (#t #f))
 
 ### `number?` ###
 
@@ -306,7 +318,7 @@ exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (number? 6 4))
-? uncaught exception: (illegal-arguments 6 4)
+? uncaught exception: (illegal-arguments (6 4))
 
 ### `subtract` ###
 
@@ -336,21 +348,21 @@ Addition may be accomplished by negating the second argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (subtract #f 100))
-? uncaught exception: (expected-number . #f)
+? uncaught exception: (expected-number #f)
 
 | (robin (0 1) ((core (0 1) *))
 |   (subtract 100 ()))
-? uncaught exception: (expected-number)
+? uncaught exception: (expected-number ())
 
 `subtract` expects exactly two arguments.
 
 | (robin (0 1) ((core (0 1) *))
 |   (subtract 100 200 300))
-? uncaught exception: (illegal-arguments 100 200 300)
+? uncaught exception: (illegal-arguments (100 200 300))
 
 | (robin (0 1) ((core (0 1) *))
 |   (subtract))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 ### `divide` ###
 
@@ -377,7 +389,7 @@ argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (divide 123 0))
-? uncaught exception: (division-by-zero . 123)
+? uncaught exception: (division-by-zero 123)
 
 Addition may be accomplished by taking the reciprocal of the second
 argument.
@@ -390,21 +402,21 @@ argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (divide #f 100))
-? uncaught exception: (expected-number . #f)
+? uncaught exception: (expected-number #f)
 
 | (robin (0 1) ((core (0 1) *))
 |   (divide 100 ()))
-? uncaught exception: (expected-number)
+? uncaught exception: (expected-number ())
 
 `divide` expects exactly two arguments.
 
 | (robin (0 1) ((core (0 1) *))
 |   (divide 100 200 300))
-? uncaught exception: (illegal-arguments 100 200 300)
+? uncaught exception: (illegal-arguments (100 200 300))
 
 | (robin (0 1) ((core (0 1) *))
 |   (divide))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 ### `floor` ###
 
@@ -425,11 +437,11 @@ evaluates to the nearest whole number not larger than that rational.
 
 | (robin (0 1) ((core (0 1) *))
 |   (floor 100 200 300))
-? uncaught exception: (illegal-arguments 100 200 300)
+? uncaught exception: (illegal-arguments (100 200 300))
 
 | (robin (0 1) ((core (0 1) *))
 |   (floor))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 ### `sign` ###
 
@@ -451,11 +463,11 @@ evaluates to 0 if that number is 0, 1 if that number is positive, or
 
 | (robin (0 1) ((core (0 1) *))
 |   (sign 100 200 300))
-? uncaught exception: (illegal-arguments 100 200 300)
+? uncaught exception: (illegal-arguments (100 200 300))
 
 | (robin (0 1) ((core (0 1) *))
 |   (sign))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 ### `eval` ###
 
@@ -468,17 +480,19 @@ sake of purity, that dependency should be removed (but the tests
 will look awful.)
 
 | (robin (0 1) ((small (0 1) *))
-|   (eval (env) (literal (pair (literal a) (literal b)))))
-= (a . b)
+|   (eval (env) (literal (pair (literal a) (pair (literal b) ())))))
+= (a b)
 
 | (robin (0 1) ((small (0 1) *))
 |   (eval () (literal (pair (literal a) (literal b)))))
-? uncaught exception: (unbound-identifier . pair)
+? uncaught exception: (unbound-identifier pair)
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind bindings (pair
-|                    (pair (literal same) equal?)
-|                    (pair (pair (literal x) #f) (literal ())))
+|                    (pair (literal same) (pair equal? ()))
+|                    (pair
+|                      (pair (literal x) (pair #f ()))
+|                      ()))
 |     (eval bindings (literal (same x x)))))
 = #t
 
@@ -488,9 +502,10 @@ precedence.
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind bindings (pair
-|                    (pair (literal foo) (literal yes))
-|                    (pair (pair (literal foo) (literal no))
-|                       (literal ())))
+|                    (pair (literal foo) (pair (literal yes) ()))
+|                    (pair
+|                       (pair (literal foo) (pair (literal no) ()))
+|                       ()))
 |     (eval bindings (literal foo))))
 = yes
 
@@ -500,31 +515,31 @@ tries to look up things in that environment.
 
 | (robin (0 1) ((small (0 1) *))
 |   (eval 103 (literal (pair (literal a) (literal b)))))
-? uncaught exception: (expected-pair . 103)
+? uncaught exception: (expected-env-alist 103)
 
 Evaluation expects the contents of the list which makes up the
 environment to be pairs.
 
 | (robin (0 1) ((small (0 1) *))
 |   (eval (pair #f ()) (literal (pair (literal a) (literal b)))))
-? uncaught exception: (expected-pair . #f)
+? uncaught exception: (expected-env-entry #f)
 
 Evaluation expects the head of each pair in the list which makes up the
 environment to be a symbol.
 
 | (robin (0 1) ((small (0 1) *))
-|   (eval (pair (pair 7 #f) ()) (literal (pair (literal a) (literal b)))))
-? uncaught exception: (expected-symbol . 7)
+|   (eval (pair (pair 7 (pair #f ())) ()) (literal (pair (literal a) (literal b)))))
+? uncaught exception: (expected-symbol 7)
 
 `eval` expects exactly two arguments.
 
 | (robin (0 1) ((core (0 1) *))
 |   (eval))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 | (robin (0 1) ((core (0 1) *))
 |   (eval 4 5 6))
-? uncaught exception: (illegal-arguments 4 5 6)
+? uncaught exception: (illegal-arguments (4 5 6))
 
 ### `macro` ###
 
@@ -593,21 +608,21 @@ will look awful.)
 |   (bind qqq
 |     (macro (self args env)
 |       (if (equal? args ())
-|         (eval env (literal (pair b d)))
-|         (eval (pair (pair (head args) 0) env)
+|         (eval env (literal (pair b (pair d ()))))
+|         (eval (pair (pair (head args) (pair 0 ())) env)
 |           (pair self (tail args)))))
 |     (bind b 1 (bind d 4 (qqq b c d)))))
-= (0 . 0)
+= (0 0)
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind qqq
 |     (macro (self args env)
 |       (if (equal? args ())
-|         (eval env (literal (pair b d)))
-|         (eval (pair (pair (head args) 0) env)
+|         (eval env (literal (pair b (pair d ()))))
+|         (eval (pair (pair (head args) (pair 0 ())) env)
 |           (pair self (tail args)))))
 |     (bind b 1 (bind d 4 (qqq x y z)))))
-= (1 . 4)
+= (1 4)
 
 Your recursive `macro` application doesn't have to be tail-recursive.
 
@@ -616,40 +631,41 @@ Your recursive `macro` application doesn't have to be tail-recursive.
 |     (macro (self args env)
 |       (if (equal? args ())
 |         ()
-|         (pair (pair (head args) (eval env (head args)))
+|         (pair (pair (head args)
+|                     (pair (eval env (head args)) ()))
 |           (eval env
 |             (pair self (tail args))))))
 |     (bind b 1 (bind d 4 (make-env b d macro)))))
-= ((b . 1) (d . 4) (macro . (builtin macro)))
+= ((b 1) (d 4) (macro (builtin macro)))
 
 `macro` expects exactly two arguments.
 
 | (robin (0 1) ((core (0 1) *))
 |   ((macro (self args env)) (why hello there)))
-? uncaught exception: (illegal-arguments (self args env))
+? uncaught exception: (illegal-arguments ((self args env)))
 
 | (robin (0 1) ((core (0 1) *))
 |   ((macro (self args env) pair pair) (why hello there)))
-? uncaught exception: (illegal-arguments (self args env) pair pair)
+? uncaught exception: (illegal-arguments ((self args env) pair pair))
 
 `macro` expects its first argument to be a list of exactly three
 symbols.
 
 | (robin (0 1) ((core (0 1) *))
 |   ((macro 100 pair) (why hello there)))
-? uncaught exception: (illegal-arguments 100 pair)
+? uncaught exception: (illegal-arguments (100 pair))
 
 | (robin (0 1) ((core (0 1) *))
 |   ((macro (self args) pair) (why hello there)))
-? uncaught exception: (illegal-arguments (self args) pair)
+? uncaught exception: (illegal-arguments ((self args) pair))
 
 | (robin (0 1) ((core (0 1) *))
 |   ((macro (self args env foo) pair) (why hello there)))
-? uncaught exception: (illegal-arguments (self args env foo) pair)
+? uncaught exception: (illegal-arguments ((self args env foo) pair))
 
 | (robin (0 1) ((core (0 1) *))
 |   ((macro (self args 99) pair) (why hello there)))
-? uncaught exception: (illegal-arguments (self args 99) pair)
+? uncaught exception: (illegal-arguments ((self args 99) pair))
 
 ### `raise` ###
 
@@ -673,11 +689,11 @@ exactly one argument.
 
 | (robin (0 1) ((core (0 1) *))
 |   (raise))
-? uncaught exception: (illegal-arguments)
+? uncaught exception: (illegal-arguments ())
 
 | (robin (0 1) ((core (0 1) *))
 |   (raise 2 3 4))
-? uncaught exception: (illegal-arguments 2 3 4)
+? uncaught exception: (illegal-arguments (2 3 4))
 
 ### `with` ###
 
@@ -691,20 +707,16 @@ Passing values with metadata attached shouldn't break any of the core
 macros.
 
 | (robin (0 1) ((core (0 1) *))
-|   (head (with #t (pair 1 2))))
+|   (head (with #t (pair 1 ()))))
 = 1
 
 | (robin (0 1) ((core (0 1) *))
-|   (tail (with #t (pair 1 2))))
-= 2
+|   (tail (with #t (pair 1 ()))))
+= ()
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair (with #t 1) (with #t 2)))
-= (1 . 2)
-
-| (robin (0 1) ((core (0 1) *))
-|   (pair (with #t 1) (with #t 2)))
-= (1 . 2)
+|   (pair (with #t 1) (pair (with #t 2) ())))
+= (1 2)
 
 | (robin (0 1) ((core (0 1) *))
 |   (if (with #t #t) (with #t 2) (with #t 3)))
@@ -719,7 +731,7 @@ macros.
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (pair? (with #t (pair 2 3))))
+|   (list? (with #t (pair 2 (pair 3 ())))))
 = #t
 
 | (robin (0 1) ((core (0 1) *))
@@ -789,10 +801,10 @@ Testing for equality ignores metadata.
 = #t
 
 | (robin (0 1) ((core (0 1) *))
-|   (has? #t (head (pair (with #t 4) 5))))
+|   (has? #t (head (pair (with #t 4) (pair 5 ())))))
 = #t
 
-Binding retains metatdata.
+Binding retains metadata.
 
 | (robin (0 1) ((small (0 1) *))
 |   (bind q (with (literal gee) 77)
@@ -804,8 +816,8 @@ Metadata is retained in macros.
 | (robin (0 1) ((small (0 1) *))
 |   (bind whee
 |     (macro (self args env)
-|       (pair (head (head env))
-|             (has? 7 (tail (head env)))))
-|     (bind r (with 7 #f)
+|       (pair (head env)
+|             (pair (has? 7 (head (tail (head env)))) ())))
+|     (bind r (with 7 8)
 |       (whee))))
-= (r . #t)
+= ((r 8) #t)

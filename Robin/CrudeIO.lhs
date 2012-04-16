@@ -73,16 +73,16 @@ otherwise we might lose input before anyone has subscribed to us.
 > processNewSubscribers chan subscribers = do
 >     message <- readChan chan
 >     case message of
->         (Pair sender (Pair (Symbol "subscribe") (Pair _ Null))) -> do
+>         (List [sender, (Symbol "subscribe"), _]) -> do
 >             tid <- myThreadId
 >             let myPid = Pid tid chan
->             let response = (Pair myPid (Pair (Pair (Symbol "subscribe") (Symbol "reply")) (Pair (Symbol "ok") Null)))
+>             let response = List [myPid, (List [(Symbol "subscribe"), (Symbol "reply")]), (Symbol "ok")]
 >             writeChan (getChan sender) response
 >             getAnyNewSubscribers chan (sender:subscribers)
->         (Pair sender (Pair tag rest)) -> do
+>         (List (sender:tag:_)) -> do
 >             tid <- myThreadId
 >             let myPid = Pid tid chan
->             let response = (Pair myPid (Pair (Pair tag (Symbol "reply")) (Pair (Symbol "what?") Null)))
+>             let response = List [myPid, (List [tag, (Symbol "reply")]), (Symbol "what?")]
 >             writeChan (getChan sender) response
 >             getAnyNewSubscribers chan subscribers
 >         _ -> do

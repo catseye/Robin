@@ -97,7 +97,7 @@ these tests in the concurrency module?)
 
 | (robin (0 1) ((boolean (0 1) *))
 |   (not #t #f))
-? uncaught exception: (illegal-arguments #f)
+? uncaught exception: (illegal-arguments (#f))
 
 ### `xor` ###
 

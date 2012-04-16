@@ -9,102 +9,111 @@
 Core
 ====
 
-> robinHead env ienv (Pair expr Null) cc = do
+> robinHead env ienv (List [expr]) cc = do
 >     eval env ienv expr (\x ->
->         assertPair ienv x (\(Pair a _) -> cc a))
-> robinHead env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+>         assertList ienv x (\val ->
+>             case val of
+>                 List (a:_) -> cc a
+>                 other -> raise ienv (errMsg "expected-list" other)))
+> robinHead env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinTail env ienv (Pair expr Null) cc = do
+> robinTail env ienv (List [expr]) cc = do
 >     eval env ienv expr (\x ->
->         assertPair ienv x (\(Pair _ b) -> cc b))
-> robinTail env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+>         assertList ienv x (\val ->
+>             case val of
+>                 List (_:b) -> cc (List b)
+>                 other -> raise ienv (errMsg "expected-list" other)))
+> robinTail env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinPair env ienv (Pair e1 (Pair e2 Null)) cc = do
->     eval env ienv e1 (\x1 -> eval env ienv e2 (\x2 -> cc $ Pair x1 x2))
-> robinPair env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinPair env ienv (List [e1, e2]) cc = do
+>     eval env ienv e1 (\x1 -> eval env ienv e2 (\val ->
+>             case val of
+>                 List x2 -> cc $ List (x1:x2)
+>                 other -> raise ienv (errMsg "expected-list" other)))
+> robinPair env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> equalP env ienv (Pair e1 (Pair e2 Null)) cc = do
+> equalP env ienv (List [e1, e2]) cc = do
 >     eval env ienv e1 (\x1 -> eval env ienv e2 (\x2 -> cc $ Boolean (x1 == x2)))
-> equalP env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> equalP env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> predP pred env ienv (Pair e Null) cc = do
->     eval env ienv e (\x -> cc $ Boolean $ pred $ stripMetadata x)
-> predP pred env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> predP pred env ienv (List [expr]) cc = do
+>     eval env ienv expr (\x -> cc $ Boolean $ pred $ stripMetadata x)
+> predP pred env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > symbolP = predP isSymbol
 > booleanP = predP isBoolean
-> pairP = predP isPair
+> listP = predP isList
 > macroP = predP isMacro
 > numberP = predP isNumber
 
-> robinSubtract env ienv (Pair xexpr (Pair yexpr Null)) cc = do
+> robinSubtract env ienv (List [xexpr, yexpr]) cc = do
 >     eval env ienv xexpr (\x ->
 >         assertNumber ienv x (\(Number xv) ->
 >             eval env ienv yexpr (\y ->
 >                 assertNumber ienv y (\(Number yv) ->
 >                     cc (Number (xv - yv))))))
-> robinSubtract env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinSubtract env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinDivide env ienv (Pair xexpr (Pair yexpr Null)) cc = do
+> robinDivide env ienv (List [xexpr, yexpr]) cc = do
 >     eval env ienv xexpr (\x ->
 >         assertNumber ienv x (\(Number xv) ->
 >             eval env ienv yexpr (\y ->
 >                 assertNumber ienv y (\(Number yv) ->
 >                     if yv == (0%1) then
->                         raise ienv (Pair (Symbol "division-by-zero") x)
+>                         raise ienv (errMsg "division-by-zero" x)
 >                       else
 >                         cc (Number (xv / yv))))))
-> robinDivide env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinDivide env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinFloor env ienv (Pair expr Null) cc = do
+> robinFloor env ienv (List [expr]) cc = do
 >     eval env ienv expr (\x ->
 >         assertNumber ienv x (\(Number xv) ->
 >             cc $ Number (ratFloor xv % 1)))
-> robinFloor env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinFloor env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > ratFloor x = numerator x `div` denominator x
 
-> robinSign env ienv (Pair expr Null) cc = do
+> robinSign env ienv (List [expr]) cc = do
 >     eval env ienv expr (\x ->
 >         assertNumber ienv x (\(Number xv) ->
 >             cc $ Number $ sign xv))
-> robinSign env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinSign env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > sign x = if x == 0 then 0 else if x < 0 then -1 else 1
 
-> robinIf env ienv (Pair test (Pair texpr (Pair fexpr Null))) cc = do
+> robinIf env ienv (List [test, texpr, fexpr]) cc = do
 >     eval env ienv test (\x ->
 >         assertBoolean ienv x (\(Boolean b) ->
 >             case b of
 >                 True -> eval env ienv texpr cc
 >                 False -> eval env ienv fexpr cc))
-> robinIf env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinIf env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinEval env ienv (Pair envlist (Pair form Null)) cc = do
+> robinEval env ienv (List [envlist, form]) cc = do
 >     eval env ienv envlist (\newEnv ->
 >         eval env ienv form (\body -> do
 >             eval newEnv ienv body cc))
-> robinEval env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinEval env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> macro env ienv (Pair args@(Pair (Symbol selfS) (Pair (Symbol argsS) (Pair (Symbol envS) Null))) (Pair body Null)) cc = do
+> macro env ienv (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc = do
 >     cc $ Macro env args body
-> macro env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> macro env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinRaise env ienv (Pair expr Null) cc =
+> robinRaise env ienv (List [expr]) cc =
 >     eval env ienv expr (\v -> raise ienv v)
-> robinRaise env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinRaise env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinWith env ienv (Pair metadataExpr (Pair expr Null)) cc =
+> robinWith env ienv (List [metadataExpr, expr]) cc =
 >     eval env ienv metadataExpr (\metadata ->
 >         eval env ienv expr (\value ->
 >             cc $ Metadata metadata value))
-> robinWith env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> robinWith env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> hasP env ienv (Pair metadataExpr (Pair expr Null)) cc =
+> hasP env ienv (List [metadataExpr, expr]) cc =
 >     eval env ienv metadataExpr (\metadata ->
 >         eval env ienv expr (\value ->
 >             cc $ Boolean $ hasMetadata metadata value))
-> hasP env ienv other cc = raise ienv (Pair (Symbol "illegal-arguments") other)
+> hasP env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 Module Definition
 -----------------
@@ -118,7 +127,7 @@ Module Definition
 >         ("head",     robinHead),
 >         ("tail",     robinTail),
 >         ("pair",     robinPair),
->         ("pair?",    pairP),
+>         ("list?",    listP),
 >         ("symbol?",  symbolP),
 >         ("boolean?", booleanP),
 >         ("macro?",   macroP),

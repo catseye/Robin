@@ -7,7 +7,7 @@
             dest)
           ((empty? sexp)
             ())
-          ((pair? sexp)
+          ((list? sexp)
             (pair (self self src dest (head sexp))
                   (self self src dest (tail sexp))))
           (else
@@ -16,11 +16,11 @@
     (subst-many
       (fun (alist sexp)
         (fold (fun (binding sexp)
-                (subst (head binding) (tail binding) sexp)) sexp alist)))
+                (subst (head binding) (head (tail binding)) sexp)) sexp alist)))
     )
     (list
-      (pair (literal subst)      subst)
-      (pair (literal subst-many) subst-many)
+      (list (literal subst)      subst)
+      (list (literal subst-many) subst-many)
     )
   )
 )

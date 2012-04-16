@@ -25,16 +25,14 @@ FILES="doc/Robin.falderal \
 if [ -e bin/robin.exe ]; then
     falderal test -b \
                   -c "Interpret Robin Program" \
-                  -c "Interpret Bundled Robin Program" \
                   -c "Interpret Robin Program without output" \
-                  -f 'Interpret Robin Program:shell command "bin\\robin.exe -m module %(test-file)"' \
-                  -f 'Interpret Bundled Robin Program:shell command "c:\\Python27\\python.exe bin\\unbundle_modules.py %(test-file)"' \
+                  -f 'Interpret Robin Program:shell command "bin\\robin.exe -m module -m fixture\\module %(test-file)"' \
                   -f 'Interpret Robin Program without output:shell command "bin\\robin.exe -m module -n %(test-file)"' \
                   ${FILES}
     rm -f results*
 else
     falderal test -b \
-                  -f 'Interpret Robin Program:shell command "bin/robin %(test-file)"' \
+                  -c "Interpret Robin Program" \
+                  -f 'Interpret Robin Program:shell command "bin/robin -m module -m fixture/module %(test-file)"' \
                   ${FILES}
 fi
-

@@ -24,50 +24,50 @@ first argument of `catch`, and the second argument of `catch` is
 evaluated in that new environment.
 
 | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-|   (catch error (pair error #f)
-|     (raise (literal (nasty-value . 999999)))))
-= ((nasty-value . 999999) . #f)
+|   (catch error (pair error (pair #f ()))
+|     (raise (literal (nasty-value 999999)))))
+= ((nasty-value 999999) #f)
 
 `catch` can catch exceptions raised by core macros.
 
 | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-|   (catch error (pair error 5)
+|   (catch error (pair error (pair 5 ()))
 |     (head #f)))
-= ((expected-pair . #f) . 5)
+= ((expected-list #f) 5)
 
 The innermost `catch` will catch the exception.
 
 | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-|   (catch error (pair error 5)
-|     (catch error (pair error 9)
+|   (catch error (pair error (pair 5 ()))
+|     (catch error (pair error (pair 9 ()))
 |       (head #f))))
-= ((expected-pair . #f) . 9)
+= ((expected-list #f) 9)
 
 An exception raised from within an exception handler is
 caught by the next innermost exception handler.
 
 | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-|   (catch error (pair error 5)
-|     (catch error (pair error 9)
-|       (catch error (raise (pair error error))
+|   (catch error (pair error (pair 5 ()))
+|     (catch error (pair error (pair 9 ()))
+|       (catch error (raise (pair error (pair error ())))
 |         (raise 7)))))
-= ((7 . 7) . 9)
+= ((7 7) 9)
 
 `catch` expects its first argument to be an identifier.
 
 | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch #f 23 (head #f)))
-? uncaught exception: (illegal-arguments #f 23 (head #f))
+? uncaught exception: (illegal-arguments (#f 23 (head #f)))
 
 `catch` expects exactly three arguments.
 
 | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error error))
-? uncaught exception: (illegal-arguments error error)
+? uncaught exception: (illegal-arguments (error error))
 
 | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
 |   (catch error error (head #f) 23))
-? uncaught exception: (illegal-arguments error error (head #f) 23)
+? uncaught exception: (illegal-arguments (error error (head #f) 23))
 
 ### Re-exported Functions ###
 

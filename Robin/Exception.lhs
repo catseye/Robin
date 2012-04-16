@@ -9,15 +9,14 @@
 Exception
 =========
 
-> robinCatch env ienv (Pair id@(Symbol _) (Pair handler (Pair body Null))) cc =
+> robinCatch env ienv (List [id@(Symbol _), handler, body]) cc =
 >     let
 >         handlerContinuation = (\errvalue ->
 >             eval (Env.insert id errvalue env) ienv handler cc)
 >         ienv' = setExceptionHandler handlerContinuation ienv
 >     in
 >         eval env ienv' body cc
-> robinCatch env ienv other cc = raise ienv (
->     Pair (Symbol "illegal-arguments") other)
+> robinCatch env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 Module Definition
 -----------------
