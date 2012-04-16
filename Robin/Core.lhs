@@ -26,7 +26,10 @@ Core
 > robinTail env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > robinPair env ienv (List [e1, e2]) cc = do
->     eval env ienv e1 (\x1 -> eval env ienv e2 (\(List x2) -> cc $ List (x1:x2)))
+>     eval env ienv e1 (\x1 -> eval env ienv e2 (\val ->
+>             case val of
+>                 List x2 -> cc $ List (x1:x2)
+>                 other -> raise ienv (errMsg "expected-list" other)))
 > robinPair env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > equalP env ienv (List [e1, e2]) cc = do
