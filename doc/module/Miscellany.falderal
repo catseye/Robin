@@ -20,7 +20,7 @@ loop.
 
 | (robin (0 1) ((core (0 1) *) (circular-a (0 1) *))
 |   (equal? literal-a literal-b))
-? robin: circular reference in module circular-a
+? circular reference in module circular-a
 
 `and` is short-circuiting.
 
