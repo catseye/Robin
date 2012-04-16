@@ -111,7 +111,7 @@ The first argument to `spawn!` must be a symbol.
 ### `send!` ###
 
 `send!` evaluates its first argument to obtain a pid, then its second
-argument to obtain a value.  It then send!s that value as a message to
+argument to obtain a value.  It then sends that value as a message to
 the process identified by the pid, then evaluates its third argument
 and itself evaluates to that.
 
@@ -148,8 +148,8 @@ argument, and itself evaluates to that.
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (bind parent (myself)
 |     (spawn! worker (send! parent (literal lettuce) (literal ok))
-|       (recv! message (pair message message)))))
-= (lettuce . lettuce)
+|       (recv! message (pair message (pair message ()))))))
+= (lettuce lettuce)
 
 `recv!` expects its first argument to be an identifier to be bound.  (This
 is a case of illegal arguments, as the identifier is not an expression
@@ -158,8 +158,8 @@ that must evaluate to a certain type.)
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (bind parent (myself)
 |     (spawn! worker (send! parent (literal lettuce) (literal ok))
-|       (recv! (pair 7 8) 9))))
-? uncaught exception: (illegal-arguments (pair 7 8) 9)
+|       (recv! (pair 7 ()) 9))))
+? uncaught exception: (illegal-arguments (pair 7 ()) 9)
 
 `recv!` expects exactly two arguments.
 
@@ -193,11 +193,11 @@ A process we spawned can receive multiple messages.
 |     (spawn! worker 
 |       (recv! message1
 |         (recv! message2
-|           (send! parent (pair message1 message2) 0)))
+|           (send! parent (pair message1 (pair message2 ())) 0)))
 |       (send! worker (literal thats)
 |         (send! worker (literal entertainment)
 |           (recv! message message))))))
-= (thats . entertainment)
+= (thats entertainment)
 
 A process we spawned will terminate while waiting for a message, if the
 main process terminates.
@@ -221,8 +221,8 @@ A spawned process can spawn processes of its own.
 |         (spawn! subworker (send! subparent (myself) 123)
 |           (recv! message (send! parent message 123))))
 |       (recv! subworker
-|          (pair (pid? subworker) (equal? worker subworker))))))
-= (#t . #f)
+|          (pair (pid? subworker) (pair (equal? worker subworker) ()))))))
+= (#t #f)
 
 A process can send messages to any process it knows about, not just
 its parent.
@@ -236,7 +236,7 @@ its parent.
 = hello
 
 If an exception is raised, but not caught, in a process, that process
-send!s a message to this effect to the process that spawn!ed it,
+sends a message to this effect to the process that spawned it,
 immediately before terminating.
 
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
@@ -308,10 +308,10 @@ may in fact hang instead of doing what our implementation does.
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (bind parent (myself) (spawn! worker
 |     (recv! message
-|       (let ((send!er  (head message))
+|       (let ((sender  (head message))
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
-|         (send! send!er (pair (myself)
+|         (send! sender (pair (myself)
 |                        (pair (pair (literal some-other-tag) (literal reply))
 |                          (pair (pair tag payload) ()))) 0)))
 |      (call! worker this-tag (literal this-payload) reply
@@ -381,7 +381,7 @@ The payload of the `call!` is available in the bound variable.
 |     (call! worker monkey (literal shines) reply reply)))
 = (island . shines)
 
-`respond!` respond!s to only one message.
+`respond!` responds to only one message.
 
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (spawn! worker
@@ -392,7 +392,7 @@ The payload of the `call!` is available in the bound variable.
 |       (call! worker monkey (literal shines) reply reply))))
 ? thread blocked indefinitely in an MVar operation
 
-Typicall!y, to write a server, you would use it in a loop.
+Typically, to write a server, you would use it in a loop.
 
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (bind work-fun (fun (self)
@@ -413,5 +413,5 @@ Typicall!y, to write a server, you would use it in a loop.
 |   (bind parent (myself) (spawn! worker
 |     (call! parent take 71 reply (literal ok))
 |     (respond!
-|       (take (x) (literal ok) (pair 55 x))))))
-= (55 . 71)
+|       (take (x) (literal ok) (pair 55 (pair x ())))))))
+= (55 71)

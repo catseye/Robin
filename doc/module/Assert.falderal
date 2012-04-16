@@ -45,15 +45,19 @@ Module `assert`
 |   (assert-symbol 7 (literal what)))
 ? uncaught exception: (expected-symbol . 7)
 
-### `assert-pair` ###
+### `assert-list` ###
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
-|   (assert-pair (pair 1 2) #t))
+|   (assert-list () #t))
 = #t
 
 | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
-|   (assert-pair #t (pair 1 2)))
-? uncaught exception: (expected-pair . #t)
+|   (assert-list (pair 1 ()) #t))
+= #t
+
+| (robin (0 1) ((small (0 1) *) (assert (0 1) *))
+|   (assert-list #t (literal zunk)))
+? uncaught exception: (expected-list . #t)
 
 ### `assert-macro` ###
 
