@@ -245,7 +245,7 @@ immediately before terminating.
 |       (bind x (head ())
 |         (send! parent (literal hi) 0))
 |       (recv! message message))))
-= (uncaught-exception expected-pair)
+= (uncaught-exception (expected-list ()))
 
 ### `msgs?` ###
 
@@ -282,11 +282,11 @@ with another process.
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
 |         (send! sender (pair (myself)
-|                        (pair (pair tag (literal reply))
-|                          (pair (pair tag payload) ()))) 0)))
+|                        (pair (pair tag (pair (literal reply) ()))
+|                          (pair (pair tag (pair payload ())) ()))) 0)))
 |     (call! worker this-tag (literal this-payload) reply
 |       (pair (literal reply-was) reply))))
-= (reply-was this-tag . this-payload)
+= (reply-was this-tag this-payload)
 
 The pid and tag in the return message must match, or `call!` will
 not finish.  Note: this is an awful test, because an implementation
@@ -299,8 +299,8 @@ may in fact hang instead of doing what our implementation does.
 |             (tag     (head (tail message)))
 |             (payload (head (tail (tail message)))))
 |         (send! sender (pair parent
-|                        (pair (pair tag (literal reply))
-|                          (pair (pair tag payload) ()))) 0)))
+|                        (pair (pair tag (pair (literal reply) ()))
+|                          (pair (pair tag (pair payload ())) ()))) 0)))
 |      (call! worker this-tag (literal this-payload) reply
 |        (pair (literal reply-was) reply)))))
 ? thread blocked indefinitely in an MVar operation
@@ -376,18 +376,18 @@ The payload of the `call!` is available in the bound variable.
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (spawn! worker
 |     (respond!
-|       (donkey (x) (literal kong)            (literal ok))
-|       (monkey (x) (pair (literal island) x) (literal ok)))
+|       (donkey (x) (literal kong)                      (literal ok))
+|       (monkey (x) (pair (literal island) (pair x ())) (literal ok)))
 |     (call! worker monkey (literal shines) reply reply)))
-= (island . shines)
+= (island shines)
 
 `respond!` responds to only one message.
 
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (spawn! worker
 |     (respond!
-|       (donkey (x) (literal kong)            (literal ok))
-|       (monkey (x) (pair (literal island) x) (literal ok)))
+|       (donkey (x) (literal kong)                      (literal ok))
+|       (monkey (x) (pair (literal island) (pair x ())) (literal ok)))
 |     (call! worker donkey () reply
 |       (call! worker monkey (literal shines) reply reply))))
 ? thread blocked indefinitely in an MVar operation
@@ -397,15 +397,15 @@ Typically, to write a server, you would use it in a loop.
 | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
 |   (bind work-fun (fun (self)
 |     (respond!
-|       (donkey (x) (literal kong)            (self self))
-|       (monkey (x) (pair (literal island) x) (self self))
-|       (stop   (x) (literal ok)              (literal ok))))
+|       (donkey (x) (literal kong)                      (self self))
+|       (monkey (x) (pair (literal island) (pair x ())) (self self))
+|       (stop   (x) (literal ok)                        (literal ok))))
 |     (spawn! worker (work-fun work-fun)
 |       (call! worker donkey () reply1
 |         (call! worker monkey (literal shines) reply2
 |           (call! worker stop 123 reply3
 |             (pair reply1 (pair reply2 (pair reply3 ())))))))))
-= (kong (island . shines) ok)
+= (kong (island shines) ok)
 
 `respond!` evaluates to the appropriate tail.
 

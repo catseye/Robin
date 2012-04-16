@@ -11,12 +11,18 @@ Core
 
 > robinHead env ienv (List [expr]) cc = do
 >     eval env ienv expr (\x ->
->         assertList ienv x (\(List (a:_)) -> cc a))
+>         assertList ienv x (\val ->
+>             case val of
+>                 List (a:_) -> cc a
+>                 other -> raise ienv (errMsg "expected-list" other)))
 > robinHead env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > robinTail env ienv (List [expr]) cc = do
 >     eval env ienv expr (\x ->
->         assertList ienv x (\(List (_:b)) -> cc (List b)))
+>         assertList ienv x (\val ->
+>             case val of
+>                 List (_:b) -> cc (List b)
+>                 other -> raise ienv (errMsg "expected-list" other)))
 > robinTail env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > robinPair env ienv (List [e1, e2]) cc = do
