@@ -1,0 +1,823 @@
+Module `core`
+=============
+
+    -> Tests for functionality "Interpret Robin Program"
+
+Robin's `core` module exports the set of intrinsic macros on top of which
+all other Robin macros and programs are built.
+
+### `pair` ###
+
+`pair` evaluates both of its arguments, then evaluates to a pair which
+contains both of those values, in the same order.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (pair () ()))
+    = (())
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (pair #t (pair #f ())))
+    = (#t #f)
+
+The second argument to `pair` must be a list.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (pair #t #f))
+    ? uncaught exception: (expected-list #f)
+
+The first argument to `pair` can be any type, but fewer than or more than
+two arguments will raise an exception.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (pair #t))
+    ? uncaught exception: (illegal-arguments (#t))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (pair #f #t #f))
+    ? uncaught exception: (illegal-arguments (#f #t #f))
+
+`pair` is basically equivalent to Scheme's `cons`.
+
+### `head` ###
+
+`head` evaluates its argument to a pair, and evaluates to the first element
+of that pair.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (head (pair #t ())))
+    = #t
+
+`head` expects its argument to be a pair.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (head #f))
+    ? uncaught exception: (expected-list #f)
+
+`head` expects exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (head (pair #t #f) (pair #f #t)))
+    ? uncaught exception: (illegal-arguments ((pair #t #f) (pair #f #t)))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (head))
+    ? uncaught exception: (illegal-arguments ())
+
+`head` is basically equivalent to Scheme's `car`.
+
+### `tail` ###
+
+`tail` evaluates its argument to a pair, and evaluates to the second element
+of that pair.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (tail (pair #t (pair #f ()))))
+    = (#f)
+
+`tail` expects its argument to be a pair.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (tail #f))
+    ? uncaught exception: (expected-list #f)
+
+`tail` expects exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (tail (pair #t #f) (pair #f #t)))
+    ? uncaught exception: (illegal-arguments ((pair #t #f) (pair #f #t)))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (tail))
+    ? uncaught exception: (illegal-arguments ())
+
+`tail` is basically equivalent to Scheme's `cdr`.
+
+### `if` ###
+
+`if` evaluates its first argument to a boolean value.  If that value is
+`#t`, it evaluates, and evaluates to, its second argument; or if that value
+is `#f` it evaluates, and evaluates to, its third argument.  In all cases,
+at most two arguments are evaluated.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if #t 7 9))
+    = 7
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if #f 7 9))
+    = 9
+
+The second and third arguments can be arbitrary expressions, but `if`
+expects its first argument to be a boolean.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if 5 7 9))
+    ? uncaught exception: (expected-boolean 5)
+
+`if` expects exactly three arguments.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if #t 7))
+    ? uncaught exception: (illegal-arguments (#t 7))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if #t 7 8 9))
+    ? uncaught exception: (illegal-arguments (#t 7 8 9))
+
+The identifiers named in the branch which is not evaluated need not be
+properly bound to values in the environment.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if #t 1 (pair fred ethel)))
+    = 1
+
+### `equal?` ###
+
+`equal?` evaluates both of its arguments to arbitrary S-expressions
+and compares them for deep equality.
+
+`equal?` works on symbols.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal?
+    |     ((macro (s a e) (head a)) this-symbol)
+    |     ((macro (s a e) (head a)) this-symbol)))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal?
+    |     ((macro (s a e) (head a)) this-symbol)
+    |     ((macro (s a e) (head a)) that-symbol)))
+    = #f
+
+`equal?` works on lists.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? (pair 1 (pair 2 (pair 3 ())))
+    |           (pair 1 (pair 2 (pair 3 ())))))
+    = #t
+
+Two values of different types are never equal.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? #t
+    |           (pair ((macro (self args env) (head args)) a) ())))
+    = #f
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? #f
+    |           ()))
+    = #f
+
+Arguments to `equal?` can be any type, but fewer than or more than
+two arguments will raise an exception.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? 7))
+    ? uncaught exception: (illegal-arguments (7))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? 7 8 9))
+    ? uncaught exception: (illegal-arguments (7 8 9))
+
+### `list?` ###
+
+`list?` evaluates its argument, then evaluates to `#t` if it is a list,
+`#f` otherwise.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (list? ((macro (self args env) (head args)) (a b))))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (list? ((macro (self args env) (head args)) (a b c d e f))))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (list? (pair 4 (pair 5 ()))))
+    = #t
+
+The empty list is a list.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (list? ()))
+    = #t
+
+Symbols are not lists.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (list? ((macro (self args env) (head args)) b)))
+    = #f
+
+The argument to `list?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (list? (pair 4 ()) (pair 6 ())))
+    ? uncaught exception: (illegal-arguments ((pair 4 ()) (pair 6 ())))
+
+### `macro?` ###
+
+`macro?` evaluates its argument, then evaluates to `#t` if it is a macro
+(either built-in or user-defined), or `#f` if it is not.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (macro? (macro (self args env) args)))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (macro? macro))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (macro? ((macro (self args env) (head args)) macro)))
+    = #f
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (macro? 4/5))
+    = #f
+
+The argument to `macro?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (macro? macro macro))
+    ? uncaught exception: (illegal-arguments (macro macro))
+
+### `symbol?` ###
+
+`symbol?` evaluates its argument, then evaluates to `#t` if it is a symbol,
+`#f` otherwise.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (symbol? ((macro (s a e) (head a)) this-symbol)))
+    = #t
+
+Pairs are not symbols.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (symbol? (pair 1 ())))
+    = #f
+
+The argument to `symbol?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (symbol? 77 88))
+    ? uncaught exception: (illegal-arguments (77 88))
+
+### `boolean?` ###
+
+`boolean?` evaluates its argument, then evaluates to `#t` if it is a
+boolean value, `#f` otherwise.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (boolean? #t))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (boolean? #f))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (boolean? ()))
+    = #f
+
+The argument to `symbol?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (boolean? #t #f))
+    ? uncaught exception: (illegal-arguments (#t #f))
+
+### `number?` ###
+
+`number?` evaluates its argument, then evaluates to `#t` if it is a
+rational number, `#f` otherwise.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (number? 5/7))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (number? 0))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (number? ()))
+    = #f
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (number? #t))
+    = #f
+
+The argument to `number?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (number? 6 4))
+    ? uncaught exception: (illegal-arguments (6 4))
+
+### `subtract` ###
+
+`subtract` evaluates its first argument to a rational number, then
+evaluates its second argument to a rational number, then evaluates
+to the difference between the first and second numbers.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract 6 4))
+    = 2
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract 16/15 1/5))
+    = 13/15
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract 1000 8000))
+    = -7000
+
+Addition may be accomplished by negating the second argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract 999 (subtract 0 999)))
+    = 1998
+
+`subtract` expects both of its arguments to be numbers.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract #f 100))
+    ? uncaught exception: (expected-number #f)
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract 100 ()))
+    ? uncaught exception: (expected-number ())
+
+`subtract` expects exactly two arguments.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract 100 200 300))
+    ? uncaught exception: (illegal-arguments (100 200 300))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract))
+    ? uncaught exception: (illegal-arguments ())
+
+### `divide` ###
+
+`divide` evaluates its first argument to a rational number, then
+evaluates its second argument to a rational number, then evaluates
+to the ratio between the first and second numbers.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide 99 11))
+    = 9
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide 6 4))
+    = 3/2
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide 4 (subtract 0 5)))
+    = -4/5
+
+If the second argument is zero, an exception will be raised.
+
+Addition may be accomplished by taking the reciprocal of the second
+argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide 123 0))
+    ? uncaught exception: (division-by-zero 123)
+
+Addition may be accomplished by taking the reciprocal of the second
+argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide 7 (divide 1 7)))
+    = 49
+
+`divide` expects both of its arguments to be numbers.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide #f 100))
+    ? uncaught exception: (expected-number #f)
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide 100 ()))
+    ? uncaught exception: (expected-number ())
+
+`divide` expects exactly two arguments.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide 100 200 300))
+    ? uncaught exception: (illegal-arguments (100 200 300))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide))
+    ? uncaught exception: (illegal-arguments ())
+
+### `floor` ###
+
+`floor` evaluates its sole argument to a rational number, then
+evaluates to the nearest whole number not larger than that rational.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (floor 26/5))
+    = 5
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (floor 5))
+    = 5
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (floor (subtract 0 1/2)))
+    = -1
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (floor 100 200 300))
+    ? uncaught exception: (illegal-arguments (100 200 300))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (floor))
+    ? uncaught exception: (illegal-arguments ())
+
+### `sign` ###
+
+`sign` evaluates its sole argument to a rational number, then
+evaluates to 0 if that number is 0, 1 if that number is positive, or
+-1 if that number is negative.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (sign 26/5))
+    = 1
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (sign 0))
+    = 0
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (sign (subtract 0 200)))
+    = -1
+
+`sign` expects exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (sign 100 200 300))
+    ? uncaught exception: (illegal-arguments (100 200 300))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (sign))
+    ? uncaught exception: (illegal-arguments ())
+
+### `eval` ###
+
+`eval` evaluates its first argument to obtain an environment, then
+evaluates its second argument to obtain an S-expression; it then
+evaluates that S-expression in the given environment.
+
+TODO: these tests use things from the `small` module; for the
+sake of purity, that dependency should be removed (but the tests
+will look awful.)
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (eval (env) (literal (pair (literal a) (pair (literal b) ())))))
+    = (a b)
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (eval () (literal (pair (literal a) (literal b)))))
+    ? uncaught exception: (unbound-identifier pair)
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind bindings (pair
+    |                    (pair (literal same) (pair equal? ()))
+    |                    (pair
+    |                      (pair (literal x) (pair #f ()))
+    |                      ()))
+    |     (eval bindings (literal (same x x)))))
+    = #t
+
+If two bindings for the same identifier are supplied in the environment
+alist passed to `eval`, the one closer to the front of the alist takes
+precedence.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind bindings (pair
+    |                    (pair (literal foo) (pair (literal yes) ()))
+    |                    (pair
+    |                       (pair (literal foo) (pair (literal no) ()))
+    |                       ()))
+    |     (eval bindings (literal foo))))
+    = yes
+
+`eval` will happily use whatever type of value you like as the
+environment, however, subsequent evaluation will fail when it
+tries to look up things in that environment.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (eval 103 (literal (pair (literal a) (literal b)))))
+    ? uncaught exception: (expected-env-alist 103)
+
+Evaluation expects the contents of the list which makes up the
+environment to be pairs.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (eval (pair #f ()) (literal (pair (literal a) (literal b)))))
+    ? uncaught exception: (expected-env-entry #f)
+
+Evaluation expects the head of each pair in the list which makes up the
+environment to be a symbol.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (eval (pair (pair 7 (pair #f ())) ()) (literal (pair (literal a) (literal b)))))
+    ? uncaught exception: (expected-symbol 7)
+
+`eval` expects exactly two arguments.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (eval))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (eval 4 5 6))
+    ? uncaught exception: (illegal-arguments (4 5 6))
+
+### `macro` ###
+
+`macro` takes its first argument to be a list of three formal
+parameters, and its second argument to be an arbitrary expression,
+and uses these two arguments to build, and evaluate to, a macro
+value.
+
+When this macro value is evaluated, the first formal argument will
+be bound to the macro itself, the second will be bound to the
+literal, unevaluated list of arguments passed to the macro, and the
+third will be bound to an alist representing the environment in
+effect at the point the macro value is evaluated.
+
+These formals are conventionally called `self`, `args`, and `env`,
+but different names can be chosen in the `macro` definition, for
+instance to avoid shadowing.
+
+`literal`, in fact, can be defined as a macro, and it is one of the
+simplest possible macros that can be written:
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((macro (self args env) (head args)) (why hello there)))
+    = (why hello there)
+
+Macros have "closure" behavior; that is, bindings in force when a
+macro is defined will still be in force when the macro is applied,
+even if they are no longer lexically in scope.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   ((let
+    |      ((a (literal these-are))
+    |       (m (macro (self args env) (pair a args))))
+    |     m) my args))
+    = (these-are my args)
+
+Macros can return macros.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let
+    |     ((mk (macro (self argsa env)
+    |         (macro (self argsb env)
+    |           (pair (head argsb) argsa))))
+    |      (mk2 (mk vindaloo)))
+    |     (mk2 chicken)))
+    = (chicken vindaloo)
+
+Arguments to macros shadow any other bindings in effect.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let
+    |     ((args (literal a))
+    |      (b (macro (self args env) (pair args args))))
+    |     (b 7)))
+    = ((7) 7)
+
+`self` is there to let you write recursive macros.  The following
+example demonstrates this; it evaluates `(pair b d)` in an environment
+where all the identifiers you list after `qqq` have been bound to 0.
+
+TODO: these tests use things from the `small` module; for the
+sake of purity, that dependency should be removed (but the tests
+will look awful.)
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind qqq
+    |     (macro (self args env)
+    |       (if (equal? args ())
+    |         (eval env (literal (pair b (pair d ()))))
+    |         (eval (pair (pair (head args) (pair 0 ())) env)
+    |           (pair self (tail args)))))
+    |     (bind b 1 (bind d 4 (qqq b c d)))))
+    = (0 0)
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind qqq
+    |     (macro (self args env)
+    |       (if (equal? args ())
+    |         (eval env (literal (pair b (pair d ()))))
+    |         (eval (pair (pair (head args) (pair 0 ())) env)
+    |           (pair self (tail args)))))
+    |     (bind b 1 (bind d 4 (qqq x y z)))))
+    = (1 4)
+
+Your recursive `macro` application doesn't have to be tail-recursive.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind make-env
+    |     (macro (self args env)
+    |       (if (equal? args ())
+    |         ()
+    |         (pair (pair (head args)
+    |                     (pair (eval env (head args)) ()))
+    |           (eval env
+    |             (pair self (tail args))))))
+    |     (bind b 1 (bind d 4 (make-env b d macro)))))
+    = ((b 1) (d 4) (macro (builtin macro)))
+
+`macro` expects exactly two arguments.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((macro (self args env)) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env)))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((macro (self args env) pair pair) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env) pair pair))
+
+`macro` expects its first argument to be a list of exactly three
+symbols.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((macro 100 pair) (why hello there)))
+    ? uncaught exception: (illegal-arguments (100 pair))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((macro (self args) pair) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args) pair))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((macro (self args env foo) pair) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env foo) pair))
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((macro (self args 99) pair) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args 99) pair))
+
+### `raise` ###
+
+`raise` evaluates its argument to obtain a value, then raises an
+exception with that value.
+
+If the implementation of Robin does not support catching exceptions, or if
+it does but no exception handlers have been installed in the execution
+history, the Robin program will terminate with an error, ceasing execution
+of all Robin processes immediately, returning control to the operating
+system.  For the sake of usability, the error should include a message which
+refers to the exception that triggered it, but this is not a strict
+requirement.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (raise 999999))
+    ? uncaught exception: 999999
+
+`raise`'s single argument may be any kind of value, but `raise` expects
+exactly one argument.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (raise))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (raise 2 3 4))
+    ? uncaught exception: (illegal-arguments (2 3 4))
+
+### `with` ###
+
+`with` attaches metadata to a value.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (with #t 5))
+    = 5
+
+Passing values with metadata attached shouldn't break any of the core
+macros.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (head (with #t (pair 1 ()))))
+    = 1
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (tail (with #t (pair 1 ()))))
+    = ()
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (pair (with #t 1) (pair (with #t 2) ())))
+    = (1 2)
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if (with #t #t) (with #t 2) (with #t 3)))
+    = 2
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (if (with 777 #f) (with #t 2) (with #t 3)))
+    = 3
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? (with #t 4) (with #t 4)))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (list? (with #t (pair 2 (pair 3 ())))))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (number? (with #t 3)))
+    = #t
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (symbol? (with #t (literal x))))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (macro? (with #t (macro (self args env) args))))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (boolean? (with #t #t)))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   ((with #t (macro (self args env) args)) foo bar baz))
+    = (foo bar baz)
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (subtract (with #t 0) (with #f 5)))
+    = -5
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (divide (with #t 1) (with #f 5)))
+    = 1/5
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (sign (with #t 1)))
+    = 1
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (floor (with #t 3/2)))
+    = 1
+
+Testing for equality ignores metadata.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? (with #t 4) 4))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? 4 (with #t 4)))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? (with #t 4) (with #f 4)))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (equal? (with #t 4) (with #t 5)))
+    = #f
+
+### `has?` ###
+
+`has?` checks if a value has a given metadata.
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (has? #t 4))
+    = #f
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (has? #t (with #t 4)))
+    = #t
+
+    | (robin (0 1) ((core (0 1) *))
+    |   (has? #t (head (pair (with #t 4) (pair 5 ())))))
+    = #t
+
+Binding retains metadata.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind q (with (literal gee) 77)
+    |     (has? (literal gee) q)))
+    = #t
+
+Metadata is retained in macros.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind whee
+    |     (macro (self args env)
+    |       (pair (head env)
+    |             (pair (has? 7 (head (tail (head env)))) ())))
+    |     (bind r (with 7 8)
+    |       (whee))))
+    = ((r 8) #t)

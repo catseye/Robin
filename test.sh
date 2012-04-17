@@ -6,7 +6,7 @@ if [ ! -e bin/robin -a ! -e bin/robin.exe ]; then
 fi
 
 FILES="doc/Fundamental_Semantics.markdown \
-      doc/module/Core.falderal \
+      doc/module/Core.markdown \
       doc/module/Small.markdown \
       doc/module/Exception.markdown \
       doc/module/Concurrency.markdown \
