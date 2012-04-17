@@ -1,0 +1,527 @@
+Module `list`
+=============
+
+    -> Tests for functionality "Interpret Robin Program"
+
+The `list` module exports macros and functions for working with data of
+conventional list type.
+
+### `list` ###
+
+`list` is a macro which evaluates each of its arguments, and evaluates to a
+(proper) list containing each of the results, in the same order.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (list 1 2 3 4 5))
+    = (1 2 3 4 5)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (list (pair 2 (pair 3 ())) (pair 6 (pair 7 ()))))
+    = ((2 3) (6 7))
+
+`list` need not have any arguments at all; the result is the empty list.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (list))
+    = ()
+
+### `empty?` ###
+
+`empty?` evaluates its single argument, and evaluates to `#t` if that value
+is the empty list, `#f` otherwise.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (empty? (literal symbol)))
+    = #f
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (empty? ()))
+    = #t
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (empty? (list 1 2 3)))
+    = #f
+
+### `map` ###
+
+`map` evaluates its first argument to obtain a macro, and its second argument
+to obtain a list.  It then evaluates to a list which is obtained by applying
+the macro to each element of the given list.  The macro is generally assumed
+to be a one-argument function.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (map (fun (x) (list x)) (literal (three dog night))))
+    = ((three) (dog) (night))
+
+While it is possible to pass a macro that is not a function, it is not
+very productive.  (Also, it exposes the implementation of `map`, so this
+is not a very good test.)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (map (macro (self args env) args) (literal (three dog night))))
+    = (((head li)) ((head li)) ((head li)))
+
+### `fold` ###
+
+`fold` evaluates its first argument to obtain a macro, generally assumed to
+be a two-argument function, its second argument to obtain an initial value,
+and its third argument to obtain a list.  It then applies the function to
+successive elements of the list.  Each time the function is applied, an
+element from the list is passed as the first argument.  The first time the
+function is applied, the initial value is passed as the second argument;
+each subsequent time, the result of the previous application is passed as
+the second argument.  `fold` evaluates to the result of the the final
+application of the function.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (fold (fun (x a) x) () (literal (three dog night))))
+    = night
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (fold (fun (x a) a) 541 (literal (archie moffam))))
+    = 541
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (fold (fun (x a) (pair a (pair x ()))) () (literal (three dog night))))
+    = (((() three) dog) night)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (fold 1/2 (fun (x a) a) (literal (three dog night))))
+    ? uncaught exception: (inapplicable-object 1/2)
+
+### `reverse` ###
+
+`reverse` evaluates its argument to a list, then evaluates to a list which
+is the same as the given list in every respect except that the order of
+the elements is reversed.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (reverse (literal (1 2 3 4 5))))
+    = (5 4 3 2 1)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (reverse (literal fairies-wear-boots)))
+    ? uncaught exception: (expected-list fairies-wear-boots)
+
+### `filter` ###
+
+`filter` evaluates its first argument to obtain a macro, generally assumed
+to be a predicate (a one-argument function which evaluates to a boolean).
+It then evaluates its second argument to obtain a list.  It then evaluates
+to a list which contains all the elements of the given list, in the same
+order, which satisfy the predicate.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (filter (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
+    = (two four six)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (filter (fun (x) x) (literal (#t #t #f banana #t #f))))
+    ? uncaught exception: (expected-boolean banana)
+
+### `find` ###
+
+`find` evaluates its first argument to obtain a predicate, then evaluates
+its second argument to obtain a list.  It then evaluates to a list which
+is either empty, if no element of the list satisfies the predicate, or
+a list which contains exactly one element, which will be the first
+element from the list which satisfies the predicate.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (find (fun (x) (symbol? x)) ()))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (find (fun (x) (symbol? x)) (list 1 2 3)))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (find (fun (x) #t) (list 1 2 3)))
+    = (1)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (find (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
+    = (two)
+
+`find` could be defined in terms of `filter`, but in practice it would
+be implemented in a way which need not examine the entire list.
+
+### `elem?` ###
+
+`elem?` evaluates its first argument to a value of any type, and its
+second argument to obtain a list.  It then evaluates to `#t` if the value
+is `equal?` to some element of the list, `#f` otherwise.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (elem? (literal p) (literal (a p e))))
+    = #t
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (elem? (literal p) (literal (a r k))))
+    = #f
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (elem? 7 ()))
+    = #f
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (elem? 7 (list 5 (list 6 7) 8)))
+    = #f
+
+`elem?` can be defined in terms of `find`, in a manner such as:
+
+    (not (empty? (find (fun (x) (equal? x y)) li)))
+
+### `append` ###
+
+`append` evaluates both of its arguments to lists.  It then
+evaluates to a list which is the concatenation of these lists.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (append (list 1 2 3) (list 4 5 6)))
+    = (1 2 3 4 5 6)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (append () ()))
+    = ()
+
+### `length` ###
+
+`length` evaluates its single argument to obtain a proper list, then
+evaluates to a non-negative integer which is the length of the list
+(the number of pairs, not counting nested pairs and not counting the
+empty list at the very tail.)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (length ()))
+    = 0
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (length (list 1 2 #t #f 3)))
+    = 5
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (length (literal whatnot)))
+    ? uncaught exception: (expected-list whatnot)
+
+### `index` ###
+
+`index` evaluates its first argument to a natural number, and its
+second argument to a list.  It then evaluates to the element of the
+list at the index given by the natural number.  The index is 0-based;
+0 refers to the element at the head of the list.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (index 0 (literal (the girl from ipanema))))
+    = the
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (index 2 (literal (the girl from ipanema))))
+    = from
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (bind last (fun (li) (index (subtract (length li) 1) li))
+    |     (last (literal (the girl from ipanema)))))
+    = ipanema
+
+Attempting to index beyond the end of the list will raise an exception.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (index 7 (literal (the girl from ipanema))))
+    ? uncaught exception: (expected-list ())
+
+`index` expects its first argument to be a number.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (index (literal goofy) (list 1 2 3 4 5)))
+    ? uncaught exception: (expected-number goofy)
+
+`index` expects its second argument to be a list.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (index 8 (literal whatnot)))
+    ? uncaught exception: (expected-list whatnot)
+
+### `take-while` ###
+
+`take-while` evaluates its first argument to obtain a predicate and its
+second argument to obtain a list.  It then evaluates to the longest prefix
+of the list whose elements all satisfy the predicate.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (take-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+    = (one two)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (take-while (fun (x) (symbol? x)) (literal (1 2 3 4 five six))))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (take-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+    = (1 2 3 4 5 6)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (take-while (fun (x) (symbol? x)) ()))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (take-while (fun (x) (symbol? x)) #f))
+    ? uncaught exception: (expected-list #f)
+
+### `drop-while` ###
+
+`drop-while` evaluates its first argument to obtain a predicate and its
+second argument to obtain a list.  It then evaluates to the suffix of the
+given list, starting at the first element which does not satisfy the
+predicate.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (drop-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+    = (3 4 five 6 seven)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (drop-while (fun (x) (symbol? x)) (literal (1 2 3 4 5 6))))
+    = (1 2 3 4 5 6)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (drop-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (drop-while (fun (x) (symbol? x)) ()))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (drop-while (fun (x) (symbol? x)) #f))
+    ? uncaught exception: (expected-list #f)
+
+### `first` ###
+
+`first` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired length, and its second argument to obtain a list.
+It then evaluates to the prefix of the given list of the desired length.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (first 0 (list 1 2 3 4 5)))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (first 3 (list 1 2 3 4 5)))
+    = (1 2 3)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (first 6 (list 1 2 3 4 5)))
+    ? uncaught exception: (expected-list ())
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (first 1 (literal foo)))
+    ? uncaught exception: (expected-list foo)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (first 0 (literal foo)))
+    = ()
+
+### `rest` ###
+
+`rest` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired position, and its second argument to obtain a
+list.  It then evaluates to the suffix of the given list starting at the
+desired position.  The position 0 indicates the beginning of the list.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (rest 0 (list 1 2 3 4 5)))
+    = (1 2 3 4 5)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (rest 3 (list 1 2 3 4 5)))
+    = (4 5)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (rest 5 (list 1 2 3 4 5)))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (rest 6 (list 1 2 3 4 5)))
+    ? uncaught exception: (expected-list ())
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (rest 1 (literal foo)))
+    ? uncaught exception: (expected-list foo)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (rest 0 (literal foo)))
+    = foo
+
+### `last` ###
+
+`last` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired length, and its second argument to obtain a
+list.  It then evaluates to the suffix of the given list of the desired
+length.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (last 0 (list 1 2 3 4 5)))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (head (last 1 (list 1 2 3 4 5))))
+    = 5
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (last 3 (list 1 2 3 4 5)))
+    = (3 4 5)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (last 6 (list 1 2 3 4 5)))
+    ? uncaught exception: (expected-list ())
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (last 1 (literal foo)))
+    ? uncaught exception: (expected-list foo)
+
+Unlike `first`, `last` does care if it's not a list, even when the count
+is zero.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (last 0 (literal foo)))
+    ? uncaught exception: (expected-list foo)
+
+### `prefix?` ###
+
+`prefix?` evaluates its first and second arguments to obtain lists.
+It then evaluates to `#t` if the first list is a prefix of the second
+list, `#f` otherwise.  A list A is a prefix of a list B if A is `empty?`,
+or the head of A is `equal?` to the head of B and the tail of A is a
+prefix of the tail of B.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (prefix? (list 1 2 3) (list 1 2 3 4 5 6)))
+    = #t
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (prefix? (list 1 2 5) (list 1 2 3 4 5 6)))
+    = #f
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (prefix? () (list 1 2 3 4 5 6)))
+    = #t
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (prefix? () (literal schpritz)))
+    = #t
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (prefix? (list 1 2 3) (list 1 2 3)))
+    = #t
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (prefix? (list 1 2 3 4) (list 1 2 3)))
+    = #f
+
+### `flatten` ###
+
+`flatten` evaluates its first argument to obtain a list, then evaluates
+to the list obtained by interpolating all elements into a single list.
+By interpolating we mean that, if some element is itself a list, the
+individual elements of that list will be present, in the same order, in
+the corresponding position, in the resulting list, and that this process
+is applied recursively to any elements in sublists which are themselves
+sublists.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (flatten ()))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (flatten (list 1 2 3)))
+    = (1 2 3)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (flatten (list 1 (list 2 3 4) 5)))
+    = (1 2 3 4 5)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (flatten (list 1 (list 2 3 (list 4 4 4)) 5)))
+    = (1 2 3 4 4 4 5)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (flatten (list 1 () 5)))
+    = (1 5)
+
+### `lookup` ###
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (lookup (literal b) (literal ((a 1) (b 2) (c 3)))))
+    = (2)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (lookup (literal a) (literal ((a 1) (a 2) (a 3)))))
+    = (1)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (lookup (literal r) (literal ((a 1) (b 2) (c 3)))))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (lookup (literal q) ()))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (lookup (literal q) 55))
+    ? uncaught exception: (expected-list 55)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (lookup (literal q) (literal ((a 7) 99 (q 4)))))
+    ? uncaught exception: (expected-list 99)
+
+### `extend` ###
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (extend (literal b) 6 (literal ((a 1) (b 2) (c 3)))))
+    = ((b 6) (a 1) (b 2) (c 3))
+
+The following should be true for any identifier i and alist x.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (let ((i (literal a))
+    |         (x (literal ((f 5) (g 7)))))
+    |     (lookup i (extend i 1 x))))
+    = (1)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (extend (literal b) 6 ()))
+    = ((b 6))
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (extend (literal b) 6 81))
+    ? uncaught exception: (expected-list 81)
+
+### `delete` ###
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (delete (literal b) (literal ((a 1) (b 2) (c 3)))))
+    = ((a 1) (c 3))
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (delete (literal b) (literal ((a 1) (b 2) (c 3) (b 4)))))
+    = ((a 1) (c 3))
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (delete (literal r) (literal ((a 1) (b 2) (c 3)))))
+    = ((a 1) (b 2) (c 3))
+
+The following should be true for any identifier i and alist x.
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (let ((i (literal a))
+    |         (x (literal ((a 5) (b 7)))))
+    |     (lookup i (delete i x))))
+    = ()
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (delete (literal q) 55))
+    ? uncaught exception: (expected-list 55)
+
+    | (robin (0 1) ((small (0 1) *) (list (0 1) *))
+    |   (delete (literal q) (literal ((a 7) 99 (q 4)))))
+    ? uncaught exception: (expected-list 99)

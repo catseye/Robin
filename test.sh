@@ -5,13 +5,13 @@ if [ ! -e bin/robin -a ! -e bin/robin.exe ]; then
     exit 1
 fi
 
-FILES="doc/Robin.falderal \
+FILES="doc/Fundamental_Semantics.markdown \
       doc/module/Core.falderal \
       doc/module/Small.falderal \
-      doc/module/Exception.falderal \
+      doc/module/Exception.markdown \
       doc/module/Concurrency.falderal \
-      doc/module/List.falderal \
-      doc/module/Term.falderal \
+      doc/module/List.markdown \
+      doc/module/Term.markdown \
       doc/module/Environment.falderal \
       doc/module/Boolean.falderal \
       doc/module/Arithmetic.falderal \
