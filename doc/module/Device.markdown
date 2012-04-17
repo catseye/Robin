@@ -1,5 +1,3 @@
--> encoding: UTF-8
-
 Module `device`
 ===============
 
@@ -14,7 +12,7 @@ all devices on the running system, from Robin.  Existing modules such as
 `crude-io` and `console` may be deprecated, or at least have their status
 changed (they may only describe the devices, not provide access to them.)
 
--> Tests for functionality "Interpret Robin Program"
+    -> Tests for functionality "Interpret Robin Program"
 
 ### `acquire!` ###
 
@@ -28,11 +26,11 @@ A device descriptor is an identifier followed by a set (unordered list)
 of capabilities.  Each capability is (for now) a symbol, which refers to
 a required capability of the device.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (device (0 1) *))
-|   (acquire! (console (ascii colour addressable)
-|              foo ())
-|     (pair (pid? console) (pid? foo))))
-= #t
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (device (0 1) *))
+    |   (acquire! (console (ascii colour addressable)
+    |              foo ())
+    |     (pair (pid? console) (pid? foo))))
+    = #t
 
 Issues to consider: sharing of device access.  In both senses: does the
 device allow shared access, and can we copy this pid to another process
@@ -44,11 +42,11 @@ The `release!` macro evaluates its one argument to a pid, then signals
 the device that it will no longer be used by this process.  Subsequent
 messages sent to the device pid from this process will be ignored.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (device (0 1) *))
-|   (acquire! (console (ascii colour addressable))
-|     (release! console
-|       123)))
-= 123
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (device (0 1) *))
+    |   (acquire! (console (ascii colour addressable))
+    |     (release! console
+    |       123)))
+    = 123
 
 ### `register!` ###
 

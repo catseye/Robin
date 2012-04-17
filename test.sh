@@ -7,9 +7,9 @@ fi
 
 FILES="doc/Fundamental_Semantics.markdown \
       doc/module/Core.falderal \
-      doc/module/Small.falderal \
+      doc/module/Small.markdown \
       doc/module/Exception.markdown \
-      doc/module/Concurrency.falderal \
+      doc/module/Concurrency.markdown \
       doc/module/List.markdown \
       doc/module/Term.markdown \
       doc/module/Environment.markdown \
@@ -17,8 +17,8 @@ FILES="doc/Fundamental_Semantics.markdown \
       doc/module/Arithmetic.markdown \
       doc/module/Random.markdown \
       doc/module/Assert.markdown \
-      doc/module/Pure.falderal \
-      doc/module/CrudeIO.falderal \
+      doc/module/Pure.markdown \
+      doc/module/CrudeIO.markdown \
       doc/module/Miscellany.markdown"
 
 # Hack for Robin & Falderal built with the ghc from Haskell Platform on Windows

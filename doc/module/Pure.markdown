@@ -1,9 +1,7 @@
--> encoding: UTF-8
-
 Module `pure`
 =============
 
--> Tests for functionality "Interpret Robin Program"
+    -> Tests for functionality "Interpret Robin Program"
 
 The `pure` module is an EXPERIMENTAL module for EXPERIMENTING with
 static analysis, namely to determine if functions cannot possibly have
@@ -30,29 +28,29 @@ going to glom them all together under this banner.
 but marked with `pure` in the metadata (except `eval` where this is far
 from a guarantee.)
 
-| (robin (0 1) ((pure (0 1) *))
-|   (has? (literal pure) head))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (has? (literal pure) head))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *))
-|   (has? (literal pure) tail))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (has? (literal pure) tail))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *))
-|   (has? (literal pure) pair))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (has? (literal pure) pair))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *))
-|   (has? (literal pure) if))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (has? (literal pure) if))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *))
-|   (has? (literal pure) macro))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (has? (literal pure) macro))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *))
-|   (has? (literal pure) fun))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (has? (literal pure) fun))
+    = #t
 
 ### Purity Analysis ###
 
@@ -77,190 +75,190 @@ The first argument is an environment.  The second argument is a list
 of symbols which are the formal parameters of the function.  The third
 argument is a literal term which is the body of the function.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) () (literal 4)))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) () (literal 4)))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) () (literal (subtract 4 5))))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) () (literal (subtract 4 5))))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (a b)) (literal (subtract a b))))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (a b)) (literal (subtract a b))))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-expr? (env) (literal (a b)) (literal (send! (myself) 3))))
-= #f
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-expr? (env) (literal (a b)) (literal (send! (myself) 3))))
+    = #f
 
 An otherwise pure function which simply binds something that it does not use
 is still pure.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|     (bind y 23 x))))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |     (bind y 23 x))))
+    = #t
 
 An otherwise pure function which binds some pure values to names is still
 pure.
 
 Unfortunately, our analyzer isn't smart enough to figure that out yet.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|     (bind y (subtract x 23) (bind r 5 (subtract y r))))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |     (bind y (subtract x 23) (bind r 5 (subtract y r))))))
+    = #f
 
 A function which evaluates to a pure built-in function is pure.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (foo)) (literal head)))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (foo)) (literal head)))
+    = #t
 
 A function which evaluates to a pure function is pure.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (foo)) (literal (fun (x) x))))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (foo)) (literal (fun (x) x))))
+    = #t
 
 A function which evaluates to an impure function is still pure, as long as
 the impure function is determined entirely by the parameters to the pure
 function.
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-expr? (env) () (literal
-|      (fun (x) (send! x 3)))))
-= #t
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-expr? (env) () (literal
+    |      (fun (x) (send! x 3)))))
+    = #t
 
 Even if it uses a closed-over identifier.
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-expr? (env) (literal (pid)) (literal
-|      (fun (x) (send! pid x)))))
-= #t
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-expr? (env) (literal (pid)) (literal
+    |      (fun (x) (send! pid x)))))
+    = #t
 
 Even if it evaluates to multiple functions.
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-expr? (env) (literal (pid)) (literal
-|     (pair (fun () pid)
-|           (fun (x) (send! pid x))))))
-= #t
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-expr? (env) (literal (pid)) (literal
+    |     (pair (fun () pid)
+    |           (fun (x) (send! pid x))))))
+    = #t
 
 An otherwise pure function which calls a pure function that it defines
 within itself is pure.
 
 Unfortunately, our analyzer isn't smart enough to figure that out yet.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|       ((fun (y) y) 123))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |       ((fun (y) y) 123))))
+    = #f
 
 (Unless of course, one of its actual arguments is not.)
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|       ((fun (y) y) (send! x 14)))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |       ((fun (y) y) (send! x 14)))))
+    = #f
 
 Even if it uses closed-over identifiers.
 
 Unfortunately, our analyzer isn't smart enough to figure that out yet.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|       ((fun (y) x) 123))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |       ((fun (y) x) 123))))
+    = #f
 
 Even if it was bound to a name first.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|     (bind y (fun (z) z)
-|       (y 123)))))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |     (bind y (fun (z) z)
+    |       (y 123)))))
+    = #t
 
 Even if it was bound to a name first, and uses closed-over identifiers.
 
 Unfortunately, our analyzer isn't smart enough to figure that out yet.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|     (bind y (fun (z) (pair x z))
-|       (y 123)))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |     (bind y (fun (z) (pair x z))
+    |       (y 123)))))
+    = #f
 
 An otherwise pure function which calls an impure function that it defines
 within itself is not pure.
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-expr? (env) (literal (pid)) (literal
-|     ((fun (j) (send! j 3)) pid))))
-= #f
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-expr? (env) (literal (pid)) (literal
+    |     ((fun (j) (send! j 3)) pid))))
+    = #f
 
 Even if that impure function was bound to a name first.
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-expr? (env) (literal (pid)) (literal
-|     (bind zap! (fun (j) (send! j 3))
-|       (zap! pid)))))
-= #f
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-expr? (env) (literal (pid)) (literal
+    |     (bind zap! (fun (j) (send! j 3))
+    |       (zap! pid)))))
+    = #f
 
 If we bind a name to an impure expression, the function is not pure, even
 if it doesn't use the name.
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-expr? (env) (literal (pid)) (literal
-|      (bind n (send! pid 3) pid))))
-= #f
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-expr? (env) (literal (pid)) (literal
+    |      (bind n (send! pid 3) pid))))
+    = #f
 
 A function which applies one of its arguments is not pure, because its
 argument might not be pure.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-expr? (env) (literal (x)) (literal
-|     (x 123))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-expr? (env) (literal (x)) (literal
+    |     (x 123))))
+    = #f
 
 ### `pure-fun-defn?` ###
 
 TBW
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-fun-defn? (env) (literal
-|     (fun (a) a))))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-fun-defn? (env) (literal
+    |     (fun (a) a))))
+    = #t
 
 We don't do macros yet.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-fun-defn? (env) (literal
-|     (macro (self args env) args))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-fun-defn? (env) (literal
+    |     (macro (self args env) args))))
+    = #f
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-fun-defn? (env) (literal
-|     head)))
-= #t
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-fun-defn? (env) (literal
+    |     head)))
+    = #t
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-fun-defn? (env) (literal
-|     (fun (a) (send! a a)))))
-= #f
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-fun-defn? (env) (literal
+    |     (fun (a) (send! a a)))))
+    = #f
 
-| (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
-|   (pure-fun-defn? (env) (literal
-|     send!)))
-= #f
+    | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
+    |   (pure-fun-defn? (env) (literal
+    |     send!)))
+    = #f
 
 This is actually pure, but too complex for us to analyze right now,
 so we pessimistically say no.
 
-| (robin (0 1) ((pure (0 1) *))
-|   (pure-fun-defn? (env) (literal
-|     ((head (pair fun ())) (a) a))))
-= #f
+    | (robin (0 1) ((pure (0 1) *))
+    |   (pure-fun-defn? (env) (literal
+    |     ((head (pair fun ())) (a) a))))
+    = #f
 
 ### `pure-fun` ###
 

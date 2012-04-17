@@ -1,5 +1,3 @@
--> encoding: UTF-8
-
 Module `crude-io`
 =================
 
@@ -31,40 +29,40 @@ this confirmation message.  The simplest way to do this is to use the
 `call!` macro.  If the program terminates before this confirmation message
 is received, the text might not be written to the standard output.
 
--> Tests for functionality "Interpret Robin Program"
+    -> Tests for functionality "Interpret Robin Program"
 
 Sending a message to `crude-output` causes the contents of the message to
 be written to the standard output, and an `ok` message sent back to the
 sending process as a confirmation.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-|   (call! crude-output write (literal hello-world) reply reply))
-= hello-world
-= ok
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    |   (call! crude-output write (literal hello-world) reply reply))
+    = hello-world
+    = ok
 
--> Functionality "Interpret Robin Program without output" is implemented by
--> shell command "bin/robin -n %(test-file)"
+    -> Functionality "Interpret Robin Program without output" is implemented by
+    -> shell command "bin/robin -n %(test-file)"
 
--> Tests for functionality "Interpret Robin Program without output"
+    -> Tests for functionality "Interpret Robin Program without output"
 
 The sending process need not do anything with the response.  The
 implementation need not write the result of the main process to the
 standard output.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-|   (call! crude-output write (literal hello-world) reply 0))
-= hello-world
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    |   (call! crude-output write (literal hello-world) reply 0))
+    = hello-world
 
 Multiple messages may be sent to `crude-output`; the content of each
 message will be formatted as a textual S-expression, and written out on
 its own line.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-|   (call! crude-output write (literal hello) x
-|     (call! crude-output write (literal (world 1 2 3)) y
-|       0)))
-= hello
-= (world 1 2 3)
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    |   (call! crude-output write (literal hello) x
+    |     (call! crude-output write (literal (world 1 2 3)) y
+    |       0)))
+    = hello
+    = (world 1 2 3)
 
 ### `crude-input` ###
 
@@ -83,59 +81,59 @@ to all subscribers.
 `crude-input` will not send any message until an entire line has been
 entered and parsed correctly.
 
--> Tests for shell command "echo 'hello' | bin/robin %(test-file)"
+    -> Tests for shell command "echo 'hello' | bin/robin %(test-file)"
 
 `crude-input` can be subscribed to, and the subscriber will receive
 messages when input occurs.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-|   (call! crude-input subscribe () x
-|     (recv! entered
-|       (pair (literal i-got) (pair entered ())))))
-= (i-got hello)
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    |   (call! crude-input subscribe () x
+    |     (recv! entered
+    |       (pair (literal i-got) (pair entered ())))))
+    = (i-got hello)
 
--> Tests for shell command "echo '(1 2 3)' | bin/robin %(test-file)"
+    -> Tests for shell command "echo '(1 2 3)' | bin/robin %(test-file)"
 
 Arbitrary S-expressions may occur on each line; they are parsed.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-|   (call! crude-input subscribe () x
-|     (recv! entered
-|       (pair (literal i-got) (pair entered ())))))
-= (i-got (1 2 3))
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    |   (call! crude-input subscribe () x
+    |     (recv! entered
+    |       (pair (literal i-got) (pair entered ())))))
+    = (i-got (1 2 3))
 
--> Tests for shell command "/bin/echo -e '1\n2\n3\n' | bin/robin -n %(test-file)"
+    -> Tests for shell command "/bin/echo -e '1\n2\n3\n' | bin/robin -n %(test-file)"
 
 Multiple lines of text may be input, and multiple messages will be sent.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-|   (bind input-loop
-|         (fun (self)
-|           (recv! entered
-|             (if (equal? entered (literal eof))
-|               #f
-|               (call! crude-output write (pair #t (pair entered ())) foo
-|                 (self self)))))
-|     (call! crude-input subscribe () x
-|       (input-loop input-loop))))
-= (#t 1)
-= (#t 2)
-= (#t 3)
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    |   (bind input-loop
+    |         (fun (self)
+    |           (recv! entered
+    |             (if (equal? entered (literal eof))
+    |               #f
+    |               (call! crude-output write (pair #t (pair entered ())) foo
+    |                 (self self)))))
+    |     (call! crude-input subscribe () x
+    |       (input-loop input-loop))))
+    = (#t 1)
+    = (#t 2)
+    = (#t 3)
 
--> Tests for shell command "/bin/echo -e '1\n#r\n3\n' | bin/robin -n %(test-file)"
+    -> Tests for shell command "/bin/echo -e '1\n#r\n3\n' | bin/robin -n %(test-file)"
 
 If an S-expression on a given line cannot be parsed, no message will be
 sent.
 
-| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-|   (bind input-loop
-|         (fun (self)
-|           (recv! entered
-|             (if (equal? entered (literal eof))
-|               #f
-|               (call! crude-output write (pair #t (pair entered ())) foo
-|                 (self self)))))
-|     (call! crude-input subscribe () x
-|       (input-loop input-loop))))
-= (#t 1)
-= (#t 3)
+    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    |   (bind input-loop
+    |         (fun (self)
+    |           (recv! entered
+    |             (if (equal? entered (literal eof))
+    |               #f
+    |               (call! crude-output write (pair #t (pair entered ())) foo
+    |                 (self self)))))
+    |     (call! crude-input subscribe () x
+    |       (input-loop input-loop))))
+    = (#t 1)
+    = (#t 3)
