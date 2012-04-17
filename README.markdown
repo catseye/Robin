@@ -172,10 +172,12 @@ Plans
   accessed inside the module in which they were created.  Actually, we
   already have function values, and they're traditionally opaque; but
   I'm not sure that solves the problem of them only being accessible
-  from the module in which they're defined.
-
-* Remove improper lists from the language.  This is starting to look
-  like the more attractive route.
+  from the module in which they're defined.  This will probably start
+  life as some sort of "object" type, which encapsulates some (immutable)
+  state, and supports methods (which may return a transformed object);
+  this may devolve into something which is implemented purely in terms
+  of function values (closing over the state, and returning a new
+  function value with a transformed state.)
 
 ### Standard Modules ###
 
@@ -231,6 +233,8 @@ though.
   `quasiquote`, which works more like `let` (cf. `let-symbol`).  Also
   possibly `quasi-literal` which works more like Perl's embedded `$`
   variables.  (Extending this to embedded expressions is also possible.)
+  Actually, it should be a lot like quasiquote, except the unquote
+  symbol should be specified at the start of the quasiquote sequence.
 
 * Work out the static analysis modules.  See the Static Analysis document
   for more information.
@@ -244,6 +248,10 @@ though.
   allow the backtrace to be amended with the position within the text
   file to which the problem can be traced.  The purpose of all this is
   to allow producing more complete error messages at the top level.
+
+* Create a module `metadata` which, like `exception`, both asserts that
+  the Robin implementation supports metadata on values, and exposes the
+  functions used to work with metadata (`with` and `has?`.)
 
 ### Possible Future Modules ###
 
