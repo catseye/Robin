@@ -12,14 +12,14 @@ FILES="doc/Fundamental_Semantics.markdown \
       doc/module/Concurrency.falderal \
       doc/module/List.markdown \
       doc/module/Term.markdown \
-      doc/module/Environment.falderal \
-      doc/module/Boolean.falderal \
-      doc/module/Arithmetic.falderal \
-      doc/module/Random.falderal \
-      doc/module/Assert.falderal \
+      doc/module/Environment.markdown \
+      doc/module/Boolean.markdown \
+      doc/module/Arithmetic.markdown \
+      doc/module/Random.markdown \
+      doc/module/Assert.markdown \
       doc/module/Pure.falderal \
       doc/module/CrudeIO.falderal \
-      doc/module/Miscellany.falderal"
+      doc/module/Miscellany.markdown"
 
 # Hack for Robin & Falderal built with the ghc from Haskell Platform on Windows
 if [ -e bin/robin.exe ]; then
