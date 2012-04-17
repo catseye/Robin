@@ -151,7 +151,9 @@ all the other data types.  It is inductively defined as follows:
 * A rational number is an S-expression.
 * A macro is an S-expression.
 * An opaque value is an S-expression.
-* A pair of two S-expressions is an S-expression.
+* An empty list is an S-expression.
+* A list cell containing an S-expression, prepended to another list,
+  is an S-expression.
 * Nothing else is an S-expression.
 
 S-expressions have a textual representation, but not all types have values
@@ -268,11 +270,11 @@ implementation, except in the case of built-in macros.
     = (macro (self args env) args)
 
 A built-in macro is represented thusly.  (TODO: this representation
-has problems; see section on pairs below.)
+has problems; see section on lists below.)
 
     | (robin (0 1) ((core (0 1)))
-    |   core:pair)
-    = (builtin pair)
+    |   core:head)
+    = (builtin head)
 
 One upshot of built-in macros is that *all* intrinsic Robin functionality,
 even things that in Scheme are special forms, can be passed around as
@@ -284,15 +286,31 @@ values.
 
 Macros always evaluate to themselves.
 
-### Pairs ###
+### Lists ###
 
-TODO: these are only proper lists now.  rewrite this.
+A list is either the empty list, or a list cell containing a value of any
+type, prepended to another list.
 
-A pair is a pair of values of any type (including another pair.)  By
-convention, the first of the two values in the pair is referred to as the
-"head" of the pair, and the second as the "tail" of the pair.
+The "head" of a list cell is the value (of any type) that it contains;
+the "tail" is the other list that it is prepended to.  The empty list
+has neither head nor tail.
 
-TODO: write more about this.
+Lists have a literal representation in Robin's S-expression based
+syntax.
+
+The empty list is notated `()` and it evaluates to itself.
+
+    | (robin (0 1) ()
+    |    ())
+    = ()
+
+A list with several elements is notated as a sequence of those
+elements, preceded by a `(`, followed by a `)`, and delimited
+by whitespace.
+
+Lists do not evaluate to themselves; rather, they represent a macro
+application.  However, the `literal` macro may be used to obtain a
+literal list.
 
     | (robin (0 1) ((small (0 1)))
     |    (small:literal (7 8)))
@@ -306,46 +324,29 @@ effectively, the parens are "fake" on these things.
     |   (pair #f (pair boolean? ())))
     = (#f (builtin boolean?))
 
-Pairs do not evaluate to themselves; rather, they represent a macro
-application.  TODO: document this.
-
 Conventional Data Types
 -----------------------
 
 This section lists data types that are not intrinsic, but are rather
 arrangements of intrinsic types in a way that follows a convention.
 
-### Lists ###
-
-By convention, a list is simply a lopsided tree of pairs.  The first element
-(head) of each pair is the value in that position of the list, while the
-second element (tail) is either another pair representing the continuation
-of the list, or the special value `()`, which is pronounced "null".
-
-TODO: write about how S-expressions are lists unless they contain a dot,
-proper vs improper lists, and so forth.
-
-Unlike Scheme, you do not need to quote `()`; it evaluates to itself
-rather than indicating an illegal empty application.
-
-    | (robin (0 1) () ())
-    = ()
-
 ### Alists ###
 
-An alist, short for "association list", is simply a list of pairs.  The
-idea is that each pair associates, somehow, the value in its head with
-the value in its tail.
+An alist, short for "association list", is simply a list of two-element
+sublists.  The idea is that each of these two-elements associates, in some
+context, the value of its first element with the value of its second element.
 
 ### Binding Alists ###
 
-When the head of each pair in an alist is a symbol, we call it a binding
-alist.  The idea is that it is a Robin representation of an evaluation
-environment, where the symbols in the heads of the pairs are bound to the
-values in the tails of the pairs.  Binding alists can be created from an
-environment in effect (such as in the third argument of a macro) and can
-be used to change the evaluation environment in effect (such as in the
-first argument to `eval`.)
+When the first element of each two-element sublist in an alist is a symbol,
+we call it a _binding alist_.  The idea is that it is a Robin representation
+of an evaluation environment, where the symbols in the heads of the pairs
+are bound to the values in the tails of the pairs.  Binding alists can be
+created from an environment in effect (such as in the third argument of a
+macro) and can be used to change the evaluation environment in effect (such
+as in the first argument to `eval`.)
+
+TODO: binding alists will be replaced by abstract map objects of some kind.
 
 ### Strings ###
 
