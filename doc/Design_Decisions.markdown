@@ -328,17 +328,16 @@ in the way of that.
 
 #### Should Robin allow improper lists?
 
-Decision: Yes
-Chance of changing: Moderate.
+Decision: No.
 
 Drawing directly from the Lisp/Scheme tradition, and being supported by the
 idea that the core semantics should admit as much "goo" as possible ("it's
 not a language so much as it's a building material"), with static analysis,
-if desired, being layered on top of that -- improper lists are currently
+if desired, being layered on top of that, improper lists were originally
 allowed in Robin.
 
-However, there are several points not in their favour, and I might remove
-them.
+However, there are several points that can be made against them, so they
+were removed from the language.
 
 * We may want to base everything on "goo", but we should want clean "goo".
 
@@ -362,13 +361,10 @@ them.
 
 #### Should we require lists in syntax where they aren't strictly necessary?
 
-Decision: Sometimes yes, sometimes no.
-Chance of changing: High.
+Decision: Yes.
 
-This wasn't really a conscious decision, so much as something that should
-probably be cleaned up.
-
-By example: Scheme's `let*` requires that you put all the bindings in a list:
+What do I even mean by this?  Well, for example, Scheme's `let*` requires
+that you put all the bindings in a list:
 
     (let* ((a 1)
            (b 2)
@@ -396,10 +392,10 @@ could also be seen as more orthogonal to the semantics (you really are
 working with a list of bindings, and you shouldn't overload the meanings of
 things in the list.)
 
-So: in the `(robin (0 1) ...)` form, there is no seperate list of module
-imports; but Robin's `let*` does have an intermediate list.  (On the other
-hand, `bind` doesn't need a list at all, obviating the issue.)  Generally,
-there is no consistency here yet, and one should probably be established.
+So, Robin's `let*` does have an intermediate list.  (On the other hand,
+`bind` doesn't need a list at all, obviating the issue.)  Following suit,
+the syntax for importing modules uses a list to contain the module specifiers
+(although it did not originally.)
 
 #### Should the language define static analyses?
 
@@ -580,7 +576,7 @@ the `random` module should be called `pseudo-random` or similar.  And
 
 #### Should all messaging transactions be synchronous?
 
-Decision: Not sure.  I'm starting to think yes.
+Decision: It's tempting, but I'm starting to think it's not practical.
 
 While the Erlang paradigm for message-passing is very simple -- just
 `Pid ! msg` and you've sent a message -- it's also very low-level.  For
@@ -611,9 +607,18 @@ not so much as shared updatable storage leads to them.)  Doing what we can
 to encourage programmers to avoid race conditions in design is probably
 called for.
 
+However... the problem is that if all messaging is synchronous, you lose
+one of the main benefits of messaging, which is (this sounds tautological)
+asynchronicity.  If you always need to wait for another process to confirm
+that it got your message, you can't do anything else in the meantime.
+
+Perhaps there is a way around this.  I'll need to come up with some
+examples and write them down here.
+
 #### Should all messaging consist of message structures (with envelopes)?
 
 Decision: Again, not sure, leaning towards yes.
 
 Again, `Pid ! Msg` where `Msg` is anything is very simple, but again, it
-is very low-level.  Need to think about this more.
+is very low-level.  It is useful to have metadata about the message, like
+which process sent it, and when.  But I need to think about this more.

@@ -100,6 +100,13 @@ Naming
     semantically equivalent to `(and-list (list a b c))`, but this
     can support short-circuiting where the other cannot.
 
+  But perhaps I am thinking too much about short-circuiting here.
+  If the expressions of the actual parameters are pure, this should
+  not be a concern; short-circuiting in this case is only an optimization,
+  and could be done by a compiler or other program transformer which
+  recognizes `(and-list (list a b c))` and transforms it into
+  `(and a (and b c))` once it knows that `a` `b` and `c` are pure.
+
 Conditionals
 ------------
 

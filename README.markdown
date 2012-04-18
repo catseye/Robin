@@ -197,6 +197,9 @@ Plans
 * In the `arith` module, make `sum` and `product` that work on lists.
   Possibly make `product` short-circuiting.  Possibly add `int-pow`.
 
+* Write `list` in the Robin implementation of `small`, and use it to
+  simplify that module.  Just re-export it from the `list` module.
+
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)
@@ -230,11 +233,11 @@ being evaluated.  This might make the `self` parameter to macros redundant,
 though.
 
 * Use `subst-env` to implement `literal-with`, as a substitute for
-  `quasiquote`, which works more like `let` (cf. `let-symbol`).  Also
-  possibly `quasi-literal` which works more like Perl's embedded `$`
-  variables.  (Extending this to embedded expressions is also possible.)
-  Actually, it should be a lot like quasiquote, except the unquote
-  symbol should be specified at the start of the quasiquote sequence.
+  `quasiquote`, which works more like `let` (cf. `let-symbol`).
+
+* In the `term` module, export `cast`, which works like Scheme's
+  `quasiquote`, except the unquote symbol can be specified at the top of
+  the form.
 
 * Work out the static analysis modules.  See the Static Analysis document
   for more information.
@@ -252,6 +255,11 @@ though.
 * Create a module `metadata` which, like `exception`, both asserts that
   the Robin implementation supports metadata on values, and exposes the
   functions used to work with metadata (`with` and `has?`.)
+
+* Create the `device` module and use it instead of `crude-io` and
+  `console`.  Perhaps make those two into "interface modules"?  I
+  suppose an interface module would expose a predicate to check if a
+  device supports a given interface.
 
 ### Possible Future Modules ###
 
