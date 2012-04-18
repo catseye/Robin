@@ -37,7 +37,7 @@ from a guarantee.)
     = #t
 
     | (robin (0 1) ((pure (0 1) *))
-    |   (has? (literal pure) pair))
+    |   (has? (literal pure) prepend))
     = #t
 
     | (robin (0 1) ((pure (0 1) *))
@@ -141,8 +141,8 @@ Even if it evaluates to multiple functions.
 
     | (robin (0 1) ((pure (0 1) *) (concurrency (0 1) *))
     |   (pure-expr? (env) (literal (pid)) (literal
-    |     (pair (fun () pid)
-    |           (fun (x) (send! pid x))))))
+    |     (prepend (fun () pid)
+    |       (prepend (fun (x) (send! pid x)) ())))))
     = #t
 
 An otherwise pure function which calls a pure function that it defines
@@ -185,7 +185,7 @@ Unfortunately, our analyzer isn't smart enough to figure that out yet.
 
     | (robin (0 1) ((pure (0 1) *))
     |   (pure-expr? (env) (literal (x)) (literal
-    |     (bind y (fun (z) (pair x z))
+    |     (bind y (fun (z) (prepend x z))
     |       (y 123)))))
     = #f
 
@@ -257,7 +257,7 @@ so we pessimistically say no.
 
     | (robin (0 1) ((pure (0 1) *))
     |   (pure-fun-defn? (env) (literal
-    |     ((head (pair fun ())) (a) a))))
+    |     ((head (prepend fun ())) (a) a))))
     = #f
 
 ### `pure-fun` ###

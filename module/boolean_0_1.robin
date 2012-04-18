@@ -4,14 +4,14 @@
       (if (equal? args ())
         #t
         (if (eval env (head args))
-          (eval env (pair self (tail args)))
+          (eval env (prepend self (tail args)))
           #f))))
     (or (macro (self args env)
       (if (equal? args ())
         #f
         (if (eval env (head args))
           #t
-          (eval env (pair self (tail args)))))))
+          (eval env (prepend self (tail args)))))))
     (not (fun (a)
       (if a #f #t)))
     (xor (fun (a b)

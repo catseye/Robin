@@ -1,2 +1,2 @@
 (robin (0 1) ((small (0 1) *) (circular-b (0 1) *))
-  (pair (pair (literal literal-a) (pair literal-b ())) ()))
+  (list (list (literal literal-a) literal-b)))

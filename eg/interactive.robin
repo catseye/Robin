@@ -4,7 +4,7 @@
           (recv! entered
             (if (equal? entered (literal eof))
               #f
-              (call! crude-output write (pair #t entered) foo
+              (call! crude-output write (list #t entered) foo
                 (self self)))))
     (call! crude-input subscribe () x
       (input-loop input-loop))))

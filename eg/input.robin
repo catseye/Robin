@@ -1,4 +1,4 @@
 (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
   (call! crude-input subscribe () x
     (recv! entered
-      (pair (literal i-got) entered))))
+      (list (literal i-got) entered))))

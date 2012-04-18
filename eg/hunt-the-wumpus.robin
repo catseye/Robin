@@ -44,13 +44,13 @@
         (if (equal? n 0)
           acc
           (self self (subtract n 1)
-                     (pair (get-random-room! acc) acc)))))
+                     (prepend (get-random-room! acc) acc)))))
       (get-n-random-rooms! (fun (n acc)
         (get-n-random-rooms-r! get-n-random-rooms-r! n acc)))
       (initial-wumpus (get-random-room! ()))
       (initial-bats (get-n-random-rooms! 2 ()))
       (initial-pits (get-n-random-rooms! 2 ()))
-      (initial-room (get-random-room! (pair initial-wumpus (append initial-bats initial-pits))))
+      (initial-room (get-random-room! (prepend initial-wumpus (append initial-bats initial-pits))))
       (initial-arrows 5)
       (print! (macro (self args env)
         ;''If the thing to be printed turns out to be the empty list,
@@ -59,7 +59,7 @@
             (subst-env
               (map
                 (fun (binding)
-                  (pair (list (literal ?) (head binding)) (tail binding)))
+                  (prepend (list (literal ?) (head binding)) (tail binding)))
                 env))
             (subject (subst-many subst-env (head args)))
           )

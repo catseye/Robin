@@ -1,13 +1,13 @@
 (robin (0 1) ((core (0 1) *))
   (eval
-    (pair
-      (pair ((macro (self args env) (head args)) literal) (macro (self args env) (head args)))
-      (pair
-        (pair ((macro (self args env) (head args)) bind) (macro (self args env) (eval
-                                                         (pair (pair (head args) (eval env (head (tail args)))) env)
+    (prepend
+      (prepend ((macro (self args env) (head args)) literal) (macro (self args env) (head args)))
+      (prepend
+        (prepend ((macro (self args env) (head args)) bind) (macro (self args env) (eval
+                                                         (prepend (prepend (head args) (eval env (head (tail args)))) env)
                                                          (head (tail (tail args))))))
-        (pair
-          (pair ((macro (self args env) (head args)) env) (macro (self args env) env))
+        (prepend
+          (prepend ((macro (self args env) (head args)) env) (macro (self args env) env))
           ((macro (self args env) env))
         )
       )
@@ -20,10 +20,10 @@
             (bind binding (head bindings)
               (bind name (head binding)
                 (bind value (eval env (head (tail binding)))
-                  (bind newenv (pair (pair name value) env)
+                  (bind newenv (prepend (prepend name value) env)
                     (bind newbindings (tail bindings)
-                      (bind newargs (pair newbindings (tail args))
-                        (eval newenv (pair self newargs)))))))))))
+                      (bind newargs (prepend newbindings (tail args))
+                        (eval newenv (prepend self newargs)))))))))))
         (let
           (
             (choose (macro (self args env)
@@ -35,7 +35,7 @@
                   (eval env then)
                   (if (eval env test)
                     (eval env then)
-                    (eval env (pair self (tail args))))))))
+                    (eval env (prepend self (tail args))))))))
             (fun (macro (self args env)
               (let ((formals (head args))
                     (body (head (tail args)))
@@ -50,21 +50,21 @@
                           closed-env
                           (let (
                                 (value (eval fun-env (head actuals)))
-                                (new-closed-env (pair (pair (head formals) value) closed-env))
-                                (new-args (pair new-closed-env (pair fun-env (pair (tail formals) (pair (tail actuals) ())))))
+                                (new-closed-env (prepend (prepend (head formals) value) closed-env))
+                                (new-args (prepend new-closed-env (prepend fun-env (prepend (tail formals) (prepend (tail actuals) ())))))
                                )
                             (eval env
-                              (pair self new-args)))))))
+                              (prepend self new-args)))))))
                     (make-env-wrap (macro (self args env)
                       (let (
                              (closed-env (eval env (head args)))
                              (fun-env (eval env (head (tail args))))
                              (formals (eval env (head (tail (tail args)))))
                              (actuals (eval env (head (tail (tail (tail args))))))
-                             (new-args (pair closed-env (pair fun-env (pair formals (pair actuals ())))))
+                             (new-args (prepend closed-env (prepend fun-env (prepend formals (prepend actuals ())))))
                            )
                         (eval env
-                          (pair make-env new-args))))))
+                          (prepend make-env new-args))))))
                 (macro (fun-self actuals fun-env)
                   (eval (make-env-wrap env fun-env formals actuals) body)))))
           )

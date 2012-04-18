@@ -281,7 +281,7 @@ even things that in Scheme are special forms, can be passed around as
 values.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair if (pair head ())))
+    |   (prepend if (prepend head ())))
     = ((builtin if) (builtin head))
 
 Macros always evaluate to themselves.
@@ -316,12 +316,12 @@ literal list.
     |    (small:literal (7 8)))
     = (7 8)
 
-Representations of some types (like built-in macros) look funny because they
-don't follow the rules for depicting pairs with a dot and lists without --
-effectively, the parens are "fake" on these things.
+Representations of some types (like built-in macros) look funny because
+they don't follow the rules for depicting lists -- effectively, the parens
+are "fake" on these things.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair #f (pair boolean? ())))
+    |   (prepend #f (prepend boolean? ())))
     = (#f (builtin boolean?))
 
 Conventional Data Types
@@ -340,7 +340,7 @@ context, the value of its first element with the value of its second element.
 
 When the first element of each two-element sublist in an alist is a symbol,
 we call it a _binding alist_.  The idea is that it is a Robin representation
-of an evaluation environment, where the symbols in the heads of the pairs
+of an evaluation environment, where the symbols in the heads of the sublists
 are bound to the values in the tails of the pairs.  Binding alists can be
 created from an environment in effect (such as in the third argument of a
 macro) and can be used to change the evaluation environment in effect (such
@@ -427,7 +427,7 @@ be parsed, but it will be ignored.
 
     | (robin (0 1) ((core (0 1) *))
     |   ;(this program produces a list of two booleans)
-    |   (pair #f (pair #f ())))
+    |   (prepend #f (prepend #f ())))
     = (#f #f)
 
 Because S-expressions may nest, and because comments may appear
@@ -437,7 +437,7 @@ inside S-expressions, comments may nest.
     |   ;(this program produces
     |     ;(what you might call)
     |     a list of two booleans)
-    |   (pair #f (pair #f ())))
+    |   (prepend #f (prepend #f ())))
     = (#f #f)
 
 Comments are still parsed.  A syntax error in a comment is an error.
@@ -445,8 +445,8 @@ Comments are still parsed.  A syntax error in a comment is an error.
     | (robin (0 1) ((core (0 1) *))
     |   ;(this program produces
     |     #k
-    |     a pair of booleans)
-    |   (pair #f #f))
+    |     a list of booleans)
+    |   (prepend #f (prepend #f ())))
     ? (line 3, column 6):
     ? unexpected "k"
     ? expecting "t" or "f"
@@ -454,17 +454,17 @@ Comments are still parsed.  A syntax error in a comment is an error.
 Any number of comments may appear together.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair ;what ;on ;earth #f (pair #f ())))
+    |   (prepend ;what ;on ;earth #f (prepend #f ())))
     = (#f #f)
 
 Comments may appear before a closing parenthesis.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair #f (pair #f ()) ;foo))
+    |   (prepend #f (prepend #f ()) ;foo))
     = (#f #f)
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair #f (pair #f ()) ;peace ;(on) ;earth))
+    |   (prepend #f (prepend #f ()) ;peace ;(on) ;earth))
     = (#f #f)
 
 Comments may appear in an empty list.
@@ -484,7 +484,7 @@ used.
 
     | (robin (0 1) ((core (0 1) *))
     |   ;''This program, it produces a list of two booleans. #k ?''
-    |   (pair #f (pair #f ())))
+    |   (prepend #f (prepend #f ())))
     = (#f #f)
 
 Standard Modules

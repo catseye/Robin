@@ -10,7 +10,7 @@ S-expressions as terms, that is, hierarchical trees of data.
 
 `subst` evaluates all three of its arguments to obtain values of any type.  It
 then returns a modification of the third value where all instances of the first
-value (even those deeply nested within subpairs) have been replaced with the
+value (even those deeply nested within sublists) have been replaced with the
 second value.
 
     | (robin (0 1) ((small (0 1) *) (term (0 1) *))
@@ -39,7 +39,7 @@ second value.
 
     | (robin (0 1) ((small (0 1) *) (term (0 1) *))
     |   (subst (literal (turkey and cheese)) (literal (pastrami and rye))
-    |     (pair (literal (turkey and bacon)) (literal (turkey and cheese)))))
+    |     (prepend (literal (turkey and bacon)) (literal (turkey and cheese)))))
     = ((turkey and bacon) pastrami and rye)
 
 ### `subst-many` ###

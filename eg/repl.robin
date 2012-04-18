@@ -5,7 +5,7 @@
               (env (0 1) *))
   (let (
     (restricted-env
-      (export pair head tail if equal? pair? macro? symbol? boolean?
+      (export prepend head tail if equal? list? macro? symbol? boolean?
               number? subtract divide floor sign eval macro raise with has?
               literal fun bind let choose env))
     (input-loop
@@ -13,7 +13,7 @@
           (recv! entered
             (if (equal? entered (literal eof))
               (literal bye)
-              (bind result (catch error (pair (literal error) error)
+              (bind result (catch error (list (literal error) error)
                              (eval restricted-env entered))
                 (call! crude-output write result foo
                   (self self)))))))

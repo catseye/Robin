@@ -205,7 +205,7 @@ main process terminates.
     |     (spawn! worker
     |       (recv! message1
     |         (recv! message2
-    |           (send! parent (pair message1 message2) 0)))
+    |           (send! parent (list message1 message2) 0)))
     |       (send! worker (literal thats)
     |         (literal stop)))))
     = stop
@@ -219,7 +219,7 @@ A spawned process can spawn processes of its own.
     |         (spawn! subworker (send! subparent (myself) 123)
     |           (recv! message (send! parent message 123))))
     |       (recv! subworker
-    |          (pair (pid? subworker) (list (equal? worker subworker)))))))
+    |          (list (pid? subworker) (equal? worker subworker))))))
     = (#t #f)
 
 A process can send messages to any process it knows about, not just
@@ -296,11 +296,11 @@ may in fact hang instead of doing what our implementation does.
     |       (let ((sender  (head message))
     |             (tag     (head (tail message)))
     |             (payload (head (tail (tail message)))))
-    |         (send! sender (pair parent
-    |                        (pair (pair tag (pair (literal reply) ()))
-    |                          (pair (pair tag (pair payload ())) ()))) 0)))
+    |         (send! sender (list parent
+    |                             (list tag (literal reply))
+    |                             (list tag payload ())) 0)))
     |      (call! worker this-tag (literal this-payload) reply
-    |        (pair (literal reply-was) (pair reply ()))))))
+    |        (list (literal reply-was) reply)))))
     ? thread blocked indefinitely in an MVar operation
 
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
@@ -309,11 +309,11 @@ may in fact hang instead of doing what our implementation does.
     |       (let ((sender  (head message))
     |             (tag     (head (tail message)))
     |             (payload (head (tail (tail message)))))
-    |         (send! sender (pair (myself)
-    |                        (pair (pair (literal some-other-tag) (pair (literal reply) ()))
-    |                          (pair (pair tag (pair payload ())) ()))) 0)))
+    |         (send! sender (list (myself)
+    |                             (list (literal some-other-tag) (literal reply))
+    |                             (list tag payload ())) 0)))
     |      (call! worker this-tag (literal this-payload) reply
-    |        (pair (literal reply-was) (pair reply ()))))))
+    |        (list (literal reply-was) reply)))))
     ? thread blocked indefinitely in an MVar operation
 
 If `call!` receives an exception message, it will `raise` that
@@ -329,29 +329,29 @@ currently!) but... we'll see.
     |             (payload (head (tail (tail message)))))
     |         (head (literal argh))))
     |     (call! worker this-tag (literal this-payload) reply
-    |       (pair (literal reply-was) reply))))
+    |       (list (literal reply-was) reply))))
     ? uncaught exception: (expected-list argh)
 
 `call!` expects its first argument to be a pid.
 
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (call! (literal worker) this-tag (literal this-payload) reply
-    |      (pair (literal reply-was) reply)))
+    |      (list (literal reply-was) reply)))
     ? uncaught exception: (expected-pid worker)
 
 `call!` expects its second argument to be a symbol.
 
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (call! (myself) #f (literal this-payload) reply
-    |      (pair (literal reply-was) reply)))
-    ? uncaught exception: (illegal-arguments ((myself) #f (literal this-payload) reply (pair (literal reply-was) reply)))
+    |      (list (literal reply-was) reply)))
+    ? uncaught exception: (illegal-arguments ((myself) #f (literal this-payload) reply (list (literal reply-was) reply)))
 
 `call!` expects its fourth argument to be an identifier.
 
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (call! (myself) this-tag (literal this-payload) #f
-    |      (pair (literal reply-was) reply)))
-    ? uncaught exception: (illegal-arguments ((myself) this-tag (literal this-payload) #f (pair (literal reply-was) reply)))
+    |      (list (literal reply-was) reply)))
+    ? uncaught exception: (illegal-arguments ((myself) this-tag (literal this-payload) #f (list (literal reply-was) reply)))
 
 ### `respond!` ###
 
@@ -374,8 +374,8 @@ The payload of the `call!` is available in the bound variable.
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (spawn! worker
     |     (respond!
-    |       (donkey (x) (literal kong)                      (literal ok))
-    |       (monkey (x) (pair (literal island) (pair x ())) (literal ok)))
+    |       (donkey (x) (literal kong)            (literal ok))
+    |       (monkey (x) (list (literal island) x) (literal ok)))
     |     (call! worker monkey (literal shines) reply reply)))
     = (island shines)
 
@@ -384,8 +384,8 @@ The payload of the `call!` is available in the bound variable.
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (spawn! worker
     |     (respond!
-    |       (donkey (x) (literal kong)                      (literal ok))
-    |       (monkey (x) (pair (literal island) (pair x ())) (literal ok)))
+    |       (donkey (x) (literal kong)            (literal ok))
+    |       (monkey (x) (list (literal island) x) (literal ok)))
     |     (call! worker donkey () reply
     |       (call! worker monkey (literal shines) reply reply))))
     ? thread blocked indefinitely in an MVar operation
@@ -395,14 +395,14 @@ Typically, to write a server, you would use it in a loop.
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (bind work-fun (fun (self)
     |     (respond!
-    |       (donkey (x) (literal kong)                      (self self))
-    |       (monkey (x) (pair (literal island) (pair x ())) (self self))
-    |       (stop   (x) (literal ok)                        (literal ok))))
+    |       (donkey (x) (literal kong)            (self self))
+    |       (monkey (x) (list (literal island) x) (self self))
+    |       (stop   (x) (literal ok)              (literal ok))))
     |     (spawn! worker (work-fun work-fun)
     |       (call! worker donkey () reply1
     |         (call! worker monkey (literal shines) reply2
     |           (call! worker stop 123 reply3
-    |             (pair reply1 (pair reply2 (pair reply3 ())))))))))
+    |             (list reply1 reply2 reply3)))))))
     = (kong (island shines) ok)
 
 `respond!` evaluates to the appropriate tail.
@@ -411,5 +411,5 @@ Typically, to write a server, you would use it in a loop.
     |   (bind parent (myself) (spawn! worker
     |     (call! parent take 71 reply (literal ok))
     |     (respond!
-    |       (take (x) (literal ok) (pair 55 (pair x ())))))))
+    |       (take (x) (literal ok) (list 55 x))))))
     = (55 71)

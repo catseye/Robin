@@ -24,7 +24,7 @@
             li
             (if (equal? (head (head li)) id)
               (tail li)
-              (pair (head li) (self self id (tail li))))))
+              (prepend (head li) (self self id (tail li))))))
           (eval (remove-binding-r remove-binding-r (head args) env)
             (head (tail args))))))
     (sandbox

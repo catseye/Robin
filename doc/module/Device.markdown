@@ -29,8 +29,8 @@ a required capability of the device.
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (device (0 1) *))
     |   (acquire! (console (ascii colour addressable)
     |              foo ())
-    |     (pair (pid? console) (pid? foo))))
-    = #t
+    |     (list (pid? console) (pid? foo))))
+    = (#t #t)
 
 Issues to consider: sharing of device access.  In both senses: does the
 device allow shared access, and can we copy this pid to another process

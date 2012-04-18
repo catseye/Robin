@@ -4,7 +4,7 @@
   (let (
     (head     (with (literal pure) head))
     (tail     (with (literal pure) tail))
-    (pair     (with (literal pure) pair))
+    (prepend  (with (literal pure) prepend))
     (list?    (with (literal pure) list?))
     (symbol?  (with (literal pure) symbol?))
     (number?  (with (literal pure) number?))
@@ -71,7 +71,7 @@
         ((empty? expr)     #t)
         ;''XXX The following is badly written.''
         ((list? expr)
-          ;''If the head of the pair is an S-expr which represents a
+          ;''If the head of the list is an S-expr which represents a
              pure fun, such as 'head' or '(fun (x) x)', then this
              expression is pure if all of the actual arguments are
              pure.  BUT -- first we must special-case some things.''
@@ -143,7 +143,7 @@
     (pure-fun-defn? (fun (env expr)
       (pure-fun-defn?-r pure-fun-defn?-r pure-expr?-r env expr)))
     )
-    (export head tail pair list? symbol? number? macro? boolean?
+    (export head tail prepend list? symbol? number? macro? boolean?
             subtract divide floor sign macro if with has?
             eval
             literal env fun bind

@@ -66,13 +66,13 @@ its second argument in an environment where all bindings *except* those
 for the listed identifiers have been unbound.
 
     | (robin (0 1) ((core (0 1) *) (env (0 1) *))
-    |   (sandbox (pair tail)
-    |     (tail (pair 8 (pair 9 ())))))
+    |   (sandbox (prepend tail)
+    |     (tail (prepend 8 (prepend 9 ())))))
     = (9)
 
     | (robin (0 1) ((core (0 1) *) (env (0 1) *))
-    |   (sandbox (pair tail)
-    |     (head (pair 8 (pair 9 ())))))
+    |   (sandbox (prepend tail)
+    |     (head (prepend 8 (prepend 9 ())))))
     ? uncaught exception: (unbound-identifier head)
 
 ### `export` ###

@@ -8,8 +8,8 @@
           ((empty? sexp)
             ())
           ((list? sexp)
-            (pair (self self src dest (head sexp))
-                  (self self src dest (tail sexp))))
+            (prepend (self self src dest (head sexp))
+                     (self self src dest (tail sexp))))
           (else
             sexp)))
         (subst-r subst-r src dest sexp))))

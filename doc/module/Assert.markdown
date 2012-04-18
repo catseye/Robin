@@ -50,7 +50,7 @@ Module `assert`
     = #t
 
     | (robin (0 1) ((small (0 1) *) (assert (0 1) *))
-    |   (assert-list (pair 1 ()) #t))
+    |   (assert-list (prepend 1 ()) #t))
     = #t
 
     | (robin (0 1) ((small (0 1) *) (assert (0 1) *))

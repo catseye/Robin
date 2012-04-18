@@ -6,48 +6,50 @@ Module `core`
 Robin's `core` module exports the set of intrinsic macros on top of which
 all other Robin macros and programs are built.
 
-### `pair` ###
+### `prepend` ###
 
-`pair` evaluates both of its arguments, then evaluates to a pair which
-contains both of those values, in the same order.
+`prepend` evaluates both of its arguments, then evaluates to a list cell
+which contains the first value as its data and the second value as the
+continuation of the list.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair () ()))
+    |   (prepend () ()))
     = (())
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair #t (pair #f ())))
+    |   (prepend #t (prepend #f ())))
     = (#t #f)
 
-The second argument to `pair` must be a list.
+The second argument to `prepend` must be a list.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair #t #f))
+    |   (prepend #t #f))
     ? uncaught exception: (expected-list #f)
 
-The first argument to `pair` can be any type, but fewer than or more than
+The first argument to `prepend` can be any type, but fewer than or more than
 two arguments will raise an exception.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair #t))
+    |   (prepend #t))
     ? uncaught exception: (illegal-arguments (#t))
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair #f #t #f))
+    |   (prepend #f #t #f))
     ? uncaught exception: (illegal-arguments (#f #t #f))
 
-`pair` is basically equivalent to Scheme's `cons`.
+`prepend` is basically equivalent to Scheme's `cons`, except for the
+requirement that the second argument be a list.
 
 ### `head` ###
 
-`head` evaluates its argument to a pair, and evaluates to the first element
-of that pair.
+`head` evaluates its argument to a list, and evaluates to the first element
+of that list.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (head (pair #t ())))
+    |   (head (prepend #t ())))
     = #t
 
-`head` expects its argument to be a pair.
+`head` expects its argument to be a list.
 
     | (robin (0 1) ((core (0 1) *))
     |   (head #f))
@@ -56,8 +58,8 @@ of that pair.
 `head` expects exactly one argument.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (head (pair #t #f) (pair #f #t)))
-    ? uncaught exception: (illegal-arguments ((pair #t #f) (pair #f #t)))
+    |   (head (prepend #t #f) (prepend #f #t)))
+    ? uncaught exception: (illegal-arguments ((prepend #t #f) (prepend #f #t)))
 
     | (robin (0 1) ((core (0 1) *))
     |   (head))
@@ -67,14 +69,14 @@ of that pair.
 
 ### `tail` ###
 
-`tail` evaluates its argument to a pair, and evaluates to the second element
-of that pair.
+`tail` evaluates its argument to a list, and evaluates to the tail of that
+list (the sublist obtained by removing the first element.)
 
     | (robin (0 1) ((core (0 1) *))
-    |   (tail (pair #t (pair #f ()))))
+    |   (tail (prepend #t (prepend #f ()))))
     = (#f)
 
-`tail` expects its argument to be a pair.
+`tail` expects its argument to be a list.
 
     | (robin (0 1) ((core (0 1) *))
     |   (tail #f))
@@ -83,8 +85,8 @@ of that pair.
 `tail` expects exactly one argument.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (tail (pair #t #f) (pair #f #t)))
-    ? uncaught exception: (illegal-arguments ((pair #t #f) (pair #f #t)))
+    |   (tail (prepend #t #f) (prepend #f #t)))
+    ? uncaught exception: (illegal-arguments ((prepend #t #f) (prepend #f #t)))
 
     | (robin (0 1) ((core (0 1) *))
     |   (tail))
@@ -128,7 +130,7 @@ The identifiers named in the branch which is not evaluated need not be
 properly bound to values in the environment.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (if #t 1 (pair fred ethel)))
+    |   (if #t 1 (prepend fred ethel)))
     = 1
 
 ### `equal?` ###
@@ -153,15 +155,15 @@ and compares them for deep equality.
 `equal?` works on lists.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (equal? (pair 1 (pair 2 (pair 3 ())))
-    |           (pair 1 (pair 2 (pair 3 ())))))
+    |   (equal? (prepend 1 (prepend 2 (prepend 3 ())))
+    |           (prepend 1 (prepend 2 (prepend 3 ())))))
     = #t
 
 Two values of different types are never equal.
 
     | (robin (0 1) ((core (0 1) *))
     |   (equal? #t
-    |           (pair ((macro (self args env) (head args)) a) ())))
+    |           (prepend ((macro (self args env) (head args)) a) ())))
     = #f
 
     | (robin (0 1) ((core (0 1) *))
@@ -194,7 +196,7 @@ two arguments will raise an exception.
     = #t
 
     | (robin (0 1) ((core (0 1) *))
-    |   (list? (pair 4 (pair 5 ()))))
+    |   (list? (prepend 4 (prepend 5 ()))))
     = #t
 
 The empty list is a list.
@@ -213,8 +215,8 @@ The argument to `list?` may (naturally) be any type, but there must be
 exactly one argument.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (list? (pair 4 ()) (pair 6 ())))
-    ? uncaught exception: (illegal-arguments ((pair 4 ()) (pair 6 ())))
+    |   (list? (prepend 4 ()) (prepend 6 ())))
+    ? uncaught exception: (illegal-arguments ((prepend 4 ()) (prepend 6 ())))
 
 ### `macro?` ###
 
@@ -253,10 +255,10 @@ exactly one argument.
     |   (symbol? ((macro (s a e) (head a)) this-symbol)))
     = #t
 
-Pairs are not symbols.
+Lists are not symbols.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (symbol? (pair 1 ())))
+    |   (symbol? (prepend 1 ())))
     = #f
 
 The argument to `symbol?` may (naturally) be any type, but there must be
@@ -480,18 +482,18 @@ sake of purity, that dependency should be removed (but the tests
 will look awful.)
 
     | (robin (0 1) ((small (0 1) *))
-    |   (eval (env) (literal (pair (literal a) (pair (literal b) ())))))
+    |   (eval (env) (literal (prepend (literal a) (prepend (literal b) ())))))
     = (a b)
 
     | (robin (0 1) ((small (0 1) *))
-    |   (eval () (literal (pair (literal a) (literal b)))))
-    ? uncaught exception: (unbound-identifier pair)
+    |   (eval () (literal (prepend (literal a) (literal b)))))
+    ? uncaught exception: (unbound-identifier prepend)
 
     | (robin (0 1) ((small (0 1) *))
-    |   (bind bindings (pair
-    |                    (pair (literal same) (pair equal? ()))
-    |                    (pair
-    |                      (pair (literal x) (pair #f ()))
+    |   (bind bindings (prepend
+    |                    (prepend (literal same) (prepend equal? ()))
+    |                    (prepend
+    |                      (prepend (literal x) (prepend #f ()))
     |                      ()))
     |     (eval bindings (literal (same x x)))))
     = #t
@@ -501,10 +503,10 @@ alist passed to `eval`, the one closer to the front of the alist takes
 precedence.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (bind bindings (pair
-    |                    (pair (literal foo) (pair (literal yes) ()))
-    |                    (pair
-    |                       (pair (literal foo) (pair (literal no) ()))
+    |   (bind bindings (prepend
+    |                    (prepend (literal foo) (prepend (literal yes) ()))
+    |                    (prepend
+    |                       (prepend (literal foo) (prepend (literal no) ()))
     |                       ()))
     |     (eval bindings (literal foo))))
     = yes
@@ -514,21 +516,21 @@ environment, however, subsequent evaluation will fail when it
 tries to look up things in that environment.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (eval 103 (literal (pair (literal a) (literal b)))))
+    |   (eval 103 (literal (prepend (literal a) (literal b)))))
     ? uncaught exception: (expected-env-alist 103)
 
 Evaluation expects the contents of the list which makes up the
-environment to be pairs.
+environment to be two-element lists.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (eval (pair #f ()) (literal (pair (literal a) (literal b)))))
+    |   (eval (prepend #f ()) (literal (prepend (literal a) (literal b)))))
     ? uncaught exception: (expected-env-entry #f)
 
-Evaluation expects the head of each pair in the list which makes up the
+Evaluation expects the head of each sublist in the list which makes up the
 environment to be a symbol.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (eval (pair (pair 7 (pair #f ())) ()) (literal (pair (literal a) (literal b)))))
+    |   (eval (prepend (prepend 7 (prepend #f ())) ()) (literal (prepend (literal a) (literal b)))))
     ? uncaught exception: (expected-symbol 7)
 
 `eval` expects exactly two arguments.
@@ -572,7 +574,7 @@ even if they are no longer lexically in scope.
     | (robin (0 1) ((small (0 1) *))
     |   ((let
     |      ((a (literal these-are))
-    |       (m (macro (self args env) (pair a args))))
+    |       (m (macro (self args env) (prepend a args))))
     |     m) my args))
     = (these-are my args)
 
@@ -582,7 +584,7 @@ Macros can return macros.
     |   (let
     |     ((mk (macro (self argsa env)
     |         (macro (self argsb env)
-    |           (pair (head argsb) argsa))))
+    |           (prepend (head argsb) argsa))))
     |      (mk2 (mk vindaloo)))
     |     (mk2 chicken)))
     = (chicken vindaloo)
@@ -592,12 +594,12 @@ Arguments to macros shadow any other bindings in effect.
     | (robin (0 1) ((small (0 1) *))
     |   (let
     |     ((args (literal a))
-    |      (b (macro (self args env) (pair args args))))
+    |      (b (macro (self args env) (prepend args args))))
     |     (b 7)))
     = ((7) 7)
 
 `self` is there to let you write recursive macros.  The following
-example demonstrates this; it evaluates `(pair b d)` in an environment
+example demonstrates this; it evaluates `(prepend b d)` in an environment
 where all the identifiers you list after `qqq` have been bound to 0.
 
 TODO: these tests use things from the `small` module; for the
@@ -608,9 +610,9 @@ will look awful.)
     |   (bind qqq
     |     (macro (self args env)
     |       (if (equal? args ())
-    |         (eval env (literal (pair b (pair d ()))))
-    |         (eval (pair (pair (head args) (pair 0 ())) env)
-    |           (pair self (tail args)))))
+    |         (eval env (literal (prepend b (prepend d ()))))
+    |         (eval (prepend (prepend (head args) (prepend 0 ())) env)
+    |           (prepend self (tail args)))))
     |     (bind b 1 (bind d 4 (qqq b c d)))))
     = (0 0)
 
@@ -618,9 +620,9 @@ will look awful.)
     |   (bind qqq
     |     (macro (self args env)
     |       (if (equal? args ())
-    |         (eval env (literal (pair b (pair d ()))))
-    |         (eval (pair (pair (head args) (pair 0 ())) env)
-    |           (pair self (tail args)))))
+    |         (eval env (literal (prepend b (prepend d ()))))
+    |         (eval (prepend (prepend (head args) (prepend 0 ())) env)
+    |           (prepend self (tail args)))))
     |     (bind b 1 (bind d 4 (qqq x y z)))))
     = (1 4)
 
@@ -631,10 +633,10 @@ Your recursive `macro` application doesn't have to be tail-recursive.
     |     (macro (self args env)
     |       (if (equal? args ())
     |         ()
-    |         (pair (pair (head args)
-    |                     (pair (eval env (head args)) ()))
+    |         (prepend (prepend (head args)
+    |                     (prepend (eval env (head args)) ()))
     |           (eval env
-    |             (pair self (tail args))))))
+    |             (prepend self (tail args))))))
     |     (bind b 1 (bind d 4 (make-env b d macro)))))
     = ((b 1) (d 4) (macro (builtin macro)))
 
@@ -645,27 +647,27 @@ Your recursive `macro` application doesn't have to be tail-recursive.
     ? uncaught exception: (illegal-arguments ((self args env)))
 
     | (robin (0 1) ((core (0 1) *))
-    |   ((macro (self args env) pair pair) (why hello there)))
-    ? uncaught exception: (illegal-arguments ((self args env) pair pair))
+    |   ((macro (self args env) prepend prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env) prepend prepend))
 
 `macro` expects its first argument to be a list of exactly three
 symbols.
 
     | (robin (0 1) ((core (0 1) *))
-    |   ((macro 100 pair) (why hello there)))
-    ? uncaught exception: (illegal-arguments (100 pair))
+    |   ((macro 100 prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments (100 prepend))
 
     | (robin (0 1) ((core (0 1) *))
-    |   ((macro (self args) pair) (why hello there)))
-    ? uncaught exception: (illegal-arguments ((self args) pair))
+    |   ((macro (self args) prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args) prepend))
 
     | (robin (0 1) ((core (0 1) *))
-    |   ((macro (self args env foo) pair) (why hello there)))
-    ? uncaught exception: (illegal-arguments ((self args env foo) pair))
+    |   ((macro (self args env foo) prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env foo) prepend))
 
     | (robin (0 1) ((core (0 1) *))
-    |   ((macro (self args 99) pair) (why hello there)))
-    ? uncaught exception: (illegal-arguments ((self args 99) pair))
+    |   ((macro (self args 99) prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args 99) prepend))
 
 ### `raise` ###
 
@@ -707,15 +709,15 @@ Passing values with metadata attached shouldn't break any of the core
 macros.
 
     | (robin (0 1) ((core (0 1) *))
-    |   (head (with #t (pair 1 ()))))
+    |   (head (with #t (prepend 1 ()))))
     = 1
 
     | (robin (0 1) ((core (0 1) *))
-    |   (tail (with #t (pair 1 ()))))
+    |   (tail (with #t (prepend 1 ()))))
     = ()
 
     | (robin (0 1) ((core (0 1) *))
-    |   (pair (with #t 1) (pair (with #t 2) ())))
+    |   (prepend (with #t 1) (prepend (with #t 2) ())))
     = (1 2)
 
     | (robin (0 1) ((core (0 1) *))
@@ -731,7 +733,7 @@ macros.
     = #t
 
     | (robin (0 1) ((core (0 1) *))
-    |   (list? (with #t (pair 2 (pair 3 ())))))
+    |   (list? (with #t (prepend 2 (prepend 3 ())))))
     = #t
 
     | (robin (0 1) ((core (0 1) *))
@@ -801,7 +803,7 @@ Testing for equality ignores metadata.
     = #t
 
     | (robin (0 1) ((core (0 1) *))
-    |   (has? #t (head (pair (with #t 4) (pair 5 ())))))
+    |   (has? #t (head (prepend (with #t 4) (prepend 5 ())))))
     = #t
 
 Binding retains metadata.
@@ -816,8 +818,8 @@ Metadata is retained in macros.
     | (robin (0 1) ((small (0 1) *))
     |   (bind whee
     |     (macro (self args env)
-    |       (pair (head env)
-    |             (pair (has? 7 (head (tail (head env)))) ())))
+    |       (prepend (head env)
+    |             (prepend (has? 7 (head (tail (head env)))) ())))
     |     (bind r (with 7 8)
     |       (whee))))
     = ((r 8) #t)

@@ -87,7 +87,7 @@ Functions can return functions.
 
     | (robin (0 1) ((small (0 1) *))
     |   (let
-    |     ((mk (fun (x) (fun (y) (pair y x))))
+    |     ((mk (fun (x) (fun (y) (prepend y x))))
     |      (mk2 (mk (literal (vindaloo)))))
     |     (mk2 (literal chicken))))
     = (chicken vindaloo)
@@ -166,7 +166,7 @@ An identifier can be bound to a symbol.
 `let` can bind a symbol to a function value.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (let ((a (fun (x y) (pair y x))))
+    |   (let ((a (fun (x y) (prepend y x))))
     |         (a () (literal foo))))
     = (foo)
 
@@ -240,6 +240,6 @@ where this form is encountered, as an alist.
     |                    (if (equal? key (head (head alist)))
     |                       (head alist)
     |                       (self self (tail alist) key))))
-    |     (pair
-    |       (find find (env) (literal boolean?)) (find find (env) (literal pair)))))
-    = ((boolean? (builtin boolean?)) pair (builtin pair))
+    |     (prepend
+    |       (find find (env) (literal boolean?)) (find find (env) (literal prepend)))))
+    = ((boolean? (builtin boolean?)) prepend (builtin prepend))
