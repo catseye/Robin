@@ -42,6 +42,20 @@ any S-expression.
 
 `literal` is basically equivalent to Scheme's `quote`.
 
+### `list` ###
+
+    | (robin (0 1) ((small (0 1)))
+    |   (small:list 1 2 3))
+    = (1 2 3)
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (list (literal x) (literal y)))
+    = (x y)
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (list))
+    = ()
+
 ### `fun` ###
 
 You can define functions with `fun`.  They can be anonymous.

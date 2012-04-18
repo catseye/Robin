@@ -12,8 +12,17 @@ Small
 This implementation of the `small` module is non-normative.
 
 > literal env ienv (List [expr]) cc =
->   cc expr
+>     cc expr
 > literal env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
+
+> evalAll env ienv [] acc cc =
+>     cc $ List $ reverse acc
+> evalAll env ienv (head:tail) acc cc =
+>     eval env ienv head (\value ->
+>         evalAll env ienv tail (value:acc) cc)
+
+> robinList env ienv (List exprs) cc =
+>     evalAll env ienv exprs [] cc
 
 > robinEnv env ienv (List []) cc =
 >   cc env
@@ -63,6 +72,7 @@ Module Definition
 
 > bindings = [
 >              ("literal",  literal),
+>              ("list",     robinList),
 >              ("bind",     bind),
 >              ("env",      robinEnv),
 >              ("let",      robinLet),

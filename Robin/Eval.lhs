@@ -37,10 +37,10 @@ value.  Then continue the current continuation with that value.
 > eval env ienv s@(Symbol _) cc =
 >     raise ienv (errMsg "expected-env-alist" env)
 
-Evaluating a pair means we must make several evaluations.  We
+Evaluating a list means we must make several evaluations.  We
 evaluate the head to obtain something to apply (which must be a
 macro, built-in or not.)  We then apply the body of the macro,
-passing it the tail of the pair.
+passing it the tail of the list.
 
 > eval env ienv (List (applierExpr:actuals)) cc = do
 >     eval env ienv applierExpr (\applier ->
