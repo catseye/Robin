@@ -21,49 +21,49 @@ If an exception is raised when evaluating the final argument of
 first argument of `catch`, and the second argument of `catch` is
 evaluated in that new environment.
 
-    | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-    |   (catch error (pair error (pair #f ()))
+    | (robin (0 1) ((small (0 1) *) (exception (0 1) *))
+    |   (catch error (list error #f)
     |     (raise (literal (nasty-value 999999)))))
     = ((nasty-value 999999) #f)
 
 `catch` can catch exceptions raised by core macros.
 
-    | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-    |   (catch error (pair error (pair 5 ()))
+    | (robin (0 1) ((small (0 1) *) (exception (0 1) *))
+    |   (catch error (list error 5)
     |     (head #f)))
     = ((expected-list #f) 5)
 
 The innermost `catch` will catch the exception.
 
-    | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-    |   (catch error (pair error (pair 5 ()))
-    |     (catch error (pair error (pair 9 ()))
+    | (robin (0 1) ((small (0 1) *) (exception (0 1) *))
+    |   (catch error (list error 5)
+    |     (catch error (list error 9)
     |       (head #f))))
     = ((expected-list #f) 9)
 
 An exception raised from within an exception handler is
 caught by the next innermost exception handler.
 
-    | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
-    |   (catch error (pair error (pair 5 ()))
-    |     (catch error (pair error (pair 9 ()))
-    |       (catch error (raise (pair error (pair error ())))
+    | (robin (0 1) ((small (0 1) *) (exception (0 1) *))
+    |   (catch error (list error 5)
+    |     (catch error (list error 9)
+    |       (catch error (raise (list error error))
     |         (raise 7)))))
     = ((7 7) 9)
 
 `catch` expects its first argument to be an identifier.
 
-    | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
+    | (robin (0 1) ((small (0 1) *) (exception (0 1) *))
     |   (catch #f 23 (head #f)))
     ? uncaught exception: (illegal-arguments (#f 23 (head #f)))
 
 `catch` expects exactly three arguments.
 
-    | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
+    | (robin (0 1) ((small (0 1) *) (exception (0 1) *))
     |   (catch error error))
     ? uncaught exception: (illegal-arguments (error error))
 
-    | (robin (0 1) ((pure (0 1) *) (exception (0 1) *))
+    | (robin (0 1) ((small (0 1) *) (exception (0 1) *))
     |   (catch error error (head #f) 23))
     ? uncaught exception: (illegal-arguments (error error (head #f) 23))
 

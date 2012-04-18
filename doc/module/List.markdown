@@ -16,7 +16,7 @@ conventional list type.
     = (1 2 3 4 5)
 
     | (robin (0 1) ((small (0 1) *) (list (0 1) *))
-    |   (list (pair 2 (pair 3 ())) (pair 6 (pair 7 ()))))
+    |   (list (list 2 3) (list 6 7)))
     = ((2 3) (6 7))
 
 `list` need not have any arguments at all; the result is the empty list.
@@ -82,7 +82,7 @@ application of the function.
     = 541
 
     | (robin (0 1) ((small (0 1) *) (list (0 1) *))
-    |   (fold (fun (x a) (pair a (pair x ()))) () (literal (three dog night))))
+    |   (fold (fun (x a) (list a x)) () (literal (three dog night))))
     = (((() three) dog) night)
 
     | (robin (0 1) ((small (0 1) *) (list (0 1) *))
@@ -189,7 +189,7 @@ evaluates to a list which is the concatenation of these lists.
 
 `length` evaluates its single argument to obtain a proper list, then
 evaluates to a non-negative integer which is the length of the list
-(the number of pairs, not counting nested pairs and not counting the
+(the number of cells, not counting nested cells and not counting the
 empty list at the very tail.)
 
     | (robin (0 1) ((small (0 1) *) (list (0 1) *))

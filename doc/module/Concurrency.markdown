@@ -146,7 +146,7 @@ argument, and itself evaluates to that.
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (bind parent (myself)
     |     (spawn! worker (send! parent (literal lettuce) (literal ok))
-    |       (recv! message (pair message (pair message ()))))))
+    |       (recv! message (list message message)))))
     = (lettuce lettuce)
 
 `recv!` expects its first argument to be an identifier to be bound.  (This
@@ -156,8 +156,8 @@ that must evaluate to a certain type.)
     | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *))
     |   (bind parent (myself)
     |     (spawn! worker (send! parent (literal lettuce) (literal ok))
-    |       (recv! (pair 7 ()) 9))))
-    ? uncaught exception: (illegal-arguments ((pair 7 ()) 9))
+    |       (recv! (list 7) 9))))
+    ? uncaught exception: (illegal-arguments ((list 7) 9))
 
 `recv!` expects exactly two arguments.
 
@@ -191,7 +191,7 @@ A process we spawned can receive multiple messages.
     |     (spawn! worker 
     |       (recv! message1
     |         (recv! message2
-    |           (send! parent (pair message1 (pair message2 ())) 0)))
+    |           (send! parent (list message1 message2) 0)))
     |       (send! worker (literal thats)
     |         (send! worker (literal entertainment)
     |           (recv! message message))))))
@@ -219,7 +219,7 @@ A spawned process can spawn processes of its own.
     |         (spawn! subworker (send! subparent (myself) 123)
     |           (recv! message (send! parent message 123))))
     |       (recv! subworker
-    |          (pair (pid? subworker) (pair (equal? worker subworker) ()))))))
+    |          (pair (pid? subworker) (list (equal? worker subworker)))))))
     = (#t #f)
 
 A process can send messages to any process it knows about, not just
@@ -279,11 +279,11 @@ with another process.
     |       (let ((sender  (head message))
     |             (tag     (head (tail message)))
     |             (payload (head (tail (tail message)))))
-    |         (send! sender (pair (myself)
-    |                        (pair (pair tag (pair (literal reply) ()))
-    |                          (pair (pair tag (pair payload ())) ()))) 0)))
+    |         (send! sender (list (myself)
+    |                             (list tag (literal reply))
+    |                             (list tag payload)) 0)))
     |     (call! worker this-tag (literal this-payload) reply
-    |       (pair (literal reply-was) (pair reply ())))))
+    |       (list (literal reply-was) reply))))
     = (reply-was (this-tag this-payload))
 
 The pid and tag in the return message must match, or `call!` will

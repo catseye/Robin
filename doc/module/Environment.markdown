@@ -65,12 +65,12 @@ in effect.
 its second argument in an environment where all bindings *except* those
 for the listed identifiers have been unbound.
 
-    | (robin (0 1) ((small (0 1) *) (env (0 1) *))
+    | (robin (0 1) ((core (0 1) *) (env (0 1) *))
     |   (sandbox (pair tail)
     |     (tail (pair 8 (pair 9 ())))))
     = (9)
 
-    | (robin (0 1) ((small (0 1) *) (env (0 1) *))
+    | (robin (0 1) ((core (0 1) *) (env (0 1) *))
     |   (sandbox (pair tail)
     |     (head (pair 8 (pair 9 ())))))
     ? uncaught exception: (unbound-identifier head)
@@ -96,8 +96,8 @@ these tests should be rewritten to search the resulting alist.
     = ((b 2) (a 1))
 
     | (robin (0 1) ((small (0 1) *) (env (0 1) *))
-    |   (export pair tail))
-    = ((tail (builtin tail)) (pair (builtin pair)))
+    |   (export head tail))
+    = ((head (builtin head)) (tail (builtin tail)))
 
 ### `unshadow` ###
 

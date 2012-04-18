@@ -71,7 +71,7 @@ even if they are no longer lexically in scope.
     | (robin (0 1) ((small (0 1) *))
     |   ((let
     |      ((a (literal (hi)))
-    |       (f (fun (x) (pair x (pair a ())))))
+    |       (f (fun (x) (list x a))))
     |     f) (literal oh)))
     = (oh (hi))
 
@@ -80,7 +80,7 @@ Functions can take functions.
     | (robin (0 1) ((small (0 1) *))
     |   (let
     |     ((apply (fun (x) (x (literal a)))))
-    |     (apply (fun (r) (pair r (literal ()))))))
+    |     (apply (fun (r) (list r)))))
     = (a)
 
 Functions can return functions.
@@ -97,7 +97,7 @@ Arguments to functions shadow any other bindings in effect.
     | (robin (0 1) ((small (0 1) *))
     |   (let
     |     ((a (literal a))
-    |      (b (fun (a) (pair a (pair a ())))))
+    |      (b (fun (a) (list a a))))
     |     (b 7)))
     = (7 7)
 
@@ -117,21 +117,21 @@ it evaluates.
 
     | (robin (0 1) ((small (0 1) *))
     |   (bind x (literal hello)
-    |     (pair x (pair x ()))))
+    |     (list x x)))
     = (hello hello)
 
     | (robin (0 1) ((small (0 1) *))
-    |   (bind dup (fun (x) (pair x (pair x ())))
+    |   (bind dup (fun (x) (list x x))
     |     (dup (literal g))))
     = (g g)
 
     | (robin (0 1) ((small (0 1) *))
-    |   (bind dup (fun (x) (pair x (pair x ())))
+    |   (bind dup (fun (x) (list x x))
     |     (dup (dup (literal g)))))
     = ((g g) (g g))
 
     | (robin (0 1) ((small (0 1) *))
-    |   (bind smoosh (fun (x y) (pair y (pair x ())))
+    |   (bind smoosh (fun (x y) (list y x))
     |     (smoosh #t #f)))
     = (#f #t)
 
@@ -174,7 +174,7 @@ Bindings established in a `let` remain in effect when evaluating
 the arguments things in the body of the `let`.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (let ((dup (fun (x) (pair x (pair x ())))))
+    |   (let ((dup (fun (x) (list x x))))
     |     (dup (dup (literal g)))))
     = ((g g) (g g))
 
@@ -182,7 +182,7 @@ Bindings established in a binding in a `let` can be seen in
 subsequent bindings in the same `let`.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (let ((a (literal hello)) (b (pair a ()))) b))
+    |   (let ((a (literal hello)) (b (list a))) b))
     = (hello)
 
 Shadowing happens.
