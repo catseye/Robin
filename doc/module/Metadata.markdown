@@ -3,7 +3,10 @@ Module `metadata`
 
     -> Tests for functionality "Interpret Robin Program"
 
-Robin's `metadata` module exports...
+Robin's `metadata` module exports macros for working with metadata.  Like
+`exception`, importing this module both asserts that the Robin implementation
+supports metadata on values, and exposes the macros used to work with
+metadata (`with` and `has?`.)
 
 ### `with` ###
 

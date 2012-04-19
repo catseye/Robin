@@ -252,14 +252,14 @@ though.
   file to which the problem can be traced.  The purpose of all this is
   to allow producing more complete error messages at the top level.
 
-* Create a module `metadata` which, like `exception`, both asserts that
-  the Robin implementation supports metadata on values, and exposes the
-  functions used to work with metadata (`with` and `has?`.)
-
 * Create the `device` module and use it instead of `crude-io` and
   `console`.  Perhaps make those two into "interface modules"?  I
   suppose an interface module would expose a predicate to check if a
   device supports a given interface.
+
+* Support values, rather than simply presence of a value, in metadata.
+  This makes metadata more like a map of keys to values on a value,
+  than liks a set of keys on a value.
 
 ### Possible Future Modules ###
 
