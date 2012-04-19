@@ -103,6 +103,12 @@ first number divided by the second.
     |   (/ (- 0 33) 4))
     = -33/4
 
+Division by zero is undefined, and an exception will be raised.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (/ 10 0))
+    ? uncaught exception: (division-by-zero 10)
+
 `/` expects exactly two arguments, both numbers.
 
     | (robin (0 1) ((arith (0 1) *))
@@ -224,7 +230,50 @@ be relaxed in the future.
     |   (arith:integer? 14 23))
     ? uncaught exception: (illegal-arguments (14 23))
 
+### `natural?` ###
+
+`natural?` evaluates its argument, then evaluates to `#t` if that argument
+is a natural number (a non-negative integer) and to `#f` otherwise.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (natural? 6/5))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (natural? 8))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (natural? 0))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (natural? (- 0 8)))
+    = #f
+
+The argument to `natural?` must be of numeric type.  TODO: this may
+be relaxed in the future.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (natural? #t))
+    ? uncaught exception: (expected-number #t)
+
+`natural?` expects exactly one argument.
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:natural?))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:natural? 14 23))
+    ? uncaught exception: (illegal-arguments (14 23))
+
 ### `div` ###
+
+`div` evaluates both of its arguments to numbers and evaluates to the
+result of integer division of the first number by the second.  Integer
+division computes by what integer the second number can be multiplied
+to make it as big as possible without exceeding the first number.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (div 100 3))
@@ -250,7 +299,34 @@ be relaxed in the future.
     |   (div 10 0))
     ? uncaught exception: (division-by-zero 10)
 
+Division by zero is undefined, and an exception will be raised.
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:div 10 0))
+    ? uncaught exception: (division-by-zero 10)
+
+`div` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (div 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (div 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (div 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (div #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `rem` ###
+
+`rem` evaluates both of its arguments to numbers and evaluates to the
+remainder of the division of the first number by the second.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (rem 12 3))
@@ -276,11 +352,46 @@ be relaxed in the future.
     |   (rem 10 (- 0 3)))
     = -2
 
+Trying to find the remainder of a division by zero is undefined, and an
+exception will be raised.
+
     | (robin (0 1) ((arith (0 1) *))
     |   (rem 10 0))
     ? uncaught exception: (division-by-zero 10)
 
+When the arguments are not whole numbers, the remainder is still
+a whole number. TODO: the semantics here need to be cleaned up.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (rem 10 10/3))
+    = 0
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (rem 10/3 3))
+    = 1/3
+
+`rem` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (rem 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (rem 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (rem 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (rem #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `>` ###
+
+`>` evaluates both of its arguments to numbers, then evaluates to `#t`
+if the first number is strictly greater than the second.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (> 6 4))
@@ -294,7 +405,28 @@ be relaxed in the future.
     |   (> 6 6))
     = #f
 
+`>` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (> 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (> 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (> 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (> #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `<` ###
+
+`<` evaluates both of its arguments to numbers, then evaluates to `#t`
+if the first number is strictly less than the second.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (< 6 4))
@@ -308,7 +440,28 @@ be relaxed in the future.
     |   (< 6 6))
     = #f
 
+`<` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (< 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (< 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (< 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (< #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `>=` ###
+
+`>=` evaluates both of its arguments to numbers, then evaluates to `#t`
+if the first number is greater than or equal to the second.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (>= 6 4))
@@ -322,7 +475,28 @@ be relaxed in the future.
     |   (>= 6 6))
     = #t
 
+`>=` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (>= 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (>= 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (>= 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (>= #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `<=` ###
+
+`<=` evaluates both of its arguments to numbers, then evaluates to `#t`
+if the first number is less than or equal to the second.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (<= 6 4))
@@ -336,20 +510,20 @@ be relaxed in the future.
     |   (<= 6 6))
     = #t
 
-### `natural?` ###
+`<=` expects exactly two arguments, both numbers.
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (natural? 6/5))
-    = #f
+    |   (<= 14))
+    ? uncaught exception: (illegal-arguments (14))
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (natural? 8))
-    = #t
+    |   (<= 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (natural? 0))
-    = #t
+    |   (<= 14 #t))
+    ? uncaught exception: (expected-number #t)
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (natural? (- 0 8)))
-    = #f
+    |   (<= #t 51))
+    ? uncaught exception: (expected-number #t)

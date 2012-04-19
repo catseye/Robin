@@ -286,8 +286,6 @@ though.
 
 * Document the `boolean` module.
 
-* Document the `arith` module.
-
 * Document the alist functions in the `list` module.
 
 * Document the literate Haskell implementation better -- right now it's
