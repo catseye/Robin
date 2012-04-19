@@ -103,18 +103,6 @@ Core
 >     eval env ienv expr (\v -> raise ienv v)
 > robinRaise env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinWith env ienv (List [metadataExpr, expr]) cc =
->     eval env ienv metadataExpr (\metadata ->
->         eval env ienv expr (\value ->
->             cc $ Metadata metadata value))
-> robinWith env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
-
-> hasP env ienv (List [metadataExpr, expr]) cc =
->     eval env ienv metadataExpr (\metadata ->
->         eval env ienv expr (\value ->
->             cc $ Boolean $ hasMetadata metadata value))
-> hasP env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
-
 Module Definition
 -----------------
 
@@ -140,7 +128,5 @@ Module Definition
 >         ("macro",    macro),
 >         ("eval",     robinEval),
 >         ("if",       robinIf),
->         ("with",     robinWith),
->         ("has?",     hasP),
 >         ("raise",    robinRaise)
 >       ]

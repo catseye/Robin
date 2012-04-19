@@ -1,4 +1,4 @@
-(robin (0 1) ((small (0 1) *) (list (0 1) *) (env (0 1) *))
+(robin (0 1) ((small (0 1) *) (list (0 1) *) (env (0 1) *) (metadata (0 1) *))
   ;''This is an EXPERIMENTAL module for EXPERIMENTING with
      static analysis in Robin using metadata on values.''
   (let (

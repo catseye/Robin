@@ -10,6 +10,7 @@ FILES="doc/Fundamental_Semantics.markdown \
       doc/module/Small.markdown \
       doc/module/Exception.markdown \
       doc/module/Concurrency.markdown \
+      doc/module/Metadata.markdown \
       doc/module/List.markdown \
       doc/module/Term.markdown \
       doc/module/Environment.markdown \
