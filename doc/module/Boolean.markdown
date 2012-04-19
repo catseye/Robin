@@ -5,6 +5,9 @@ Module `boolean`
 
 ### `and` ###
 
+`and` evaluates all of its arguments to booleans, and evaluates to the
+logical conjunction (boolean "and") of all of these values.
+
     | (robin (0 1) ((boolean (0 1) *))
     |   (and #t #t))
     = #t
@@ -39,15 +42,24 @@ Module `boolean`
     |   (and #t #t #t #f))
     = #f
 
+`and` expects its arguments to be booleans.
+
     | (robin (0 1) ((boolean (0 1)))
     |   (boolean:and 100))
     ? uncaught exception: (expected-boolean 100)
 
-`and` is short-circuiting, but testing that property is beyond the scope
-of these tests, as it requires side effects in order to tell.  (TODO: put
-these tests in the concurrency module?)
+`and` is short-circuiting in the sense that no arguments after the first
+`#f` argument will be evaluated.  Fully testing this requires side-effects,
+but it can be demonstrated as follows.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:and #f 100))
+    = #f
 
 ### `conj` ###
+
+`conj` evaluates its single argument to a list of booleans, then evaluates
+to the conjunction of those booleans.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (conj ()))
@@ -61,15 +73,39 @@ these tests in the concurrency module?)
     |   (conj (list #t #t #f)))
     = #f
 
+`conj` expects exactly one argument.
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (conj))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (conj (list #t #t) (list #f #f)))
+    ? uncaught exception: (illegal-arguments ((list #t #t) (list #f #f)))
+
+`conj` expects its single argument to be a list.
+
     | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
     |   (conj 100))
     ? uncaught exception: (expected-list 100)
+
+`conj` expects its single argument to be a list of booleans.
 
     | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
     |   (conj (list #t #t 100)))
     ? uncaught exception: (expected-boolean 100)
 
+`conj` is short-circuiting in the sense that no elements after the first
+`#f` in the list will be examined.
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (conj (list #f #t 100)))
+    = #f
+
 ### `or` ###
+
+`or` evaluates all of its arguments to booleans, and evaluates to the
+logical disjunction (boolean "or") of all of these values.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (or #t #t))
@@ -105,15 +141,24 @@ these tests in the concurrency module?)
     |   (or #f #f #f #t))
     = #t
 
+`or` expects its arguments to be booleans.
+
     | (robin (0 1) ((boolean (0 1)))
     |   (boolean:or 100))
     ? uncaught exception: (expected-boolean 100)
 
-`or` is short-circuiting, but testing that property is beyond the scope
-of these tests, as it requires side effects in order to tell.  (TODO: put
-these tests in the concurrency module?)
+`or` is short-circuiting in the sense that no arguments after the first
+`#t` argument will be evaluated.  Fully testing this requires side-effects,
+but it can be demonstrated as follows.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:or #t 100))
+    = #t
 
 ### `disj` ###
+
+`disj` evaluates its single argument to a list of booleans, then evaluates
+to the disjunction of those booleans.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (disj ()))
@@ -127,15 +172,39 @@ these tests in the concurrency module?)
     |   (disj (list #f #t #f)))
     = #t
 
+`disj` expects exactly one argument.
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (disj))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (disj (list #t #t) (list #f #f)))
+    ? uncaught exception: (illegal-arguments ((list #t #t) (list #f #f)))
+
+`disj` expects its single argument to be a list.
+
     | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
     |   (disj 100))
     ? uncaught exception: (expected-list 100)
+
+`disj` expects its single argument to be a list of booleans.
 
     | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
     |   (disj (list #f #f 100)))
     ? uncaught exception: (expected-boolean 100)
 
+`disj` is short-circuiting in the sense that no elements after the first
+`#t` in the list will be examined.
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (disj (list #f #t 100)))
+    = #t
+
 ### `not` ###
+
+`not` evaluates its single argument to a boolean, then evaluates to
+the logical negation of that boolean.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (not #t))
@@ -145,9 +214,21 @@ these tests in the concurrency module?)
     |   (not #f))
     = #t
 
+`not` expects exactly one argument.
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (not))
+    ? uncaught exception: (illegal-arguments ())
+
     | (robin (0 1) ((boolean (0 1) *))
     |   (not #t #f))
     ? uncaught exception: (illegal-arguments (#t #f))
+
+`not` expects its single argument to be a boolean.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:not 33))
+    ? uncaught exception: (expected-boolean 33)
 
 ### `xor` ###
 
@@ -171,5 +252,5 @@ This test demonstrates that these functions really do evaluate their
 arguments.
 
     | (robin (0 1) ((boolean (0 1) *))
-    |   (and (or (xor (and #t #t) #f) #f) #t))
+    |   (and (or (xor (and #t (not (not #t))) #f) #f) #t))
     = #t
