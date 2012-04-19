@@ -30,6 +30,43 @@ of those two numbers.
     |   (+ #t 51))
     ? uncaught exception: (expected-number #t)
 
+### `sum` ###
+
+`sum` evaluates its single argument to a list of numbers.  It then evaluates
+to the sum of all of the numbers in the list.
+
+    | (robin (0 1) ((arith (0 1)) (small (0 1)))
+    |   (arith:sum (small:list 77 35 128 4)))
+    = 244
+
+`sum` of an empty list is zero.
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:sum ()))
+    = 0
+
+`sum` expects exactly one argument.
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (sum (list 4 5) (list 6 7)))
+    ? uncaught exception: (illegal-arguments ((list 4 5) (list 6 7)))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (sum))
+    ? uncaught exception: (illegal-arguments ())
+
+`sum` expects its one argument to be a list.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (sum 41))
+    ? uncaught exception: (expected-list 41)
+
+`sum` expects its list to contain only numbers.
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1)))
+    |   (sum (small:list 4 5 6 #t 7 8)))
+    ? uncaught exception: (expected-number #t)
+
 ### `-` ###
 
 `-` evaluates both of its arguments to numbers and evaluates to the difference
@@ -82,6 +119,43 @@ of the two numbers.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (* #t 51))
+    ? uncaught exception: (expected-number #t)
+
+### `product` ###
+
+`product` evaluates its single argument to a list of numbers.  It then evaluates
+to the product of all of the numbers in the list.
+
+    | (robin (0 1) ((arith (0 1)) (small (0 1)))
+    |   (arith:product (small:list 5 7 9 3)))
+    = 945
+
+`product` of an empty list is one.
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:product ()))
+    = 1
+
+`product` expects exactly one argument.
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (product (list 4 5) (list 6 7)))
+    ? uncaught exception: (illegal-arguments ((list 4 5) (list 6 7)))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (product))
+    ? uncaught exception: (illegal-arguments ())
+
+`product` expects its one argument to be a list.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (product 7))
+    ? uncaught exception: (expected-list 7)
+
+`product` expects its list to contain only numbers.
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1)))
+    |   (product (small:list 4 5 6 #t 7 8)))
     ? uncaught exception: (expected-number #t)
 
 ### `/` ###

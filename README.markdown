@@ -179,6 +179,10 @@ Plans
   of function values (closing over the state, and returning a new
   function value with a transformed state.)
 
+* Work out the approach to short-circuiting (roughly, not given in the
+  semantics, but optimization is allowed by the implementation after it
+  has established all the arguments are pure.)
+
 ### Standard Modules ###
 
 * In the `concurrency` module, finalize the semantics for exception and
@@ -194,8 +198,7 @@ Plans
 * Enhance the `console` module.  Write a version of `robotfindskitten`
   using it.
 
-* In the `arith` module, make `sum` and `product` that work on lists.
-  Possibly make `product` short-circuiting.  Possibly add `int-pow`.
+* In the `arith` module, possibly add `int-pow`.
 
 * Write `list` in the Robin implementation of `small`, and use it to
   simplify that module.  Just re-export it from the `list` module.
