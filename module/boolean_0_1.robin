@@ -6,15 +6,27 @@
         (if (eval env (head args))
           (eval env (prepend self (tail args)))
           #f))))
+    (conj-r (fun (self li)
+      (if (equal? li ())
+        #t
+        (and (head li)
+             (self self (tail li))))))
+    (conj (fun (li) (conj-r conj-r li)))
     (or (macro (self args env)
       (if (equal? args ())
         #f
         (if (eval env (head args))
           #t
           (eval env (prepend self (tail args)))))))
+    (disj-r (fun (self li)
+      (if (equal? li ())
+        #f
+        (or (head li)
+            (self self (tail li))))))
+    (disj (fun (li) (disj-r disj-r li)))
     (not (fun (a)
       (if a #f #t)))
     (xor (fun (a b)
       (or (and a (not b)) (and (not a) b))))
     )
-    (export and or not xor)))
+    (export and conj or disj not xor)))

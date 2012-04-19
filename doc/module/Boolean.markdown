@@ -39,9 +39,35 @@ Module `boolean`
     |   (and #t #t #t #f))
     = #f
 
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:and 100))
+    ? uncaught exception: (expected-boolean 100)
+
 `and` is short-circuiting, but testing that property is beyond the scope
 of these tests, as it requires side effects in order to tell.  (TODO: put
 these tests in the concurrency module?)
+
+### `conj` ###
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (conj ()))
+    = #t
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (conj (list #t #t #t)))
+    = #t
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (conj (list #t #t #f)))
+    = #f
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (conj 100))
+    ? uncaught exception: (expected-list 100)
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (conj (list #t #t 100)))
+    ? uncaught exception: (expected-boolean 100)
 
 ### `or` ###
 
@@ -79,9 +105,35 @@ these tests in the concurrency module?)
     |   (or #f #f #f #t))
     = #t
 
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:or 100))
+    ? uncaught exception: (expected-boolean 100)
+
 `or` is short-circuiting, but testing that property is beyond the scope
 of these tests, as it requires side effects in order to tell.  (TODO: put
 these tests in the concurrency module?)
+
+### `disj` ###
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (disj ()))
+    = #f
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (disj (list #f #f #f)))
+    = #f
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (disj (list #f #t #f)))
+    = #t
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (disj 100))
+    ? uncaught exception: (expected-list 100)
+
+    | (robin (0 1) ((boolean (0 1) *) (small (0 1) *))
+    |   (disj (list #f #f 100)))
+    ? uncaught exception: (expected-boolean 100)
 
 ### `not` ###
 
