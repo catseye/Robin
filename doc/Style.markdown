@@ -76,36 +76,39 @@ Naming
       (fun (a b)
         (+ (list.length a) (list.length b)))))
 
-* Multiple arguments: still working this out too.  When you have a
-  commutative, associative binary operator, you often want to be able
-  to apply it to more than two arguments.  There are actually three
-  cases here:
-  
-  * Plain old binary operation: `(and a b)`.  This should exist,
-    because it has the advantage of being of known arity, which could
-    be of help to analyzers and sugared syntax.  It should implement
-    short-circuiting, if that makes sense for the operation (not only
-    booleans, but `(multiply 0 j)` need not evaluate `j`.)  The other
-    cases below can reduce to repeated applications of this.
+Associative Binary Operators
+----------------------------
 
-  * Fold of operation over list: `(and-list (list a b c))`.  This
-    is not much more than sugar for the appropriate `fold`; in this
-    case, `(fold and #t (list a b c))`.  However, it will evaluate
-    all of the arguments and construct a list, which defeats short-
-    circuiting.  Often the name of this can be based on a different
-    English word (`conj` for `and`, `disj` for `or`, `sum` for `add`,
-    `product` for `multiply`.)
+When defining a macro which implements a binary operation which is
+associative, write two versions:
 
-  * Operation over mutilple arguments: `(and-many a b c)`.  This is
-    semantically equivalent to `(and-list (list a b c))`, but this
-    can support short-circuiting where the other cannot.
+* One version which takes any number of arguments.  The minimum number
+  may be zero, one, or two, depending on the nature of the operation,
+  but there should be no limit to the number of arguments; the
+  operation can be applied successively to all of the arguments, two
+  at a time.
 
-  But perhaps I am thinking too much about short-circuiting here.
-  If the expressions of the actual parameters are pure, this should
-  not be a concern; short-circuiting in this case is only an optimization,
-  and could be done by a compiler or other program transformer which
-  recognizes `(and-list (list a b c))` and transforms it into
-  `(and a (and b c))` once it knows that `a` `b` and `c` are pure.
+* One version which takes a list, and applies the operation to all
+  of the arguments in the list.  This is not much more than sugar for
+  the appropriate `fold`.  Often the name of this can be based on a
+  different English word than the binary operation would have (`conj`
+  for `and`, `disj` for `or`, `sum` for `add`, `product` for `multiply`),
+  but if no word is appropriate, suffix the symbol for the binary
+  operation with a `*` character.
+
+The first version may take advantage of short-circuiting, but the
+second version cannot, by itself: it will evaluate all of the arguments
+and construct a list first, which defeats short-circuiting.
+
+A sufficiently clever analyzer can convert the first into successive
+applications of a single two-argument version of the macro, and the
+second into this form as well if all of the members of the list are
+known at analysis time.
+
+A purity analysis may be applied to check if this conversion can
+happen.  The macros so defined should be decorated with metadata which
+associates each with the other for the purposes of analysis and
+conversion.  The details of this need to be worked out.
 
 Conditionals
 ------------

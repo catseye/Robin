@@ -1,7 +1,12 @@
 (robin (0 1) ((small (0 1) *) (env (0 1) *))
   (let (
-    (+ (fun (a b)
+    (add (fun (a b)
       (subtract a (subtract 0 b))))
+    (+ (macro (self args env)
+      (if (equal? args ())
+        0
+        (add (eval env (head args))
+             (eval env (prepend self (tail args)))))))
     (sum-r (fun (self li)
       (if (equal? li ())
         0
@@ -10,8 +15,13 @@
       (sum-r sum-r li)))
     (- (fun (a b)
       (subtract a b)))
-    (* (fun (a b)
+    (multiply (fun (a b)
       (if (equal? b 0) 0 (divide a (divide 1 b)))))
+    (* (macro (self args env)
+      (if (equal? args ())
+        1
+        (multiply (eval env (head args))
+                  (eval env (prepend self (tail args)))))))
     (product-r (fun (self li)
       (if (equal? li ())
         1
@@ -38,7 +48,19 @@
       (equal? (sign (- a b)) (- 0 1))))
     (<= (fun (a b)
       (if (equal? a b) #t (equal? (sign (- a b)) (- 0 1)))))
+    (cmp-list?-r (fun (self op li)
+      (if (equal? li ()) #t
+        (if (equal? (tail li) ()) #t
+          (if (op (head li) (head (tail li)))
+            (self self op (tail li))
+            #f)))))
+    (ascending? (fun (li)
+      (cmp-list?-r cmp-list?-r <= li)))
+    (strictly-ascending? (fun (li)
+      (cmp-list?-r cmp-list?-r < li)))
     (natural? (fun (a)
       (if (equal? (frac a) 0) (>= a 0) #f)))
     )
-    (export + sum - * product / abs frac integer? div rem > >= < <= natural?)))
+    (export + sum - * product / abs frac integer?
+            div rem > >= < <= natural?
+            ascending? strictly-ascending?)))

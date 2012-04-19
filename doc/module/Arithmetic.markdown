@@ -5,22 +5,32 @@ Module `arith`
 
 ### `+` ###
 
-`+` evaluates both of its arguments to numbers and evaluates to the sum
-of those two numbers.
+`+` evaluates all of its arguments to numbers and evaluates to the sum
+of those numbers.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (+ 14 23))
     = 37
 
-`+` expects exactly two arguments, both numbers.
+`+` can accept any number of arguments.
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (+ 14))
-    ? uncaught exception: (illegal-arguments (14))
+    |   (+ 14 23 53))
+    = 90
+
+`+` with no arguments evaluates to zero.
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (+ 14 23 57))
-    ? uncaught exception: (illegal-arguments (14 23 57))
+    |   (+))
+    = 0
+
+`+` with one argument is an identity function on numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (+ 7))
+    = 7
+
+All of the arguments to `+` must be numbers.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (+ 14 #t))
@@ -96,22 +106,32 @@ of the second number from the first.
 
 ### `*` ###
 
-`*` evaluates both of its arguments to numbers and evaluates to the product
-of the two numbers.
+`*` evaluates all of its arguments to numbers and evaluates to the product
+of those numbers.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (* 23 10))
     = 230
 
-`*` expects exactly two arguments, both numbers.
+`*` can accept any number of arguments.
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (* 14))
-    ? uncaught exception: (illegal-arguments (14))
+    |   (* 3 4 5))
+    = 60
+
+`*` with no arguments evaluates to one.
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (* 14 23 57))
-    ? uncaught exception: (illegal-arguments (14 23 57))
+    |   (*))
+    = 1
+
+`*` with one argument is an identity function on numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (* 7/8))
+    = 7/8
+
+`*` expects all of its arguments to be numbers.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (* 14 #t))
@@ -601,3 +621,59 @@ if the first number is less than or equal to the second.
     | (robin (0 1) ((arith (0 1) *))
     |   (<= #t 51))
     ? uncaught exception: (expected-number #t)
+
+### `ascending?` ###
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (ascending? (list 1 2 3)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (ascending? (list 1 2 2 3)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (ascending? (list 3 2 1)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (ascending? (list 1 2 1 3)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (ascending? ()))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (ascending? (list 100)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (ascending? 44))
+    ? uncaught exception: (expected-list 44)
+
+### `strictly-ascending?` ###
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-ascending? (list 1 2 3)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-ascending? (list 1 2 2 3)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-ascending? (list 1 2 1 3)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-ascending? ()))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-ascending? (list 100)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-ascending? 44))
+    ? uncaught exception: (expected-list 44)
