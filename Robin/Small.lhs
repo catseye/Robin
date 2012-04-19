@@ -32,16 +32,16 @@ This implementation of the `small` module is non-normative.
 >     cc $ Builtin "<lambda>" fun
 >   where
 >     fun env ienv (List actuals) cc = do
->         evalArgs formals actuals env ienv (\argEnv ->
+>         evalArgs formals actuals actuals env ienv (\argEnv ->
 >             eval (Env.union argEnv closedEnv) ienv body cc)
->     evalArgs [] [] _ _ cc = do
+>     evalArgs [] [] _ _ _ cc = do
 >         cc Env.empty
->     evalArgs (formal@(Symbol _):formals) (actual:actuals) env ienv cc = do
+>     evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env ienv cc = do
 >         eval env ienv actual (\value ->
->             evalArgs formals actuals env ienv (\rest ->
+>             evalArgs formals actuals origActuals env ienv (\rest ->
 >                 cc $ Env.insert formal value rest))
->     evalArgs _ other _ ienv cc = do
->         raise ienv (errMsg "illegal-arguments" (List other))
+>     evalArgs _ _ origActuals _ ienv cc = do
+>         raise ienv (errMsg "illegal-arguments" (List origActuals))
 
 > choose env ienv (List [(List [(Symbol "else"), branch])]) cc =
 >     eval env ienv branch cc

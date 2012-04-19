@@ -5,29 +5,126 @@ Module `arith`
 
 ### `+` ###
 
+`+` evaluates both of its arguments to numbers and evaluates to the sum
+of those two numbers.
+
     | (robin (0 1) ((arith (0 1) *))
     |   (+ 14 23))
     = 37
 
+`+` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (+ 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (+ 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (+ 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (+ #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `-` ###
+
+`-` evaluates both of its arguments to numbers and evaluates to the difference
+of the second number from the first.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (- 23 10))
     = 13
 
+`-` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (- 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (- 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (- 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (- #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `*` ###
+
+`*` evaluates both of its arguments to numbers and evaluates to the product
+of the two numbers.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (* 23 10))
     = 230
 
+`*` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (* 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (* 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (* 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (* #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `/` ###
+
+`/` evaluates both of its arguments to numbers and evaluates to the
+first number divided by the second.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (/ 33 11))
     = 3
 
+`/` works on any rational numbers, not just integers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (/ 33 4))
+    = 33/4
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (/ (- 0 33) 4))
+    = -33/4
+
+`/` expects exactly two arguments, both numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (/ 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (/ 14 23 57))
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (/ 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (/ #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `abs` ###
+
+`abs` evaluates its single argument to a number, and evaluates to
+the absolute value of that number (where the sign is always positive.)
 
     | (robin (0 1) ((arith (0 1) *))
     |   (abs 5))
@@ -41,21 +138,58 @@ Module `arith`
     |   (abs 0))
     = 0
 
+`abs` expects exactly one numeric argument.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (abs))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (abs 14 23))
+    ? uncaught exception: (illegal-arguments (14 23))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (abs #t))
+    ? uncaught exception: (expected-number #t)
+
 ### `frac` ###
+
+`frac` evaluates its single argument to a number, and evaluates to
+the fractional portion of that number (i.e., that number, minus the
+integer portion of that number.)
 
     | (robin (0 1) ((arith (0 1) *))
     |   (frac 6/5))
     = 1/5
 
     | (robin (0 1) ((arith (0 1) *))
-    |   (frac (- 0 6/5)))
-    = 1/5
-
-    | (robin (0 1) ((arith (0 1) *))
     |   (frac 8))
     = 0
 
+The result of `frac` is always positive.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (frac (- 0 6/5)))
+    = 1/5
+
+`frac` expects exactly one numeric argument.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (frac))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (frac 14 23))
+    ? uncaught exception: (illegal-arguments (14 23))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (frac #t))
+    ? uncaught exception: (expected-number #t)
+
 ### `integer?` ###
+
+`integer?` evaluates its argument, then evaluates to `#t` if that
+argument is a number without any fractional part, and to `#f` otherwise.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (integer? 6/5))
@@ -72,6 +206,23 @@ Module `arith`
     | (robin (0 1) ((arith (0 1) *))
     |   (integer? (- 0 8)))
     = #t
+
+The argument to `integer?` must be of numeric type.  TODO: this may
+be relaxed in the future.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (integer? #t))
+    ? uncaught exception: (expected-number #t)
+
+`integer?` expects exactly one argument.
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:integer?))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:integer? 14 23))
+    ? uncaught exception: (illegal-arguments (14 23))
 
 ### `div` ###
 

@@ -107,6 +107,22 @@ A function may have no arguments at all.
     |   ((fun () 7)))
     = 7
 
+An exception will be raised if not enough arguments are supplied to a
+function call.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   ((fun (a b) (list b a))
+    |     (prepend 1 ())))
+    ? uncaught exception: (illegal-arguments ((prepend 1 ()))
+
+An exception will be raised if too many arguments are supplied to a
+function call.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   ((fun (a b) (list b a))
+    |     1 (prepend 2 ()) 3))
+    ? uncaught exception: (illegal-arguments (1 (prepend 2 ()) 3))
+
 `fun` is basically equivalent to Scheme's `lambda`.
 
 ### `bind` ###
