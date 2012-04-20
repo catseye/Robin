@@ -59,7 +59,7 @@ but it can be demonstrated as follows.
 ### `conj` ###
 
 `conj` evaluates its single argument to a list of booleans, then evaluates
-to the conjunction of those booleans.
+to the logical conjunction of those booleans.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (conj ()))
@@ -158,7 +158,7 @@ but it can be demonstrated as follows.
 ### `disj` ###
 
 `disj` evaluates its single argument to a list of booleans, then evaluates
-to the disjunction of those booleans.
+to the logical disjunction of those booleans.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (disj ()))
@@ -232,6 +232,9 @@ the logical negation of that boolean.
 
 ### `xor` ###
 
+`xor` evaluates both of its arguments to boolean, then evaluates to
+the "exclusive-or" of those booleans.
+
     | (robin (0 1) ((boolean (0 1) *))
     |   (xor #t #t))
     = #f
@@ -247,6 +250,26 @@ the logical negation of that boolean.
     | (robin (0 1) ((boolean (0 1) *))
     |   (xor #f #f))
     = #f
+
+`xor` expects exactly two arguments.
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (xor #f))
+    ? uncaught exception: (illegal-arguments (#f))
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (xor #t #f #f))
+    ? uncaught exception: (illegal-arguments (#t #f #f))
+
+`xor` expects both of its arguments to be booleans.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:xor 100 #t))
+    ? uncaught exception: (expected-boolean 100)
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:xor #t 99))
+    ? uncaught exception: (expected-boolean 99)
 
 This test demonstrates that these functions really do evaluate their
 arguments.

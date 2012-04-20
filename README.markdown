@@ -200,6 +200,9 @@ Plans
 
 * In the `arith` module, possibly add `int-pow`.
 
+* In the `boolean` module, follow the style guidelines for associative
+  binary operators.
+
 * Write `list` in the Robin implementation of `small`, and use it to
   simplify that module.  Just re-export it from the `list` module.
 
@@ -286,8 +289,6 @@ though.
   Pixley in Robin.
 
 ### Documentation ###
-
-* Document the `boolean` module.
 
 * Document the alist functions in the `list` module.
 
