@@ -20,7 +20,8 @@ FILES="doc/Fundamental_Semantics.markdown \
       doc/module/Assert.markdown \
       doc/module/Pure.markdown \
       doc/module/CrudeIO.markdown \
-      doc/module/Miscellany.markdown"
+      doc/module/Miscellany.markdown \
+      doc/module/Bind-Args.markdown"
 
 # Hack for Robin & Falderal built with the ghc from Haskell Platform on Windows
 if [ -e bin/robin.exe ]; then
