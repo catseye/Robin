@@ -58,9 +58,18 @@
       (cmp-list?-r cmp-list?-r <= li)))
     (strictly-ascending? (fun (li)
       (cmp-list?-r cmp-list?-r < li)))
+    (descending? (fun (li)
+      (cmp-list?-r cmp-list?-r >= li)))
+    (strictly-descending? (fun (li)
+      (cmp-list?-r cmp-list?-r > li)))
     (natural? (fun (a)
       (if (equal? (frac a) 0) (>= a 0) #f)))
     )
-    (export + sum - * product / abs frac integer?
-            div rem > >= < <= natural?
-            ascending? strictly-ascending?)))
+    (export add + sum -
+            multiply * product /
+            div rem
+            abs frac
+            integer? natural?
+            > >= < <= 
+            ascending? strictly-ascending?
+            descending? strictly-descending?)))

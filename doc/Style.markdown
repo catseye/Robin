@@ -80,35 +80,59 @@ Associative Binary Operators
 ----------------------------
 
 When defining a macro which implements a binary operation which is
-associative, write two versions:
+associative, write three versions:
 
-* One version which takes any number of arguments.  The minimum number
-  may be zero, one, or two, depending on the nature of the operation,
-  but there should be no limit to the number of arguments; the
-  operation can be applied successively to all of the arguments, two
-  at a time.
+* First write the basic version; this should take two arguments and be named
+  with the natural-language word of the operation.  This version is useful
+  because it has the simplest definition to which one can refer, and can be
+  used in the definition of the next two versions.
 
-* One version which takes a list, and applies the operation to all
-  of the arguments in the list.  This is not much more than sugar for
-  the appropriate `fold`.  Often the name of this can be based on a
-  different English word than the binary operation would have (`conj`
-  for `and`, `disj` for `or`, `sum` for `add`, `product` for `multiply`),
-  but if no word is appropriate, suffix the symbol for the binary
-  operation with a `*` character.
+* Then write a version which takes any number of arguments.  The minimum
+  number may be zero, one, or two, depending on the nature of the operation,
+  but there should be no limit to the number of arguments; the operation can
+  be applied successively to all of the arguments, two at a time.  This
+  version can be named after the common mathematical symbol for the operation
+  if one exists, or, if not, the name of the first version suffixed with `*`.
 
-The first version may take advantage of short-circuiting, but the
-second version cannot, by itself: it will evaluate all of the arguments
-and construct a list first, which defeats short-circuiting.
+  There should be a macro which lets you derive this version in a higher-
+  order way from the first version, but currently that support does not
+  exist.
 
-A sufficiently clever analyzer can convert the first into successive
-applications of a single two-argument version of the macro, and the
-second into this form as well if all of the members of the list are
-known at analysis time.
+* Then write a version which takes a list, and applies the operation to all
+  of the arguments in the list.  This version can be written by passing the
+  first version to the appropriate `fold`.  Often the name of this can be
+  based on a different natural-language word than the binary operation would
+  have, but if no such word is appropriate, use the name of the first version
+  suffixed with `-list`.
 
-A purity analysis may be applied to check if this conversion can
-happen.  The macros so defined should be decorated with metadata which
-associates each with the other for the purposes of analysis and
-conversion.  The details of this need to be worked out.
+Examples from the standard modules:
+
+* `add`, `+`, and `sum`
+* `multiply`, `*`, and `product`
+* `and`, `&`, and `conj`
+* `or`, `|`, and `disj`
+* `gt?`, `>`, and `strictly-decreasing?`
+* `gte?`, `>=`, and `decreasing?`
+* `lt?`, `<`, and `strictly-increasing?`
+* `lte?`, `<=`, and `increasing?`
+* `equal?`, `=`, and `same?`
+
+All three versions may take advantage of short-circuiting, but the third
+version has a weaker form: all of the elements of the list must be evaluated
+first in order for the list to be constructed, but the operation may not
+examine all elements of the list to compute its result.
+
+These details still need to be worked out:
+
+* A sufficiently clever analyzer can convert the first into successive
+  applications of a single two-argument version of the macro, and the
+  second into this form as well if all of the members of the list are
+  known at analysis time.
+
+* A purity analysis may be applied to check if this conversion can
+  happen.  The macros so defined should be decorated with metadata which
+  associates each with the other for the purposes of analysis and
+  conversion.
 
 Conditionals
 ------------

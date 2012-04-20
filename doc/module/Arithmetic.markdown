@@ -3,6 +3,35 @@ Module `arith`
 
     -> Tests for functionality "Interpret Robin Program"
 
+### `add` ###
+
+`add` evaluates both of its arguments to numbers and evaluates to the sum
+of those two numbers.
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:add 14 23))
+    = 37
+
+`add` expects exactly two arguments.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (add 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (add 6 7 7))
+    ? uncaught exception: (illegal-arguments (6 7 7))
+
+Both of the arguments to `add` must be numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (add 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (add #t 51))
+    ? uncaught exception: (expected-number #t)
+
 ### `+` ###
 
 `+` evaluates all of its arguments to numbers and evaluates to the sum
@@ -102,6 +131,35 @@ of the second number from the first.
 
     | (robin (0 1) ((arith (0 1) *))
     |   (- #t 51))
+    ? uncaught exception: (expected-number #t)
+
+### `multiply` ###
+
+`multiply` evaluates both of its arguments to numbers and evaluates to the product
+of those two numbers.
+
+    | (robin (0 1) ((arith (0 1)))
+    |   (arith:multiply 6 7))
+    = 42
+
+`multiply` expects exactly two arguments.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (multiply 14))
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (multiply 6 7 7))
+    ? uncaught exception: (illegal-arguments (6 7 7))
+
+Both of the arguments to `multiply` must be numbers.
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (multiply 14 #t))
+    ? uncaught exception: (expected-number #t)
+
+    | (robin (0 1) ((arith (0 1) *))
+    |   (multiply #t 51))
     ? uncaught exception: (expected-number #t)
 
 ### `*` ###
@@ -676,4 +734,60 @@ if the first number is less than or equal to the second.
 
     | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
     |   (strictly-ascending? 44))
+    ? uncaught exception: (expected-list 44)
+
+### `descending?` ###
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (descending? (list 3 2 1)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (descending? (list 3 3 3 2 2 1)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (descending? (list 1 2 3)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (descending? (list 3 2 3 1)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (descending? ()))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (descending? (list 100)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (descending? 44))
+    ? uncaught exception: (expected-list 44)
+
+### `strictly-descending?` ###
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-descending? (list 3 2 1)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-descending? (list 3 2 2 1)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-descending? (list 3 2 3 1)))
+    = #f
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-descending? ()))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-descending? (list 100)))
+    = #t
+
+    | (robin (0 1) ((arith (0 1) *) (small (0 1) *))
+    |   (strictly-descending? 44))
     ? uncaught exception: (expected-list 44)
