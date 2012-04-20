@@ -71,3 +71,28 @@ the same thing as `literal` would.
     |   (term:literal-with ()
     |     (a d (r p q) q (p (z q) p p) p z q)))
     = (a d (r p q) q (p (z q) p p) p z q)
+
+### `cast` ###
+
+`cast` is a macro which works a lot like Scheme's `quasiquote`, except
+that the unquote symbol is specified as the first argument of the macro.
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (bind b 44
+    |     (cast $ (a b c))))
+    = (a b c)
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (bind b 44
+    |     (cast $ (a ($ b) c))))
+    = (a 44 c)
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (bind b 44
+    |     (cast $ (a b ($ c)))))
+    ? uncaught exception: (unbound-identifier c)
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (bind b 44
+    |     (cast $ (a $ b c))))
+    = (a $ b c)

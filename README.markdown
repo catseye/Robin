@@ -217,10 +217,6 @@ Plans
   being evaluated.  This might make the `self` parameter to macros redundant,
   though.
 
-* In the `term` module, export `cast`, which works like Scheme's
-  `quasiquote`, except the unquote symbol can be specified at the top of
-  the form.
-
 * Work out the static analysis modules.  See the Static Analysis document
   for more information.
 
