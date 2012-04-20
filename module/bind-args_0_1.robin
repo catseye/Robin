@@ -9,20 +9,24 @@
           (orig-val-list (eval env (head (tail args))))
           (given-env     (eval env (head (tail (tail args)))))
           (expr          (head (tail (tail (tail args)))))
-          (bind-args-r   (fun (self id-list val-list env-acc)
-            ;''This will need to be converted into a macro at some point,
-               but for now, this is easier.''
-            (if (equal? id-list ())
-              (if (equal? val-list ())
-                env-acc
-                (raise (list (literal illegal-arguments) orig-val-list)))
-              (if (equal? val-list ())
-                (raise (list (literal illegal-arguments) orig-val-list))
-                (self self (tail id-list) (tail val-list)
-                      (prepend
-                        (list (head id-list) (eval given-env (head val-list)))
-                        env-acc))))))
-          (new-env (bind-args-r bind-args-r id-list orig-val-list env))
+          (bind-args-r   (macro (self args env)
+            (let (
+              (id-list  (eval env (head args)))
+              (val-list (eval env (head (tail args))))
+              (env-acc  (eval env (head (tail (tail args)))))
+              )
+              (if (equal? id-list ())
+                (if (equal? val-list ())
+                  env-acc
+                  (raise (list (literal illegal-arguments) orig-val-list)))
+                (if (equal? val-list ())
+                  (raise (list (literal illegal-arguments) orig-val-list))
+                  (self
+                    (tail id-list) (tail val-list)
+                    (prepend
+                      (list (head id-list) (eval given-env (head val-list)))
+                      env-acc)))))))
+          (new-env (bind-args-r id-list orig-val-list env))
           )
           (eval new-env expr))))
     )
