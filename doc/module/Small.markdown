@@ -51,6 +51,8 @@ any S-expression.
     |   (small:list 1 2 3))
     = (1 2 3)
 
+Unlike `literal`, `list` does evaluate all of its arguments.
+
     | (robin (0 1) ((small (0 1) *))
     |   (list (literal x) (literal y)))
     = (x y)
@@ -266,17 +268,21 @@ Each binding must have exactly one name and one value.
 
     | (robin (0 1) ((small (0 1) *))
     |   (let ((a 1 3)) a))
-    ? uncaught exception: (illegal-arguments (((a 1 3)) a))
+    ? uncaught exception: (illegal-binding (a 1 3))
     
     | (robin (0 1) ((small (0 1) *))
     |   (let ((a)) a))
-    ? uncaught exception: (illegal-arguments (((a)) a))
+    ? uncaught exception: (illegal-binding (a))
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let (()) 7))
+    ? uncaught exception: (illegal-binding ())
 
 The identifier in a binding must be a symbol.
 
     | (robin (0 1) ((small (0 1) *))
     |   (let ((3 1)) 3))
-    ? uncaught exception: (illegal-arguments (((3 1)) 3))
+    ? uncaught exception: (illegal-binding (3 1))
 
 `let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
 
@@ -307,6 +313,26 @@ corresponding expression will be evaluated if all other tests failed.
     | (robin (0 1) ((small (0 1) *))
     |   (choose (else (literal woo))))
     = woo
+    
+`choose` does require an `else` branch.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (choose (#f (literal hi)) (#f (literal med))))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (choose))
+    ? uncaught exception: (illegal-arguments ())
+
+Each branch of a `choose` needs to be a two-element list.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (choose (#t) (else (literal lo))))
+    ? uncaught exception: (illegal-arguments ((#t) (else (literal lo))))
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (choose (#f 66) (else)))
+    ? uncaught exception: (illegal-arguments ((else)))
 
 `choose` is basically equivalent to Scheme's `cond`.
 

@@ -69,6 +69,8 @@ This implementation of the `small` module is non-normative.
 >     bindAll (List [name@(Symbol _), sexpr]:rest) env ienv cc =
 >         eval env ienv sexpr (\value ->
 >             bindAll rest (Env.insert name value env) ienv cc)
+>     bindAll (other:rest) env ienv cc =
+>         raise ienv (errMsg "illegal-binding" other)
 > robinLet env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 Module Definition
