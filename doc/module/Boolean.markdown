@@ -5,8 +5,8 @@ Module `boolean`
 
 ### `and` ###
 
-`and` evaluates all of its arguments to booleans, and evaluates to the
-logical conjunction (boolean "and") of all of these values.
+`and` evaluates both of its arguments to booleans, and evaluates to the
+logical conjunction (boolean "and") of these two values.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (and #t #t))
@@ -24,29 +24,25 @@ logical conjunction (boolean "and") of all of these values.
     |   (and #f #f))
     = #f
 
-`and` can take any number of arguments.
-
-    | (robin (0 1) ((boolean (0 1) *))
-    |   (and))
-    = #t
+`and` expects exactly two arguments.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (and #f))
-    = #f
+    ? uncaught exception: (illegal-arguments (#f))
 
     | (robin (0 1) ((boolean (0 1) *))
-    |   (and #t #t #t #t #t))
-    = #t
+    |   (and #t #f #f))
+    ? uncaught exception: (illegal-arguments (#t #f #f))
 
-    | (robin (0 1) ((boolean (0 1) *))
-    |   (and #t #t #t #f))
-    = #f
-
-`and` expects its arguments to be booleans.
+`and` expects both of its arguments to be booleans.
 
     | (robin (0 1) ((boolean (0 1)))
-    |   (boolean:and 100))
+    |   (boolean:and 100 #t))
     ? uncaught exception: (expected-boolean 100)
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:and #t 99))
+    ? uncaught exception: (expected-boolean 99)
 
 `and` is short-circuiting in the sense that no arguments after the first
 `#f` argument will be evaluated.  Fully testing this requires side-effects,
@@ -54,6 +50,40 @@ but it can be demonstrated as follows.
 
     | (robin (0 1) ((boolean (0 1)))
     |   (boolean:and #f 100))
+    = #f
+
+### `and*` ###
+
+`and*` is like `and`, but can take any number of arguments.
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (and*))
+    = #t
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (and* #f))
+    = #f
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (and* #t #t #t #t #t))
+    = #t
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (and* #t #t #t #f))
+    = #f
+
+`and` expects its arguments to be booleans.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:and* 100))
+    ? uncaught exception: (expected-boolean 100)
+
+`and*` is short-circuiting in the sense that no arguments after the first
+`#f` argument will be evaluated.  Fully testing this requires side-effects,
+but it can be demonstrated as follows.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:and* #t #t #f 100))
     = #f
 
 ### `conj` ###
@@ -104,8 +134,8 @@ to the logical conjunction of those booleans.
 
 ### `or` ###
 
-`or` evaluates all of its arguments to booleans, and evaluates to the
-logical disjunction (boolean "or") of all of these values.
+`or` evaluates both of its arguments to booleans, and evaluates to the
+logical disjunction (boolean "or") of these two values.
 
     | (robin (0 1) ((boolean (0 1) *))
     |   (or #t #t))
@@ -123,29 +153,25 @@ logical disjunction (boolean "or") of all of these values.
     |   (or #f #f))
     = #f
 
-`or` can take any number of arguments.
+`or` expects exactly two arguments.
 
     | (robin (0 1) ((boolean (0 1) *))
-    |   (or))
-    = #f
+    |   (or #f))
+    ? uncaught exception: (illegal-arguments (#f))
 
     | (robin (0 1) ((boolean (0 1) *))
-    |   (or #t))
-    = #t
+    |   (or #t #f #f))
+    ? uncaught exception: (illegal-arguments (#t #f #f))
 
-    | (robin (0 1) ((boolean (0 1) *))
-    |   (or #f #f #f #f #f))
-    = #f
-
-    | (robin (0 1) ((boolean (0 1) *))
-    |   (or #f #f #f #t))
-    = #t
-
-`or` expects its arguments to be booleans.
+`or` expects both of its arguments to be booleans.
 
     | (robin (0 1) ((boolean (0 1)))
-    |   (boolean:or 100))
+    |   (boolean:or 100 #f))
     ? uncaught exception: (expected-boolean 100)
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:or #f 99))
+    ? uncaught exception: (expected-boolean 99)
 
 `or` is short-circuiting in the sense that no arguments after the first
 `#t` argument will be evaluated.  Fully testing this requires side-effects,
@@ -153,6 +179,40 @@ but it can be demonstrated as follows.
 
     | (robin (0 1) ((boolean (0 1)))
     |   (boolean:or #t 100))
+    = #t
+
+### `or*` ###
+
+`or*` is like `or`, but can take any number of arguments.
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (or*))
+    = #f
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (or* #t))
+    = #t
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (or* #f #f #f #f #f))
+    = #f
+
+    | (robin (0 1) ((boolean (0 1) *))
+    |   (or* #f #f #f #t))
+    = #t
+
+`or*` expects its arguments to be booleans.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:or* 100))
+    ? uncaught exception: (expected-boolean 100)
+
+`or*` is short-circuiting in the sense that no arguments after the first
+`#t` argument will be evaluated.  Fully testing this requires side-effects,
+but it can be demonstrated as follows.
+
+    | (robin (0 1) ((boolean (0 1)))
+    |   (boolean:or* #f #f #f #t 100))
     = #t
 
 ### `disj` ###

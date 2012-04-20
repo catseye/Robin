@@ -189,20 +189,6 @@ Plans
   final-result and unknown-tag reply messages, particularly during `call`
   and `respond`.
 
-* Establish (and enforce) conventions listed in the Style document.
-
-* Write a `timer` module which exports a process which can be asked
-  (via a message) to send back a message after a given time has passed.
-  This could be used to build a version of `recv` which can time out.
-
-* Enhance the `console` module.  Write a version of `robotfindskitten`
-  using it.
-
-* In the `arith` module, possibly add `int-pow`.
-
-* In the `boolean` module, follow the style guidelines for associative
-  binary operators.
-
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)
@@ -255,14 +241,23 @@ though.
   file to which the problem can be traced.  The purpose of all this is
   to allow producing more complete error messages at the top level.
 
+* Support values, rather than simply presence of a value, in metadata.
+  This makes metadata more like a map of keys to values on a value,
+  than liks a set of keys on a value.
+
+### Devices ###
+
 * Create the `device` module and use it instead of `crude-io` and
   `console`.  Perhaps make those two into "interface modules"?  I
   suppose an interface module would expose a predicate to check if a
   device supports a given interface.
 
-* Support values, rather than simply presence of a value, in metadata.
-  This makes metadata more like a map of keys to values on a value,
-  than liks a set of keys on a value.
+* Write a `timer` device which can be asked (via a message) to send
+  back a message after a given time has passed.  This could be used to
+  build a version of `recv` which can time out.
+
+* Enhance the `console` device.  Write a version of `robotfindskitten`
+  using it.
 
 ### Possible Future Modules ###
 

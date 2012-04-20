@@ -109,8 +109,8 @@ Examples from the standard modules:
 
 * `add`, `+`, and `sum`
 * `multiply`, `*`, and `product`
-* `and`, `&`, and `conj`
-* `or`, `|`, and `disj`
+* `and`, `and*`, and `conj`
+* `or`, `or*`, and `disj`
 * `gt?`, `>`, and `strictly-decreasing?`
 * `gte?`, `>=`, and `decreasing?`
 * `lt?`, `<`, and `strictly-increasing?`

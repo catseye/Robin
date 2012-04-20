@@ -20,26 +20,26 @@ loop.
     |   (equal? literal-a literal-b))
     ? circular reference in module circular-a
 
-`and` is short-circuiting.
+`and*` is short-circuiting.
 
     | (robin (0 1) ((small (0 1) *) (boolean (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
     |   (let ((true
     |          (fun () (call! crude-output write (literal t) reply #t)))
     |         (false
     |          (fun () (call! crude-output write (literal f) reply #f))))
-    |     (and (true) (false) (false) (true))))
+    |     (and* (true) (false) (false) (true))))
     = t
     = f
     = #f
 
-`or` is short-circuiting.
+`or*` is short-circuiting.
 
     | (robin (0 1) ((small (0 1) *) (boolean (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
     |   (let ((true
     |          (fun () (call! crude-output write (literal t) reply #t)))
     |         (false
     |          (fun () (call! crude-output write (literal f) reply #f))))
-    |     (or (false) (true) (true) (false))))
+    |     (or* (false) (true) (true) (false))))
     = f
     = t
     = #t
