@@ -4,14 +4,11 @@
   (let (
     (bind-args
       (macro (self args env)
-        ;''(head args) is the literal list of identifiers;
-           (eval env (head (tail args))) is the list of
-            values to be bound to those identifiers.''
         (let (
-          (id-list (head args))
-          (orig-val-list (eval env (head (tail args))))
-          (expr (head (tail (tail args))))
-          (bind-args-r (fun (self id-list val-list env-acc)
+          (id-list       (head args))
+          (orig-val-list (head (tail args)))
+          (expr          (head (tail (tail args))))
+          (bind-args-r   (fun (self id-list val-list env-acc)
             ;''This will need to be converted into a macro at some point,
                but for now, this is easier.''
             (if (empty? id-list)
@@ -22,7 +19,7 @@
                 (raise (list (literal illegal-arguments) orig-val-list))
                 (self self (tail id-list) (tail val-list)
                       (prepend
-                        (list (head id-list) (head val-list))
+                        (list (head id-list) (eval env (head val-list)))
                         env-acc))))))
           (new-env (bind-args-r bind-args-r id-list orig-val-list env))
           )

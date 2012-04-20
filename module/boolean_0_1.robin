@@ -1,9 +1,11 @@
-(robin (0 1) ((small (0 1) *) (env (0 1) *))
+(robin (0 1) ((small (0 1) *) (env (0 1) *) (list (0 1) *))
   (let (
     (and (macro (self args env)
-      (if (eval env (head args))
-        (if (eval env (head (tail args))) #t #f)
-        #f)))
+      (if (equal? (length args) 2)
+        (if (eval env (head args))
+          (if (eval env (head (tail args))) #t #f)
+          #f)
+        (raise (list (literal illegal-arguments) args)))))
     (and* (macro (self args env)
       (if (equal? args ())
         #t
@@ -17,9 +19,11 @@
     (conj (fun (li)
       (conj-r conj-r li)))
     (or (macro (self args env)
-      (if (eval env (head args))
-        #t
-        (if (eval env (head (tail args))) #t #f))))
+      (if (equal? (length args) 2)
+        (if (eval env (head args))
+          #t
+          (if (eval env (head (tail args))) #t #f))
+        (raise (list (literal illegal-arguments) args)))))
     (or* (macro (self args env)
       (if (equal? args ())
         #f
