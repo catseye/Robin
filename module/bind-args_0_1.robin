@@ -1,0 +1,30 @@
+(robin (0 1) ((small (0 1) *) (list (0 1) *))
+  ;''Should really be a part of small, but prototyping
+     it here now.''
+  (let (
+    (bind-args
+      (macro (self args env)
+        ;''(head args) is the literal list of identifiers;
+           (eval env (head (tail args))) is the list of
+            values to be bound to those identifiers.''
+        (let (
+          (id-list (head args))
+          (orig-val-list (eval env (head (tail args))))
+          (expr (head (tail (tail args))))
+          (bind-args-r (macro (self args env)
+            (let (
+              (id-list (eval env (head args)))
+              (val-list (eval env (head (tail args))))
+              )
+              (if (empty? id-list)
+                (if (empty? val-list)
+                  ()
+                  (raise (list (literal illegal-arguments) orig-val-list))
+                args ;ha ;no)))))
+          (new-env (bind-args-r id-list orig-val-list))
+          )
+          (eval new-env expr))))
+    )
+    (list
+      (list (literal bind-args) bind-args)
+    )))
