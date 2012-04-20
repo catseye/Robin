@@ -1,4 +1,4 @@
-(robin (0 1) ((small (0 1) *) (list (0 1) *))
+(robin (0 1) ((small (0 1) *))
   ;''Should really be a part of small, but prototyping
      it here now.''
   (let (
@@ -12,11 +12,11 @@
           (bind-args-r   (fun (self id-list val-list env-acc)
             ;''This will need to be converted into a macro at some point,
                but for now, this is easier.''
-            (if (empty? id-list)
-              (if (empty? val-list)
+            (if (equal? id-list ())
+              (if (equal? val-list ())
                 env-acc
                 (raise (list (literal illegal-arguments) orig-val-list)))
-              (if (empty? val-list)
+              (if (equal? val-list ())
                 (raise (list (literal illegal-arguments) orig-val-list))
                 (self self (tail id-list) (tail val-list)
                       (prepend

@@ -77,3 +77,17 @@ become clear here: typically you would just pass the macro's `args` and
     |       (subtract a (subtract 0 b))))
     |     (add (subtract 0 0))))
     ? uncaught exception: (illegal-arguments ((subtract 0 0)))
+
+    | (robin (0 1) ((small (0 1) *) (bind-args (0 1) *))
+    |   (bind add (macro (self args env)
+    |     (bind-args (a b) args env
+    |       (subtract a (subtract 0 b))))
+    |     (add 9 9 9)))
+    ? uncaught exception: (illegal-arguments (9 9 9))
+
+    | (robin (0 1) ((small (0 1) *) (bind-args (0 1) *))
+    |   (bind add (macro (self args env)
+    |     (bind-args (a b) args env
+    |       (subtract a (subtract 0 b))))
+    |     (add 1 n)))
+    ? uncaught exception: (unbound-identifier n)
