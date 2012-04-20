@@ -42,6 +42,7 @@ This implementation of the `small` module is non-normative.
 >                 cc $ Env.insert formal value rest))
 >     evalArgs _ _ origActuals _ ienv cc = do
 >         raise ienv (errMsg "illegal-arguments" (List origActuals))
+> robinFun env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > choose env ienv (List [(List [(Symbol "else"), branch])]) cc =
 >     eval env ienv branch cc
@@ -52,10 +53,12 @@ This implementation of the `small` module is non-normative.
 >                 eval env ienv branch cc
 >             Boolean False ->
 >                 choose env ienv (List rest) cc)
+> choose env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > bind env ienv (List [name@(Symbol _), expr, body]) cc =
 >     eval env ienv expr (\value ->
 >         eval (Env.insert name value env) ienv body cc)
+> bind env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > robinLet env ienv (List [(List bindings), body]) cc =
 >     bindAll bindings env ienv (\newEnv ->
@@ -66,6 +69,7 @@ This implementation of the `small` module is non-normative.
 >     bindAll (List [name@(Symbol _), sexpr]:rest) env ienv cc =
 >         eval env ienv sexpr (\value ->
 >             bindAll rest (Env.insert name value env) ienv cc)
+> robinLet env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 Module Definition
 -----------------

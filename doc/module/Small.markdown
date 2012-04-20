@@ -37,6 +37,12 @@ any S-expression.
     |   (literal (hello (there) world)))
     = (hello (there) world)
 
+`literal` requires at least one argument.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (literal))
+    ? uncaught exception: (illegal-arguments ())
+
 `literal` is basically equivalent to Scheme's `quote`.
 
 ### `list` ###
@@ -48,6 +54,8 @@ any S-expression.
     | (robin (0 1) ((small (0 1) *))
     |   (list (literal x) (literal y)))
     = (x y)
+
+`list` does not require any arguments.
 
     | (robin (0 1) ((small (0 1) *))
     |   (list))
@@ -104,6 +112,20 @@ A function may have no arguments at all.
     |   ((fun () 7)))
     = 7
 
+But, a function must have exactly both a body and a list of formal arguments.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   ((fun ())))
+    ? uncaught exception: (illegal-arguments (()))
+
+    | (robin (0 1) ((small (0 1) *))
+    |   ((fun)))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (robin (0 1) ((small (0 1) *))
+    |   ((fun (a) a a)))
+    ? uncaught exception: (illegal-arguments ((a) a a))
+
 An exception will be raised if not enough arguments are supplied to a
 function call.
 
@@ -156,6 +178,20 @@ it evaluates.
     |                       (self self (tail alist) key))))
     |     (find find (literal ((c d) (e f) (a b))) (literal a))))
     = (a b)
+
+`bind` expects exactly three arguments.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind smoosh (fun (x y) (list y x))))
+    ? uncaught exception: (illegal-arguments (smoosh (fun (x y) (list y x))))
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind smoosh))
+    ? uncaught exception: (illegal-arguments (smoosh))
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (bind))
+    ? uncaught exception: (illegal-arguments ())
 
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
@@ -210,6 +246,38 @@ Shadowing happens.
     |   (let () (literal hi)))
     = hi
 
+Both the body and the list of bindings are required.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let ()))
+    ? uncaught exception: (illegal-arguments (()))
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let))
+    ? uncaught exception: (illegal-arguments ())
+
+No arguments may be given besides the body and list of bindings.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let ((a 1)) a a))
+    ? uncaught exception: (illegal-arguments (((a 1)) a a))
+
+Each binding must have exactly one name and one value.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let ((a 1 3)) a))
+    ? uncaught exception: (illegal-arguments (((a 1 3)) a))
+    
+    | (robin (0 1) ((small (0 1) *))
+    |   (let ((a)) a))
+    ? uncaught exception: (illegal-arguments (((a)) a))
+
+The identifier in a binding must be a symbol.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let ((3 1)) 3))
+    ? uncaught exception: (illegal-arguments (((3 1)) 3))
+
 `let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
 
 ### `choose` ###
@@ -256,3 +324,9 @@ where this form is encountered, as an alist.
     |     (prepend
     |       (find find (env) (literal boolean?)) (find find (env) (literal prepend)))))
     = ((boolean? (builtin boolean?)) prepend (builtin prepend))
+
+`env` expects exactly no arguments.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (env hello))
+    ? uncaught exception: (illegal-arguments (hello))
