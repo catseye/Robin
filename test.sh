@@ -45,6 +45,6 @@ else
                   ${FILES}
     falderal test -b \
                   -c "Interpret Robin Program" \
-                  -f 'Interpret Robin Program:shell command "bin\\robin.exe -B small -m module -m fixture\\module %(test-file)"' \
+                  -f 'Interpret Robin Program:shell command "bin/robin -B small -m module -m fixture/module %(test-file)"' \
                   ${FILES_NO_BUILTIN_SMALL}
 fi

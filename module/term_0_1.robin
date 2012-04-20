@@ -24,21 +24,26 @@
         (fold (fun (binding sexp)
                 (subst (head binding) (eval env (head (tail binding))) sexp))
               body alist))))
-    (cast-r (fun (self marker fn sexp)
+    (cast-r (fun (self marker fn head-pos sexp)
       (choose
         ((empty? sexp)
           ())
         ((list? sexp)
-          (if (equal? (head sexp) marker)
-            (fn (head (tail sexp)))
+          (if head-pos
+            (if (equal? (head sexp) marker)
+              (fn (head (tail sexp)))
+              ;else
+              (prepend (self self marker fn #t (head sexp))
+                       (self self marker fn #f (tail sexp))))
             ;else
-            (prepend (self self marker fn (head sexp))
-                     (self self marker fn (tail sexp)))))
+            (prepend (self self marker fn #t (head sexp))
+                     (self self marker fn #f (tail sexp)))))
         (else
           sexp))))
     (cast (macro (self args env)
       (cast-r cast-r (head args)
                      (fun (e) (eval env e))
+                     #t
                      (head (tail args)))))
     )
     (list
