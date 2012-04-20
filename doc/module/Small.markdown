@@ -1,9 +1,6 @@
 Module `small`
 ==============
 
-    -> Functionality "Interpret Robin Program" is implemented by
-    -> shell command "bin/robin -B small %(test-file)"
-
     -> Tests for functionality "Interpret Robin Program"
 
 The `core` module only exports macros which are necessarily, or for reasons

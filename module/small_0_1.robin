@@ -1,13 +1,15 @@
 (robin (0 1) ((core (0 1) *))
   (eval
     (prepend
-      (prepend ((macro (self args env) (head args)) literal) (macro (self args env) (head args)))
+      (prepend ((macro (self args env) (head args)) literal) (prepend (macro (self args env) (head args)) ()))
       (prepend
-        (prepend ((macro (self args env) (head args)) bind) (macro (self args env) (eval
-                                                         (prepend (prepend (head args) (eval env (head (tail args)))) env)
-                                                         (head (tail (tail args))))))
+        (prepend ((macro (self args env) (head args)) bind)
+          (prepend (macro (self args env)
+                     (eval
+                       (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
+                       (head (tail (tail args))))) ()))
         (prepend
-          (prepend ((macro (self args env) (head args)) env) (macro (self args env) env))
+          (prepend ((macro (self args env) (head args)) env) (prepend (macro (self args env) env) ()))
           ((macro (self args env) env))
         )
       )
@@ -20,7 +22,7 @@
             (bind binding (head bindings)
               (bind name (head binding)
                 (bind value (eval env (head (tail binding)))
-                  (bind newenv (prepend (prepend name value) env)
+                  (bind newenv (prepend (prepend name (prepend value ())) env)
                     (bind newbindings (tail bindings)
                       (bind newargs (prepend newbindings (tail args))
                         (eval newenv (prepend self newargs)))))))))))
@@ -55,7 +57,7 @@
                           closed-env
                           (let (
                                 (value (eval fun-env (head actuals)))
-                                (new-closed-env (prepend (prepend (head formals) value) closed-env))
+                                (new-closed-env (prepend (prepend (head formals) (prepend value ())) closed-env))
                                 (new-args (prepend new-closed-env (prepend fun-env (prepend (tail formals) (prepend (tail actuals) ())))))
                                )
                             (eval env

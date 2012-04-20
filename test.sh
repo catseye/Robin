@@ -23,6 +23,8 @@ FILES="doc/Fundamental_Semantics.markdown \
       doc/module/Miscellany.markdown \
       doc/module/Bind-Args.markdown"
 
+FILES_NO_BUILTIN_SMALL="doc/module/Small.markdown"
+
 # Hack for Robin & Falderal built with the ghc from Haskell Platform on Windows
 if [ -e bin/robin.exe ]; then
     falderal test -b \
@@ -31,10 +33,18 @@ if [ -e bin/robin.exe ]; then
                   -f 'Interpret Robin Program:shell command "bin\\robin.exe -m module -m fixture\\module %(test-file)"' \
                   -f 'Interpret Robin Program without output:shell command "bin\\robin.exe -m module -n %(test-file)"' \
                   ${FILES}
+    falderal test -b \
+                  -c "Interpret Robin Program" \
+                  -f 'Interpret Robin Program:shell command "bin\\robin.exe -B small -m module -m fixture\\module %(test-file)"' \
+                  ${FILES_NO_BUILTIN_SMALL}
     rm -f results*
 else
     falderal test -b \
                   -c "Interpret Robin Program" \
                   -f 'Interpret Robin Program:shell command "bin/robin -m module -m fixture/module %(test-file)"' \
                   ${FILES}
+    falderal test -b \
+                  -c "Interpret Robin Program" \
+                  -f 'Interpret Robin Program:shell command "bin\\robin.exe -B small -m module -m fixture\\module %(test-file)"' \
+                  ${FILES_NO_BUILTIN_SMALL}
 fi
