@@ -189,10 +189,6 @@ Plans
   final-result and unknown-tag reply messages, particularly during `call`
   and `respond`.
 
-* A macro for asserting that the correct number of arguments have been
-  given to a macro.  (Right now the `small` macros don't complain if
-  given too many arguments.)
-
 * Some kind of macro for capturing the recursive function call pattern
   (like `letrec`, but not necessary to support mutual recursion.)  Possibly
   called `bind-recur`.  Also `let-recur` could build on that.  Turn:

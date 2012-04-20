@@ -6,8 +6,9 @@
       (macro (self args env)
         (let (
           (id-list       (head args))
-          (orig-val-list (head (tail args)))
-          (expr          (head (tail (tail args))))
+          (orig-val-list (eval env (head (tail args))))
+          (given-env     (eval env (head (tail (tail args)))))
+          (expr          (head (tail (tail (tail args)))))
           (bind-args-r   (fun (self id-list val-list env-acc)
             ;''This will need to be converted into a macro at some point,
                but for now, this is easier.''
@@ -19,7 +20,7 @@
                 (raise (list (literal illegal-arguments) orig-val-list))
                 (self self (tail id-list) (tail val-list)
                       (prepend
-                        (list (head id-list) (eval env (head val-list)))
+                        (list (head id-list) (eval given-env (head val-list)))
                         env-acc))))))
           (new-env (bind-args-r bind-args-r id-list orig-val-list env))
           )
