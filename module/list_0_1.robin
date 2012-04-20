@@ -2,11 +2,6 @@
   (let (
     (empty? (fun (li)
       (equal? li ())))
-    (list (macro (self args env)
-      (if (empty? args)
-        ()
-        (prepend (eval env (head args))
-                 (eval env (prepend self (tail args)))))))
     (map (fun (app li)
       (bind map-r
         (fun (self app li)

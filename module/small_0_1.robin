@@ -26,6 +26,11 @@
                         (eval newenv (prepend self newargs)))))))))))
         (let
           (
+            (list (macro (self args env)
+              (if (equal? args ())
+                ()
+                (prepend (eval env (head args))
+                         (eval env (prepend self (tail args)))))))
             (choose (macro (self args env)
               (let
                 ((branch (head args))

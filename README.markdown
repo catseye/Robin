@@ -203,9 +203,6 @@ Plans
 * In the `boolean` module, follow the style guidelines for associative
   binary operators.
 
-* Write `list` in the Robin implementation of `small`, and use it to
-  simplify that module.  Just re-export it from the `list` module.
-
 * A macro for asserting that the correct number of arguments have been
   given to a macro.  (Right now the `small` macros don't complain if
   given too many arguments.)
