@@ -193,32 +193,29 @@ Plans
   (like `letrec`, but not necessary to support mutual recursion.)  Possibly
   called `bind-recur`.  Also `let-recur` could build on that.  Turn:
 
-    (bind-recur foo (fun (a b c)
+      (bind-recur foo (fun (a b c)
+                        (if a
+                          (b c)
+                          (foo (bar a) b c))) ...)
+
+  into
+
+      (bind foo
+        (bind foo-r (fun (self a b c)
                       (if a
                         (b c)
-                        (foo (bar a) b c))) ...)
+                        (self self (bar a) b c)))
+          (fun (a b c) (foo-r foo-r a b c))) ...)
 
-into
+  Lack of a `gensym` will make this tricky.  We don't really have to
+  bind `foo-r`, we can just repeat the definition of the recursive
+  function; but I don't know how we can add the `self` parameter without
+  potentially shadowing a user parameter also named `self`.
 
-    (bind foo
-      (bind foo-r (fun (self a b c)
-                    (if a
-                      (b c)
-                      (self self (bar a) b c)))
-        (fun (a b c) (foo-r foo-r a b c))) ...)
-
-Lack of a `gensym` will make this tricky.  We don't really have to
-bind `foo-r`, we can just repeat the definition of the recursive
-function; but I don't know how we can add the `self` parameter without
-potentially shadowing a user parameter also named `self`.
-
-An alternative which might be easier (but less elegant) would be to
-introduce a primitive `(self)` which evaluates to the function currently
-being evaluated.  This might make the `self` parameter to macros redundant,
-though.
-
-* Use `subst-env` to implement `literal-with`, as a substitute for
-  `quasiquote`, which works more like `let` (cf. `let-symbol`).
+  An alternative which might be easier (but less elegant) would be to
+  introduce a primitive `(self)` which evaluates to the function currently
+  being evaluated.  This might make the `self` parameter to macros redundant,
+  though.
 
 * In the `term` module, export `cast`, which works like Scheme's
   `quasiquote`, except the unquote symbol can be specified at the top of

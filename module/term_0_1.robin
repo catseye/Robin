@@ -13,14 +13,22 @@
           (else
             sexp)))
         (subst-r subst-r src dest sexp))))
-    (subst-many
-      (fun (alist sexp)
+    (subst-many (fun (alist sexp)
+      (fold (fun (binding sexp)
+              (subst (head binding) (head (tail binding)) sexp)) sexp alist)))
+    (literal-with (macro (self args env)
+      (let (
+        (alist (head args))
+        (body  (head (tail args)))
+        )
         (fold (fun (binding sexp)
-                (subst (head binding) (head (tail binding)) sexp)) sexp alist)))
+                (subst (head binding) (eval env (head (tail binding))) sexp))
+              body alist))))
     )
     (list
-      (list (literal subst)      subst)
-      (list (literal subst-many) subst-many)
+      (list (literal subst)        subst)
+      (list (literal subst-many)   subst-many)
+      (list (literal literal-with) literal-with)
     )
   )
 )

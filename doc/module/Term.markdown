@@ -48,3 +48,26 @@ second value.
     |   (subst-many (literal ((p 100) (q 200)))
     |     (literal (a d (r p q) q (p (z q) p p) p z q)))))
     = (a d (r 100 200) 200 (100 (z 200) 100 100) 100 z 200)
+
+### `literal-with` ###
+
+    | (robin (0 1) ((term (0 1)))
+    |   (term:literal-with ((p 100) (q 200))
+    |     (a d (r p q) q (p (z q) p p) p z q)))
+    = (a d (r 100 200) 200 (100 (z 200) 100 100) 100 z 200)
+
+Somewhat unlike `subst-many`, `literal-with` evaluates the expressions
+given as values in the bindings.
+
+    | (robin (0 1) ((core (0 1) *) (term (0 1) *))
+    |   (literal-with ((p (subtract 200 100)) (q (subtract 350 150)))
+    |     (a d (r p q) q (p (z q) p p) p z q)))
+    = (a d (r 100 200) 200 (100 (z 200) 100 100) 100 z 200)
+
+`literal-with` may be given an empty list of bindings; in this case it does
+the same thing as `literal` would.
+
+    | (robin (0 1) ((term (0 1)))
+    |   (term:literal-with ()
+    |     (a d (r p q) q (p (z q) p p) p z q)))
+    = (a d (r p q) q (p (z q) p p) p z q)
