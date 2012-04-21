@@ -9,9 +9,11 @@
 Small
 =====
 
-This implementation of the `small` module is non-normative.
+This implementation of the `small` module is non-normative.  For the
+normative definition (in Robin), see `small.robin` in the `module` directory
+of the distribution.
 
-> literal env ienv (List [expr]) cc =
+> literal env ienv (List (expr:_)) cc =
 >     cc expr
 > literal env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
@@ -24,9 +26,8 @@ This implementation of the `small` module is non-normative.
 > robinList env ienv (List exprs) cc =
 >     evalAll env ienv exprs [] cc
 
-> robinEnv env ienv (List []) cc =
+> robinEnv env ienv (List _) cc =
 >   cc env
-> robinEnv env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 > robinFun closedEnv ienv (List [(List formals), body]) cc = do
 >     cc $ Builtin "<lambda>" fun

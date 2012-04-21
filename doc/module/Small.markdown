@@ -23,6 +23,15 @@ provided as builtins, is up to the implementation.
 In addition, the `small` module re-exports everything from `core`, so that
 it is not necessary to import both of these modules, only `small`.
 
+Note that, for the purpose of simplicity of definition, the behavior of many
+of these macros differ from the more usual behavior of raising an
+`illegal-arguments` exception, when the arguments supplied in the macro
+call are not satisfactory.  In most cases, an exception will be raised,
+but exactly which exception that is, is not specified.  In some cases,
+extra arguments to the macro will be ignored and discarded.  A static
+analyzer may be provided one day which detects these cases and raises an
+exception, but that is a matter of static analysis, not execution.
+
 ### `literal` ###
 
 One of the most basic identifiers available in `small` is `literal`,
@@ -37,11 +46,18 @@ any S-expression.
     |   (literal (hello (there) world)))
     = (hello (there) world)
 
-`literal` requires at least one argument.
+`literal` requires at least one argument; otherwise, an exception will
+be raised.
 
     | (robin (0 1) ((small (0 1) *))
     |   (literal))
-    ? uncaught exception: (illegal-arguments ())
+    ? uncaught exception
+
+Any arguments beyond the first argument are simply ignored and discarded.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (literal a b c))
+    = a
 
 `literal` is basically equivalent to Scheme's `quote`.
 
@@ -51,7 +67,7 @@ any S-expression.
     |   (small:list 1 2 3))
     = (1 2 3)
 
-Unlike `literal`, `list` does evaluate all of its arguments.
+Unlike `literal`, `list` does evaluate its arguments, all of them.
 
     | (robin (0 1) ((small (0 1) *))
     |   (list (literal x) (literal y)))
@@ -115,18 +131,19 @@ A function may have no arguments at all.
     = 7
 
 But, a function must have exactly both a body and a list of formal arguments.
+Otherwise, an exception will be raised.
 
     | (robin (0 1) ((small (0 1) *))
     |   ((fun ())))
-    ? uncaught exception: (illegal-arguments (()))
+    ? uncaught exception
 
     | (robin (0 1) ((small (0 1) *))
     |   ((fun)))
-    ? uncaught exception: (illegal-arguments ())
+    ? uncaught exception
 
     | (robin (0 1) ((small (0 1) *))
     |   ((fun (a) a a)))
-    ? uncaught exception: (illegal-arguments ((a) a a))
+    ? uncaught exception
 
 An exception will be raised if not enough arguments are supplied to a
 function call.
@@ -134,7 +151,7 @@ function call.
     | (robin (0 1) ((small (0 1) *))
     |   ((fun (a b) (list b a))
     |     (prepend 1 ())))
-    ? uncaught exception: (illegal-arguments ((prepend 1 ()))
+    ? uncaught exception
 
 An exception will be raised if too many arguments are supplied to a
 function call.
@@ -142,7 +159,7 @@ function call.
     | (robin (0 1) ((small (0 1) *))
     |   ((fun (a b) (list b a))
     |     1 (prepend 2 ()) 3))
-    ? uncaught exception: (illegal-arguments (1 (prepend 2 ()) 3))
+    ? uncaught exception
 
 `fun` is basically equivalent to Scheme's `lambda`.
 
@@ -181,19 +198,19 @@ it evaluates.
     |     (find find (literal ((c d) (e f) (a b))) (literal a))))
     = (a b)
 
-`bind` expects exactly three arguments.
+`bind` expects exactly three arguments, or else an exception will be raised.
 
     | (robin (0 1) ((small (0 1) *))
     |   (bind smoosh (fun (x y) (list y x))))
-    ? uncaught exception: (illegal-arguments (smoosh (fun (x y) (list y x))))
+    ? uncaught exception
 
     | (robin (0 1) ((small (0 1) *))
     |   (bind smoosh))
-    ? uncaught exception: (illegal-arguments (smoosh))
+    ? uncaught exception
 
     | (robin (0 1) ((small (0 1) *))
     |   (bind))
-    ? uncaught exception: (illegal-arguments ())
+    ? uncaught exception
 
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
@@ -248,15 +265,16 @@ Shadowing happens.
     |   (let () (literal hi)))
     = hi
 
-Both the body and the list of bindings are required.
+Both the body and the list of bindings are required, or else an exception
+will be raised.
 
     | (robin (0 1) ((small (0 1) *))
     |   (let ()))
-    ? uncaught exception: (illegal-arguments (()))
+    ? uncaught exception
 
     | (robin (0 1) ((small (0 1) *))
     |   (let))
-    ? uncaught exception: (illegal-arguments ())
+    ? uncaught exception
 
 No arguments may be given besides the body and list of bindings.
 
@@ -264,19 +282,22 @@ No arguments may be given besides the body and list of bindings.
     |   (let ((a 1)) a a))
     ? uncaught exception: (illegal-arguments (((a 1)) a a))
 
-Each binding must have exactly one name and one value.
+Each binding must have at least a name and a value, or else an exception
+will be raised.
+    
+    | (robin (0 1) ((small (0 1) *))
+    |   (let ((a)) a))
+    ? uncaught exception
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let (()) 7))
+    ? uncaught exception
+
+Hm, what to do about extra stuff in a binding...
 
     | (robin (0 1) ((small (0 1) *))
     |   (let ((a 1 3)) a))
     ? uncaught exception: (illegal-binding (a 1 3))
-    
-    | (robin (0 1) ((small (0 1) *))
-    |   (let ((a)) a))
-    ? uncaught exception: (illegal-binding (a))
-
-    | (robin (0 1) ((small (0 1) *))
-    |   (let (()) 7))
-    ? uncaught exception: (illegal-binding ())
 
 The identifier in a binding must be a symbol.
 
@@ -314,25 +335,27 @@ corresponding expression will be evaluated if all other tests failed.
     |   (choose (else (literal woo))))
     = woo
     
-`choose` does require an `else` branch.
+`choose` does require an `else` branch, or else an exception will be
+raised.
 
     | (robin (0 1) ((small (0 1) *))
     |   (choose (#f (literal hi)) (#f (literal med))))
-    ? uncaught exception: (illegal-arguments ())
+    ? uncaught exception
 
     | (robin (0 1) ((small (0 1) *))
     |   (choose))
-    ? uncaught exception: (illegal-arguments ())
+    ? uncaught exception
 
-Each branch of a `choose` needs to be a two-element list.
+Each branch of a `choose` needs to be a two-element list, or else an
+exception will be raised.
 
     | (robin (0 1) ((small (0 1) *))
     |   (choose (#t) (else (literal lo))))
-    ? uncaught exception: (illegal-arguments ((#t) (else (literal lo))))
+    ? uncaught exception
 
     | (robin (0 1) ((small (0 1) *))
     |   (choose (#f 66) (else)))
-    ? uncaught exception: (illegal-arguments ((else)))
+    ? uncaught exception
 
 `choose` is basically equivalent to Scheme's `cond`.
 
@@ -351,8 +374,16 @@ where this form is encountered, as an alist.
     |       (find find (env) (literal boolean?)) (find find (env) (literal prepend)))))
     = ((boolean? (builtin boolean?)) prepend (builtin prepend))
 
-`env` expects exactly no arguments.
+`env` expects no arguments.  Any arguments supplied will be simply ignored
+and discarded, without being evaluated.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (env hello))
-    ? uncaught exception: (illegal-arguments (hello))
+    |   (bind find (fun (self alist key)
+    |                 (if (equal? alist (literal ())) (literal ())
+    |                    (if (equal? key (head (head alist)))
+    |                       (head alist)
+    |                       (self self (tail alist) key))))
+    |     (prepend
+    |       (find find (env find) (literal boolean?))
+    |       (find find (env (goofah whatever)) (literal prepend)))))
+    = ((boolean? (builtin boolean?)) prepend (builtin prepend))
