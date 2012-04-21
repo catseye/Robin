@@ -220,16 +220,6 @@ Plans
 * Work out the static analysis modules.  See the Static Analysis document
   for more information.
 
-* Either extend the `exception` module and semantics, or create a new
-  module for exception semantics extended as follows.  Allow the backtrace
-  of an exception to be accessed as a Robin object, and, to some extent,
-  manipulated.  When an exception is raised in a context where another
-  exception is being caught, allow the backtraces to be chained together.
-  When an exception is raised during (say) the reading of a text file,
-  allow the backtrace to be amended with the position within the text
-  file to which the problem can be traced.  The purpose of all this is
-  to allow producing more complete error messages at the top level.
-
 * Support values, rather than simply presence of a value, in metadata.
   This makes metadata more like a map of keys to values on a value,
   than liks a set of keys on a value.
@@ -268,6 +258,15 @@ Plans
 * Write a `pixley` module which exports only the identifiers supported
   by Pixley.  This could be imported, instead of `core`, to emulate
   Pixley in Robin.
+
+* Create a new module for exception semantics extended as follows.  Allow the
+  backtrace of an exception to be accessed as a Robin object, and, to some
+  extent, manipulated.  When an exception is raised in a context where
+  another exception is being caught, allow the backtraces to be chained
+  together.  When an exception is raised during (say) the reading of a text
+  file, allow the backtrace to be amended with the position within the text
+  file to which the problem can be traced.  The purpose of all this is
+  to allow producing more complete error messages at the top level.
 
 ### Documentation ###
 

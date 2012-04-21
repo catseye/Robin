@@ -24,33 +24,52 @@
         (fold (fun (binding sexp)
                 (subst (head binding) (eval env (head (tail binding))) sexp))
               body alist))))
-    (cast-r (fun (self marker fn head-pos sexp)
-      (choose
-        ((empty? sexp)
-          ())
-        ((list? sexp)
-          (if head-pos
-            (if (equal? (head sexp) marker)
-              (fn (head (tail sexp)))
+    (cast (macro (self args env)
+      (bind cast-r (fun (self marker fn head-pos sexp)
+        (choose
+          ((empty? sexp)
+            ())
+          ((list? sexp)
+            (if head-pos
+              (if (equal? (head sexp) marker)
+                (fn (head (tail sexp)))
+                ;else
+                (prepend (self self marker fn #t (head sexp))
+                         (self self marker fn #f (tail sexp))))
               ;else
               (prepend (self self marker fn #t (head sexp))
-                       (self self marker fn #f (tail sexp))))
-            ;else
-            (prepend (self self marker fn #t (head sexp))
-                     (self self marker fn #f (tail sexp)))))
-        (else
-          sexp))))
-    (cast (macro (self args env)
-      (cast-r cast-r (head args)
-                     (fun (e) (eval env e))
-                     #t
-                     (head (tail args)))))
+                       (self self marker fn #f (tail sexp)))))
+          (else
+            sexp)))
+        (cast-r cast-r (head args)
+                       (fun (e) (eval env e))
+                       #t
+                       (head (tail args))))))
+    (subst-head (fun (src dest sexp)
+      (bind subst-head-r (fun (self src dest head-pos sexp)
+        (choose
+          ((empty? sexp)
+            ())
+          ((list? sexp)
+            (if head-pos
+              (if (equal? (head sexp) src)
+                (append dest (self self src dest #f (tail sexp)))
+                ;else
+                (prepend (self self src dest #t (head sexp))
+                         (self self src dest #f (tail sexp))))
+              ;else
+              (prepend (self self src dest #t (head sexp))
+                       (self self src dest #f (tail sexp)))))
+          (else
+            sexp)))
+        (subst-head-r subst-head-r src dest #t sexp))))
     )
     (list
       (list (literal subst)        subst)
       (list (literal subst-many)   subst-many)
       (list (literal literal-with) literal-with)
       (list (literal cast)         cast)
+      (list (literal subst-head)   subst-head)
     )
   )
 )

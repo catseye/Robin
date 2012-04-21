@@ -96,3 +96,37 @@ that the unquote symbol is specified as the first argument of the macro.
     |   (bind b 44
     |     (cast $ (a $ b c))))
     = (a $ b c)
+
+### `subst-head` ###
+
+`subst-head` looks for a particular term only at the beginning of a list,
+and replaces the head of that list with a new list of terms.
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (subst-head (literal ralph) (literal (greta garbo))
+    |     (literal (this (ralph person) is here))))
+    = (this (greta garbo person) is here)
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (subst-head (literal ralph) (literal (greta garbo))
+    |     (literal (this (person ralph) is here))))
+    = (this (person ralph) is here)
+
+`subst-head` can match any type of data at the head of the list.
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (subst-head 123 (literal (x))
+    |     (literal (hey (123 123) 123))))
+    = (hey (x 123) 123)
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (subst-head (list 123) (literal (x))
+    |     (literal (hey (123 123) 123 (123) ((123) 123)))))
+    = (hey (123 123) 123 (123) (x 123))
+
+However, `subst-head` expects the replacement to be a list.
+
+    | (robin (0 1) ((small (0 1) *) (term (0 1) *))
+    |   (subst-head (literal ralph) (literal ronald)
+    |     (literal (this (ralph person) is here))))
+    ? uncaught exception: (expected-list ronald)
