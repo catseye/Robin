@@ -21,11 +21,13 @@
             (eval env (head (tail args)))
             (bind binding (head bindings)
               (bind name (head binding)
-                (bind value (eval env (head (tail binding)))
-                  (bind newenv (prepend (prepend name (prepend value ())) env)
-                    (bind newbindings (tail bindings)
-                      (bind newargs (prepend newbindings (tail args))
-                        (eval newenv (prepend self newargs)))))))))))
+                (if (symbol? name)
+                  (bind value (eval env (head (tail binding)))
+                    (bind newenv (prepend (prepend name (prepend value ())) env)
+                      (bind newbindings (tail bindings)
+                        (bind newargs (prepend newbindings (tail args))
+                          (eval newenv (prepend self newargs))))))
+                  (raise (prepend (literal illegal-binding) (prepend binding ())))))))))
         (let
           (
             (list (macro (self args env)
@@ -54,14 +56,18 @@
                              (actuals (head (tail (tail (tail args)))))
                            )
                         (if (equal? formals ())
-                          closed-env
-                          (let (
-                                (value (eval fun-env (head actuals)))
-                                (new-closed-env (prepend (prepend (head formals) (prepend value ())) closed-env))
-                                (new-args (prepend new-closed-env (prepend fun-env (prepend (tail formals) (prepend (tail actuals) ())))))
-                               )
-                            (eval env
-                              (prepend self new-args)))))))
+                          (if (equal? actuals ())
+                            closed-env
+                            (raise (literal (illegal-arguments))))
+                          (if (equal? actuals ())
+                            (raise (literal (illegal-arguments)))
+                            (let (
+                                  (value (eval fun-env (head actuals)))
+                                  (new-closed-env (prepend (prepend (head formals) (prepend value ())) closed-env))
+                                  (new-args (prepend new-closed-env (prepend fun-env (prepend (tail formals) (prepend (tail actuals) ())))))
+                                 )
+                              (eval env
+                                (prepend self new-args))))))))
                     (make-env-wrap (macro (self args env)
                       (let (
                              (closed-env (eval env (head args)))

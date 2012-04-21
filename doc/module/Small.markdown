@@ -145,21 +145,21 @@ Otherwise, an exception will be raised.
     |   ((fun (a) a a)))
     ? uncaught exception
 
-An exception will be raised if not enough arguments are supplied to a
-function call.
+An `illegal-arguments` exception will be raised if not enough arguments are
+supplied to a function call.
 
     | (robin (0 1) ((small (0 1) *))
     |   ((fun (a b) (list b a))
     |     (prepend 1 ())))
-    ? uncaught exception
+    ? uncaught exception: (illegal-arguments
 
-An exception will be raised if too many arguments are supplied to a
-function call.
+An `illegal-arguments` exception will be raised if too many arguments are
+supplied to a function call.
 
     | (robin (0 1) ((small (0 1) *))
     |   ((fun (a b) (list b a))
     |     1 (prepend 2 ()) 3))
-    ? uncaught exception
+    ? uncaught exception: (illegal-arguments
 
 `fun` is basically equivalent to Scheme's `lambda`.
 
@@ -265,6 +265,18 @@ Shadowing happens.
     |   (let () (literal hi)))
     = hi
 
+The list of bindings must be a list, or else an exception will be raised.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let 999 (literal hi)))
+    ? uncaught exception
+
+Each binding in a list must be a list, or else an exception will be raised.
+
+    | (robin (0 1) ((small (0 1) *))
+    |   (let (999) (literal hi)))
+    ? uncaught exception
+
 Both the body and the list of bindings are required, or else an exception
 will be raised.
 
@@ -276,11 +288,12 @@ will be raised.
     |   (let))
     ? uncaught exception
 
-No arguments may be given besides the body and list of bindings.
+Any arguments given beyond the body and list of bindings will be ignored
+and discarded, without being evaluated.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (let ((a 1)) a a))
-    ? uncaught exception: (illegal-arguments (((a 1)) a a))
+    |   (let ((a 1)) a foo))
+    = 1
 
 Each binding must have at least a name and a value, or else an exception
 will be raised.
@@ -293,11 +306,12 @@ will be raised.
     |   (let (()) 7))
     ? uncaught exception
 
-Hm, what to do about extra stuff in a binding...
+Anything given in a binding beyond the name and the value will simply be
+ignored and discarded, without being evaluated or otherwise examined.
 
     | (robin (0 1) ((small (0 1) *))
-    |   (let ((a 1 3)) a))
-    ? uncaught exception: (illegal-binding (a 1 3))
+    |   (let ((a 1 foo)) a))
+    = 1
 
 The identifier in a binding must be a symbol.
 

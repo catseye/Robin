@@ -61,13 +61,13 @@ of the distribution.
 >         eval (Env.insert name value env) ienv body cc)
 > bind env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> robinLet env ienv (List [(List bindings), body]) cc =
+> robinLet env ienv (List ((List bindings):body:_)) cc =
 >     bindAll bindings env ienv (\newEnv ->
 >         eval newEnv ienv body cc)
 >   where
 >     bindAll [] env ienv cc =
 >         cc env
->     bindAll (List [name@(Symbol _), sexpr]:rest) env ienv cc =
+>     bindAll (List (name@(Symbol _):sexpr:_):rest) env ienv cc =
 >         eval env ienv sexpr (\value ->
 >             bindAll rest (Env.insert name value env) ienv cc)
 >     bindAll (other:rest) env ienv cc =
