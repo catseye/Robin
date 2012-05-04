@@ -178,6 +178,31 @@ Serialization
   (yaml, xml, binary, etc)
 - S-expressions are trivially serializable, except for functions
 
+Formatting
+----------
+
+Closely related to serialization.
+
+Many languages support a "standard" operation to convert an arbitrary value to
+a string.  Some even have two (e.g. Python's `str` and `repr`).
+
+But in reality, there are any number of ways to convert a value to a string.
+Why should the string representation of 16 necessarily be `"16"` -- why not
+`"0xf"` or `"XVI"`?  `"16"` is fine, but it should be explicitly noted to be
+the default for the reason that it's the most convenient for the audience of
+humans who use the decimal Arabic notation when dealing with numbers.
+
+How can we support both a reasonable (and possibly configurable) default
+formatting, as well as any number of other ways to format values which would
+be more appropriate in different contexts?
+
+Can we pass a "style" argument to the string-conversion function?
+
+Should we establish a "design pattern" for writing formatting functions, and
+provide support for implementing such patterns?
+
+(Also, `format` is probably a better name for this function than `str`.)
+
 Multiple Environments
 ---------------------
 
