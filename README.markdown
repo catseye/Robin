@@ -27,7 +27,7 @@ All facilities of the underlying system are modelled as such processes.
 
 Robin supports a simple system of raising and handling exceptions.  This
 helps define the semantics of otherwise undefined operations, such as trying
-to obtain the tail of a non-pair.
+to obtain the `tail` of a number.
 
 Lastly, Robin unifies (to a degree) programming and static analysis.  The
 language itself defines essentially no rules of static correctness beyond
@@ -216,6 +216,19 @@ Plans
   introduce a primitive `(self)` which evaluates to the function currently
   being evaluated.  This might make the `self` parameter to macros redundant,
   though.
+
+  But, it might just be simpler to punt on this and make it a part of the
+  sugar in the humane syntax, which could support a form like:
+  
+      forward foo in
+        let
+          foo = fun(a, b, c)
+                  if a then b(c) else foo(bar(a), b, c)
+        in
+          ...
+
+  ...and this would transform the binding as appropriate.  This would also
+  extend to mutually recursive definitions (`forward foo, bar in ...`)
 
 * Work out the static analysis modules.  See the Static Analysis document
   for more information.

@@ -622,3 +622,54 @@ Decision: Again, not sure, leaning towards yes.
 Again, `Pid ! Msg` where `Msg` is anything is very simple, but again, it
 is very low-level.  It is useful to have metadata about the message, like
 which process sent it, and when.  But I need to think about this more.
+
+#### Should symbols be atomic?
+
+Decision: Currently, yes.  
+Chance of changing: High.
+
+In the Lisp tradition, symbols are "atomic" -- you can't take them apart,
+you can't (always) create new ones at runtime, they have no intrinsic order,
+and so forth.  Beyond a certain conceptual cleanliness, this has the
+advantage that each symbol can be associated with, and after a compilation
+process, can be replaced by, a small integer of fixed size.  This is good
+for efficiency, but efficiency is not what we're going for here.  Later
+languages in the Lisp tradition introduced things like `gensym` to create
+new symbols, and a separate string type and operations like `symbol->string`
+and `string->symbol`.
+
+Being able to create new symbols during runtime is very useful in program
+transformation, and for our purposes, should outweigh any efficiency gains
+from having a fixed set of atomic symbols.
+
+Also, if two nodes of a distributed Robin system are exchanging terms
+produced by software the other knows-not-what, they *must* be prepared to see
+symbols that they don't already know.
+
+In Robin, we can regard having a fixed, static set of symbols in use in a
+program as a *luxury*; if a static analysis reveals that you can "afford" it,
+(i.e. that you're not creating new ones at runtime and so forth,) a compiler
+can replace the symbols with small integers for efficiency in your case.
+
+### Should symbols and strings be different types?
+
+Decision: Currently, yes.  
+Chance of changing: High.
+
+Given Scheme's approach to the above (`symbol->string` and `string->symbol`),
+let's ask ourselves: what's *really* the difference between the two types?
+In an essentially purely functional language like Robin, both symbols and
+strings are immutable.  In implementations where strings are "intern'ed",
+this is not so different from inserting symbols in a symbol table.  And,
+in a language like Robin where equality and identity are identical,
+`(equal? "foo" "foo")` should evaluate to true whether the two strings are
+two copies of the same text, or two pointers to the same single text.
+
+This all points to the idea that symbols and strings should be unified; or
+rather, that there should be no symbols, only strings.  A traditional
+symbol literal, then, should be one syntax for specifying a string; and on
+the other hand, you ought to be able to say things like
+
+    (''let'' (('X'a'X' 1)) (''+'' 1 a))
+
+with impunity.

@@ -123,5 +123,26 @@ on some object (effectively a class object, in some aspects, perhaps), or
 retain plain macros (if objects are built from them then they're still
 available for that purpose), or something else...
 
+Problems
+--------
 
+One of the biggest problems here is how objects would interact with static
+analysis.  A macro which operates on an object doesn't care about how the
+object implements the methods on it, but it *does* care that the method
+operation meets the interface expectations.
 
+To do static analysis on objects, we would need to codify the expectations on
+the interface(s) that each object supports.  With traditional name-only duck
+typing, this is not possible; we would need to extend names with the interface
+module that they're from (so you can distinguish `tree:bark` from `dog:bark`.)
+
+Also, we would need to start putting metadata into interfaces somehow.
+
+We need to do this anyway, to some extent; if I make a new macro called
+`assign` which works a lot like `bind` or `let` but has a different syntax,
+how do I let the static analyzer know that it does that?  (For that matter,
+how does the static analyzer know that the concurrency macros bind a new
+value to one of the identifiers passed to them?)
+
+So, this should probably be put on hold until I have a better idea of what
+metadata will eventually look like.
