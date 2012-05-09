@@ -392,10 +392,14 @@ could also be seen as more orthogonal to the semantics (you really are
 working with a list of bindings, and you shouldn't overload the meanings of
 things in the list.)
 
-So, Robin's `let*` does have an intermediate list.  (On the other hand,
+So, Robin's `let` does have an intermediate list.  (On the other hand,
 `bind` doesn't need a list at all, obviating the issue.)  Following suit,
 the syntax for importing modules uses a list to contain the module specifiers
 (although it did not originally.)
+
+As a corollary to this, `choose` should probably have a list of conditions,
+and should not need an `else` branch -- the "body" of the `choose` should
+be the "else".
 
 #### Should the language define static analyses?
 
@@ -670,6 +674,74 @@ rather, that there should be no symbols, only strings.  A traditional
 symbol literal, then, should be one syntax for specifying a string; and on
 the other hand, you ought to be able to say things like
 
-    (''let'' (('X'a'X' 1)) (''+'' 1 a))
+    (''let'' ((''( ('' 1)) ('X'+'X' 1 ''( (''))
 
 with impunity.
+
+### Should macro-type values even exist?
+
+Decision: Currently, yes.  
+Chance of changing: non-zero.
+
+PicoLisp has some good ideas here (although identifying numbers with
+machine addresses of functions strikes me as going way too far.)  Robin
+has already wholeheartedly adopted the macro (which treats its arguments
+as unevaluated terms) as a core abstraction, and builds functions on top
+of them.  However, it could get even closer to PicoLisp's paradigm here,
+and not treat macros as their own data type.  Instead, they are simply
+terms of a certain form which, when they appear as the first element of
+a list being evaluated, are expanded through substitution.
+
+One reason to do this is that serializing, or otherwise depicting, a
+macro is somewhat problematic.  We can use the definition that was used
+to define the macro, but it's awkward.
+
+Here's an example of what would be different if there were no macro-type
+values.  Take the following code:
+
+    (bind dup (macro (self args env)
+                (bind a (eval env (head args))
+                  (list a a)))
+      (dup (literal foo)))
+
+Currently, this would be evaluated as follows.  The `(macro ...)` term
+evaluates to a value of macro type, and this value is bound to the name
+`dup` in a new environment.  The `(dup ...)` term is evaluated, `dup` is
+looked up in the environment to find that value of macro type, and that
+macro definition is evaluated with the given arguments.
+
+Here is what would happen if macros were just terms.  First, the code
+would need to be written something more like:
+
+    (bind dup (literal (macro (self args env)
+                         (bind a (eval env (head args))
+                           (list a a))))
+      (dup (literal foo)))
+
+Then, during evaluation, `dup` is bound to a literal term in a new
+environment.  The `(dup ...)` term is evaluated, and `dup` is looked up
+in the environment to find a literal term.  That term is virtually
+inserted in the term being evaluated:
+
+    ((macro (self args env)
+       (bind a (eval env (head args))
+         (list a a))) (literal foo))
+
+This term is examined, and it is found to conform to a "macro evaluation
+form"; it is virtually expanded thusly:
+
+    (bind self (macro (self args env)
+                 (bind a (eval env (head args))
+                   (list a a)))
+      (bind args (literal (literal foo))
+        (bind env (env)
+          (bind a (eval env (head args))
+           (list a a)))))
+
+Although the `(env)` may be fudging it a bit, this evaluation process is
+now rather nicely depictable in Robin (although an implementation would
+almost certainly make the new environment itself, without evaluating `bind`
+to do so.)
+
+This still doesn't help much with dealing with the same issues surrounding
+built-in macros, though.
