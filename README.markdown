@@ -233,10 +233,6 @@ Plans
 * Work out the static analysis modules.  See the Static Analysis document
   for more information.
 
-* Support values, rather than simply presence of a value, in metadata.
-  This makes metadata more like a map of keys to values on a value,
-  than liks a set of keys on a value.
-
 ### Devices ###
 
 * Create the `device` module and use it instead of `crude-io` and

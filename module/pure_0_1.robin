@@ -2,26 +2,26 @@
   ;''This is an EXPERIMENTAL module for EXPERIMENTING with
      static analysis in Robin using metadata on values.''
   (let (
-    (head     (with (literal pure) head))
-    (tail     (with (literal pure) tail))
-    (prepend  (with (literal pure) prepend))
-    (list?    (with (literal pure) list?))
-    (symbol?  (with (literal pure) symbol?))
-    (number?  (with (literal pure) number?))
-    (boolean? (with (literal pure) boolean?))
-    (macro?   (with (literal pure) macro?))
-    (subtract (with (literal pure) subtract))
-    (divide   (with (literal pure) divide))
-    (floor    (with (literal pure) floor))
-    (sign     (with (literal pure) sign))
-    (macro    (with (literal definer) (with (literal pure) macro)))
-    (if       (with (literal pure) if))
-    (with     (with (literal pure) with))
-    (has?     (with (literal pure) has?))
-    (literal  (with (literal pure) literal))
-    (bind     (with (literal binder) (with (literal pure) bind)))
-    (env      (with (literal pure) env))
-    (fun      (with (literal definer) (with (literal pure) fun)))
+    (head     (with pure #t head))
+    (tail     (with pure #t tail))
+    (prepend  (with pure #t prepend))
+    (list?    (with pure #t list?))
+    (symbol?  (with pure #t symbol?))
+    (number?  (with pure #t number?))
+    (boolean? (with pure #t boolean?))
+    (macro?   (with pure #t macro?))
+    (subtract (with pure #t subtract))
+    (divide   (with pure #t divide))
+    (floor    (with pure #t floor))
+    (sign     (with pure #t sign))
+    (macro    (with definer #t (with pure #t macro)))
+    (if       (with pure #t if))
+    (with     (with pure #t with))
+    (has?     (with pure #t has?))
+    (literal  (with pure #t literal))
+    (bind     (with binder #t (with pure #t bind)))
+    (env      (with pure #t env))
+    (fun      (with definer #t (with pure #t fun)))
     (dummy-fun (fun (x) x))
     (pure-fun-defn?-r (fun (self pure-expr?-r env expr)
       ;''XXX The following is badly written.''
@@ -42,7 +42,7 @@
               ((equal? maybe-val ())
                 #f)
               ((macro? (head maybe-val))
-                (has? (literal pure) (head maybe-val)))
+                (has? pure (head maybe-val)))
               (else
                 #f))))
         (else
@@ -66,7 +66,7 @@
       (choose
         ((elem? expr args) #t)
         ((number? expr)    #t)
-        ((macro? expr)     (has? (literal pure) expr))
+        ((macro? expr)     (has? pure expr))
         ((boolean? expr)   #t)
         ((empty? expr)     #t)
         ;''XXX The following is badly written.''
@@ -80,7 +80,7 @@
             (choose
               ((equal? maybe-applier ())
                 #f)
-              ((has? (literal binder) (head maybe-applier))
+              ((has? binder (head maybe-applier))
                 ;''When analyzing a `bind` expression, we analyze the value
                    being bound to see if it, too, is pure or not.  We then
                    extend the environment with a value for the bound
@@ -103,7 +103,7 @@
                             self env bound-expr))
                        (placeholder
                         (if bound-pure-fun
-                          (with (literal pure) dummy-fun)
+                          (with pure #t dummy-fun)
                           dummy-fun))
                        (new-env
                          (extend ident placeholder env))
@@ -111,7 +111,7 @@
                         (head (tail (tail (tail expr))))))
                       (self self new-env args body-expr))
                     #f)))
-              ((has? (literal definer) (head maybe-applier))
+              ((has? definer (head maybe-applier))
                 ;''A "definer" expression (such as `macro` or `fun`), which
                    simply evaluates to a macro value of some kind, is pure.
                    

@@ -29,27 +29,27 @@ but marked with `pure` in the metadata (except `eval` where this is far
 from a guarantee.)
 
     | (robin (0 1) ((pure (0 1) *))
-    |   (has? (literal pure) head))
+    |   (has? pure head))
     = #t
 
     | (robin (0 1) ((pure (0 1) *))
-    |   (has? (literal pure) tail))
+    |   (has? pure tail))
     = #t
 
     | (robin (0 1) ((pure (0 1) *))
-    |   (has? (literal pure) prepend))
+    |   (has? pure prepend))
     = #t
 
     | (robin (0 1) ((pure (0 1) *))
-    |   (has? (literal pure) if))
+    |   (has? pure if))
     = #t
 
     | (robin (0 1) ((pure (0 1) *))
-    |   (has? (literal pure) macro))
+    |   (has? pure macro))
     = #t
 
     | (robin (0 1) ((pure (0 1) *))
-    |   (has? (literal pure) fun))
+    |   (has? pure fun))
     = #t
 
 ### Purity Analysis ###
