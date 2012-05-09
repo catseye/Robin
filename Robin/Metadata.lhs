@@ -7,16 +7,25 @@
 Metadata
 ========
 
-> robinWith env ienv (List [metadataExpr, expr]) cc =
->     eval env ienv metadataExpr (\metadata ->
->         eval env ienv expr (\value ->
->             cc $ Metadata metadata value))
+> robinWith env ienv (List [metaNameExpr, metaValueExpr, expr]) cc =
+>     eval env ienv metaNameExpr (\metaName ->
+>         eval env ienv metaValueExpr (\metaValue ->
+>             eval env ienv expr (\value ->
+>                 cc $ Metadata (metaName, metaValue) value)))
 > robinWith env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
-> hasP env ienv (List [metadataExpr, expr]) cc =
->     eval env ienv metadataExpr (\metadata ->
+> robinGet env ienv (List [metaNameExpr, expr]) cc =
+>     eval env ienv metaNameExpr (\metaName ->
 >         eval env ienv expr (\value ->
->             cc $ Boolean $ hasMetadata metadata value))
+>             case getMetadata metaName value of
+>                 Just v  -> cc v
+>                 Nothing -> cc $ List []))
+> robinGet env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
+
+> hasP env ienv (List [metaNameExpr, expr]) cc =
+>     eval env ienv metaNameExpr (\metaName ->
+>         eval env ienv expr (\value ->
+>             cc $ Boolean $ hasMetadata metaName value))
 > hasP env ienv other cc = raise ienv (errMsg "illegal-arguments" other)
 
 Module Definition
@@ -28,6 +37,7 @@ Module Definition
 > moduleDef = do
 >     return $ Env.fromList $ map (\(name,bif) -> (name, Builtin name bif))
 >       [
->         ("with",     robinWith),
->         ("has?",     hasP)
+>         ("with", robinWith),
+>         ("has?", hasP),
+>         ("get",  robinGet)
 >       ]

@@ -23,7 +23,7 @@ though somewhat regrettably, as it's quite lacking as a name.
 >           | Macro Expr Expr Expr
 >           | Builtin String Bif
 >           | List [Expr]
->           | Metadata Expr Expr
+>           | Metadata (Expr, Expr) Expr
 
 Equality ignores metadata for now.  That's too deep a question for
 me to think about right now.
@@ -72,10 +72,15 @@ Helpers
 Metadata Helpers
 ----------------
 
-> hasMetadata metadata (Metadata m x)
->     | m == metadata = True
->     | otherwise     = hasMetadata metadata x
+> hasMetadata metaName (Metadata (k, v) x)
+>     | k == metaName = True
+>     | otherwise     = hasMetadata metaName x
 > hasMetadata _ _ = False
+
+> getMetadata metaName (Metadata (k, v) x)
+>     | k == metaName = Just v
+>     | otherwise     = getMetadata metaName x
+> getMetadata _ _ = Nothing
 
 > stripMetadata (Metadata _ x) =
 >     stripMetadata x
