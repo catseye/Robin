@@ -40,9 +40,6 @@ sending process as a confirmation.
     = hello-world
     = ok
 
-    -> Functionality "Interpret Robin Program without output" is implemented by
-    -> shell command "bin/robin -n %(test-file)"
-
     -> Tests for functionality "Interpret Robin Program without output"
 
 The sending process need not do anything with the response.  The

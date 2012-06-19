@@ -1,6 +1,7 @@
 > module Robin.CrudeIO where
 
 > import Control.Concurrent (myThreadId)
+> import qualified Control.Exception as Exc
 
 > import Robin.Chan
 > import Robin.Expr
@@ -48,7 +49,7 @@ otherwise we might lose input before anyone has subscribed to us.
 >     inputHandler' chan subscribers
 
 > inputHandler' chan subscribers = do
->     line <- getLine `catch` (\e -> do return "eof")
+>     line <- getLine `Exc.catch` excHandler
 >     subscribers' <- getAnyNewSubscribers chan subscribers
 >     case parseRobin line of
 >         Right expr@(Symbol "eof") -> do
@@ -59,6 +60,9 @@ otherwise we might lose input before anyone has subscribed to us.
 >             inputHandler' chan subscribers'
 >         Left _ ->
 >             inputHandler' chan subscribers'
+>   where
+>      excHandler :: Exc.SomeException -> IO String
+>      excHandler _ = do return "eof"
 
 > getAnyNewSubscribers :: Chan Expr -> [Expr] -> IO [Expr]
 

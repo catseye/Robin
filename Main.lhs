@@ -1,6 +1,7 @@
 > module Main where
 
-> import System
+> import System.Environment
+> import System.Exit
 
 > import Robin.Parser (parseRobin)
 > import Robin.Module (evalRobin, mkModuleCache)
