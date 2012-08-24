@@ -259,3 +259,75 @@ using the same symbol for different purposes in different contexts.
 dereferencing. In Python, `.` is both object attribute access and package
 hierarchy -- although packages are, at least, kind of like objects.  In Lua,
 `=` is both assignment and key value association.)
+
+Programming Languages vs. Operating Systems
+-------------------------------------------
+
+(this section needs to be cleaned up -- not sure where to put it, and it
+arguably doesn't belong here)
+
+What you see before you in this distribution can be described as a
+programming language, but many of the ideas took root while thinking about
+operating systems.
+
+What's the difference between a programming language and an operating system?
+
+Well, maybe less than you think.
+
+Programming languages do need to define the environment in which they can
+express programs.  Sometimes this is a specific OS (like early C on Unix) --
+or they claim to be "portable", but then they're really just defining an
+abstraction against all the possible OS'es they think they'll run on.  Often
+this abstract is clumsy, but some languages put a lot of thought into it,
+like Smalltalk.
+
+Operating systems, on the other hand, don't tell you what programming
+language to use -- or do they?  A modern OS insists everything is, at some
+point, in native machine language, and a running instance will almost always
+be limited to a single machine language of a single architecture.  Somewhat
+more alternative OS'es define a virtual machine language to abstract away
+from the concrete machine language.  Usually this virtual machine language
+looks like a machine language, but sometimes it's a tad more high-level,
+like Lisp.  Any way you slice it, the OS does sanction a particular, albeit
+usually low-level, programming language.
+
+Where PL's and OS's seem to meet more-or-less neatly is in the idea of the
+VM, so let's examine that.
+
+Most modern virtual machines are designed to implement high-level languages
+in a modern operating system environment.  The JVM was specifically designed
+for running Java, and while .NET was ostensibly designed for multiple
+languages, the bytecode is pretty closely tuned to C\#.
+
+What these VMs were not designed to do, but what a VM "should really" be
+designed to do (if it, at least, wants to live up to the name "virtual
+machine") is to abstract the *hardware* and provide virtualizations
+(abstractions) of the available devices.
+
+An environment contains zero or more devices.  A device exposes zero
+or more services.  Each service conforms to one or more interfaces.
+Each service may additionally require one or more services be available
+(by interface).
+
+At one point I was calling this place where programming language and
+operating system meet a "CE" (Computational Environment) because
+"operating system" is far too generic-sounding and "programming language"
+doesn't address the important environmental aspect here.  Whether I would
+continue to use the term CE or not, as it could just add to the confusion.
+
+How do most programming languages deal with the abstraction of available
+(or virtual) devices?  Terribly, I would say.  Take, as a simple example,
+an addressable character screen device.  Someone writes a library, in C,
+to access it (e.g. `ncurses`,) providing an API comprising C functions
+and C structs.  Someone then writes a binding or a wrapper (e.g. using
+`swig`) or otherwise foreign-function interfaces it to the language, usually
+exposing the exact same C-level API naively adapted to the programming
+language.  Then you, the programmer in this language, wrestle with working
+with the device almost exactly as a C programmer would, initializing and
+releasing it as a C programmer would, with limitations on how you may or
+may not use it from multithreaded code like a C programmer would (which
+might be brutally different from how the runtime for your programming
+language implementation assumes that its world works.)  All this, with the
+added hassle of having to make sure you have all these bindings for the
+device for your chosen implementation of your language built and installed
+correctly.

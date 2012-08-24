@@ -554,15 +554,46 @@ some other representation.
 
 #### Should there be a distinction between processes and devices?
 
-Decision: Yes.
+Decision: No.
+
+I backtracked on this one.
 
 It's tempting to unify the two, and say that there are only devices,
 and that every concurrent process you spawn is a device of some sort.
 
-But devices represent resources beyond just cycles and memory, while
-you can have a "compute" process which just uses cycles and memory.
-It doesn't need to be acquired, or released, or registered for access
-by some other, anonymous program.
+The argument against unifying the two is that devices represent resources
+beyond just cycles and memory, while you can have a "compute" process
+which just uses cycles and memory.  It doesn't need to be acquired, or
+released, or registered for access by some other, anonymous program.
+
+But that's not quite true.  It's not "just cycles and memory"; cycles
+and memory, and the privilege to create a process that uses them,
+constitute a device that must be acquired (started), released (stopped),
+and possibly even registered for access, if the notion of IPC involves
+sending messages from process to process.
+
+So I think we need a concept of a "processing device".  Normally this would
+be a "virtual processor" (backed by an OS process or other simulated
+concurrency.)
+
+But also -- other devices may or may not acquire their own virtual processor,
+or use an existing virtual processor instead.  These two options map to
+having each service in its own process (an Erlang ideal) and to having a
+library of functions that run "inline" (in the caller's thread -- a C reality.)
+
+It would be great if devices could be contrived so as to be flexible on that
+point.
+
+Starting up a virtual processor to run a Robin program is a bootstrapping
+issue.  You generally wouldn't have to write any code to acquire the initial
+processor device -- I mean you couldn't: what started the virtual processor
+that *that* code was running on?  This would instead be the responsibility of
+Robin's kernel, which is, conceptually, a black box in this regard.  But you
+could start *another* processor device, in your code, to run your code --
+basically, to spawn a process.
+
+See also the "Programming Languages vs. Operating Systems" section I just
+added to the Practical Matters doc (though it doesn't really belong there.)
 
 #### Should the `random` facility be a device?
 
