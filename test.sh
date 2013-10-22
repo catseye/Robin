@@ -1,8 +1,7 @@
 #!/bin/sh
 
 if [ ! -e bin/robin -a ! -e bin/robin.exe ]; then
-    echo "Please build the robin executable first."
-    exit 1
+    ./build.sh || exit 1
 fi
 
 FILES="doc/Fundamental_Semantics.markdown \
