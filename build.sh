@@ -1,5 +1,8 @@
 #!/bin/sh
 
+if [ "${WITHOUT}x" = "x" ]; then
+    WITHOUT="Console"
+fi
 ALL_MODULES="Small Concurrency Exception Metadata Random CrudeIO Console"
 MODULES=""
 
