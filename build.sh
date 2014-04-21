@@ -54,4 +54,6 @@ done
 
 mkdir -p bin
 ghc ${PACKAGES} --make Main.lhs -o bin/robin
+RESULT=$?
 rm -f *.o *.hi Robin/*.o Robin/*.hi
+exit $RESULT
