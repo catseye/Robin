@@ -65,7 +65,8 @@ systems are left as an exercise for the reader.
 
     $ sudo apt-get install ghc cabal-install
     $ cabal install parsec
-    $ cabal install hscurses   # if you want to use the console module
+    $ cabal install hscurses   # if you want to use the Console module
+    $ cabal install random     # if you want to use the Random module
 
 Step 3: Build the sources.
 

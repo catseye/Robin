@@ -83,54 +83,58 @@ entered and parsed correctly.
 `crude-input` can be subscribed to, and the subscriber will receive
 messages when input occurs.
 
-    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-    |   (call! crude-input subscribe () x
-    |     (recv! entered
-    |       (list (literal i-got) entered))))
-    = (i-got hello)
+    SKIP
+    !| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    !|   (call! crude-input subscribe () x
+    !|     (recv! entered
+    !|       (list (literal i-got) entered))))
+    != (i-got hello)
 
     -> Tests for shell command "echo '(1 2 3)' | bin/robin %(test-file)"
 
 Arbitrary S-expressions may occur on each line; they are parsed.
 
-    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-    |   (call! crude-input subscribe () x
-    |     (recv! entered
-    |       (list (literal i-got) entered))))
-    = (i-got (1 2 3))
+    SKIP
+    !| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    !|   (call! crude-input subscribe () x
+    !|     (recv! entered
+    !|       (list (literal i-got) entered))))
+    != (i-got (1 2 3))
 
     -> Tests for shell command "/bin/echo -e '1\n2\n3\n' | bin/robin -n %(test-file)"
 
 Multiple lines of text may be input, and multiple messages will be sent.
 
-    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-    |   (bind input-loop
-    |         (fun (self)
-    |           (recv! entered
-    |             (if (equal? entered (literal eof))
-    |               #f
-    |               (call! crude-output write (list #t entered) foo
-    |                 (self self)))))
-    |     (call! crude-input subscribe () x
-    |       (input-loop input-loop))))
-    = (#t 1)
-    = (#t 2)
-    = (#t 3)
+    SKIP
+    !| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    !|   (bind input-loop
+    !|         (fun (self)
+    !|           (recv! entered
+    !|             (if (equal? entered (literal eof))
+    !|               #f
+    !|               (call! crude-output write (list #t entered) foo
+    !|                 (self self)))))
+    !|     (call! crude-input subscribe () x
+    !|       (input-loop input-loop))))
+    != (#t 1)
+    != (#t 2)
+    != (#t 3)
 
     -> Tests for shell command "/bin/echo -e '1\n#r\n3\n' | bin/robin -n %(test-file)"
 
 If an S-expression on a given line cannot be parsed, no message will be
 sent.
 
-    | (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
-    |   (bind input-loop
-    |         (fun (self)
-    |           (recv! entered
-    |             (if (equal? entered (literal eof))
-    |               #f
-    |               (call! crude-output write (list #t entered) foo
-    |                 (self self)))))
-    |     (call! crude-input subscribe () x
-    |       (input-loop input-loop))))
-    = (#t 1)
-    = (#t 3)
+    SKIP
+    !| (robin (0 1) ((small (0 1) *) (concurrency (0 1) *) (crude-io (0 1) *))
+    !|   (bind input-loop
+    !|         (fun (self)
+    !|           (recv! entered
+    !|             (if (equal? entered (literal eof))
+    !|               #f
+    !|               (call! crude-output write (list #t entered) foo
+    !|                 (self self)))))
+    !|     (call! crude-input subscribe () x
+    !|       (input-loop input-loop))))
+    != (#t 1)
+    != (#t 3)

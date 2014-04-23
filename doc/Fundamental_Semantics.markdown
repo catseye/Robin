@@ -378,11 +378,12 @@ sentinel may consist of any text not containing a single quote.
     |   (literal '...@('Hello'...@('))
     = (72 101 108 108 111)
 
-    | (robin (0 1) ((small (0 1) *))
-    |   (literal 'X'Hello'Y'))
-    ? (line 3, column 1):
-    ? unexpected end of input
-    ? expecting "'"
+    SKIP
+    !| (robin (0 1) ((small (0 1) *))
+    !|   (literal 'X'Hello'Y'))
+    !? (line 3, column 1):
+    !? unexpected end of input
+    !? expecting "'"
 
 A sentinelized literal like this may embed a pair of single quotes.
 
@@ -442,14 +443,15 @@ inside S-expressions, comments may nest.
 
 Comments are still parsed.  A syntax error in a comment is an error.
 
-    | (robin (0 1) ((core (0 1) *))
-    |   ;(this program produces
-    |     #k
-    |     a list of booleans)
-    |   (prepend #f (prepend #f ())))
-    ? (line 3, column 6):
-    ? unexpected "k"
-    ? expecting "t" or "f"
+    SKIP
+    !| (robin (0 1) ((core (0 1) *))
+    !|   ;(this program produces
+    !|     #k
+    !|     a list of booleans)
+    !|   (prepend #f (prepend #f ())))
+    !? (line 3, column 6):
+    !? unexpected "k"
+    !? expecting "t" or "f"
 
 Any number of comments may appear together.
 
