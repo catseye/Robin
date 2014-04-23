@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ "${WITHOUT}x" = "x" ]; then
-    WITHOUT="Console"
-fi
+# if you can't install hscurses, uncomment this:
+# WITHOUT="Console"
+
 ALL_MODULES="Small Concurrency Exception Metadata Random CrudeIO Console"
 MODULES=""
 

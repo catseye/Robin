@@ -95,6 +95,10 @@ Step 5: Run the tests.
     $ cd robin
     $ ./test.sh
 
+Step 6: Run an example program or two.
+
+    $ bin/robin -m modules eg/hunt-the-wumpus.robin
+
 The `robin` executable so built is the reference interpreter; it is not
 intended for production use, so much as to be a model for how to implement
 Robin.  It can, however, be used for light-duty tasks.  We suggest creating
