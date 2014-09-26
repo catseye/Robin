@@ -10,18 +10,19 @@ internals.)
 
 Robin provides (as of this writing) 15 intrinsics.  These represent
 the fundamental functionality that is used to evaluate programs, and that
-cannot be expressed (non-meta-circularly) as macros written in Robin.
-All other macros are built up on top of the intrinsics.
+cannot be expressed as macros written in Robin (not without resorting to
+meta-circularity, at any rate.)  All other macros are built up on top of
+the intrinsics.
 
 This set of intrinsics is not optional — every Robin implementation must
 provide them, or it's not Robin.
 
 Intrinsics usually have undefined behaviour if their preconditions are
-not met (called with wrong number or types of arguments.)  Obviously,
-we can't write tests for those cases here.  However, for each intrinsics,
-there is a corresponding macro in `stdlib` which wraps the intrinsics,
-and is named the same except omitting the `@`.  These wrappers give
-the intrinsics predictable failure modes in these cases, by raising
+not met (i.e., if they are called with wrong number or types of arguments.)
+Obviously, we can't write tests for those cases here.  However, for each
+intrinsics, there is a corresponding macro in `stdlib` which wraps the
+intrinsics, and is named the same except omitting the `@`.  These wrappers
+give the intrinsics predictable failure modes in these cases, by raising
 defined exceptions.
 
 ### `@prepend` ###
@@ -277,8 +278,8 @@ exactly one argument.
 
 ### `@subtract` ###
 
-`@subtract` evaluates its first argument to a rational number, then
-evaluates its second argument to a rational number, then evaluates
+`@subtract` evaluates its first argument to a number, then
+evaluates its second argument to a number, then evaluates
 to the difference between the first and second numbers.
 
     | (display
@@ -571,6 +572,10 @@ requirement.
 `@raise`'s single argument may be any kind of value, but `raise` expects
 exactly one argument.
 
+A Robin environment may install exception handlers which are not defined
+in Robin code itself.  (i.e. exiting to the operating system is not a
+strict requirement.)
+
 ### `@catch` ###
 
 `@catch` installs an exception handler.
@@ -627,3 +632,6 @@ caught by the next innermost exception handler.
 `@catch` expects its first argument to be an identifier.
 
 `@catch` expects exactly three arguments.
+
+TODO we should probably have some tests that prove that `@catch` can
+catch errors raised from inside macros.

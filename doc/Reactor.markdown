@@ -1,7 +1,7 @@
 Robin Reactors
 ==============
 
-To seperate the concerns of computation and interaction, Robin provides
+To separate the concerns of computation and interaction, Robin provides
 a construct called a _reactor_.  While normal S-expression evaluation
 accomplishes side-effect-free computation, reactors permit the construction
 of interactive programs.  Reactors are similar to event handlers in
@@ -23,7 +23,7 @@ _body_ of the reactor.
 Whenever an event of interest to the reactor (as determined by the facilities
 with which the reactor requested interaction) occurs, the body is evaluated,
 being passed three (pre-evaluated) arguments:
-    
+
 *   A literal symbol called the _event code_, specifying what kind of event
     happened;
 *   An arbitrary value called the _event payload_ containing more data about
@@ -31,9 +31,10 @@ being passed three (pre-evaluated) arguments:
 *   The previous state of the reactor.  (This will be the initial state
     if the reactor body has never before been evaluated.)
 
-The body is expected to return a list where the first element is the new
-state of the reactor, and each of the subsequent elements is a _response_
-to the facility.  A response it iself a two-element list containing:
+Given these things, the body is expected to evaluate to a list where the
+first element is the new state of the reactor, and each of the subsequent
+elements is a _response_ to the facility.  A response is itself a
+two-element list containing:
     
 *   A literal symbol called the _response code_ specifying the kind of
     response to the event that is being made; and
@@ -56,7 +57,7 @@ The `line-terminal` facility allows a Robin program to interact with a
 terminal-based, line-buffered "standard I/O" a la Unix.  Note that there is
 nothing in the Robin language that requires this to be "the real standard
 I/O"; Robin denies any knowledge of that sort of thing.  It could well be
-simulated with modal dialogue boxes in a GUI, or with textareas on an web
+simulated with modal dialogue boxes in a GUI, or with textareas on a web
 page under Javascript.
 
 A reactor accessing the `line-terminal` facility may make responses in the
@@ -335,7 +336,8 @@ will definitely change slightly in a subsequent 0.x version of Robin.)
 Namely:
     
 *   How does the reactor know which facility the `init` is for?
-*   Can a reactor response with a `close` to a facility other than the
+    (Probably it should be named as part of the payload of `init`?)
+*   Can a reactor respond with a `close` to a facility other than the
     facility that sent it the event it is currently handling?
 *   Currently reactors cannot communicate with each other at all.
     How can reactors communicate with each other?  (Our idea is to have

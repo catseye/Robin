@@ -37,6 +37,8 @@ Clone this repo and `cd` into it, and run `./build.sh` to build the reference
 interpreter `bin/robinri`, and the slightly-less-impractical interpreter
 called `bin/whitecap` (for historical reasons, and subject to change.)
 
+(Or if you have [toolshelf][], just run `toolshelf dock gh:catseye/robin`.)
+
 If you have a few minutes to spare, please do run the tests by running
 `./test.sh`.  (This requires [Falderal][].)
 
@@ -75,8 +77,9 @@ Robin 0.2 *adds* to Robin 0.1:
 *   _reactors_, which I hope will be a cleaner and more system-agnostic
     way to do I/O.  See `doc/Reactor.markdown`.
 
-[Falderal]: http://catseye.tc/node/Falderal
-[PicoLisp]: http://picolisp.com/
-[Pixley]:   http://catseye.tc/projects/pixley/
-[Robin]:    http://catseye.tc/node/Robin
-[Scheme]:   http://schemers.org/
+[Falderal]:  http://catseye.tc/node/Falderal
+[PicoLisp]:  http://picolisp.com/
+[Pixley]:    http://catseye.tc/node/Pixley
+[Robin]:     http://catseye.tc/node/Robin
+[Scheme]:    http://schemers.org/
+[toolshelf]: http://catseye.tc/node/toolshelf

@@ -16,7 +16,7 @@ themselves.  Allowable top-level forms are given in the subsections below.
 
 ### `display` ###
 
-`(display EXPR)` evaluates the <expr> and displays the result in a canonical
+`(display EXPR)` evaluates the EXPR and displays the result in a canonical
 S-expression rendering, followed by a newline.
 
     | (display #t)
@@ -99,7 +99,7 @@ ones.)
 
 When in a Robin program proper, a symbol can be bound to a value, and
 in this context is it referred to as an _identifier_.  However, if an
-attempt is made to evaluate a symbol which is not bound to an identifier,
+attempt is made to evaluate a symbol which is not an identifier,
 an exception will be raised.  For a symbol to appear unevaluated in a Robin
 program, it must be an argument to a macro.  For that reason, we can't
 show an example of a literal symbol without first defining a macro... but
@@ -112,7 +112,7 @@ will go ahead and show the example, and will explain macros later.
 A Robin implementation is not expected to be able to generate new symbols
 at runtime.
 
-Symbols can be applied, and that is the typical use of them.  But actually,
+Symbols can be applied, and that is a typical use of them.  But actually,
 it is what the symbol is bound to in the environment that is applied.
 
 ### Booleans ###
@@ -164,10 +164,10 @@ Integers cannot be applied.
 A macro is an S-expression, in an environment, which describes how to
 translate one S-expression to another.
 
-One area where Robin diverges heavily from Lisp and Scheme is that,
+One area where Robin diverges significantly from Lisp and Scheme is that,
 whereas Lisp and Scheme support macro capabilities, in Robin, the macro
 is a **fundamental type**.  Other abstractions, such as function values, are
-built on top of macros.  Macros are first-class objects that may exist
+built on top of macros.  Macros are "first-class" objects that may exist
 at runtime and can evaluate to other macros.  Therefore, the word "macro"
 has, perhaps, a slightly different meaning in Robin than in Lisp or Scheme.
 
@@ -179,7 +179,7 @@ other such abstractions *must* be built on top of macros.
 Whereas a function evaluates each of its arguments to values, and
 binds each of those values to a formal parameter of the function, then
 evaluates the body of the function in that new environment, a macro:
-    
+
 *   binds the macro value itself to the first formal parameter of the
     macro (by convention called `self`) — this is to facilitate writing
     recursive macros;
@@ -256,7 +256,7 @@ A list with several elements is notated as a sequence of those
 elements, preceded by a `(`, followed by a `)`, and delimited
 by whitespace.
 
-Lists do not evaluate to themselves; rather, they represent a macro
+Non-empty lists do not evaluate to themselves; rather, they represent a macro
 application.  However, the `literal` macro may be used to obtain a
 literal list.
 
@@ -366,11 +366,11 @@ When the first element of each two-element sublist in an alist is a symbol,
 we call it a _binding alist_.  The idea is that it is a Robin representation
 of an evaluation environment, where the symbols in the heads of the sublists
 are bound to the values in the tails of the pairs.  Binding alists can be
-created from an environment in effect (such as in the third argument of a
-macro) and can be used to change the evaluation environment in effect (such
-as in the first argument to `eval`.)
+created from the environment currently in effect (such as in the case of the
+third argument of a macro) and can be used to change the evaluation
+environment that is in effect (such as in the first argument to `@eval`.)
 
-TODO: binding alists will be replaced by abstract map objects of some kind.
+TODO: binding alists may be replaced by abstract map objects of some kind.
 
 Comments
 --------
@@ -393,7 +393,7 @@ inside S-expressions, comments may nest.
     |   (@prepend #f (@prepend #f ())))
     = (#f #f)
 
-Comments are still parsed.  A syntax error in a comment is an error.
+Comments are still parsed.  A syntax error in a comment is an error!
 
     | (display
     |   ;(this program produces

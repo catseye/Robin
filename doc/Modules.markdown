@@ -2,20 +2,20 @@ Robin: Modules
 ==============
 
 In this document, "Robin" refers to the Robin programming language
-version 0.1.
+version 0.2.
 
-Robin module system is this: Robin does not have a module system.
+Robin's module system is this: Robin does not have a module system.
 
 We're still working this out, so bear with us.  Let's start with
 some fundamental principles of Robin.  You may love them or think
 they are stupid (I can't tell, myself,) but they are what they are.
 
-*   The core Robin language include only a handful of symbols,
+*   The core Robin language includes only a handful of symbols,
     called _intrinsics_.  These represent functionality that would
     be impossible or highly impractical to write in Robin itself.
 
 *   A Robin program may, of course, define new symbols internal
-    to it, by assigning them meanings in its environment.
+    to that program, by assigning them meanings in its environment.
 
 *   The Robin language expresses Robin programs; it does not
     express metadata about Robin programs.
@@ -36,12 +36,12 @@ they are stupid (I can't tell, myself,) but they are what they are.
     any other implementation should solve the problem.
 
 *   ... all the Robin language really "knows" is that a Robin
-    program may be split up into seperate files (or rather,
-    "inputs of program texts into the implementation", I guess.)
+    program may be split up into seperate "files" (where "file" means
+    "input of program text into the implementation", I guess.)
 
 *   Robin recognizes a set of symbols, currently called `stdlib`,
-    that (should) have a (relatively) fixed meaning for all Robin
-    programs, whether they are used in that program or not.
+    that (should) have a (relatively) fixed meaning in all Robin
+    programs, whether they are used in any given program or not.
 
 *   Note (that should be elsewhere?): most of the macros defined
     in `stdlib` are supposed to, intentionally, take a fixed number
@@ -78,6 +78,7 @@ Some implications of this setup in practice are:
     *   informs a tool like `make`
     *   uses Robin's syntax
     *   and perhaps even embeds Robin as an embedded language
+        (and thus perhaps appears as a Robin "top-level form")
     
     ...*but*, the important thing to note is that such a language
     would *not be Robin itself*.
@@ -89,7 +90,8 @@ Some implications of this setup in practice are:
 The more pragmatic aspect of how the reference implementation
 currently handles the issue of dependencies between Robin programs,
 keeping in mind that this is an implementation issue and _not_ a
-language issue:
+language issue, and thus that the reference implementation is _not_
+normative in this regard:
 
 *   Each symbol defined in the Robin `stdlib` is written in its own
     Robin source file in the `stdlib` subdirectory, bundled along
