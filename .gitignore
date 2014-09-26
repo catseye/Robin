@@ -1,2 +1,5 @@
+*.o
+*.hi
 /bin/*
-/Robin/Builtins.hs
+/pkg/*
+/src/Main.lhs

@@ -1,4 +1,10 @@
+syntax: glob
+
+*.o
+*.hi
+
 syntax: regexp
 
 ^bin/
-^Robin/Builtins.hs
+^pkg/
+^src/Main.lhs
