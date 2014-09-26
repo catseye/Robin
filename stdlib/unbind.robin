@@ -1,0 +1,35 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Env)"
+
+`unbind` removes the given identifier from the environment and evaluates its
+second argument in that reduced environment.
+
+    | (display
+    |   (unbind if (if #t (literal x) (literal y))))
+    ? uncaught exception: (unbound-identifier if)
+
+If the identifier doesn't exist in the environment, no change is made to
+the environment.
+
+    | (display
+    |   (unbind yog-sothoth (if #t (literal x) (literal y))))
+    = x
+
+`unbind` removes all trace of binding from the given identifier; if that
+identifier has several definitions that are shadowed, none of them will be
+in effect.
+
+    | (display
+    |   (let ((x 7))
+    |     (let ((x 8))
+    |       (unbind x
+    |         x))))
+    ? uncaught exception: (unbound-identifier x)
+
+'XXX'
+
+(define unbind
+  (macro (self args env)
+    (eval (filter (fun (binding) (if (equal? (head binding) (head args)) #f #t)) env)
+          (head (tail args)))))

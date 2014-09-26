@@ -1,0 +1,24 @@
+(define list? (@macro (self args env)
+  (bind-args (l) args env
+    (@list? l))))
+
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Small)"
+
+`list?` is a wrapper for the `@list?` intrinsic, for which it provides
+predictable failure modes.  In non-failure modes, `list?` should have
+semantics identical to `@list?`.
+
+The argument to `list?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (display
+    |   (list? (prepend 4 ()) (prepend 6 ())))
+    ? uncaught exception: (illegal-arguments ((prepend 4 ()) (prepend 6 ())))
+
+    | (display
+    |   (list?))
+    ? uncaught exception: (illegal-arguments ())
+
+'XXX'

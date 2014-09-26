@@ -1,28 +1,24 @@
 #!/bin/sh
 
-if [ ! -e bin/robin -a ! -e bin/robin.exe ]; then
-    ./build.sh || exit 1
+./build.sh || exit 1
+
+TESTDOCS1="
+doc/Robin.markdown
+doc/Intrinsics.markdown
+doc/Reactor.markdown
+"
+
+if [ "${FIXTURE}x" = "x" ]; then
+    FIXTURE=fixture/whitecap.markdown
 fi
+echo "Using fixture $FIXTURE..."
 
-FILES="doc/Fundamental_Semantics.markdown \
-      doc/module/Core.markdown \
-      doc/module/Small.markdown \
-      doc/module/Exception.markdown \
-      doc/module/Concurrency.markdown \
-      doc/module/Metadata.markdown \
-      doc/module/List.markdown \
-      doc/module/Term.markdown \
-      doc/module/Environment.markdown \
-      doc/module/Boolean.markdown \
-      doc/module/Arithmetic.markdown \
-      doc/module/Random.markdown \
-      doc/module/Assert.markdown \
-      doc/module/Pure.markdown \
-      doc/module/CrudeIO.markdown \
-      doc/module/Miscellany.markdown \
-      doc/module/Bind-Args.markdown"
+echo "Running tests on core semantics..."
+falderal -b $FIXTURE $TESTDOCS1 || exit 1
 
-FILES_NO_BUILTIN_SMALL="doc/module/Small.markdown"
+for PACKAGE in small intrinsics-wrappers fun boolean arith list env misc; do
+    echo "Running tests on '$PACKAGE' package..."
+    falderal -b $FIXTURE pkg/$PACKAGE.robin || exit 1
+done
 
-falderal test -b fixture/config/BuiltInSmall.markdown ${FILES}
-falderal test -b fixture/config/SmallInRobin.markdown ${FILES_NO_BUILTIN_SMALL}
+rm -f config.markdown

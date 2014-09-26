@@ -1,0 +1,42 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Env)"
+
+`env?` evaluates its single argument, and evaluates to `#t` if
+and only if it is a well-formed binding alist.
+
+    | (display
+    |   (env? (literal ((a 1) (b 2) (c 3)))))
+    = #t
+
+    | (display
+    |   (env? (literal ((a 1) (999 2) (c 3)))))
+    = #f
+
+    | (display
+    |   (env? (literal ((a 1) (b 2) c))))
+    = #f
+
+    | (display
+    |   (env? 7))
+    = #f
+
+    | (display
+    |   (env? (env)))
+    = #t
+
+'XXX'
+
+(define env? (fun (li)
+  (bind env?-r (fun (self li)
+    (if (empty? li)
+      #t
+      (if (list? li)
+        (bind binding (head li)
+          (if (list? binding)
+            (if (symbol? (head binding))
+              (self self (tail li))
+              #f)
+            #f))
+        #f)))
+    (env?-r env?-r li))))

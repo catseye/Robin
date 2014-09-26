@@ -1,0 +1,24 @@
+(define raise (@macro (self args env)
+  (bind-args (e) args env
+    (@raise e))))
+
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Small)"
+
+`raise` is a wrapper for the `@raise` intrinsic, for which it provides
+predictable failure modes.  In non-failure modes, `raise` should have
+semantics identical to `@raise`.
+
+`@raise`'s single argument may be any kind of value, but `raise` expects
+exactly one argument.
+
+    | (display
+    |   (raise))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (display
+    |   (raise 2 3 4))
+    ? uncaught exception: (illegal-arguments (2 3 4))
+
+'XXX'

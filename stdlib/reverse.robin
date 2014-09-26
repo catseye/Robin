@@ -1,0 +1,19 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`reverse` evaluates its argument to a list, then evaluates to a list which
+is the same as the given list in every respect except that the order of
+the elements is reversed.
+
+    | (display
+    |   (reverse (literal (1 2 3 4 5))))
+    = (5 4 3 2 1)
+
+    | (display
+    |   (reverse (literal fairies-wear-boots)))
+    ? uncaught exception: (expected-list fairies-wear-boots)
+
+'XXX'
+(define reverse (fun (li)
+  (fold prepend () li)))

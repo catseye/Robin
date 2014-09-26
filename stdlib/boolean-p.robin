@@ -1,0 +1,39 @@
+(define boolean? (@macro (self args env)
+  (bind-args (b) args env
+    (@if (@equal? b #t)
+      #t
+      (@if (@equal? b #f)
+        #t
+        #f)))))
+
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+
+`boolean?` evaluates its argument, then evaluates to `#t` if it is a
+boolean value, `#f` otherwise.
+
+    | (display
+    |   (boolean? #t))
+    = #t
+
+    | (display
+    |   (boolean? (@head (@prepend #f ()))))
+    = #t
+
+    | (display
+    |   (boolean? ()))
+    = #f
+
+The argument to `boolean?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (display
+    |   (boolean? #t #f))
+    ? uncaught exception: (illegal-arguments (#t #f))
+
+    | (display
+    |   (boolean?))
+    ? uncaught exception: (illegal-arguments ())
+
+'XXX'

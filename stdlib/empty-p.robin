@@ -1,0 +1,23 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`empty?` evaluates its single argument, and evaluates to `#t` if that value
+is the empty list, `#f` otherwise.
+
+    | (display
+    |   (empty? (literal symbol)))
+    = #f
+
+    | (display
+    |   (empty? ()))
+    = #t
+
+    | (display
+    |   (empty? (list 1 2 3)))
+    = #f
+
+'XXX'
+
+(define empty? (fun (li)
+  (equal? li ())))

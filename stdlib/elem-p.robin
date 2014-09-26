@@ -1,0 +1,38 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`elem?` evaluates its first argument to a value of any type, and its
+second argument to obtain a list.  It then evaluates to `#t` if the value
+is `equal?` to some element of the list, `#f` otherwise.
+
+    | (display
+    |   (elem? (literal p) (literal (a p e))))
+    = #t
+
+    | (display
+    |   (elem? (literal p) (literal (a r k))))
+    = #f
+
+    | (display
+    |   (elem? 7 ()))
+    = #f
+
+    | (display
+    |   (elem? 7 (list 5 (list 6 7) 8)))
+    = #f
+
+`elem?` can be defined in terms of `find`, in a manner such as:
+
+    (not (empty? (find (fun (x) (equal? x y)) li)))
+
+'XXX'
+
+(define elem? (fun (item li)
+  (bind elem?-r (fun (self item li)
+    (if (empty? li)
+      #f
+      (if (equal? item (head li))
+        #t
+        (self self item (tail li)))))
+  (elem?-r elem?-r item li))))

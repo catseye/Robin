@@ -1,0 +1,36 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+    | (display
+    |   (delete (literal b) (literal ((a 1) (b 2) (c 3)))))
+    = ((a 1) (c 3))
+
+    | (display
+    |   (delete (literal b) (literal ((a 1) (b 2) (c 3) (b 4)))))
+    = ((a 1) (c 3))
+
+    | (display
+    |   (delete (literal r) (literal ((a 1) (b 2) (c 3)))))
+    = ((a 1) (b 2) (c 3))
+
+The following should be true for any identifier i and alist x.
+
+    | (display
+    |   (let ((i (literal a))
+    |         (x (literal ((a 5) (b 7)))))
+    |     (lookup i (delete i x))))
+    = ()
+
+    | (display
+    |   (delete (literal q) 55))
+    ? uncaught exception: (expected-list 55)
+
+    | (display
+    |   (delete (literal q) (literal ((a 7) 99 (q 4)))))
+    ? uncaught exception: (expected-list 99)
+
+'XXX'
+
+(define delete (fun (id alist)
+  (filter (fun (x) (if (equal? (head x) id) #f #t)) alist)))

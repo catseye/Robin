@@ -1,0 +1,28 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+    | (display
+    |   (extend (literal b) 6 (literal ((a 1) (b 2) (c 3)))))
+    = ((b 6) (a 1) (b 2) (c 3))
+
+The following should be true for any identifier i and alist x.
+
+    | (display
+    |   (let ((i (literal a))
+    |         (x (literal ((f 5) (g 7)))))
+    |     (lookup i (extend i 1 x))))
+    = (1)
+
+    | (display
+    |   (extend (literal b) 6 ()))
+    = ((b 6))
+
+    | (display
+    |   (extend (literal b) 6 81))
+    ? uncaught exception: (expected-list 81)
+
+'XXX'
+
+(define extend (fun (id val alist)
+  (prepend (list id val) alist)))

@@ -1,0 +1,108 @@
+(define eval (macro (self args macro-env)
+  (@if (@equal? args ())
+    (@raise (list (literal illegal-arguments) args))
+    (@if (@equal? (@tail args) ())
+      (@raise (list (literal illegal-arguments) args))
+      (@if (@equal? (@tail (@tail args)) ())
+        (@eval macro-env
+          (list (literal @eval)
+                (@head args)
+                (@head (@tail args))))
+        (@raise (list (literal illegal-arguments) args)))))))
+
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Small)"
+
+`eval` is a wrapper for the `@eval` intrinsic, for which it provides
+predictable failure modes.  In non-failure modes, `eval` should have
+semantics identical to `@eval`.
+
+`eval` evaluates its first argument to obtain an environment, then
+evaluates its second argument to obtain an S-expression; it then
+evaluates that S-expression in the given environment.
+
+    | (display
+    |   (eval (env) (literal
+    |     (@prepend (literal a)
+    |               (@prepend (literal b) ())))))
+    = (a b)
+
+    | (display
+    |   (eval () (literal
+    |     (@prepend (literal a)
+    |               (@prepend (literal b) ())))))
+    ? uncaught exception: (unbound-identifier @prepend)
+
+Something fairly complicated that uses `bind`...?
+
+    | (display
+    |   (bind bindings (@prepend
+    |                    (@prepend (literal same) (@prepend @equal? ()))
+    |                    (@prepend
+    |                      (@prepend (literal x) (@prepend #f ()))
+    |                      ()))
+    |     (eval bindings (literal (same x x)))))
+    = #t
+
+If two bindings for the same identifier are supplied in the environment
+alist passed to `eval`, the one closer to the front of the alist takes
+precedence.
+
+    | (display
+    |   (bind bindings (@prepend
+    |                    (@prepend (literal foo) (@prepend (literal yes) ()))
+    |                    (@prepend
+    |                       (@prepend (literal foo) (@prepend (literal no) ()))
+    |                       ()))
+    |     bindings))
+    = ((foo yes) (foo no))
+
+    | (display
+    |   (bind bindings (@prepend
+    |                    (@prepend (literal foo) (@prepend (literal yes) ()))
+    |                    (@prepend
+    |                       (@prepend (literal foo) (@prepend (literal no) ()))
+    |                       ()))
+    |     (eval bindings (literal foo))))
+    = yes
+
+`eval` will happily use whatever type of value you like as the
+environment, however, subsequent evaluation will fail when it
+tries to look up things in that environment.
+
+    | (display
+    |   (eval 103 (literal
+    |     (prepend (literal a)
+    |              (prepend (literal b) ())))))
+    ? uncaught exception: (expected-env-alist 103)
+
+Evaluation expects the contents of the list which makes up the
+environment to be two-element lists.
+
+    | (display
+    |   (eval (prepend #f ()) (literal
+    |     (prepend (literal a)
+    |              (prepend (literal b) ())))))
+    ? uncaught exception: (expected-env-entry #f)
+
+Evaluation expects the head of each sublist in the list which makes up the
+environment to be a symbol.
+
+    | (display
+    |   (eval (prepend (prepend 7 (prepend #f ())) ()) (literal
+    |     (prepend (literal a)
+    |              (prepend (literal b) ())))))
+    ? uncaught exception: (expected-symbol 7)
+
+`eval` expects exactly two arguments.
+
+    | (display
+    |   (eval))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (display
+    |   (eval 4 5 6))
+    ? uncaught exception: (illegal-arguments (4 5 6))
+
+'XXX'

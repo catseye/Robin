@@ -1,0 +1,39 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`drop-while` evaluates its first argument to obtain a predicate and its
+second argument to obtain a list.  It then evaluates to the suffix of the
+given list, starting at the first element which does not satisfy the
+predicate.
+
+    | (display
+    |   (drop-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+    = (3 4 five 6 seven)
+
+    | (display
+    |   (drop-while (fun (x) (symbol? x)) (literal (1 2 3 4 5 6))))
+    = (1 2 3 4 5 6)
+
+    | (display
+    |   (drop-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+    = ()
+
+    | (display
+    |   (drop-while (fun (x) (symbol? x)) ()))
+    = ()
+
+    | (display
+    |   (drop-while (fun (x) (symbol? x)) #f))
+    ? uncaught exception: (expected-list #f)
+
+'XXX'
+
+(define drop-while (fun (pred li)
+  (bind drop-while-r (fun (self pred li)
+    (if (empty? li)
+      ()
+      (if (pred (head li))
+        (self self pred (tail li))
+        li)))
+    (drop-while-r drop-while-r pred li))))

@@ -1,0 +1,40 @@
+(define list (@macro (self args env)
+  (@if (@equal? args ())
+    ()
+    (@prepend (@eval env (@head args))
+              (@eval env (@prepend self (@tail args)))))))
+
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Small)"
+
+`list` is a macro which evaluates each of its arguments, and evaluates to a
+(proper) list containing each of the results, in the same order.
+
+    | (display
+    |   (list 1 2 3 4 5))
+    = (1 2 3 4 5)
+
+    | (display
+    |   (list (list 2 3) (list 6 7)))
+    = ((2 3) (6 7))
+
+`list` need not have any arguments at all; the result is the empty list.
+
+    | (display
+    |   (list))
+    = ()
+
+Unlike `literal`, `list` does evaluate its arguments, all of them.
+
+    | (display
+    |   (list (literal x) (literal y)))
+    = (x y)
+
+`list` does not require any arguments.
+
+    | (display
+    |   (list))
+    = ()
+
+'XXX'

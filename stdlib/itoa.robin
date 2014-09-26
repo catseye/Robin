@@ -1,0 +1,47 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Stdlib)"
+
+`itoa` evaluates its sole argument to an integer, then evaluates to
+a string representing that integer in decimal.
+
+    | (display
+    |   (itoa 100))
+    = (49 48 48)
+
+    | (display
+    |   (itoa 99))
+    = (57 57)
+
+    | (display
+    |   (itoa 0))
+    = (48)
+
+    | (display
+    |   (itoa (subtract 0 1)))
+    = (45 49)
+
+    | (display
+    |   (itoa (subtract 0 765)))
+    = (45 55 54 53)
+
+    | (display
+    |   (itoa (literal m)))
+    ? uncaught exception: (expected-number m)
+
+'XXX'
+
+(define itoa (macro (self args env)
+  (bind itoa-r (macro (self args env)
+    (bind-args (val) args env
+      (if (equal? val 0)
+        ()
+        (let ((digit (remainder val 10))
+              (rest  (divide val 10)))
+          (prepend (add 48 digit) (self rest))))))
+    (bind-args (val) args env
+      (if (equal? val 0)
+        (list 48)
+        (if (< val 0)
+          (prepend 45 (reverse (itoa-r (subtract 0 val))))
+          (reverse (itoa-r val))))))))

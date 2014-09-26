@@ -1,0 +1,39 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`fold` evaluates its first argument to obtain a macro, generally assumed to
+be a two-argument function, its second argument to obtain an initial value,
+and its third argument to obtain a list.  It then applies the function to
+successive elements of the list.  Each time the function is applied, an
+element from the list is passed as the first argument.  The first time the
+function is applied, the initial value is passed as the second argument;
+each subsequent time, the result of the previous application is passed as
+the second argument.  `fold` evaluates to the result of the the final
+application of the function.
+
+    | (display
+    |   (fold (fun (x a) x) () (literal (three dog night))))
+    = night
+
+    | (display
+    |   (fold (fun (x a) a) 541 (literal (archie moffam))))
+    = 541
+
+    | (display
+    |   (fold (fun (x a) (list a x)) () (literal (three dog night))))
+    = (((() three) dog) night)
+
+    | (display
+    |   (fold 99 (fun (x a) a) (literal (three dog night))))
+    ? uncaught exception: (inapplicable-object 99)
+
+'XXX'
+
+;(requires empty?)
+(define fold (fun (app acc li)
+  (bind fold-r (fun (self app acc li)
+    (if (empty? li)
+      acc
+      (self self app (app (head li) acc) (tail li))))
+    (fold-r fold-r app acc li))))

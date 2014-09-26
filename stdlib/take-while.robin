@@ -1,0 +1,38 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`take-while` evaluates its first argument to obtain a predicate and its
+second argument to obtain a list.  It then evaluates to the longest prefix
+of the list whose elements all satisfy the predicate.
+
+    | (display
+    |   (take-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+    = (one two)
+
+    | (display
+    |   (take-while (fun (x) (symbol? x)) (literal (1 2 3 4 five six))))
+    = ()
+
+    | (display
+    |   (take-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+    = (1 2 3 4 5 6)
+
+    | (display
+    |   (take-while (fun (x) (symbol? x)) ()))
+    = ()
+
+    | (display
+    |   (take-while (fun (x) (symbol? x)) #f))
+    ? uncaught exception: (expected-list #f)
+
+'XXX'
+
+(define take-while (fun (pred li)
+  (bind take-while-r (fun (self pred li)
+    (if (empty? li)
+      ()
+      (if (pred (head li))
+        (prepend (head li) (self self pred (tail li)))
+        ())))
+    (take-while-r take-while-r pred li))))

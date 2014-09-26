@@ -1,0 +1,24 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Env)"
+
+`sandbox` takes a list of identifiers as its first argument, and evaluates
+its second argument in an environment where all bindings *except* those
+for the listed identifiers have been unbound.
+
+    | (display
+    |   (sandbox (prepend tail)
+    |     (tail (prepend 8 (prepend 9 ())))))
+    = (9)
+
+    | (display
+    |   (sandbox (prepend tail)
+    |     (head (prepend 8 (prepend 9 ())))))
+    ? uncaught exception: (unbound-identifier head)
+
+'XXX'
+
+(define sandbox
+  (macro (self args env)
+    (eval (filter (fun (binding) (elem? (head binding) (head args))) env)
+          (head (tail args)))))

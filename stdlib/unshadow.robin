@@ -1,0 +1,63 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Env)"
+
+`unshadow` is similar to `unbind`, but only removes the latest binding
+for the given identifier; previously shadowed bindings, if any exist,
+will be visible instead.
+
+    | (display
+    |   (unshadow yog-sothoth (if #t (literal x) (literal y))))
+    = x
+
+    | (display
+    |   (unshadow if (if #t (literal x) (literal y))))
+    ? uncaught exception: (unbound-identifier if)
+
+    | (display
+    |   (bind if (literal what)
+    |     (unshadow if (if #t (literal x) (literal y)))))
+    = x
+
+    | (display
+    |   (bind q 400
+    |     (unshadow q q)))
+    ? uncaught exception: (unbound-identifier q)
+
+    | (display
+    |   (bind q 200
+    |     (bind q 400
+    |       (unshadow q q))))
+    = 200
+
+    | (display
+    |   (bind q 100
+    |     (bind q 200
+    |       (bind q 400
+    |         (unshadow q (unshadow q q))))))
+    = 100
+
+    | (display
+    |   (let ((q 100)
+    |         (q 200)
+    |         (q 400))
+    |     (unshadow q (unshadow q q))))
+    = 100
+
+`unshadow` is something of a gimmick that shows off Robin's ability
+to manipulate the evaluation environment.  In practice, the bindings
+can be determined lexically, and a different identifier could always
+be chosen instead.
+
+'XXX'
+
+(define unshadow
+  (macro (self args env)
+    (bind remove-binding-r (fun (self id li)
+      (if (empty? li)
+        li
+        (if (equal? (head (head li)) id)
+          (tail li)
+          (prepend (head li) (self self id (tail li))))))
+      (eval (remove-binding-r remove-binding-r (head args) env)
+        (head (tail args))))))

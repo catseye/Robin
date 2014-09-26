@@ -1,0 +1,38 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Arith)"
+
+`abs` evaluates its single argument to a number, and evaluates to
+the absolute value of that number (where the sign is always positive.)
+
+    | (display
+    |   (abs 5))
+    = 5
+
+    | (display
+    |   (abs (subtract 0 5)))
+    = 5
+
+    | (display
+    |   (abs 0))
+    = 0
+
+`abs` expects exactly one numeric argument.
+
+    | (display
+    |   (abs))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (display
+    |   (abs 14 23))
+    ? uncaught exception: (illegal-arguments (14 23))
+
+    | (display
+    |   (abs #t))
+    ? uncaught exception: (expected-number #t)
+
+'XXX'
+
+(define abs (macro (self args env)
+  (bind-args (a) args env
+    (if (equal? (sign a) 1) a (subtract 0 a)))))

@@ -1,0 +1,36 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+
+`not` evaluates its single argument to a boolean, then evaluates to
+the logical negation of that boolean.
+
+    | (display
+    |   (not #t))
+    = #f
+
+    | (display
+    |   (not #f))
+    = #t
+
+`not` expects exactly one argument.
+
+    | (display
+    |   (not))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (display
+    |   (not #t #f))
+    ? uncaught exception: (illegal-arguments (#t #f))
+
+`not` expects its single argument to be a boolean.
+
+    | (display
+    |   (not 33))
+    ? uncaught exception: (expected-boolean 33)
+
+'XXX'
+
+(define not (macro (self args env)
+  (bind-args (a) args env
+    (if a #f #t))))

@@ -1,0 +1,36 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`first` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired length, and its second argument to obtain a list.
+It then evaluates to the prefix of the given list of the desired length.
+
+    | (display
+    |   (first 0 (list 1 2 3 4 5)))
+    = ()
+
+    | (display
+    |   (first 3 (list 1 2 3 4 5)))
+    = (1 2 3)
+
+    | (display
+    |   (first 6 (list 1 2 3 4 5)))
+    ? uncaught exception: (expected-list ())
+
+    | (display
+    |   (first 1 (literal foo)))
+    ? uncaught exception: (expected-list foo)
+
+    | (display
+    |   (first 0 (literal foo)))
+    = ()
+
+'XXX'
+
+(define first (fun (n li)
+  (bind first-r (fun (self n li)
+    (if (equal? n 0)
+      ()
+      (prepend (head li) (self self (subtract n 1) (tail li)))))
+    (first-r first-r n li))))

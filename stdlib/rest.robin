@@ -1,0 +1,41 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`rest` evaluates its first argument to obtain a non-negative integer,
+considered to be a desired position, and its second argument to obtain a
+list.  It then evaluates to the suffix of the given list starting at the
+desired position.  The position 0 indicates the beginning of the list.
+
+    | (display
+    |   (rest 0 (list 1 2 3 4 5)))
+    = (1 2 3 4 5)
+
+    | (display
+    |   (rest 3 (list 1 2 3 4 5)))
+    = (4 5)
+
+    | (display
+    |   (rest 5 (list 1 2 3 4 5)))
+    = ()
+
+    | (display
+    |   (rest 6 (list 1 2 3 4 5)))
+    ? uncaught exception: (expected-list ())
+
+    | (display
+    |   (rest 1 (literal foo)))
+    ? uncaught exception: (expected-list foo)
+
+    | (display
+    |   (rest 0 (literal foo)))
+    = foo
+
+'XXX'
+
+(define rest (fun (n li)
+  (bind rest-r (fun (self n li)
+    (if (equal? n 0)
+      li
+      (self self (subtract n 1) (tail li))))
+    (rest-r rest-r n li))))

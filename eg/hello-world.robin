@@ -1,2 +1,7 @@
-(robin (0 1) ((small (0 1) *))
-  (literal hello-world))
+(reactor (line-terminal) 0 (macro (self args env)
+  (bind event (head args)
+    (if (equal? event (literal init))
+      (list 0
+            (list (literal writeln) (literal ''Hello, world!''))
+            (list (literal close) 0))
+      (list 0)))))

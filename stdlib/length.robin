@@ -1,0 +1,25 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`length` evaluates its single argument to obtain a proper list, then
+evaluates to a non-negative integer which is the length of the list
+(the number of cells, not counting nested cells and not counting the
+empty list at the very tail.)
+
+    | (display
+    |   (length ()))
+    = 0
+
+    | (display
+    |   (length (list 1 2 #t #f 3)))
+    = 5
+
+    | (display
+    |   (length (literal whatnot)))
+    ? uncaught exception: (expected-list whatnot)
+
+'XXX'
+
+(define length (fun (li)
+  (subtract 0 (fold (fun (x acc) (subtract acc 1)) 0 li))))

@@ -1,0 +1,61 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+
+`and` evaluates both of its arguments to booleans, and evaluates to the
+logical conjunction (boolean "and") of these two values.
+
+    | (display
+    |   (and #t #t))
+    = #t
+
+    | (display
+    |   (and #t #f))
+    = #f
+
+    | (display
+    |   (and #f #t))
+    = #f
+
+    | (display
+    |   (and #f #f))
+    = #f
+
+`and` expects exactly two arguments.
+
+(Hate to weaken this test, but I'm not a purist -- yet.)
+
+    | (display
+    |   (and #f))
+    ? uncaught exception
+
+    | (display
+    |   (and #t #f #f))
+    ? uncaught exception: (illegal-arguments (#t #f #f))
+
+`and` expects both of its arguments to be booleans.
+
+    | (display
+    |   (and 100 #t))
+    ? uncaught exception: (expected-boolean 100)
+
+    | (display
+    |   (and #t 99))
+    ? uncaught exception: (expected-boolean 99)
+
+`and` is short-circuiting in the sense that no arguments after the first
+`#f` argument will be evaluated.  Fully testing this requires side-effects,
+but it can be demonstrated as follows.
+
+    | (display
+    |   (and #f 100))
+    = #f
+
+'XXX'
+
+(define and (macro (self args env)
+  (if (equal? (tail (tail args)) ())
+    (if (eval env (head args))
+      (if (eval env (head (tail args))) #t #f)
+      #f)
+    (raise (list (literal illegal-arguments) args)))))

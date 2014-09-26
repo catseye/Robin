@@ -1,0 +1,48 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+`index` evaluates its first argument to a natural number, and its
+second argument to a list.  It then evaluates to the element of the
+list at the index given by the natural number.  The index is 0-based;
+0 refers to the element at the head of the list.
+
+    | (display
+    |   (index 0 (literal (the girl from ipanema))))
+    = the
+
+    | (display
+    |   (index 2 (literal (the girl from ipanema))))
+    = from
+
+    | (display
+    |   (bind last (fun (li) (index (subtract (length li) 1) li))
+    |     (last (literal (the girl from ipanema)))))
+    = ipanema
+
+Attempting to index beyond the end of the list will raise an exception.
+
+    | (display
+    |   (index 7 (literal (the girl from ipanema))))
+    ? uncaught exception: (expected-list ())
+
+`index` expects its first argument to be a number.
+
+    | (display
+    |   (index (literal goofy) (list 1 2 3 4 5)))
+    ? uncaught exception: (expected-number goofy)
+
+`index` expects its second argument to be a list.
+
+    | (display
+    |   (index 8 (literal whatnot)))
+    ? uncaught exception: (expected-list whatnot)
+
+'XXX'
+
+(define index (fun (index li)
+  (bind index-r (fun (self index li)
+    (if (equal? index 0)
+      (head li)
+      (self self (subtract index 1) (tail li))))
+  (index-r index-r index li))))

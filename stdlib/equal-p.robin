@@ -1,0 +1,24 @@
+(define equal? (@macro (self args env)
+  (bind-args (lhs rhs) args env
+    (@equal? lhs rhs))))
+
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Small)"
+
+`equal?` is a wrapper for the `@equal?` intrinsic, for which it provides
+predictable failure modes.  In non-failure modes, `equal?` should have
+semantics identical to `@equal?`.
+
+Arguments to `equal?` can be any type, but fewer than or more than
+two arguments will raise an exception.
+
+    | (display
+    |   (equal? 7))
+    ? uncaught exception: (illegal-arguments (7))
+
+    | (display
+    |   (equal? 7 8 9))
+    ? uncaught exception: (illegal-arguments (7 8 9))
+
+'XXX'

@@ -1,0 +1,29 @@
+(define tail (@macro (self args env)
+  (bind-args (l) args env
+    (@tail l))))
+
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with Small)"
+
+`tail` is a wrapper for the `@tail` intrinsic, for which it provides predictable
+failure modes.  In non-failure modes, `tail` should have semantics identical
+to `@tail`.
+
+`tail` expects its argument to be a list.
+
+    | (display
+    |   (tail #f))
+    ? uncaught exception: (expected-list #f)
+
+`tail` expects exactly one argument.
+
+    | (display
+    |   (tail (@prepend #t ()) (@prepend #f ())))
+    ? uncaught exception: (illegal-arguments ((@prepend #t ()) (@prepend #f ())))
+
+    | (display
+    |   (tail))
+    ? uncaught exception: (illegal-arguments ())
+
+'XXX'

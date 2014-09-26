@@ -1,2 +1,0 @@
-(robin (0 1) ((small (0 1) *) (circular-a (0 1) *))
-  (list (list (literal literal-b) literal-a)))

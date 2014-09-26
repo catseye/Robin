@@ -1,330 +1,82 @@
 Robin
 =====
 
-Robin is a programming language which draws from [Scheme][] (via [Pixley][]),
-[PicoLisp][], and [Erlang][].
+_This is a work in progress_
 
-Robin's core language is quite ascetic; however, Robin supports a module
-system, by which functionality can be brought in from modules (written in
-Robin, or some other language,) which expose their functionality to programs
-and other modules.
+Robin is a homoiconic S-expression-based language (similar to, for example,
+[Scheme][], with influences from [Pixley][] and [PicoLisp][]) with the
+following features:
 
-The standard modules include a small "standard library" to make programming
-slightly easier, a module for concurrent processes with message-passing, and
-a module for handling exceptions.
+*   The _macro_ (rather than the function) as the fundamental abstraction
+    mechanism.  There is a function form, but it's defined as a macro!
+*   A very small set of built-in operations.
+*   A very small reference implementation in Literate Haskell
+    (about 600 lines of code, excluding the explanatory prose.)
+*   A fairly rich standard library of macros built on top of those built-in
+    operations.  (Thus it can be used as either a "low-level" or "high-level"
+    language.)
+*   A fairly rich test suite (about 460 test cases.)
+*   An almost zealous system-agnosticism.
+*   An almost zealous disdain for escape characters.  Robin's string syntax
+    never needs them (it's more like a lightweight "heredoc".)
+*   A module system (which is rather fast-and-loose, so it's perhaps not
+    fair to call it a module system.  It's more like C's `#include`s —
+    except it's zealously system-agnostic.  And actually we're still working
+    out the details here.  See the file `doc/Modules.markdown`.)
+*   A(n attempt at) a clean separation of evaluation (no "side-effects") and
+    execution (with "side-effects" and system interaction) by the use of
+    _reactors_ (which are basically event handlers.)  See the file
+    `doc/Reactor.markdown` for more information.
 
-Robin programs are homoiconic, and presented in a S-expression-based syntax.
+Quick Start
+-----------
 
-Instead of function values, Robin supplies _macros_ as the primitive
-abstraction.  Robin's macros are somewhat like PicoLisp's one-argument
-lambdas -- they do not automatically evaluate their arguments.  Function
-values are built on top of macros, using the built-in macro `eval`.
+You'll need either `ghc` or Hugs installed.
 
-Like Erlang, Robin is purely functional except for message-passing.
-That is, functions have no side-effects, with the single exception of
-being able to send messages to, and receive messages from, other processes.
-All facilities of the underlying system are modelled as such processes.
+Clone this repo and `cd` into it, and run `./build.sh` to build the reference
+interpreter `bin/robinri`, and the slightly-less-impractical interpreter
+called `bin/whitecap` (for historical reasons, and subject to change.)
 
-Robin supports a simple system of raising and handling exceptions.  This
-helps define the semantics of otherwise undefined operations, such as trying
-to obtain the `tail` of a number.
+If you have a few minutes to spare, please do run the tests by running
+`./test.sh`.  (This requires [Falderal][].)
 
-Lastly, Robin unifies (to a degree) programming and static analysis.  The
-language itself defines essentially no rules of static correctness beyond
-the basic rules about syntax.  Static analyses are available in modules,
-just like any other kind of functionality, letting the programmer choose
-what level of pre-execution checking is applied to their code.
-
-[Erlang]:   http://erlang.org/
-[PicoLisp]: http://picolisp.com/
-[Pixley]:   http://catseye.tc/projects/pixley/
-[Scheme]:   http://schemers.org/
-
-Distribution
-------------
-
-The current version of Robin under development is version 0.1.  Even it
-is unreleased, so what you're looking at here is pure "technology
-preview" stuff.  Expect everything to change, perhaps drastically.
-
-Installation
-------------
-
-Step 1: Obtain the sources.
-
-    $ hg clone https://bitbucket.org/catseye/robin
-
-*or*
-
-    $ git clone git://github.com/catseye/Robin.git
-
-Step 2: Make sure you have `ghc`, and the Haskell packages `parsec` and
-(optionally) `hscurses` installed (these can both be instaled via `cabal`).
-The following instructions are for Ubuntu; equivalents for other operating
-systems are left as an exercise for the reader.
-
-    $ sudo apt-get install ghc cabal-install
-    $ cabal install parsec
-    $ cabal install hscurses   # if you want to use the Console module
-    $ cabal install random     # if you want to use the Random module
-
-Step 3: Build the sources.
-
-    $ cd robin
-    $ ./build.sh
-
-All built-in modules are built by default.  If you want to exclude some
-modules (for example `console`), you can list them in the `WITHOUT`
-environment variable.  For example,
-
-    $ WITHOUT="CrudeIO Console" ./build.sh
-
-Note that if you exclude the built-in `small` module, `robin` will fall back
-to the `small` module written in Robin, but expect it to be *much* slower.
-
-Step 4: Get Falderal, so that you can run the tests.
-
-    $ cd ..
-    $ hg clone https://bitbucket.org/catseye/falderal
-    $ cd falderal
-    $ ./install.sh
-    $ cd ..
-
-Step 5: Run the tests.
-
-    $ cd robin
-    $ ./test.sh
-
-Step 6: Run an example program or two.
-
-    $ bin/robin -m modules eg/hunt-the-wumpus.robin
-
-The `robin` executable so built is the reference interpreter; it is not
-intended for production use, so much as to be a model for how to implement
-Robin.  It can, however, be used for light-duty tasks.  We suggest creating
-the following driver script and putting it on your executable search path:
-
-    #!/bin/sh
-    ROBIN_PATH=/path/to/robin/repo
-    ${ROBIN_PATH}/bin/robin -m ${ROBIN_PATH}/module $*
-
-Of course, replace `/path/to/robin/repo` with the actual path to the clone
-you created with Mercurial or git.  If you write your own modules, you can
-place them in a directory of your choosing, and pass it after another `-m`
-option in the driver script (before the existing `-m` option, if you want
-your modules to override the standard ones.)
-
-It is possible to build `robin` under Windows, using `ghc` from the Haskell
-Platform for Windows, and Cygwin to run the shell scripts; however, there
-are various minor considerations which are currently outside the scope of
-this README.  If you're really motivated, you'll figure it out.
+(There will be a link to a tutorial with further instructions in the future)
 
 Documentation
 -------------
 
 Robin's fundamental semantics are documented in
-[doc/Robin.falderal](doc/Robin.falderal).  From there you will find links
-to documentation on each of the standard modules as well.
+[doc/Robin.markdown](doc/Robin.markdown).
 
-Goals
------
+History
+-------
 
-* To not be unduly burdensome to implement or analyze.  The core language
-  is kept very small, the "standard library" can be written in Robin itself,
-  and features such as concurrency and exceptions are optional.  The core
-  language is purely functional, to keep it mathematically simple, and the
-  reference implementation is in Haskell, which is a lot closer to an
-  "executable semantics" than one in, say, C would be.  The functionality
-  of the language is thoroughly tested.  Both the implementation and the
-  test suite are written in a literate style, to keep the prose of the
-  specification in close proximity to the code so that they can be easily
-  checked against each other for inconsistencies.
+Robin 0.2 is a somewhat significant departure from Robin 0.1.  It keeps:
 
-* To err on the side of beauty and simplicity and orthogonality, rather
-  than efficient implementation or expediency.
+*   its syntax
+*   its core builtins (mostly)
+*   some of its standard modules ("small", list, environment, boolean, arith)
+*   exceptions (and makes them standard rather than optional)
+*   its zealous system agnosticism
+*   its zealous disdain for escape characters (i.e. its literal string syntax)
 
-* At the same time, to allow the programmer to do "real" work, like
-  interfacing with an actual computer.
+Robin 0.2 *discards* from Robin 0.1:
 
-* At the same time as that, to be decoupled from any particular computer
-  or operating system, as far as possible.  The language does not specify
-  how Robin programs should be run, nor how to locate modules that are
-  imported.  Devices are abstracted to "virtual devices" and are modelled
-  as processes; input and output are done with message-passing.
+*   bigrats.  Instead, in Robin 0.2 you get 32-bit signed integers (yes,
+    precisely those.)  Anything else, you have to build.
+*   its module system.  Robin has its own, much less hermetic/holistic
+    system.  See the file `doc/Modules.markdown`.
+*   concurrency.
+*   I/O and side-effects.  It has reactors instead.  See `doc/Reactor.markdown`.
+*   its grand ambitions.  Robin would rather exist than be perfect.
 
-* To minimize atavisms and jargon.  The legacy of Robin's lexicon is
-  Scheme, which itself comes from the legacy of Lisp; while there are some
-  good patterns here (like predicates whose names end in `?`), there are
-  also a lot of anachronisms (like `car` and `cdr`) which should be
-  jettisoned.  Proper English words should be used instead, although of
-  course there is room for abbreviations when they are unambiguous
-  (`env`, `eval`, `expr`, `arith`, and so forth.)
+Robin 0.2 *adds* to Robin 0.1:
 
-* To serve as an outlet for my predilictions.  Sometimes, when using a
-  language, you come across a feature or aspect that just strikes you
-  as wrong-headed, and it makes you want to build something that doesn't
-  irritate you as badly.  Robin is, to some extent, that, for me.
+*   _reactors_, which I hope will be a cleaner and more system-agnostic
+    way to do I/O.  See `doc/Reactor.markdown`.
 
-* To not be taken *too* seriously -- it has many of the attributes of a
-  production language, but it *is* something I am undertaking for fun.
-
-Plans
------
-
-### Fundamental Semantics ###
-
-* Add an opaque type -- opaque values have internals that can only be
-  accessed inside the module in which they were created.  Actually, we
-  already have function values, and they're traditionally opaque; but
-  I'm not sure that solves the problem of them only being accessible
-  from the module in which they're defined.  This will probably start
-  life as some sort of "object" type, which encapsulates some (immutable)
-  state, and supports methods (which may return a transformed object);
-  this may devolve into something which is implemented purely in terms
-  of function values (closing over the state, and returning a new
-  function value with a transformed state.)
-
-* Work out the approach to short-circuiting (roughly, not given in the
-  semantics, but optimization is allowed by the implementation after it
-  has established all the arguments are pure.)
-
-### Standard Modules ###
-
-* In the `concurrency` module, finalize the semantics for exception and
-  final-result and unknown-tag reply messages, particularly during `call`
-  and `respond`.
-
-* Some kind of macro for capturing the recursive function call pattern
-  (like `letrec`, but not necessary to support mutual recursion.)  Possibly
-  called `bind-recur`.  Also `let-recur` could build on that.  Turn:
-
-      (bind-recur foo (fun (a b c)
-                        (if a
-                          (b c)
-                          (foo (bar a) b c))) ...)
-
-  into
-
-      (bind foo
-        (bind foo-r (fun (self a b c)
-                      (if a
-                        (b c)
-                        (self self (bar a) b c)))
-          (fun (a b c) (foo-r foo-r a b c))) ...)
-
-  Lack of a `gensym` will make this tricky.  We don't really have to
-  bind `foo-r`, we can just repeat the definition of the recursive
-  function; but I don't know how we can add the `self` parameter without
-  potentially shadowing a user parameter also named `self`.
-
-  An alternative which might be easier (but less elegant) would be to
-  introduce a primitive `(self)` which evaluates to the function currently
-  being evaluated.  This might make the `self` parameter to macros redundant,
-  though.
-
-  But, it might just be simpler to punt on this and make it a part of the
-  sugar in the humane syntax, which could support a form like:
-  
-      forward foo in
-        let
-          foo = fun(a, b, c)
-                  if a then b(c) else foo(bar(a), b, c)
-        in
-          ...
-
-  ...and this would transform the binding as appropriate.  This would also
-  extend to mutually recursive definitions (`forward foo, bar in ...`)
-
-* Work out the static analysis modules.  See the Static Analysis document
-  for more information.
-
-### Devices ###
-
-* Create the `device` module and use it instead of `crude-io` and
-  `console`.  Perhaps make those two into "interface modules"?  I
-  suppose an interface module would expose a predicate to check if a
-  device supports a given interface.
-
-* Write a `timer` device which can be asked (via a message) to send
-  back a message after a given time has passed.  This could be used to
-  build a version of `recv` which can time out.
-
-* Enhance the `console` device.  Write a version of `robotfindskitten`
-  using it.
-
-### Possible Future Modules ###
-
-* Write a `functional` module which exports some functions for working
-  with functions, such as `identity`, `compose`, and possibly `curry`
-  and `uncurry`.
-
-* Possibly make a `transcendental` module to contain `exp`, `pow`,
-  `log`, `sqrt`, and so forth.
-
-* Write a `trig` module which exports trigonometric functions `cos`,
-  `sin`, `tan`, `atan`, `pi`, etc.  Initially write this in Robin,
-  but it's a good candidate for implementing natively.
-
-* Write a `set` module which exports functions which treat lists as
-  sets, with each operation ensuring the set elements are unique in
-  the list.
-
-* Write a `pixley` module which exports only the identifiers supported
-  by Pixley.  This could be imported, instead of `core`, to emulate
-  Pixley in Robin.
-
-* Create a new module for exception semantics extended as follows.  Allow the
-  backtrace of an exception to be accessed as a Robin object, and, to some
-  extent, manipulated.  When an exception is raised in a context where
-  another exception is being caught, allow the backtraces to be chained
-  together.  When an exception is raised during (say) the reading of a text
-  file, allow the backtrace to be amended with the position within the text
-  file to which the problem can be traced.  The purpose of all this is
-  to allow producing more complete error messages at the top level.
-
-### Documentation ###
-
-* Document the alist functions in the `list` module.
-
-* Document the literate Haskell implementation better -- right now it's
-  pretty scant.
-
-* Document the evaluation rules (they're very similar to Scheme's, but
-  they should still be written down.)
-
-### Tests ###
-
-* Fuller tests for `call`.
-
-* Make the tests for `core` only ever import the `core` module -- rewrite
-  those tests which currently import `small`, although they may be pretty
-  ugly expressed purely in `core` terms.
-
-* Have the test runner know to only test those built-in modules which were
-  selected for inclusion during the build step.  (Write those options to
-  a text file which the test runner script reads.)
-
-* Informally test tail-recursive behavior (does an infinite loop
-  leak memory?)
-
-* Improve Falderal to let tests take some text as input; use this for the
-  tests for `crude-input`.
-
-### Other Implementations ###
-
-* Build another implementation of Robin.  This should probably wait,
-  as even the fundamental semantics are still a moving target, and
-  having to maintain two implementations is not so desirable.  However,
-  this will let me have a place to implement "practical" things that
-  arguably don't belong in the reference implementation.
-
-* Allow the implementation to use a configuration file (likely a `.robinrc`
-  file (or directory) in the user's home directory) to specify which files
-  (and where) to load for which modules.
-
-* Implement a selective execution trace facility (configured in the
-  configuration file, probably) which starts and stops tracing at
-  configured points during program execution.
-
-* Upon an uncaught exception, dump a backtrace.  This should be based
-  on the current continuation at the time the exception was raised.
+[Falderal]: http://catseye.tc/node/Falderal
+[PicoLisp]: http://picolisp.com/
+[Pixley]:   http://catseye.tc/projects/pixley/
+[Robin]:    http://catseye.tc/node/Robin
+[Scheme]:   http://schemers.org/

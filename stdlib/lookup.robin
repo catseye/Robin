@@ -1,0 +1,38 @@
+;'XXX'
+
+    -> Tests for functionality "Interpret Robin Program (with List)"
+
+    | (display
+    |   (lookup (literal b) (literal ((a 1) (b 2) (c 3)))))
+    = (2)
+
+    | (display
+    |   (lookup (literal a) (literal ((a 1) (a 2) (a 3)))))
+    = (1)
+
+    | (display
+    |   (lookup (literal r) (literal ((a 1) (b 2) (c 3)))))
+    = ()
+
+    | (display
+    |   (lookup (literal q) ()))
+    = ()
+
+    | (display
+    |   (lookup (literal q) 55))
+    ? uncaught exception: (expected-list 55)
+
+    | (display
+    |   (lookup (literal q) (literal ((a 7) 99 (q 4)))))
+    ? uncaught exception: (expected-list 99)
+
+'XXX'
+
+(define lookup (fun (id alist)
+  (bind lookup-r (fun (self id alist)
+    (if (empty? alist)
+      ()
+      (if (equal? id (head (head alist)))
+        (list (head (tail (head alist))))
+        (self self id (tail alist)))))
+    (lookup-r lookup-r id alist))))

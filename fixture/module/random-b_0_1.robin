@@ -1,2 +1,0 @@
-(robin (0 1) ((small (0 1) *) (random (0 1) *))
-  (list (list (literal random-b) random)))
