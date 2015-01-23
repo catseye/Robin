@@ -8,3 +8,4 @@ syntax: regexp
 ^bin/
 ^pkg/
 ^src/Main.lhs
+^Robin/Builtins.hs
