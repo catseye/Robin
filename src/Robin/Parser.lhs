@@ -1,3 +1,5 @@
+> {-# LANGUAGE FlexibleContexts #-}
+
 > module Robin.Parser (parseRobin, insistParse) where
 
 > import Data.Char
