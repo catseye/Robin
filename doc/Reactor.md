@@ -4,49 +4,64 @@ Robin Reactors
 To separate the concerns of computation and interaction, Robin provides
 a construct called a _reactor_.  While normal S-expression evaluation
 accomplishes side-effect-free computation, reactors permit the construction
-of interactive programs.  Reactors are similar to event handlers in
-languages such as Javascript, or to `gen_server`s in Erlang.
+of so-called "reactive" programs, which are driven by events and may
+interact with a user, a remote server on a network, or other source of
+events.  Reactors may be similar to event handlers in Javascript, or to
+processes in Erlang.
 
-In Robin, a reactor is installed by a top-level form with the syntax
-`(reactor LIST-OF-SYMBOLS STATE-EXPR BODY-EXPR)`.
+In Robin 0.3, a reactor is installed by a top-level form with the syntax
+`(reactor TRANSDUCER INITIAL-STATE)`.
 
-The first argument of the `reactor` form is a literal (unevaluated) list
-of symbols, called the _subscriptions_ for the reactor.  Each symbol names
-a _facility_ with which the reactor wishes to be able to interact.
+The first argument of the `reactor` form is evaluated to obtain a
+macro.  This is called the _transducer_ of the reactor.
 
 The second argument is evaluated, and becomes the _initial state_ of the
 reactor.
 
-The third argument is evaluated, presumably to a macro.  This is called the
-_body_ of the reactor.
+Whenever an event of interest to the reactor occurs, the transducer is
+evaluated, being passed three (pre-evaluated) arguments:
 
-Whenever an event of interest to the reactor (as determined by the facilities
-with which the reactor requested interaction) occurs, the body is evaluated,
-being passed three (pre-evaluated) arguments:
-
-*   A literal symbol called the _event code_, specifying what kind of event
+*   A literal symbol called the _event type_, specifying what kind of event
     happened;
 *   An arbitrary value called the _event payload_ containing more data about
     the event, in a format specific to that kind of event; and
-*   The previous state of the reactor.  (This will be the initial state
-    if the reactor body has never before been evaluated.)
+*   The current state of the reactor.  (This will be the initial state
+    if the transducer has never before been evaluated.)
 
-Given these things, the body is expected to evaluate to a list where the
+Given these things, the transducer is expected to evaluate to a list where the
 first element is the new state of the reactor, and each of the subsequent
-elements is a _response_ to the facility.  A response is itself a
-two-element list containing:
-    
-*   A literal symbol called the _response code_ specifying the kind of
-    response to the event that is being made; and
-*   An arbitrary value called the _response payload_ containing more data
-    about the response, in a format specific to that kind of response.
+elements is an _command_, which is itself a two-element list containing:
 
-There may of course be zero responses in the returned list.  If the
-returned value is not a list containing at least one element, no responses
-will be made and the state of the reactor will remain unchanged.
+*   A literal symbol called the _command type_ specifying the kind of
+    command that is being requested to be executed; and
+*   An arbitrary value called the _command payload_ containing more data
+    about the command, in a format specific to that type of command.
 
-It will be difficult to provide examples of how to use reactors without
-introducing a concrete facility to react with, so we'll do that now.
+There may of course be zero commands in the returned list.  It is an
+error if the returned value is not a list containing at least one element.
+
+If the transducer throws an error, no commands will be executed, and
+the state of the transducer will remain unchanged.  Implementations
+should allow such occurrences to be visible and/or logged.
+
+In fact commands and events may in fact be the same thing.
+
+Standard Events
+---------------
+
+When a reactor first starts up it will receive an event, `INIT`,
+telling it that it has started up.
+
+If a reactor isn't subscribed to any facilities, it won't necessarily receive any
+events.  So it's likely that it may wish to react to the `INIT` event by
+issuing commands that probe what kinds of facilities it can subscribe to,
+and/or subscribe to those facilities.
+
+The set of facilities is expected to be largely implementation-specific.
+
+All the same, there will probably be a set of standard facilities.
+
+Let's describe one such facility for concreteness.
 
 Facility `line-terminal`
 ------------------------
