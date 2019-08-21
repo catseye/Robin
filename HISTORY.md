@@ -1,10 +1,15 @@
 History of Robin
 ================
 
-Robin 0.3
+Robin 0.3 (ca 2019)
 ---------
 
 Currently in progress.  The vague plan is to reform the "reactor" subsystem.
+
+For the reference implementation,
+
+*   There is only one executable now, and it's called `robin`
+*   The Haskell modules are in the namespace `Language.Robin`
 
 Robin 0.2 (ca 2014)
 ---------
