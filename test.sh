@@ -2,23 +2,20 @@
 
 ./build.sh || exit 1
 
-TESTDOCS1="
+if [ "${APPLIANCES}x" = "x" ]; then
+  APPLIANCES="appliances/robinri.md appliances/whitecap.md"
+fi
+
+TESTDOCS="
 doc/Robin.md
 doc/Intrinsics.md
 doc/Reactor.md
 "
 
-if [ "${FIXTURE}x" = "x" ]; then
-    FIXTURE=fixture/whitecap.md
-fi
-echo "Using fixture $FIXTURE..."
-
 echo "Running tests on core semantics..."
-falderal -b $FIXTURE $TESTDOCS1 || exit 1
+falderal -b $APPLIANCES $TESTDOCS || exit 1
 
 for PACKAGE in small intrinsics-wrappers fun boolean arith list env misc; do
     echo "Running tests on '$PACKAGE' package..."
-    falderal -b $FIXTURE pkg/$PACKAGE.robin || exit 1
+    falderal -b $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
-
-rm -f config.md

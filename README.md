@@ -39,10 +39,17 @@ called `bin/whitecap` (for historical reasons, and subject to change.)
 
 (Or if you have [shelf][], you can run `shelf_dockgh catseye/robin`.)
 
-If you have a few minutes to spare, please do run the tests by running
-`./test.sh`.  (This requires [Falderal][].)
+Testing
+-------
 
-(There will be a link to a tutorial with further instructions in the future)
+If you have a few minutes to spare, and you have [Falderal][] installed,
+you can run the test suite by running
+
+    ./test.sh
+
+If you want to only test the `whitecap` interpreter (much faster), you can run
+
+    APPLIANCES="appliances/whitecap.md" ./test.sh
 
 Documentation
 -------------
