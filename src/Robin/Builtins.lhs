@@ -1,13 +1,15 @@
-> module Whitecap.Builtins where
+> module Robin.Builtins where
 
 > import qualified Robin.Env as Env
 > import Robin.Expr
 > import Robin.Eval
 
-Whitecap Builtins
-=================
+Robin Builtins
+==============
 
-Not part of the reference interpreter!
+Note, these are functions which are built-in to the Robin reference
+intepreter, for performance, but they are *not* intrinsic to the
+Robin language.  (See Intrinsics.lhs for those.)
 
 > robinHead i env (List [expr]) cc = do
 >     eval i env expr (\x ->
@@ -187,7 +189,7 @@ WHATEVER...
 THE TABLE
 ...
 
-> whitecapBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
+> robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
 >       [
 >         ("@head",     robinHead),
 >         ("@tail",     robinTail),

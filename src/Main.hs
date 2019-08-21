@@ -7,7 +7,7 @@ import System.Exit
 
 import Robin.Parser (parseRobin)
 import Robin.Intrinsics (robinIntrinsics)
-import Whitecap.Builtins (whitecapBuiltins, union)
+import Robin.Builtins (robinBuiltins)
 import Robin.TopLevel (execTopExprs)
 import Robin.Reactor (eventLoop, initReactors)
 
@@ -27,7 +27,7 @@ main = do
                     reactors' <- initReactors reactors
                     eventLoop reactors'
         _ -> do
-            (env, reactors) <- processArgs whitecapBuiltins [] args
+            (env, reactors) <- processArgs robinBuiltins [] args
             case reactors of
                 [] ->
                     exitWith ExitSuccess
