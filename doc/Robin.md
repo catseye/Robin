@@ -2,7 +2,7 @@ Robin
 =====
 
 This document defines the fundamental semantics of Robin (except for the
-meanings of the intrinsics: see `Intrinsics.markdown` for those.)
+meanings of the intrinsics: see [Intrinsics.md](Intrinsics.md) for those.)
 
     -> Tests for functionality "Interpret core Robin Program"
 
@@ -63,7 +63,7 @@ Names may not be redefined once defined.
 
 `(reactor LIST-OF-ATOMS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
 permit the construction of interactive Robin programs.  See the document
-`Reactor.markdown` for more information on, examples of, and tests for reactors.
+[Reactor.md](Reactor.md) for more information on, examples of, and tests for reactors.
 
 Intrinsic Data Types
 --------------------

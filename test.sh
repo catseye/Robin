@@ -3,13 +3,13 @@
 ./build.sh || exit 1
 
 TESTDOCS1="
-doc/Robin.markdown
-doc/Intrinsics.markdown
-doc/Reactor.markdown
+doc/Robin.md
+doc/Intrinsics.md
+doc/Reactor.md
 "
 
 if [ "${FIXTURE}x" = "x" ]; then
-    FIXTURE=fixture/whitecap.markdown
+    FIXTURE=fixture/whitecap.md
 fi
 echo "Using fixture $FIXTURE..."
 
@@ -21,4 +21,4 @@ for PACKAGE in small intrinsics-wrappers fun boolean arith list env misc; do
     falderal -b $FIXTURE pkg/$PACKAGE.robin || exit 1
 done
 
-rm -f config.markdown
+rm -f config.md

@@ -1,7 +1,7 @@
 Robin
 =====
 
-_This is a work in progress_
+_Version 0.3.  Work-in-progress, subject to change._
 
 Robin is a homoiconic S-expression-based language (similar to, for example,
 [Scheme][], with influences from [Pixley][] and [PicoLisp][]) with the
@@ -22,11 +22,11 @@ following features:
 *   A module system (which is rather fast-and-loose, so it's perhaps not
     fair to call it a module system.  It's more like C's `#include`s —
     except it's zealously system-agnostic.  And actually we're still working
-    out the details here.  See the file `doc/Modules.markdown`.)
+    out the details here.  See the file [doc/Modules.md](doc/Modules.md).)
 *   A(n attempt at) a clean separation of evaluation (no "side-effects") and
     execution (with "side-effects" and system interaction) by the use of
     _reactors_ (which are basically event handlers.)  See the file
-    `doc/Reactor.markdown` for more information.
+    [doc/Reactor.md](doc/Reactor.md) for more information.
 
 Quick Start
 -----------
@@ -37,7 +37,7 @@ Clone this repo and `cd` into it, and run `./build.sh` to build the reference
 interpreter `bin/robinri`, and the slightly-less-impractical interpreter
 called `bin/whitecap` (for historical reasons, and subject to change.)
 
-(Or if you have [toolshelf][], just run `toolshelf dock gh:catseye/robin`.)
+(Or if you have [shelf][], you can run `shelf_dockgh catseye/robin`.)
 
 If you have a few minutes to spare, please do run the tests by running
 `./test.sh`.  (This requires [Falderal][].)
@@ -48,7 +48,7 @@ Documentation
 -------------
 
 Robin's fundamental semantics are documented in
-[doc/Robin.markdown](doc/Robin.markdown).
+[doc/Robin.md](doc/Robin.md).
 
 History
 -------
@@ -67,19 +67,19 @@ Robin 0.2 *discards* from Robin 0.1:
 *   bigrats.  Instead, in Robin 0.2 you get 32-bit signed integers (yes,
     precisely those.)  Anything else, you have to build.
 *   its module system.  Robin has its own, much less hermetic/holistic
-    system.  See the file `doc/Modules.markdown`.
+    system.  See the file [doc/Modules.md](doc/Modules.md).
 *   concurrency.
-*   I/O and side-effects.  It has reactors instead.  See `doc/Reactor.markdown`.
+*   I/O and side-effects.  It has reactors instead.
 *   its grand ambitions.  Robin would rather exist than be perfect.
 
 Robin 0.2 *adds* to Robin 0.1:
 
 *   _reactors_, which I hope will be a cleaner and more system-agnostic
-    way to do I/O.  See `doc/Reactor.markdown`.
+    way to do I/O.  See [doc/Reactor.md](doc/Reactor.md).
 
-[Falderal]:  http://catseye.tc/node/Falderal
+[Falderal]:  https://catseye.tc/node/Falderal
 [PicoLisp]:  http://picolisp.com/
-[Pixley]:    http://catseye.tc/node/Pixley
-[Robin]:     http://catseye.tc/node/Robin
+[Pixley]:    https://catseye.tc/node/Pixley
+[Robin]:     https://catseye.tc/node/Robin
 [Scheme]:    http://schemers.org/
-[toolshelf]: http://catseye.tc/node/toolshelf
+[shelf]:     https://catseye.tc/node/shelf
