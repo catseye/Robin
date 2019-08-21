@@ -1,6 +1,4 @@
 *.o
 *.hi
-/bin/*
+/bin/*.exe
 /pkg/*
-/src/Main.lhs
-/Robin/Builtins.hs
