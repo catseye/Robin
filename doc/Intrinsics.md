@@ -8,7 +8,7 @@ that it is implemented intrinsically (and thus does not support quite
 every operation that is supported on macros, for example, examining its
 internals.)
 
-Robin provides (as of this writing) 15 intrinsics.  These represent
+Robin 0.3 provides 15 intrinsics.  These represent
 the fundamental functionality that is used to evaluate programs, and that
 cannot be expressed as macros written in Robin (not without resorting to
 meta-circularity, at any rate.)  All other macros are built up on top of
