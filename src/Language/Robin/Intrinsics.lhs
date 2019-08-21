@@ -1,8 +1,8 @@
-> module Robin.Intrinsics where
+> module Language.Robin.Intrinsics where
 
-> import qualified Robin.Env as Env
-> import Robin.Expr
-> import Robin.Eval
+> import qualified Language.Robin.Env as Env
+> import Language.Robin.Expr
+> import Language.Robin.Eval
 
 Intrinsics
 ==========

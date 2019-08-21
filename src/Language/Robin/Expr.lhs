@@ -1,4 +1,4 @@
-> module Robin.Expr where
+> module Language.Robin.Expr where
 
 > import Data.Char
 > import Data.Int

@@ -5,11 +5,11 @@ import System.IO
 import System.Environment
 import System.Exit
 
-import Robin.Parser (parseRobin)
-import Robin.Intrinsics (robinIntrinsics)
-import Robin.Builtins (robinBuiltins)
-import Robin.TopLevel (execTopExprs)
-import Robin.Reactor (eventLoop, initReactors)
+import Language.Robin.Parser (parseRobin)
+import Language.Robin.Intrinsics (robinIntrinsics)
+import Language.Robin.Builtins (robinBuiltins)
+import Language.Robin.TopLevel (execTopExprs)
+import Language.Robin.Reactor (eventLoop, initReactors)
 
 
 main = do

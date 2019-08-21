@@ -1,7 +1,7 @@
-> module Robin.Eval where
+> module Language.Robin.Eval where
 
-> import qualified Robin.Env as Env
-> import Robin.Expr
+> import qualified Language.Robin.Env as Env
+> import Language.Robin.Expr
 
 Evaluator
 =========

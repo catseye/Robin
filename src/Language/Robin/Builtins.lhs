@@ -1,8 +1,8 @@
-> module Robin.Builtins where
+> module Language.Robin.Builtins where
 
-> import qualified Robin.Env as Env
-> import Robin.Expr
-> import Robin.Eval
+> import qualified Language.Robin.Env as Env
+> import Language.Robin.Expr
+> import Language.Robin.Eval
 
 Robin Builtins
 ==============

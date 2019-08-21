@@ -1,13 +1,13 @@
 > {-# LANGUAGE FlexibleContexts #-}
 
-> module Robin.Parser (parseRobin, insistParse) where
+> module Language.Robin.Parser (parseRobin, insistParse) where
 
 > import Data.Char
 > import Data.Int
 
 > import Text.ParserCombinators.Parsec
 
-> import Robin.Expr
+> import Language.Robin.Expr
 
 Parser
 ======

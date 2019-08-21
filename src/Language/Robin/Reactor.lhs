@@ -1,12 +1,12 @@
-> module Robin.Reactor where
+> module Language.Robin.Reactor where
 
 > import qualified Data.Char as Char
 
 > import System.IO
 
-> import Robin.Expr
-> import qualified Robin.Env as Env
-> import Robin.Eval
+> import Language.Robin.Expr
+> import qualified Language.Robin.Env as Env
+> import Language.Robin.Eval
 
 > data Reactor = Reactor Expr Expr  Expr
 >    deriving (Show, Eq)

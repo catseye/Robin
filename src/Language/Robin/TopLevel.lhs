@@ -1,9 +1,9 @@
-> module Robin.TopLevel where
+> module Language.Robin.TopLevel where
 
-> import Robin.Expr
-> import qualified Robin.Env as Env
-> import Robin.Eval
-> import Robin.Reactor
+> import Language.Robin.Expr
+> import qualified Language.Robin.Env as Env
+> import Language.Robin.Eval
+> import Language.Robin.Reactor
 
 Top-Level S-Expressions
 -----------------------

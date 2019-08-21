@@ -1,6 +1,6 @@
-> module Robin.Env where
+> module Language.Robin.Env where
 
-> import Robin.Expr
+> import Language.Robin.Expr
 
 Environments
 ============
