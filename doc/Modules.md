@@ -117,28 +117,14 @@ normative in this regard:
     be implemented in terms of other symbols.
 
 *   However, two packages have the following justifications:
+    The package `small` is identified as a fairly minimal set
+    of symbols to make programming tolerable
+    (somewhere between possible and liveable in that "Maslow's
+    hierarchy" analogy.)  No symbol in it depends on any symbol
+    defined in any other package; only intrinsics and other symbols
+    in `small`.
     
-    *   The package `intrinsics-wrappers` contains macros which are
-        simply wrappers for the intrinsics with the same names
-        (prefixed with `@`).  These serve two purposes: to let
-        you not have to type `@` all the time, and to perform
-        better argument type and number checking than the intrinsics
-        are defined to do.
-    
-    *   The package `small` is identified as a fairly minimal set
-        of symbols to make programming tolerable
-        (somewhere between possible and liveable in that "Maslow's
-        hierarchy" analogy.)  No symbol in it depends on any symbol
-        defined in any other package; only intrinsics and other symbols
-        in `small`.  The price paid for this is that macros in
-        `small`, like the intrinsics, do not have very good argument
-        checking.
-    
-    Note that `intrinsics-wrappers` depends on `small`; the use
-    `bind-args` to do the argument checking, which in turn needs
-    `let` and `bind` and so forth.
-    
-    For a graphical depiction of the "hierarchy" of defined symbols
-    (which is not really a proper hierarchy), please see
-    `doc/Hierarchy_of_Defined_Symbols.html` (it's in HTML because it'd
-    be trickier to depict in plain text or Markdown.)
+For a graphical depiction of the "hierarchy" of defined symbols
+(which is not really a proper hierarchy), please see
+`doc/Hierarchy_of_Defined_Symbols.html` (it's in HTML because it'd
+be trickier to depict in plain text or Markdown.)
