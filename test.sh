@@ -3,7 +3,7 @@
 ./build.sh || exit 1
 
 if [ "${APPLIANCES}x" = "x" ]; then
-  APPLIANCES="appliances/robinri.md appliances/whitecap.md"
+  APPLIANCES="appliances/robin.md appliances/robin-no-builtins.md"
 fi
 
 TESTDOCS="
