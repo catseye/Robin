@@ -5,6 +5,7 @@ import System.IO
 import System.Environment
 import System.Exit
 
+import Language.Robin.Env (mergeEnvs)
 import Language.Robin.Parser (parseRobin)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
@@ -27,7 +28,7 @@ main = do
                     reactors' <- initReactors reactors
                     eventLoop reactors'
         _ -> do
-            (env, reactors) <- processArgs robinBuiltins [] args
+            (env, reactors) <- processArgs (mergeEnvs robinIntrinsics robinBuiltins) [] args
             case reactors of
                 [] ->
                     exitWith ExitSuccess

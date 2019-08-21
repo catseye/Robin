@@ -1,29 +1,29 @@
 (define bind-args
-  (@macro (self args env)
+  (macro (self args env)
     (let (
-      (id-list       (@head args))
-      (orig-val-list (@eval env (@head (@tail args))))
-      (given-env     (@eval env (@head (@tail (@tail args)))))
-      (expr          (@head (@tail (@tail (@tail args)))))
-      (bind-args-r   (@macro (self args env)
+      (id-list       (head args))
+      (orig-val-list (eval env (head (tail args))))
+      (given-env     (eval env (head (tail (tail args)))))
+      (expr          (head (tail (tail (tail args)))))
+      (bind-args-r   (macro (self args env)
         (let (
-          (id-list  (@eval env (@head args)))
-          (val-list (@eval env (@head (@tail args))))
-          (env-acc  (@eval env (@head (@tail (@tail args)))))
+          (id-list  (eval env (head args)))
+          (val-list (eval env (head (tail args))))
+          (env-acc  (eval env (head (tail (tail args)))))
           )
-          (@if (@equal? id-list ())
-            (@if (@equal? val-list ())
+          (if (equal? id-list ())
+            (if (equal? val-list ())
               env-acc
-              (@raise (list (literal illegal-arguments) orig-val-list)))
-            (@if (@equal? val-list ())
-              (@raise (list (literal illegal-arguments) orig-val-list))
+              (raise (list (literal illegal-arguments) orig-val-list)))
+            (if (equal? val-list ())
+              (raise (list (literal illegal-arguments) orig-val-list))
               (self
-                (@tail id-list) (@tail val-list)
-                (@prepend
-                  (list (@head id-list) (@eval given-env (@head val-list)))
+                (tail id-list) (tail val-list)
+                (prepend
+                  (list (head id-list) (eval given-env (head val-list)))
                   env-acc)))))))
       (new-env (bind-args-r id-list orig-val-list env)))
-      (@eval new-env expr))))
+      (eval new-env expr))))
 
 ;'XXX'
 
@@ -77,14 +77,14 @@ become clear here: typically you would just pass the macro's `args` and
 `env` to those arguments.
 
     | (display
-    |   (bind add (@macro (self args env)
+    |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
     |     (add 4 (add 5 6))))
     = 15
 
     | (display
-    |   (bind add (@macro (self args env)
+    |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
     |     (bind r 7
@@ -92,21 +92,21 @@ become clear here: typically you would just pass the macro's `args` and
     = 14
 
     | (display
-    |   (bind add (@macro (self args env)
+    |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
     |     (add (subtract 0 0))))
     ? uncaught exception: (illegal-arguments ((subtract 0 0)))
 
     | (display
-    |   (bind add (@macro (self args env)
+    |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
     |     (add 9 9 9)))
     ? uncaught exception: (illegal-arguments (9 9 9))
 
     | (display
-    |   (bind add (@macro (self args env)
+    |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
     |     (add 1 n)))

@@ -3,18 +3,10 @@
 echo "Building Robin convenience packages..."
 
 mkdir -p pkg
-# note that intrinsics-wrappers require small
-# but they *don't* require fun
+
 cat stdlib/literal.robin stdlib/env.robin stdlib/list.robin stdlib/bind.robin \
     stdlib/let.robin stdlib/choose.robin \
     stdlib/bind-args.robin > pkg/small.robin
-
-cat stdlib/if.robin \
-    stdlib/equal-p.robin \
-    stdlib/head.robin stdlib/tail.robin stdlib/prepend.robin stdlib/list-p.robin \
-    stdlib/symbol-p.robin stdlib/macro-p.robin stdlib/number-p.robin \
-    stdlib/subtract.robin stdlib/sign.robin stdlib/macro.robin stdlib/eval.robin \
-    stdlib/raise.robin stdlib/catch.robin > pkg/intrinsics-wrappers.robin
 
 cat stdlib/empty-p.robin stdlib/map.robin stdlib/fold.robin stdlib/reverse.robin \
     stdlib/filter.robin stdlib/find.robin stdlib/append.robin stdlib/elem-p.robin \
@@ -38,7 +30,6 @@ cat stdlib/env-p.robin stdlib/export.robin stdlib/sandbox.robin \
 cat stdlib/itoa.robin > pkg/misc.robin
 
 cat pkg/small.robin \
-    pkg/intrinsics-wrappers.robin \
     pkg/fun.robin \
     pkg/boolean.robin \
     pkg/arith.robin \

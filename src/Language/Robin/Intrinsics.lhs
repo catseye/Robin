@@ -13,6 +13,7 @@ Intrinsics
 >             case val of
 >                 List (a:_) -> cc a
 >                 other -> raise i (errMsg "expected-list" other)))
+> robinHead i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinTail i env (List [expr]) cc = do
 >     eval i env expr (\x ->
@@ -20,18 +21,22 @@ Intrinsics
 >             case val of
 >                 List (_:b) -> cc (List b)
 >                 other -> raise i (errMsg "expected-list" other)))
+> robinTail i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinPrepend i env (List [e1, e2]) cc = do
 >     eval i env e1 (\x1 -> eval i env e2 (\val ->
 >             case val of
 >                 List x2 -> cc $ List (x1:x2)
 >                 other -> raise i (errMsg "expected-list" other)))
+> robinPrepend i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > equalP i env (List [e1, e2]) cc = do
 >     eval i env e1 (\x1 -> eval i env e2 (\x2 -> cc $ Boolean (x1 == x2)))
+> equalP i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > predP pred i env (List [expr]) cc = do
 >     eval i env expr (\x -> cc $ Boolean $ pred x)
+> predP pred i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > symbolP = predP isSymbol
 > listP = predP isList
@@ -44,11 +49,13 @@ Intrinsics
 >             eval i env yexpr (\y ->
 >                 assertNumber i y (\(Number yv) ->
 >                     cc (Number (xv - yv))))))
+> robinSubtract i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinSign i env (List [expr]) cc = do
 >     eval i env expr (\x ->
 >         assertNumber i x (\(Number xv) ->
 >             cc $ Number $ sign xv))
+> robinSign i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > sign x = if x == 0 then 0 else if x < 0 then -1 else 1
 
@@ -58,17 +65,21 @@ Intrinsics
 >             case b of
 >                 True -> eval i env texpr cc
 >                 False -> eval i env fexpr cc))
+> robinIf i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinEval i env (List [envlist, form]) cc = do
 >     eval i env envlist (\newEnv ->
 >         eval i env form (\body -> do
 >             eval i newEnv body cc))
+> robinEval i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinMacro i env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc = do
 >     cc $ Macro env args body
+> robinMacro i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinRaise i env (List [expr]) cc =
 >     eval i env expr (\v -> raise i v)
+> robinRaise i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinCatch i env (List [id@(Symbol _), handler, body]) cc =
 >     let
@@ -77,22 +88,23 @@ Intrinsics
 >         i' = setExceptionHandler handlerContinuation i
 >     in
 >         eval i' env body cc
+> robinCatch i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > robinIntrinsics = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
 >       [
->         ("@head",     robinHead),
->         ("@tail",     robinTail),
->         ("@prepend",  robinPrepend),
->         ("@list?",    listP),
->         ("@symbol?",  symbolP),
->         ("@macro?",   macroP),
->         ("@number?",  numberP),
->         ("@equal?",   equalP),
->         ("@subtract", robinSubtract),
->         ("@sign",     robinSign),
->         ("@macro",    robinMacro),
->         ("@eval",     robinEval),
->         ("@if",       robinIf),
->         ("@raise",    robinRaise),
->         ("@catch",    robinCatch)
+>         ("head",     robinHead),
+>         ("tail",     robinTail),
+>         ("prepend",  robinPrepend),
+>         ("list?",    listP),
+>         ("symbol?",  symbolP),
+>         ("macro?",   macroP),
+>         ("number?",  numberP),
+>         ("equal?",   equalP),
+>         ("subtract", robinSubtract),
+>         ("sign",     robinSign),
+>         ("macro",    robinMacro),
+>         ("eval",     robinEval),
+>         ("if",       robinIf),
+>         ("raise",    robinRaise),
+>         ("catch",    robinCatch)
 >       ]

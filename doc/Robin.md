@@ -105,7 +105,7 @@ program, it must be an argument to a macro.  For that reason, we can't
 show an example of a literal symbol without first defining a macro... but
 will go ahead and show the example, and will explain macros later.
 
-    | (define literal (@macro (self args env) (@head args)))
+    | (define literal (macro (self args env) (head args)))
     | (display (literal hello))
     = hello
 
@@ -119,7 +119,7 @@ it is what the symbol is bound to in the environment that is applied.
 
 There are two values of Boolean type, `#t`, representing truth, and `#f`,
 representing falsehood.  By convention, an identifier which ends in `?`
-is a macro or function which evaluates to a Boolean.  The `@if` intrinsic
+is a macro or function which evaluates to a Boolean.  The `if` intrinsic
 expects a Boolean expression as its first argument.
 
 Booleans always evaluate to themselves.
@@ -190,7 +190,7 @@ evaluates the body of the function in that new environment, a macro:
     convention called `env`); and
 *   evaluates the body of the macro in that environment.
 
-Macros are defined with the `@macro` intrinsic.
+Macros are defined with the `macro` intrinsic.
 
 Macros evaluate to themselves.
 
@@ -198,8 +198,8 @@ Macros are represented as the S-expression expansion of their
 implementation.
 
     | (display
-    |   (@macro (self args env) args))
-    = (@macro (self args env) args)
+    |   (macro (self args env) args))
+    = (macro (self args env) args)
 
 Macros can be applied, and that is the typical use of them.
 
@@ -209,9 +209,9 @@ Macros can be applied, and that is the typical use of them.
 
 There also exist functions which cannot effectively be expressed directly
 in Robin — these are the so-called _intrinsics_.  All symbols representing
-intrinsics directly begin with the character `@`.
+intrinsics directly begin with the character ``.
 
-One important intrinsic is `@eval`.  Many macros will make use of `eval`,
+One important intrinsic is `eval`.  Many macros will make use of `eval`,
 to evaluate that literal tail they receive.  When they do this in the
 environment in which they were called, they behave a lot like functions.
 But they are not obligated to; they might evaluate them in a modified
@@ -222,15 +222,15 @@ Intrinsics evaluate to themselves.
 
 An intrinsic is represented thusly.
 
-    | (display @head)
-    = @head
+    | (display head)
+    = head
 
 One upshot of intrinsics is that all intrinsic Robin functionality
 (excepting top-level forms) can be passed around as values.
 
     | (display
-    |   (@prepend @if (@prepend @head ())))
-    = (@if @head)
+    |   (prepend if (prepend head ())))
+    = (if head)
 
 Intrinsics can be applied, and that is the typical use of them.
 
@@ -260,7 +260,7 @@ Non-empty lists do not evaluate to themselves; rather, they represent a macro
 application.  However, the `literal` macro may be used to obtain a
 literal list.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal (7 8)))
     = (7 8)
@@ -282,14 +282,14 @@ particular Unicode codepoint.  Robin supports a sugared syntax for
 specifying literal strings.  The characters of the string are given
 between pairs of single quotes.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal ''Hello''))
     = (72 101 108 108 111)
 
 A single single quote may appear in string literals of this kind.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal ''He'llo''))
     = (72 101 39 108 108 111)
@@ -299,24 +299,24 @@ may be given.  The sentinel between the leading single quote pair must
 match the sentinel given between the trailing single quote pair.  The
 sentinel may consist of any text not containing a single quote.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal 'X'Hello'X'))
     = (72 101 108 108 111)
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
-    |   (literal '...@('Hello'...@('))
+    |   (literal '...('Hello'...('))
     = (72 101 108 108 111)
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal 'X'Hello'Y'))
     ? unexpected end of input
 
 A sentinelized literal like this may embed a pair of single quotes.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal 'X'Hel''lo'X'))
     = (72 101 108 39 39 108 111)
@@ -324,7 +324,7 @@ A sentinelized literal like this may embed a pair of single quotes.
 By choosing different sentinels, string literals may contain any other
 string literal.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal 'X'Hel'Y'bye'Y'lo'X'))
     = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
@@ -333,7 +333,7 @@ No interpolation of escape sequences is done in a Robin string literal.
 (Functions to convert escape sequences commonly found in other languages
 may one day be available in a standard module.)
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal ''Hello\nworld''))
     = (72 101 108 108 111 92 110 119 111 114 108 100)
@@ -341,7 +341,7 @@ may one day be available in a standard module.)
 All characters which appear in the source text between the delimiters
 of the string literal are literally included in the string.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal ''Hello
     | world''))
@@ -349,7 +349,7 @@ of the string literal are literally included in the string.
 
 Adjacent string literals are not automatically concatenated.
 
-    | (define literal (@macro (s a e) (@head a)))
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (literal (''Hello'' ''world'')))
     = ((72 101 108 108 111) (119 111 114 108 100))
@@ -368,7 +368,7 @@ of an evaluation environment, where the symbols in the heads of the sublists
 are bound to the values in the tails of the pairs.  Binding alists can be
 created from the environment currently in effect (such as in the case of the
 third argument of a macro) and can be used to change the evaluation
-environment that is in effect (such as in the first argument to `@eval`.)
+environment that is in effect (such as in the first argument to `eval`.)
 
 TODO: binding alists may be replaced by abstract map objects of some kind.
 
@@ -380,7 +380,7 @@ be parsed, but it will be ignored.
 
     | (display
     |   ;(this program produces a list of two booleans)
-    |   (@prepend #f (@prepend #f ())))
+    |   (prepend #f (prepend #f ())))
     = (#f #f)
 
 Because S-expressions may nest, and because comments may appear
@@ -390,7 +390,7 @@ inside S-expressions, comments may nest.
     |   ;(this program produces
     |     ;(what you might call)
     |     a list of two booleans)
-    |   (@prepend #f (@prepend #f ())))
+    |   (prepend #f (prepend #f ())))
     = (#f #f)
 
 Comments are still parsed.  A syntax error in a comment is an error!
@@ -407,17 +407,17 @@ Comments are still parsed.  A syntax error in a comment is an error!
 Any number of comments may appear together.
 
     | (display
-    |   (@prepend ;what ;on ;earth #f (@prepend #f ())))
+    |   (prepend ;what ;on ;earth #f (prepend #f ())))
     = (#f #f)
 
 Comments may appear before a closing parenthesis.
 
     | (display
-    |   (@prepend #f (@prepend #f ()) ;foo))
+    |   (prepend #f (prepend #f ()) ;foo))
     = (#f #f)
 
     | (display
-    |   (@prepend #f (@prepend #f ()) ;peace ;(on) ;earth))
+    |   (prepend #f (prepend #f ()) ;peace ;(on) ;earth))
     = (#f #f)
 
 Comments may appear in an empty list.
@@ -437,5 +437,5 @@ used.
 
     | (display
     |   ;''This program, it produces a list of two booleans. #k ?''
-    |   (@prepend #f (@prepend #f ())))
+    |   (prepend #f (prepend #f ())))
     = (#f #f)

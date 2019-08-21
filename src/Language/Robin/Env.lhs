@@ -22,3 +22,5 @@ values (arbitrary S-expressions).
 >     List []
 > fromList ((id, val):xs) =
 >     append (List [List [(Symbol id), val]]) (fromList xs)
+
+> mergeEnvs (List a) (List b) = List (a ++ b)

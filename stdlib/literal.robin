@@ -1,4 +1,4 @@
-(define literal (@macro (self args env) (@head args)))
+(define literal (macro (self args env) (head args)))
 
 ;'XXX'
 

@@ -33,7 +33,7 @@ intrinsically (it cannot be (non-meta-circularly) defined in Robin itself.)
 >     show (Boolean True)        = "#t"
 >     show (Boolean False)       = "#f"
 >     show (Number n)            = show n
->     show (Macro env args body) = ("(@macro " ++ (show args) ++
+>     show (Macro env args body) = ("(macro " ++ (show args) ++
 >                                   " " ++ (show body) ++ ")")
 >     show (Intrinsic name _)    = name
 >     show (List exprs)          = "(" ++ (showl exprs) ++ ")"

@@ -1,8 +1,8 @@
-(define list (@macro (self args env)
-  (@if (@equal? args ())
+(define list (macro (self args env)
+  (if (equal? args ())
     ()
-    (@prepend (@eval env (@head args))
-              (@eval env (@prepend self (@tail args)))))))
+    (prepend (eval env (head args))
+              (eval env (prepend self (tail args)))))))
 
 ;'XXX'
 

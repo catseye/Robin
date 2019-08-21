@@ -4,7 +4,13 @@ History of Robin
 Robin 0.3 (ca 2019)
 ---------
 
-Currently in progress.  The vague plan is to reform the "reactor" subsystem.
+Currently in progress.
+
+*   The "intrinsics wrappers" were removed.  Their semantics have been
+    incorporated into the intrinsics themselves (whose names no longer
+    begin with `@`.)  The rationale is that they were hardly more complex
+    than the intrinsics themselves.
+*   TODO vague plan to reform the "reactor" subsystem.
 
 For the reference implementation,
 
