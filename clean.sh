@@ -1,5 +1,5 @@
 #!/bin/sh
 
-rm -rf src/Robin/*.o src/Robin/*.hi
-rm -rf src/main/*/*.o src/main/*/*.hi
+find . -name "*.o"  -exec rm {} \;
+find . -name "*.hi" -exec rm {} \;
 rm -rf pkg/*.robin
