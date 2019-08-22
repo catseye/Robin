@@ -1,3 +1,5 @@
+;''FIXME -- uses old (Robin 0.2) Reactor syntax, not expected to work under 0.3''
+
 (reactor (line-terminal) 0 (macro (self args env)
   (bind event (head args)
     (bind payload (head (tail args))

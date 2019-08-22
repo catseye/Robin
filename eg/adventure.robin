@@ -1,3 +1,5 @@
+;''FIXME -- uses old (Robin 0.2) Reactor syntax, not expected to work under 0.3''
+
 ;(require small list arith)
 
 (reactor (line-terminal) (list 0 0) (macro (self args env)
