@@ -84,8 +84,6 @@ Standard Commands
 Stops the current reactor, and removes it from the list of active
 reactors.  It will no longer receive any events.
 
-Note: not correctly implemented currently.
-
 Standard Facilities
 -------------------
 

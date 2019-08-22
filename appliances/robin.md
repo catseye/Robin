@@ -7,9 +7,6 @@
     -> Functionality "Interpret Robin Program (with Small)" is implemented by shell command
     -> "bin/robin %(test-body-file)"
 
-    -> Functionality "Interpret Robin Program (with Fun)" is implemented by shell command
-    -> "bin/robin %(test-body-file)"
-
     -> Functionality "Interpret Robin Program (with List)" is implemented by shell command
     -> "bin/robin pkg/list.robin %(test-body-file)"
 

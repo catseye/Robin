@@ -116,7 +116,7 @@ normative in this regard:
     and to make dependencies work out "nicely", so that symbols can
     be implemented in terms of other symbols.
 
-*   However, two packages have the following justifications:
+*   However, this package has the following justification:
     The package `small` is identified as a fairly minimal set
     of symbols to make programming tolerable
     (somewhere between possible and liveable in that "Maslow's
@@ -146,43 +146,34 @@ Markdown.)
     <p><i>(misc)</i> itoa</p>
 
     <table style="border: 1px solid; padding: 1em; margin: 1em">
-      <tr><th>"Fun"</th></tr>
+      <tr><th>"Small"</th></tr>
       <tr><td>
-
-        fun
+        literal
+        list
+        bind
+        env
+        let
+        choose
+        bind-args
 
         <table style="border: 1px solid; padding: 1em; margin: 1em">
-          <tr><th>"Small"</th></tr>
+          <tr><th>Intrinsics</th></tr>
           <tr><td>
-            literal
-            list
-            bind
-            env
-            let
-            choose
-            bind-args
-
-            <table style="border: 1px solid; padding: 1em; margin: 1em">
-              <tr><th>Intrinsics</th></tr>
-              <tr><td>
-                head
-                tail
-                prepend
-                list?
-                symbol?
-                macro?
-                number?
-                equal?
-                subtract
-                sign
-                macro
-                eval
-                if
-                raise
-                catch
-              </td></tr>
-            </table>
-
+            head
+            tail
+            prepend
+            list?
+            symbol?
+            macro?
+            number?
+            equal?
+            subtract
+            sign
+            macro
+            eval
+            if
+            raise
+            catch
           </td></tr>
         </table>
 

@@ -4,12 +4,12 @@ History of Robin
 Robin 0.3 (ca 2019)
 ---------
 
-Currently in progress.
-
 *   The "intrinsics wrappers" were removed.  Their semantics have been
     incorporated into the intrinsics themselves (whose names no longer
     begin with `@`.)  The rationale is that they were hardly more complex
     than the intrinsics themselves.
+*   The "fun" package has also been merged into "small" (for without
+    intrinsics wrappers there no little reason to keep it separate.)
 *   The reactor subsystem was reformed.  Reactors define a transducer
     function that takes an event and a state, and returns a new state
     and a list of commands, which are simply new events.  Several other
@@ -19,6 +19,7 @@ For the reference implementation,
 
 *   There is only one executable now, and it's called `robin`
 *   The Haskell modules are in the namespace `Language.Robin`
+*   A multitude of other small cleanups.
 
 Robin 0.2 (ca 2014)
 ---------

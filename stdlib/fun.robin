@@ -22,7 +22,7 @@
 
 ;'XXX'
 
-    -> Tests for functionality "Interpret Robin Program (with Fun)"
+    -> Tests for functionality "Interpret Robin Program (with Small)"
 
 You can define functions with `fun`.  They can be anonymous.
 
