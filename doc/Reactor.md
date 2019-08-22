@@ -10,13 +10,10 @@ events.  Reactors may be similar to event handlers in Javascript, or to
 processes in Erlang.
 
 In Robin 0.3, a reactor is installed by a top-level form with the syntax
-`(reactor TRANSDUCER INITIAL-STATE)`.
+`(reactor TRANSDUCER)`.
 
 The first argument of the `reactor` form is evaluated to obtain a
 macro.  This is called the _transducer_ of the reactor.
-
-The second argument is evaluated, and becomes the _initial state_ of the
-reactor.
 
 Whenever an event of interest to the reactor occurs, the transducer is
 evaluated, being passed three (pre-evaluated) arguments:
@@ -25,7 +22,7 @@ evaluated, being passed three (pre-evaluated) arguments:
     happened;
 *   An arbitrary value called the _event payload_ containing more data about
     the event, in a format specific to that kind of event; and
-*   The current state of the reactor.  (This will be the initial state
+*   The current state of the reactor.  (This value is undefined
     if the transducer has never before been evaluated.)
 
 Given these things, the transducer is expected to evaluate to a list where the
@@ -49,8 +46,17 @@ In fact commands and events may in fact be the same thing.
 Standard Events
 ---------------
 
-When a reactor first starts up it will receive an event, `INIT`,
-telling it that it has started up.
+### `init` ###
+
+When a reactor first starts up it will receive an event telling it that
+it has started up.  The event type for this event is the literal symbol
+`init`.
+
+There are a few things a reactor will almost always want to do when it
+receives an `init` event.  These are:
+
+*   Subscribe to facilities.
+*   Return a known initial state.
 
 If a reactor isn't subscribed to any facilities, it won't necessarily receive any
 events.  So it's likely that it may wish to react to the `INIT` event by
