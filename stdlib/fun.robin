@@ -1,25 +1,3 @@
-(define fun (macro (self args env)
-  (bind extend-with-args (macro (self args env)
-    (bind-args (env-to-extend formals actuals env-for-actuals) args env
-      (if (equal? formals ())
-        (if (equal? actuals ())
-          env-to-extend
-          (raise (list (literal illegal-arguments) (head (tail (tail args))))))
-        (if (equal? actuals ())
-          (raise (list (literal illegal-arguments) (head (tail (tail args)))))
-          (let (
-              (formal (head formals))
-              (actual (head actuals))
-              (rest-formals (tail formals))
-              (rest-actuals (tail actuals))
-              (evaled-actual (eval env-for-actuals actual))
-              (binding (list formal evaled-actual))
-              (extended-env (prepend binding env-to-extend))
-            )
-            (self extended-env rest-formals rest-actuals env-for-actuals))))))
-  (macro (iself iargs ienv)
-    (eval (extend-with-args env (head args) iargs ienv) (head (tail args)))))))
-
 ;'XXX'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
@@ -107,3 +85,25 @@ supplied to a function call.
 `fun` is basically equivalent to Scheme's `lambda`.
 
 'XXX'
+
+(define fun (macro (self args env)
+  (bind extend-with-args (macro (self args env)
+    (bind-args (env-to-extend formals actuals env-for-actuals) args env
+      (if (equal? formals ())
+        (if (equal? actuals ())
+          env-to-extend
+          (raise (list (literal illegal-arguments) (head (tail (tail args))))))
+        (if (equal? actuals ())
+          (raise (list (literal illegal-arguments) (head (tail (tail args)))))
+          (let (
+              (formal (head formals))
+              (actual (head actuals))
+              (rest-formals (tail formals))
+              (rest-actuals (tail actuals))
+              (evaled-actual (eval env-for-actuals actual))
+              (binding (list formal evaled-actual))
+              (extended-env (prepend binding env-to-extend))
+            )
+            (self extended-env rest-formals rest-actuals env-for-actuals))))))
+  (macro (iself iargs ienv)
+    (eval (extend-with-args env (head args) iargs ienv) (head (tail args)))))))

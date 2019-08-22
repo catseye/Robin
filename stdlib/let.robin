@@ -1,17 +1,3 @@
-(define let (macro (self args env)
-  (bind bindings (head args)
-    (if (equal? bindings ())
-      (eval env (head (tail args)))
-      (bind binding (head bindings)
-        (bind name (head binding)
-          (if (symbol? name)
-            (bind value (eval env (head (tail binding)))
-              (bind newenv (prepend (prepend name (prepend value ())) env)
-                (bind newbindings (tail bindings)
-                  (bind newargs (prepend newbindings (tail args))
-                    (eval newenv (prepend self newargs))))))
-            (raise (prepend (literal illegal-binding) (prepend binding ()))))))))))
-
 ;'XXX'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
@@ -126,3 +112,17 @@ The identifier in a binding must be a symbol.
 `let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
 
 'XXX'
+
+(define let (macro (self args env)
+  (bind bindings (head args)
+    (if (equal? bindings ())
+      (eval env (head (tail args)))
+      (bind binding (head bindings)
+        (bind name (head binding)
+          (if (symbol? name)
+            (bind value (eval env (head (tail binding)))
+              (bind newenv (prepend (prepend name (prepend value ())) env)
+                (bind newbindings (tail bindings)
+                  (bind newargs (prepend newbindings (tail args))
+                    (eval newenv (prepend self newargs))))))
+            (raise (prepend (literal illegal-binding) (prepend binding ()))))))))))

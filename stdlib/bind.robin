@@ -1,10 +1,3 @@
-(define bind (macro (self args env)
-  (eval
-    (prepend
-      (prepend (head args) (prepend (eval env (head (tail args)))
-                                       ())) env)
-    (head (tail (tail args))))))
-
 ;'XXX'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
@@ -66,3 +59,10 @@ it evaluates.
 binding may be given.
 
 'XXX'
+
+(define bind (macro (self args env)
+  (eval
+    (prepend
+      (prepend (head args) (prepend (eval env (head (tail args)))
+                                       ())) env)
+    (head (tail (tail args))))))

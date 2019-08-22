@@ -1,8 +1,6 @@
 TODO
 ====
 
-Move all the tests to the bottom (or the top?) of each defining file.
-
 Long-term
 ---------
 

@@ -1,11 +1,3 @@
-(define boolean? (macro (self args env)
-  (bind-args (b) args env
-    (if (equal? b #t)
-      #t
-      (if (equal? b #f)
-        #t
-        #f)))))
-
 ;'XXX'
 
     -> Tests for functionality "Interpret Robin Program (with Boolean)"
@@ -37,3 +29,11 @@ exactly one argument.
     ? uncaught exception: (illegal-arguments ())
 
 'XXX'
+
+(define boolean? (macro (self args env)
+  (bind-args (b) args env
+    (if (equal? b #t)
+      #t
+      (if (equal? b #f)
+        #t
+        #f)))))
