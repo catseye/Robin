@@ -11,7 +11,7 @@ This is written in continuation-passing style.
 Every evaluation function is (and takes) a continuation, which is implemented
 as a function with signature:
 
-    Expr -> Expr -> Expr -> (Expr -> IO Expr) -> IO Expr
+    Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
 
 (This is actually the `Intrinsic` type from `Robin.Expr`.)
 
@@ -78,7 +78,7 @@ Helper functions
 Exception Handler
 -----------------
 
-> raise :: IEnv Expr -> Expr -> IO Expr
+> raise :: IEnv Expr -> Expr -> Expr
 > raise i expr =
 >     (getExceptionHandler i) expr
 

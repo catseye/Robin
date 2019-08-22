@@ -9,8 +9,8 @@ Definitions
 An _intrinsic_ is an object which behaves much like a macro, but is implemented
 intrinsically (it cannot be (non-meta-circularly) defined in Robin itself.)
 
-> type Intrinsic = IEnv Expr -> Expr -> Expr -> (Expr -> IO Expr) -> IO Expr
-> --            internal-env    env     args    continuation         result
+> type Intrinsic = IEnv Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
+> --            internal-env    env     args    continuation      result
 
 > data Expr = Symbol String
 >           | Boolean Bool
@@ -75,7 +75,7 @@ internal; Robin programs cannot see or modify it directly.  Here
 we keep things like the continuation which is the current exception
 handler.
 
-> data IEnv t = IEnv (t -> IO t)
+> data IEnv t = IEnv (t -> t)
 
 > stop expr =
 >     error ("uncaught exception: " ++ show expr)

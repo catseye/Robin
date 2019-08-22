@@ -11,7 +11,7 @@ Top-Level S-Expressions
 > execTopExprs env reactors [] = return (env, reactors)
 
 > execTopExprs env reactors ((List [Symbol "display", expr]):rest) = do
->     result <- eval (IEnv stop) env expr (\x -> do return x)
+>     result <- return $ eval (IEnv stop) env expr (\x -> x)
 >     putStrLn $ show result
 >     execTopExprs env reactors rest
 
@@ -20,12 +20,12 @@ Top-Level S-Expressions
 >         Just _ -> do
 >             error ("symbol already defined: " ++ show name)
 >         Nothing -> do
->             result <- eval (IEnv stop) env expr (\x -> do return x)
+>             result <- return $ eval (IEnv stop) env expr (\x -> x)
 >             execTopExprs (Env.insert name result env) reactors rest
 
 > execTopExprs env reactors ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) = do
->     state <- eval (IEnv stop) env stateExpr (\x -> do return x)
->     body <- eval (IEnv stop) env bodyExpr (\x -> do return x)
+>     state <- return $ eval (IEnv stop) env stateExpr (\x -> x)
+>     body <- return $ eval (IEnv stop) env bodyExpr (\x -> x)
 >     execTopExprs env ((Reactor env state body):reactors) rest
 
 > execTopExprs env reactors (topExpr:rest) = do

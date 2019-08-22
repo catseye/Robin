@@ -45,7 +45,7 @@
 >     --print body
 >     --print event
 >     --print payload
->     retval <- eval (IEnv stop) env (List [body, event, payload, state]) (\x -> do return x)
+>     retval <- return $ eval (IEnv stop) env (List [body, event, payload, state]) (\x -> x)
 >     maybeNewState <- handleRetVal retval state
 >     rest <- handleMany reactors event payload
 >     case maybeNewState of
