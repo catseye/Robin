@@ -3,7 +3,7 @@ Robin
 
 _Version 0.3.  Work-in-progress, subject to change._
 
-**Robin** is a programming language in the general vein of
+**Robin** is a programming language in the general vein of Lisp or
 [Scheme][], but which diverges significantly from Scheme in several
 respects, taking inspiration from other languages:
 
@@ -54,14 +54,13 @@ Overview of Robin
 -----------------
 
 Robin is a homoiconic S-expression-based language (similar to, for example,
-[Scheme][], with influences from [Pixley][] and [PicoLisp][]) with the
-following features:
+Lisp or [Scheme][]) with the following features:
 
 *   The _macro_ (rather than the function) as the fundamental abstraction
     mechanism.  There is a function form, but it's defined as a macro!
 *   A very small set of intrinsic operations.
-*   A very small reference implementation in Literate Haskell
-    (about 600 lines of code, excluding the explanatory prose.)
+*   A very small reference implementation in Haskell
+    (about 700 lines of code, including comments.)
 *   A fairly rich standard library of macros built on top of those intrinsic
     operations.  An implementation can choose to implement standard library
     functions directly for better performance, or can choose to implement
