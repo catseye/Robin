@@ -23,7 +23,7 @@ Top-Level S-Expressions
 >             result <- return $ eval (IEnv stop) env expr (\x -> x)
 >             execTopExprs (Env.insert name result env) reactors rest
 
-> execTopExprs env reactors ((List [Symbol "reactor", bodyExpr]):rest) = do
+> execTopExprs env reactors ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) = do
 >     state <- return $ eval (IEnv stop) env stateExpr (\x -> x)
 >     body <- return $ eval (IEnv stop) env bodyExpr (\x -> x)
 >     execTopExprs env ((Reactor env state body):reactors) rest
