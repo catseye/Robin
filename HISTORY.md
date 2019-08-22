@@ -10,6 +10,10 @@ Currently in progress.
     incorporated into the intrinsics themselves (whose names no longer
     begin with `@`.)  The rationale is that they were hardly more complex
     than the intrinsics themselves.
+*   The reactor subsystem was reformed.  Reactors define a transducer
+    function that takes an event and a state, and returns a new state
+    and a list of commands, which are simply new events.  Several other
+    details were cleared up, and the implementation was re-written.
 
 For the reference implementation,
 
