@@ -42,9 +42,9 @@ closeUpShop reactors = do
     return ()
 
 handleMany [] event payload = return []
-handleMany (reactor:reactors) event payload = do
-    retval <- return $ eval (IEnv stop) (env reactor) (List [(body reactor), event, payload, (state reactor)]) id
-    maybeNewState <- handleRetVal retval (state reactor)
+handleMany (reactor@Reactor{env=env, state=state, body=body}:reactors) event payload = do
+    retval <- return $ eval (IEnv stop) env (List [body, event, payload, state]) id
+    maybeNewState <- handleRetVal retval state
     rest <- handleMany reactors event payload
     case maybeNewState of
         Just state' -> do
