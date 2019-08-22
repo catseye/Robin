@@ -41,12 +41,18 @@ initReactors reactors = updateMany reactors (List [(Symbol "init"), (Number 0)])
 
 eventLoop :: [Reactor] -> [Expr] -> IO ()
 
-eventLoop reactors ((List [Symbol "stop", payload]):events) =
+eventLoop reactors (event@(List [Symbol "stop", payload]):events) =
+    --hPutStrLn stderr ("*** " ++ show event)
     return ()
-eventLoop reactors (event:events) = do
+eventLoop reactors (event@(List [eventType, eventPayload]):events) = do
+    --hPutStrLn stderr ("*** " ++ show event)
     handleLineTerminalEvent event
     let (reactors', newEvents) = updateMany reactors event
     eventLoop reactors' (events ++ newEvents)
+eventLoop reactors (event:events) = do
+    -- in actuality, this is an error and we should log it etc.
+    --hPutStrLn stderr ("*** " ++ show event ++ " (ignored)")
+    eventLoop reactors events
 eventLoop reactors [] = do
     -- No events in queue, so wait for an event from the facilities that
     -- can produce them.  In our small case, this means the line-terminal.

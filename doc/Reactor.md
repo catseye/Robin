@@ -158,7 +158,7 @@ Facilities can handle multiple responses in response to an event.
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
     |             (list 0
-    |               (list (literal writeln) ''Line:'')
+    |               (list (literal writeln) (literal ''Line:''))
     |               (list (literal writeln) event-payload))
     |             (list 0)))))))
     + Cat
