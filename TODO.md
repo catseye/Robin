@@ -3,7 +3,9 @@ TODO
 
 Reform the "reactor" subsystem.
 
-test that circular definitions are not allowed.
+Test that circular definitions are not allowed.
+
+Test that a reactor can raise an error and keep going.
 
 Long-term
 ---------
@@ -17,8 +19,8 @@ Maybe
 
 Evaluate a Robin expression and display it? REPL?
 
-un-literate the .lhs files?
+Un-literate all the .lhs files?
 
-bring together the docs into a single large spec?
+Bring together the docs into a single large spec?
 
-rename `raise` to `throw`
+Rename `raise` to `throw`?

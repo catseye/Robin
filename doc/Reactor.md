@@ -9,21 +9,31 @@ interact with a user, a remote server on a network, or other source of
 events.  Reactors are similar to event handlers in Javascript, or to
 processes in Erlang.
 
-In Robin 0.3, a reactor is installed by a top-level form with the syntax
-`(reactor TRANSDUCER)`.
+In Robin 0.3, a reactor is installed by giving a top-level form with the
+following syntax:
 
-The first argument of the `reactor` form is evaluated to obtain a
+    (reactor SUBSCRIPTIONS INITIAL-STATE-EXPR TRANSDUCER)
+
+The first argument of the `reactor` form is a literal (unevaluated) list
+of symbols, called the _subscriptions_ for the reactor.  Each symbol names
+a _facility_ with which the reactor wishes to be able to interact.
+
+The second argument is evaluated, and becomes the _initial state_ of the
+reactor.
+
+The third argument of the `reactor` form is evaluated to obtain a
 macro.  This is called the _transducer_ of the reactor.
 
 Whenever an event of interest to the reactor occurs, the transducer is
-evaluated, being passed three (pre-evaluated) arguments:
+evaluated, being passed two (pre-evaluated) arguments:
 
-*   A literal symbol called the _event type_, specifying what kind of event
-    happened;
-*   An arbitrary value called the _event payload_ containing more data about
-    the event, in a format specific to that kind of event; and
-*   The current state of the reactor.  (This value is undefined
-    if the transducer has never before been evaluated.)
+*   A two-element list called the _event_.  The elements are:
+    *   A literal symbol called the _event type_, specifying what kind of event
+        happened.
+    *   An arbitrary value called the _event payload_ containing more data about
+        the event, in a format specific to the type of event.
+*   The current state of the reactor.  (This will be the initial state
+    if the reactor body has never before been evaluated.)
 
 Given these things, the transducer is expected to evaluate to a list where the
 first element is the new state of the reactor, and each of the subsequent
@@ -34,14 +44,15 @@ elements is an _command_, which is itself a two-element list containing:
 *   An arbitrary value called the _command payload_ containing more data
     about the command, in a format specific to that type of command.
 
-There may of course be zero commands in the returned list.  It is an
+There may of course be zero commands in the returned list, but it is an
 error if the returned value is not a list containing at least one element.
 
 If the transducer throws an error, no commands will be executed, and
 the state of the transducer will remain unchanged.  Implementations
 should allow such occurrences to be visible and/or logged.
 
-In fact commands and events may in fact be the same thing.
+In fact, commands _are_ events.  We just call them commands when it is
+a reactor producing them, and events when a reactor is receiving them.
 
 Standard Events
 ---------------
@@ -70,7 +81,10 @@ Standard Commands
 
 ### `stop` ###
 
-Stops everything.  This command is provisional.
+Stops the current reactor, and removes it from the list of active
+reactors.  It will no longer receive any events.
+
+Note: not correctly implemented currently.
 
 Standard Facilities
 -------------------
@@ -208,13 +222,24 @@ Reactors can keep state.
     = B
     = C
 
-This leaves some open questions about reactors (and so their semantics
-will definitely change slightly in a subsequent 0.x version of Robin.)
-Namely:
+Subscribing and unsubscribing to facilities
+-------------------------------------------
 
-*   Can a reactor respond with a `close` to a facility other than the
-    facility that sent it the event it is currently handling?
-*   Currently reactors cannot communicate with each other at all.
-    How can reactors communicate with each other?  (Our idea is to have
-    a "reactor bus" facility which can relay responses from one reactor
-    into an event for another reactor.)
+TODO.
+
+Listing a facility in the SUBSCRIPTIONS of the reactor isn't the
+only way for a reactor to be notified of events from the facility.
+The reactor can also subscribe to the facility at some point after the
+reactor has started, and later even unsubscribe from it as well.
+
+Communicating between reactors
+------------------------------
+
+It is not really recommended to implement a system with multiple
+reactors.  It is better to compose a single large reactor out of
+multiple macros.
+
+But currently we allow it, so we should say some words about it.
+
+When a reactor issues a command, all other reactors see it as an
+event.
