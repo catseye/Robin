@@ -26,4 +26,4 @@
     -> "bin/robin --no-builtins pkg/small.robin pkg/fun.robin pkg/list.robin pkg/arith.robin pkg/list-arith.robin %(test-body-file)"
 
     -> Functionality "Interpret Robin Program (with Stdlib)" is implemented by shell command
-    -> "bin/robin --no-builtins pkg/stdlib.robin %(test-body-file)"
+    -> "bin/robin --no-builtins pkg/stdlib-no-builtins.robin %(test-body-file)"

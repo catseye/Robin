@@ -36,11 +36,11 @@ cat pkg/small.robin \
     pkg/list.robin \
     pkg/env.robin \
     pkg/misc.robin \
-    > pkg/stdlib.robin
+    > pkg/stdlib-no-builtins.robin
 
 cat pkg/boolean.robin \
     pkg/arith.robin \
     pkg/list.robin \
     pkg/env.robin \
     pkg/misc.robin \
-    > "pkg/stdlib-for-robini.robin"
+    > pkg/stdlib.robin

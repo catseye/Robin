@@ -26,4 +26,4 @@
     -> "bin/robin pkg/list.robin pkg/arith.robin pkg/list-arith.robin %(test-body-file)"
 
     -> Functionality "Interpret Robin Program (with Stdlib)" is implemented by shell command
-    -> "bin/robin pkg/stdlib-for-robini.robin %(test-body-file)"
+    -> "bin/robin pkg/stdlib.robin %(test-body-file)"
