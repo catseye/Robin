@@ -7,7 +7,7 @@
 Intrinsics
 ==========
 
-> robinHead i env (List [expr]) cc = do
+> robinHead i env (List [expr]) cc =
 >     eval i env expr (\x ->
 >         assertList i x (\val ->
 >             case val of
@@ -15,7 +15,7 @@ Intrinsics
 >                 other -> raise i (errMsg "expected-list" other)))
 > robinHead i env other cc = raise i (errMsg "illegal-arguments" other)
 
-> robinTail i env (List [expr]) cc = do
+> robinTail i env (List [expr]) cc =
 >     eval i env expr (\x ->
 >         assertList i x (\val ->
 >             case val of
@@ -23,18 +23,18 @@ Intrinsics
 >                 other -> raise i (errMsg "expected-list" other)))
 > robinTail i env other cc = raise i (errMsg "illegal-arguments" other)
 
-> robinPrepend i env (List [e1, e2]) cc = do
+> robinPrepend i env (List [e1, e2]) cc =
 >     eval i env e1 (\x1 -> eval i env e2 (\val ->
 >             case val of
 >                 List x2 -> cc $ List (x1:x2)
 >                 other -> raise i (errMsg "expected-list" other)))
 > robinPrepend i env other cc = raise i (errMsg "illegal-arguments" other)
 
-> equalP i env (List [e1, e2]) cc = do
+> equalP i env (List [e1, e2]) cc =
 >     eval i env e1 (\x1 -> eval i env e2 (\x2 -> cc $ Boolean (x1 == x2)))
 > equalP i env other cc = raise i (errMsg "illegal-arguments" other)
 
-> predP pred i env (List [expr]) cc = do
+> predP pred i env (List [expr]) cc =
 >     eval i env expr (\x -> cc $ Boolean $ pred x)
 > predP pred i env other cc = raise i (errMsg "illegal-arguments" other)
 
@@ -43,7 +43,7 @@ Intrinsics
 > macroP = predP isMacro
 > numberP = predP isNumber
 
-> robinSubtract i env (List [xexpr, yexpr]) cc = do
+> robinSubtract i env (List [xexpr, yexpr]) cc =
 >     eval i env xexpr (\x ->
 >         assertNumber i x (\(Number xv) ->
 >             eval i env yexpr (\y ->
@@ -51,7 +51,7 @@ Intrinsics
 >                     cc (Number (xv - yv))))))
 > robinSubtract i env other cc = raise i (errMsg "illegal-arguments" other)
 
-> robinSign i env (List [expr]) cc = do
+> robinSign i env (List [expr]) cc =
 >     eval i env expr (\x ->
 >         assertNumber i x (\(Number xv) ->
 >             cc $ Number $ sign xv))
@@ -59,7 +59,7 @@ Intrinsics
 
 > sign x = if x == 0 then 0 else if x < 0 then -1 else 1
 
-> robinIf i env (List [test, texpr, fexpr]) cc = do
+> robinIf i env (List [test, texpr, fexpr]) cc =
 >     eval i env test (\x ->
 >         assertBoolean i x (\(Boolean b) ->
 >             case b of
@@ -67,9 +67,9 @@ Intrinsics
 >                 False -> eval i env fexpr cc))
 > robinIf i env other cc = raise i (errMsg "illegal-arguments" other)
 
-> robinEval i env (List [envlist, form]) cc = do
+> robinEval i env (List [envlist, form]) cc =
 >     eval i env envlist (\newEnv ->
->         eval i env form (\body -> do
+>         eval i env form (\body ->
 >             eval i newEnv body cc))
 > robinEval i env other cc = raise i (errMsg "illegal-arguments" other)
 

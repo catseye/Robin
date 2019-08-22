@@ -39,7 +39,7 @@ See the relevant files in `stdlib` for normative definitions.
 
 > choose i env (List [(List [(Symbol "else"), branch])]) cc =
 >     eval i env branch cc
-> choose i env (List ((List [test, branch]):rest)) cc = do
+> choose i env (List ((List [test, branch]):rest)) cc =
 >     eval i env test (\x ->
 >         case x of
 >             Boolean True ->
@@ -67,16 +67,16 @@ See the relevant files in `stdlib` for normative definitions.
 > robinLet i env other cc = raise i (errMsg "illegal-arguments" other)
 
 > --       formals actuals origActuals env i cc
-> evalArgs [] [] _ _ _ cc = do
+> evalArgs [] [] _ _ _ cc =
 >     cc Env.empty
-> evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env i cc = do
+> evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env i cc =
 >     eval i env actual (\value ->
 >         evalArgs formals actuals origActuals env i (\rest ->
 >             cc $ Env.insert formal value rest))
-> evalArgs _ _ origActuals _ i cc = do
+> evalArgs _ _ origActuals _ i cc =
 >     raise i (errMsg "illegal-arguments" (List origActuals))
 
-> robinBindArgs i env (List [(List formals), givenArgs, givenEnv, body]) cc = do
+> robinBindArgs i env (List [(List formals), givenArgs, givenEnv, body]) cc =
 >     eval i env givenArgs (\(List actuals) ->
 >         eval i env givenEnv (\outerEnv ->
 >             evalArgs formals actuals actuals outerEnv i (\argEnv ->
@@ -85,19 +85,19 @@ See the relevant files in `stdlib` for normative definitions.
 
 WHATEVER...
 
-> robinFun i closedEnv (List [(List formals), body]) cc = do
+> robinFun i closedEnv (List [(List formals), body]) cc =
 >     cc $ Intrinsic "<lambda>" fun
 >   where
->     fun i env (List actuals) cc = do
+>     fun i env (List actuals) cc =
 >         evalArgs formals actuals actuals env i (\argEnv ->
 >             eval i (union argEnv closedEnv) body cc)
->     evalArgs [] [] _ _ _ cc = do
+>     evalArgs [] [] _ _ _ cc =
 >         cc Env.empty
->     evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env i cc = do
+>     evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env i cc =
 >         eval i env actual (\value ->
 >             evalArgs formals actuals origActuals env i (\rest ->
 >                 cc $ Env.insert formal value rest))
->     evalArgs _ _ origActuals _ i cc = do
+>     evalArgs _ _ origActuals _ i cc =
 >         raise i (errMsg "illegal-arguments" (List origActuals))
 > robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
 
