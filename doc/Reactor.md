@@ -2,11 +2,11 @@ Robin Reactors
 ==============
 
 To separate the concerns of computation and interaction, Robin provides
-a construct called a _reactor_.  While normal S-expression evaluation
+a construct called a _reactor_.  While evaluation of a Robin expression
 accomplishes side-effect-free computation, reactors permit the construction
 of so-called "reactive" programs, which are driven by events and may
 interact with a user, a remote server on a network, or other source of
-events.  Reactors may be similar to event handlers in Javascript, or to
+events.  Reactors are similar to event handlers in Javascript, or to
 processes in Erlang.
 
 In Robin 0.3, a reactor is installed by a top-level form with the syntax
@@ -52,16 +52,21 @@ When a reactor first starts up it will receive an event telling it that
 it has started up.  The event type for this event is the literal symbol
 `init`.
 
-There are a few things a reactor will almost always want to do when it
-receives an `init` event.  These are:
+There are two things a reactor will almost always want to do when it
+receives an `init` event: establish a known initial state, and
+subscribe to facilities.
 
-*   Subscribe to facilities.
-*   Return a known initial state.
+It establishes a known initial state by returning an initial state
+value as the first element of the list it returns.
 
-If a reactor isn't subscribed to any facilities, it won't necessarily receive any
-events.  So it's likely that it may wish to react to the `INIT` event by
-issuing commands that probe what kinds of facilities it can subscribe to,
-and/or subscribe to those facilities.
+It subscribes to facilities by returning commands which request
+subscription to those facilities.  Once subscribed, it will receive
+`subscribed` events from them.  If the facility is not available, it
+will receive a `not-available` event.  It may then elect to abort,
+or choose an alternate facility, or so forth.
+
+If a reactor isn't subscribed to any facilities, it won't necessarily
+receive any events, although this is implementation-specific.
 
 The set of facilities is expected to be largely implementation-specific.
 
@@ -74,33 +79,36 @@ Facility `line-terminal`
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
-The `line-terminal` facility allows a Robin program to interact with a
-terminal-based, line-buffered "standard I/O" a la Unix.  Note that there is
-nothing in the Robin language that requires this to be "the real standard
-I/O"; Robin denies any knowledge of that sort of thing.  It could well be
+The `line-terminal` facility allows a Robin program to interact with
+something or someone over a line-oriented protocol, similar to what
+"standard I/O" routed to a terminal gets you under Unix.  Note that
+this is not guaranteed to be the "real" standard I/O; it could well be
 simulated with modal dialogue boxes in a GUI, or with textareas on a web
-page under Javascript.
+page under Javascript, or so forth.
 
-A reactor accessing the `line-terminal` facility may make responses in the
-form
+The `line-terminal` facility understands commands of the form
 
-    (writeln <STRING> <NEW-STATE>)
+    (writeln <STRING>)
 
 The `<STRING>` argument should be a Robin string (list of integers).  Those
-integers, as bytes, are sent to something that resembles the "standard output"
-under Unix.  (When attached to a terminal, this would typically cause an
-ASCII representation of those bytes to be displayed.)
+integers, as bytes, are sent to whetever is listening on the other end of
+the line terminal.  When attached to an actual terminal console (whether real
+or emulated), this would typically cause an ASCII representation of those bytes
+to be displayed.
 
-In the following example, the string is printed multiple times because the
-reactor is reacting indiscriminately to multiple events — we'll get to that
-in a second.  In addition, note that this reactor essentially doesn't keep
-any state — the initial state of the reactor is simply the integer 0, and
-the state is set to 0 after each event is reacted to.
+Knowing this, we can write a "Hello, world!" program.  To keep it
+simple, we'll simply assume the line-terminal facility exists.
+We won't bother to subscribe to it.  In addition, note that this reactor
+essentially doesn't keep any state — the initial state of the reactor is simply
+the integer 0, and the state is set to 0 after each event is reacted to.
 
-    | (reactor (line-terminal) 0 (macro (self args env)
-    |   (list 0 (list (literal writeln) (literal ''Hello, world!'')))))
-    = Hello, world!
-    = Hello, world!
+    > | (reactor (macro (self args env)
+    > |   (if (equal? (head args) (literal init))
+    > |     (list 0)
+    > |     (list 0 (list (literal writeln) (literal ''Hello, world!''))))))
+
+Older docs
+----------
 
 Reactors which interact with `line-terminal` receive three kinds of events.
 
