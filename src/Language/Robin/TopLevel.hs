@@ -26,7 +26,7 @@ collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) env react
         state = eval (IEnv stop) env stateExpr id
         body = eval (IEnv stop) env bodyExpr id
     in
-        collect rest env ((Reactor env state body):reactors) results
+        collect rest env (Reactor{ env=env, state=state, body=body }:reactors) results
 
 collect (topExpr:rest) env reactors results =
     error ("illegal top-level form: " ++ show topExpr)

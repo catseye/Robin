@@ -8,10 +8,12 @@ import Language.Robin.Expr
 import qualified Language.Robin.Env as Env
 import Language.Robin.Eval
 
-data Reactor = Reactor Expr Expr  Expr
-   deriving (Show, Eq)
---                     env  state body
--- body takes three arguments: event payload state
+data Reactor = Reactor {
+         env :: Expr,
+         state :: Expr,
+         body :: Expr   -- body takes three arguments: event-type event-payload state
+     } deriving (Show, Eq)
+
 
 initReactors :: [Reactor] -> IO [Reactor]
 initReactors reactors = do
@@ -40,17 +42,13 @@ closeUpShop reactors = do
     return ()
 
 handleMany [] event payload = return []
-handleMany (reactor@(Reactor env state body):reactors) event payload = do
-    --print env
-    --print body
-    --print event
-    --print payload
-    retval <- return $ eval (IEnv stop) env (List [body, event, payload, state]) (\x -> x)
-    maybeNewState <- handleRetVal retval state
+handleMany (reactor:reactors) event payload = do
+    retval <- return $ eval (IEnv stop) (env reactor) (List [(body reactor), event, payload, (state reactor)]) id
+    maybeNewState <- handleRetVal retval (state reactor)
     rest <- handleMany reactors event payload
     case maybeNewState of
         Just state' -> do
-            return (Reactor env state' body:rest)
+            return (reactor{ state=state' }:rest)
         Nothing ->
             return rest
 
