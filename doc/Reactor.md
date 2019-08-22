@@ -221,6 +221,101 @@ Reactors can keep state.
     = B
     = C
 
+Multiple reactors can be instantiated, will react to the same events.
+Note that reactors react in the *opposite* order they were installed.
+
+    | (define inc (macro (self args env)
+    |               (subtract (eval env (head args)) (subtract 0 1))))
+    | (reactor (line-terminal) 65
+    |   (macro (self args env)
+    |     (bind state (head (tail args))
+    |       (bind event (head args)
+    |         (bind event-type (head event)
+    |           (bind event-payload (head (tail event))
+    |             (if (equal? event-type (literal readln))
+    |               (list (inc state) (list (literal writeln) (list state)))
+    |               (list state))))))))
+    | (reactor (line-terminal) 0
+    |   (macro (self args env)
+    |     (bind event (head args)
+    |       (bind event-type (head event)
+    |         (bind event-payload (head (tail event))
+    |           (if (equal? event-type (literal readln))
+    |             (list 0
+    |               (list (literal writeln) event-payload))
+    |             (list 0)))))))
+    + Cat
+    + Dog
+    + Giraffe
+    = Cat
+    = A
+    = Dog
+    = B
+    = Giraffe
+    = C
+
+A reactor can stop by issuing a `stop` command.
+
+    | (define inc (macro (self args env)
+    |               (subtract (eval env (head args)) (subtract 0 1))))
+    | (reactor (line-terminal) 65
+    |   (macro (self args env)
+    |     (bind state (head (tail args))
+    |       (bind event (head args)
+    |         (bind event-type (head event)
+    |           (bind event-payload (head (tail event))
+    |             (if (equal? event-type (literal readln))
+    |               (if (equal? state 68)
+    |                 (list state (list (literal stop) 0))
+    |                 (list (inc state) (list (literal writeln) event-payload)))
+    |               (list state))))))))
+    + Cat
+    + Dog
+    + Giraffe
+    + Penguin
+    + Alligator
+    = Cat
+    = Dog
+    = Giraffe
+
+Stopping one reactor does not stop others.
+
+    | (define inc (macro (self args env)
+    |               (subtract (eval env (head args)) (subtract 0 1))))
+    | (reactor (line-terminal) 65
+    |   (macro (self args env)
+    |     (bind state (head (tail args))
+    |       (bind event (head args)
+    |         (bind event-type (head event)
+    |           (bind event-payload (head (tail event))
+    |             (if (equal? event-type (literal readln))
+    |               (if (equal? state 68)
+    |                 (list state (list (literal stop) 0))
+    |                 (list (inc state) (list (literal writeln) event-payload)))
+    |               (list state))))))))
+    | (reactor (line-terminal) 65
+    |   (macro (self args env)
+    |     (bind state (head (tail args))
+    |       (bind event (head args)
+    |         (bind event-type (head event)
+    |           (bind event-payload (head (tail event))
+    |             (if (equal? event-type (literal readln))
+    |               (list (inc state) (list (literal writeln) (list state)))
+    |               (list state))))))))
+    + Cat
+    + Dog
+    + Giraffe
+    + Penguin
+    + Alligator
+    = A
+    = Cat
+    = B
+    = Dog
+    = C
+    = Giraffe
+    = D
+    = E
+
 Subscribing and unsubscribing to facilities
 -------------------------------------------
 

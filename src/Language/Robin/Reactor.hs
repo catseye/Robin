@@ -1,13 +1,14 @@
 module Language.Robin.Reactor where
 
 import qualified Data.Char as Char
-
+import Data.Int
 import System.IO
 
 import Language.Robin.Expr
 import Language.Robin.Eval
 
 data Reactor = Reactor {
+         rid :: Int32,
          env :: Expr,
          state :: Expr,
          body :: Expr   -- body takes three arguments: event state
@@ -15,13 +16,22 @@ data Reactor = Reactor {
 
 
 update :: Reactor -> Expr -> (Reactor, [Expr])
-update reactor@Reactor{env=env, state=state, body=body} event =
+update reactor@Reactor{rid=rid, env=env, state=state, body=body} event =
     case eval (IEnv stop) env (List [body, event, state]) id of
         (List (state':commands)) ->
-            (reactor{ state=state' }, commands)
+            (reactor{ state=state' }, applyStop commands)
         _ ->
             -- in actuality, this is an error and we should log it etc.
             (reactor, [])
+    where
+        -- If the reactor issued a 'stop' command, decorate that command
+        -- with the rid of the reactor, so the event loop knows which
+        -- reactor to stop.
+        applyStop [] = []
+        applyStop ((List [Symbol "stop", _]):commands) =
+            (List [Symbol "stop", Number rid]:applyStop commands)
+        applyStop (command:commands) =
+            (command:applyStop commands)
 
 
 updateMany :: [Reactor] -> Expr -> ([Reactor], [Expr])
@@ -39,21 +49,31 @@ updateMany (reactor:reactors) event =
 
 initReactors reactors = updateMany reactors (List [(Symbol "init"), (Number 0)])
 
-eventLoop :: [Reactor] -> [Expr] -> IO ()
+showEvent True event = hPutStrLn stderr ("*** " ++ show event)
+showEvent False _ = return ()
 
-eventLoop reactors (event@(List [Symbol "stop", payload]):events) =
-    --hPutStrLn stderr ("*** " ++ show event)
+eventLoop :: Bool -> [Reactor] -> [Expr] -> IO ()
+
+eventLoop showEvents [] events =
+    -- No more reactors to react to things, so we can just stop.
     return ()
-eventLoop reactors (event@(List [eventType, eventPayload]):events) = do
-    --hPutStrLn stderr ("*** " ++ show event)
+
+eventLoop showEvents reactors (event@(List [Symbol "stop", Number reactorId]):events) = do
+    showEvent showEvents event
+    let reactors' = filter (\r -> rid r /= reactorId) reactors
+    eventLoop showEvents reactors' events
+
+eventLoop showEvents reactors (event@(List [eventType, eventPayload]):events) = do
+    showEvent showEvents event
     handleLineTerminalEvent event
     let (reactors', newEvents) = updateMany reactors event
-    eventLoop reactors' (events ++ newEvents)
-eventLoop reactors (event:events) = do
-    -- in actuality, this is an error and we should log it etc.
-    --hPutStrLn stderr ("*** " ++ show event ++ " (ignored)")
-    eventLoop reactors events
-eventLoop reactors [] = do
+    eventLoop showEvents reactors' (events ++ newEvents)
+
+eventLoop showEvents reactors (event:events) = do
+    showEvent showEvents event
+    eventLoop showEvents reactors events
+
+eventLoop showEvents reactors [] = do
     -- No events in queue, so wait for an event from the facilities that
     -- can produce them.  In our small case, this means the line-terminal.
     stillOpen <- hIsOpen stdin
@@ -63,7 +83,7 @@ eventLoop reactors [] = do
             case eof of
                 False -> do
                     event <- waitForLineTerminalEvent
-                    eventLoop reactors [event]
+                    eventLoop showEvents reactors [event]
                 True  -> return ()
         False -> return ()
 

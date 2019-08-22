@@ -17,18 +17,36 @@ main = do
     args <- getArgs
     case args of
         [] -> do
-            putStrLn "Usage: robin [--no-builtins] {source.robin}"
-            exitWith $ ExitFailure 1
-        ("--no-builtins":rest) -> do
-            (env, reactors, results) <- processArgs rest robinIntrinsics [] []
-            writeResults $ reverse results
-            runReactors reactors
-            exitWith ExitSuccess
+            abortWith "Usage: robin [--no-builtins] [--show-events] {source.robin}"
         _ -> do
-            (env, reactors, results) <- processArgs args (mergeEnvs robinIntrinsics robinBuiltins) [] []
+            let (args', env', showEvents) = processFlags args (mergeEnvs robinIntrinsics robinBuiltins) False
+            (_, reactors, results) <- processArgs args' env'
             writeResults $ reverse results
-            runReactors reactors
+            runReactors reactors showEvents
             exitWith ExitSuccess
+
+
+abortWith msg = do
+    hPutStrLn stderr msg
+    exitWith $ ExitFailure 1
+
+
+processFlags ("--no-builtins":rest) env showEvents = processFlags rest robinIntrinsics showEvents
+processFlags ("--show-events":rest) env showEvents = processFlags rest env True
+processFlags args env showEvents = (args, env, showEvents)
+
+
+processArgs args env = processArgs' args env [] [] where
+    processArgs' [] env reactors results = return (env, reactors, results)
+    processArgs' (filename:rest) env reactors results = do
+        program <- readFile filename
+        case parseRobin program of
+            Right topExprs -> do
+                (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
+                processArgs' rest env' reactors' results'
+            Left problem -> do
+                hPutStr stderr (show problem)
+                exitWith $ ExitFailure 1
 
 
 writeResults [] = return ()
@@ -37,19 +55,7 @@ writeResults (result:results) = do
     writeResults results
 
 
-runReactors [] = return ()
-runReactors reactors = do
+runReactors [] showEvents = return ()
+runReactors reactors showEvents = do
     let (reactors', events') = initReactors reactors
-    eventLoop reactors' events'
-
-
-processArgs [] env reactors results = return (env, reactors, results)
-processArgs (filename:rest) env reactors results = do
-    program <- readFile filename
-    case parseRobin program of
-        Right topExprs -> do
-            (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
-            processArgs rest env' reactors' results'
-        Left problem -> do
-            hPutStr stderr (show problem)
-            exitWith $ ExitFailure 1
+    eventLoop showEvents reactors' events'
