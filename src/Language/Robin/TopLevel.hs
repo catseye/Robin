@@ -11,6 +11,13 @@ collect [] env reactors results = (env, reactors, results)
 collect ((List [Symbol "display", expr]):rest) env reactors results =
     collect rest env reactors (eval (IEnv stop) env expr id:results)
 
+collect ((List [Symbol "assert", expr]):rest) env reactors results =
+    case eval (IEnv stop) env expr id of
+        Boolean False ->
+            error ("assertion failed: " ++ show expr)
+        _ ->
+            collect rest env reactors results
+
 collect ((List [Symbol "define", name@(Symbol _), expr]):rest) env reactors results =
     case Env.find name env of
         Just _ ->

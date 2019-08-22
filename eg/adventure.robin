@@ -1,4 +1,4 @@
-;''Requires stdlib.''
+(assert fun)  ;''A way to signal that it requires stdlib.''
 
 (reactor (line-terminal) (list 0 0) (macro (self args env)
   (let ((event (head args))
