@@ -1,11 +1,10 @@
-;''FIXME -- uses old (Robin 0.2) Reactor syntax, not expected to work under 0.3''
-
-;(require small list arith)
+;''Requires stdlib.''
 
 (reactor (line-terminal) (list 0 0) (macro (self args env)
   (let ((event (head args))
-        (payload (head (tail args)))
-        (state (head (tail (tail args))))
+        (event-type (head event))
+        (event-payload (head (tail event)))
+        (state (head (tail args)))
         (x (head state))
         (y (head (tail state)))
         (move (fun (msg dx dy state)
@@ -22,16 +21,16 @@
           (list state (list (literal writeln)
                             (literal ''Please enter n, s, e, or w, or q to quit.''))))))
     (choose
-      ((equal? event (literal init))
+      ((equal? event-type (literal init))
         (list state (list (literal writeln)
                           (literal ''Welcome to Not Quite an Adventure!''))))
-      ((equal? event (literal eof))
+      ((equal? event-type (literal eof))
         (list state (list (literal writeln)
                           (literal ''Bye!''))))
-      ((equal? event (literal readln))
-        (if (empty? payload)
+      ((equal? event-type (literal readln))
+        (if (empty? event-payload)
           (dont-understand state)
-          (bind letter (list (head payload))
+          (bind letter (list (head event-payload))
             (choose
               ((equal? letter (literal ''n''))
                 (move (literal ''North!'') 0 1 state))
@@ -42,7 +41,7 @@
               ((equal? letter (literal ''w''))
                 (move (literal ''West!'') (subtract 0 1) 0 state))
               ((equal? letter (literal ''q''))
-                (list state (list (literal close) 0)))
+                (list state (list (literal stop) 0)))
               (else
                 (dont-understand state))))))
        (else
