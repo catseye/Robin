@@ -30,6 +30,20 @@ Also, more than one top-level S-expression may appear in a single file.
     = #t
     = #f
 
+### `assert` ###
+
+`(assert EXPR)` evaluates the EXPR and, if there was an error evaluating
+the EXPR, or if the EXPR evaluates to `#f`, aborts processing the file.
+
+    | (assert #t)
+    = 
+
+    | (assert #f)
+    ? assertion failed: #f
+
+    | (assert this-identfier-is-not-bound)
+    ? unbound-identifier
+
 ### `define` ###
 
 `(define ATOM EXPR)` defines a global name.

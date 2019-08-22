@@ -14,6 +14,7 @@ Robin 0.3 (ca 2019)
     function that takes an event and a state, and returns a new state
     and a list of commands, which are simply new events.  Several other
     details were cleared up, and the implementation was re-written.
+*   The `assert` top-level form was added.
 
 For the reference implementation,
 

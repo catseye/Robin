@@ -10,8 +10,6 @@ Environments as abstract maps, alist->env, env->alist
 
 Values of "opaque" type, to support that.
 
-Top-level: `assert`, `requires` (sugar for a form of `assert`).
-
 Maybe
 -----
 
