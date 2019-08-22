@@ -123,8 +123,93 @@ normative in this regard:
     hierarchy" analogy.)  No symbol in it depends on any symbol
     defined in any other package; only intrinsics and other symbols
     in `small`.
+
+Here is a graphical depiction of the "hierarchy" of defined symbols
+(it's in HTML because it'd be trickier to depict in plain text or
+Markdown.)
+
+<table style="border: 1px solid; padding: 1em; margin: 1em">
+  <tr><th>Standard Library</th></tr>
+  <tr><td>
+
+    <p><i>(boolean)</i> and or xor not boolean?</p>
+
+    <p><i>(list)</i> empty? map fold reverse filter find append elem? length index
+    take-while drop-while first rest last prefix? flatten</p>
     
-For a graphical depiction of the "hierarchy" of defined symbols
-(which is not really a proper hierarchy), please see
-`doc/Hierarchy_of_Defined_Symbols.html` (it's in HTML because it'd
-be trickier to depict in plain text or Markdown.)
+    <p><i>(alist)</i> lookup extend delete</p>
+
+    <p><i>(env)</i> env? export sandbox unbind unshadow</p>
+
+    <p><i>(arith)</i> abs add &gt; &gt;= &lt; &lt;= multiply divide remainder</p>
+
+    <p><i>(misc)</i> itoa</p>
+
+    <table style="border: 1px solid; padding: 1em; margin: 1em">
+      <tr><th>"Fun"</th></tr>
+      <tr><td>
+
+        fun
+
+        <table style="border: 1px solid; padding: 1em; margin: 1em">
+          <tr><th>Intrinsics-Wrappers</th></tr>
+          <tr><td>
+            head
+            tail
+            prepend
+            list?
+            symbol?
+            macro?
+            number?
+            equal?
+            subtract
+            sign
+            macro
+            eval
+            if
+            raise
+            catch
+
+            <table style="border: 1px solid; padding: 1em; margin: 1em">
+              <tr><th>"Small"</th></tr>
+              <tr><td>
+                literal
+                list
+                bind
+                env
+                let
+                choose
+                bind-args
+
+                <table style="border: 1px solid; padding: 1em; margin: 1em">
+                  <tr><th>Intrinsics</th></tr>
+                  <tr><td>
+                    @head
+                    @tail
+                    @prepend
+                    @list?
+                    @symbol?
+                    @macro?
+                    @number?
+                    @equal?
+                    @subtract
+                    @sign
+                    @macro
+                    @eval
+                    @if
+                    @raise
+                    @catch
+                  </td></tr>
+                </table>
+
+              </td></tr>
+            </table>
+
+          </td></tr>
+        </table>
+
+      </td></tr>
+    </table>
+
+  </td></tr>
+</table>
