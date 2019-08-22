@@ -9,7 +9,7 @@ import Language.Robin.Env (mergeEnvs)
 import Language.Robin.Parser (parseRobin)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
-import Language.Robin.TopLevel (execTopExprs)
+import qualified Language.Robin.TopLevel as TopLevel
 import Language.Robin.Reactor (eventLoop, initReactors)
 
 
@@ -20,30 +20,36 @@ main = do
             putStrLn "Usage: robin [--no-builtins] {source.robin}"
             exitWith $ ExitFailure 1
         ("--no-builtins":rest) -> do
-            (env, reactors) <- processArgs robinIntrinsics [] rest
-            case reactors of
-                [] ->
-                    exitWith ExitSuccess
-                _ -> do
-                    reactors' <- initReactors reactors
-                    eventLoop reactors'
+            (env, reactors, results) <- processArgs rest robinIntrinsics [] []
+            writeResults $ reverse results
+            runReactors reactors
+            exitWith ExitSuccess
         _ -> do
-            (env, reactors) <- processArgs (mergeEnvs robinIntrinsics robinBuiltins) [] args
-            case reactors of
-                [] ->
-                    exitWith ExitSuccess
-                _ -> do
-                    reactors' <- initReactors reactors
-                    eventLoop reactors'
+            (env, reactors, results) <- processArgs args (mergeEnvs robinIntrinsics robinBuiltins) [] []
+            writeResults $ reverse results
+            runReactors reactors
+            exitWith ExitSuccess
 
 
-processArgs env reactors [] = return (env, reactors)
-processArgs env reactors (filename:rest) = do
+writeResults [] = return ()
+writeResults (result:results) = do
+    putStrLn $ show result
+    writeResults results
+
+
+runReactors [] = return ()
+runReactors reactors = do
+    reactors' <- initReactors reactors
+    eventLoop reactors'
+
+
+processArgs [] env reactors results = return (env, reactors, results)
+processArgs (filename:rest) env reactors results = do
     program <- readFile filename
     case parseRobin program of
         Right topExprs -> do
-            (env', reactors') <- execTopExprs env reactors topExprs
-            processArgs env' reactors' rest
+            (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
+            processArgs rest env' reactors' results'
         Left problem -> do
             hPutStr stderr (show problem)
             exitWith $ ExitFailure 1
