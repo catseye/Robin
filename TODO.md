@@ -3,8 +3,6 @@ TODO
 
 Test that circular definitions are not allowed.
 
-Test that a reactor can raise an error and keep going.
-
 Long-term
 ---------
 

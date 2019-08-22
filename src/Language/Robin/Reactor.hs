@@ -17,13 +17,16 @@ data Reactor = Reactor {
 
 update :: Reactor -> Expr -> (Reactor, [Expr])
 update reactor@Reactor{rid=rid, env=env, state=state, body=body} event =
-    case eval (IEnv stop) env (List [body, event, state]) id of
+    case eval (IEnv catchException) env (List [body, event, state]) id of
+        command@(List [(Symbol "uncaught-exception"), expr]) ->
+            (reactor, [command])
         (List (state':commands)) ->
             (reactor{ state=state' }, applyStop commands)
-        _ ->
-            -- in actuality, this is an error and we should log it etc.
-            (reactor, [])
+        expr ->
+            (reactor, [List [(Symbol "malformed-response"), expr]])
     where
+        catchException expr = List [(Symbol "uncaught-exception"), expr]
+
         -- If the reactor issued a 'stop' command, decorate that command
         -- with the rid of the reactor, so the event loop knows which
         -- reactor to stop.
