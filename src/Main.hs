@@ -39,8 +39,8 @@ writeResults (result:results) = do
 
 runReactors [] = return ()
 runReactors reactors = do
-    reactors' <- initReactors reactors
-    eventLoop reactors'
+    let (reactors', events') = initReactors reactors
+    eventLoop reactors' events'
 
 
 processArgs [] env reactors results = return (env, reactors, results)

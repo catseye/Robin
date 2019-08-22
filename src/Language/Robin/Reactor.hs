@@ -5,7 +5,6 @@ import qualified Data.Char as Char
 import System.IO
 
 import Language.Robin.Expr
-import qualified Language.Robin.Env as Env
 import Language.Robin.Eval
 
 data Reactor = Reactor {
@@ -15,63 +14,58 @@ data Reactor = Reactor {
      } deriving (Show, Eq)
 
 
-initReactors :: [Reactor] -> IO [Reactor]
-initReactors reactors = do
-     reactors'' <- handleMany reactors (Symbol "init") (Number 0)
-     return reactors''
+update :: Reactor -> Expr -> Expr -> (Reactor, [Expr])
+update reactor@Reactor{env=env, state=state, body=body} eventType payload =
+    case eval (IEnv stop) env (List [body, eventType, payload, state]) id of
+        (List (state':commands)) ->
+            (reactor{ state=state' }, commands)
+        _ ->
+            -- in actuality, this is an error and we should log it etc.
+            (reactor, [])
 
-eventLoop [] = return ()
-eventLoop reactors = do
-     stillOpen <- hIsOpen stdin
-     case stillOpen of
-         True -> do
-             eof <- hIsEOF stdin
-             case eof of
-                 False -> cromulentEvent reactors
-                 True  -> closeUpShop reactors
-         False -> closeUpShop reactors
 
-cromulentEvent reactors = do
+updateMany :: [Reactor] -> Expr -> Expr -> ([Reactor], [Expr])
+updateMany [] eventType payload = ([], [])
+updateMany (reactor:reactors) eventType payload =
+    let
+        (reactor', commands) = update reactor eventType payload
+        (reactors', commands') = updateMany reactors eventType payload
+    in
+        ((reactor':reactors'), commands ++ commands')
+
+--
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+--
+
+initReactors reactors = updateMany reactors (Symbol "init") (Number 0)
+
+eventLoop :: [Reactor] -> [Expr] -> IO ()
+eventLoop reactors (event:events) = do
+   handleLineTerminalEvent event
+   let (reactors', newEvents) = updateMany reactors event (Number 0)
+   eventLoop reactors' (events ++ newEvents)
+
+eventLoop reactors [] = do
+    -- No events in queue, so wait for an event from the facilities that
+    -- can produce them.  In our small case, this means the line-terminal.
+    stillOpen <- hIsOpen stdin
+    case stillOpen of
+        True -> do
+            eof <- hIsEOF stdin
+            case eof of
+                False -> do
+                    event <- waitForLineTerminalEvent
+                    eventLoop reactors [event]
+                True  -> return ()
+        False -> return ()
+
+waitForLineTerminalEvent = do
     inpStr <- getLine
     let payload = List (map (\x -> Number (fromIntegral $ Char.ord x)) inpStr)
-    reactors' <- handleMany reactors (Symbol "readln") payload
-    eventLoop reactors'
+    return (Symbol "readln") -- payload?
 
-closeUpShop reactors = do
-    reactors' <- handleMany reactors (Symbol "eof") (Number 0)
-    return ()
-
-handleMany [] event payload = return []
-handleMany (reactor@Reactor{env=env, state=state, body=body}:reactors) event payload = do
-    retval <- return $ eval (IEnv stop) env (List [body, event, payload, state]) id
-    maybeNewState <- handleRetVal retval state
-    rest <- handleMany reactors event payload
-    case maybeNewState of
-        Just state' -> do
-            return (reactor{ state=state' }:rest)
-        Nothing ->
-            return rest
-
--- Returns Just the new state, or Nothing if the reactor bowed out.
-
-handleRetVal retval state  =
-    case retval of
-        (List (state':responses)) -> do
-            handleResponses state' responses
-        _ -> do
-            return (Just state)
-
--- Takes the state mainly so it can return Just state on success and Nothing if the reactor bowed out.
--- Also, after a close, it does not handle any more responses.  The reactor bowed out, after all.
-
-handleResponses state [] = return (Just state)
-handleResponses state (List [Symbol "writeln", payload]:responses) = do
+handleLineTerminalEvent (List [Symbol "writeln", payload]) = do
     let List l = payload
     let s = map (\(Number x) -> Char.chr $ fromIntegral $ x) l
     hPutStrLn stdout s
-    handleResponses state responses
-handleResponses state (List [Symbol "close", payload]:responses) = do
-    return Nothing
-handleResponses state (response:responses) = do
-    hPutStrLn stderr ("malformed response " ++ show response)
-    handleResponses state responses
+handleLineTerminalEvent _ = return ()
