@@ -87,6 +87,11 @@ Some implications of this setup in practice are:
     whatsoever, as long as the implementation knows what the
     semantics of the symbol is.
 
+*   To signal that a program requires some symbol to be defined
+    before the program can be considered meaningful, it may
+    assert that the symbol is defined, using the `assert`
+    top-level form.
+
 The more pragmatic aspect of how the reference implementation
 currently handles the issue of dependencies between Robin programs,
 keeping in mind that this is an implementation issue and _not_ a
@@ -122,7 +127,8 @@ normative in this regard:
     (somewhere between possible and liveable in that "Maslow's
     hierarchy" analogy.)  No symbol in it depends on any symbol
     defined in any other package; only intrinsics and other symbols
-    in `small`.
+    in `small`.  The functions in the `small` package have also
+    been implemented directly in Haskell, in the reference interpreter.
 
 Here is a graphical depiction of the "hierarchy" of defined symbols
 (it's in HTML because it'd be trickier to depict in plain text or
@@ -146,7 +152,7 @@ Markdown.)
     <p><i>(misc)</i> itoa</p>
 
     <table style="border: 1px solid; padding: 1em; margin: 1em">
-      <tr><th>"Small"</th></tr>
+      <tr><th>"Small" Library</th></tr>
       <tr><td>
         literal
         list
