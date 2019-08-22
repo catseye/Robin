@@ -1,41 +1,41 @@
-;''FIXME -- uses old (Robin 0.2) Reactor syntax, not expected to work under 0.3''
-
 ;''
-    Deadfish in Robin 0.2 -- requires stdlib
+    Deadfish in Robin 0.3 -- requires stdlib
 ''
-(reactor (line-terminal) 0 (macro (self args env)
-  (bind event (head args)
-    (bind payload (head (tail args))
-      (bind prev-state (head (tail (tail args)))
-        (bind state
-          (if (equal? prev-state (subtract 0 1))
-            0
-            (if (equal? prev-state 256)
-              0
-              prev-state))
-          (bind prompt (macro (self args env)
-              (bind show (eval env (head args))
-                (bind state (eval env (head (tail args)))
-                  (if show
-                    (list state
-                          (list (literal writeln) (itoa state))
-                          (list (literal writeln) (literal ''>> '')))
-                    (list state
-                          (list (literal writeln) (literal ''>> '')))))))
-            (choose
-              ((equal? event (literal init))
-                (prompt #f state))
-              ((equal? event (literal readln))
-                (bind letter payload
-                  (choose
-                    ((equal? letter (literal ''d''))
-                      (prompt #f (subtract state 1)))
-                    ((equal? letter (literal ''i''))
-                      (prompt #f (subtract state (subtract 0 1))))
-                    ((equal? letter (literal ''s''))
-                      (prompt #f (multiply state state)))
-                    ((equal? letter (literal ''o''))
-                      (prompt #t state))
-                    (else (prompt state)))))
-              (else
-                (list state))))))))))
+(reactor (line-terminal) 0
+  (macro (self args env)
+    (bind event (head args)
+      (bind event-type (head event)
+        (bind event-payload (head (tail event))
+          (bind prev-state (head (tail args))
+            (bind state
+              (if (equal? prev-state (subtract 0 1))
+                0
+                (if (equal? prev-state 256)
+                  0
+                  prev-state))
+              (bind prompt (macro (self args env)
+                  (bind show (eval env (head args))
+                    (bind state (eval env (head (tail args)))
+                      (if show
+                        (list state
+                              (list (literal writeln) (itoa state))
+                              (list (literal writeln) (literal ''>> '')))
+                        (list state
+                              (list (literal writeln) (literal ''>> '')))))))
+                (choose
+                  ((equal? event-type (literal init))
+                    (prompt #f state))
+                  ((equal? event-type (literal readln))
+                    (bind letter event-payload
+                      (choose
+                        ((equal? letter (literal ''d''))
+                          (prompt #f (subtract state 1)))
+                        ((equal? letter (literal ''i''))
+                          (prompt #f (subtract state (subtract 0 1))))
+                        ((equal? letter (literal ''s''))
+                          (prompt #f (multiply state state)))
+                        ((equal? letter (literal ''o''))
+                          (prompt #t state))
+                        (else (prompt state)))))
+                  (else
+                    (list state)))))))))))

@@ -163,7 +163,7 @@ Thus we can construct a simple `cat` program:
 General Reactor properties
 --------------------------
 
-Facilities can handle multiple responses in response to an event.
+A reactor can issue multiple commands in its response to an event.
 
     | (reactor (line-terminal) 0
     |   (macro (self args env)
@@ -182,7 +182,7 @@ Facilities can handle multiple responses in response to an event.
     = Line:
     = Dog
 
-When receiving a malformed response, a facility may produce a warning
+When receiving a malformed command, a facility may produce a warning
 message of some kind, but it should otherwise ignore it and keep going.
 
     | (reactor (line-terminal) 0
@@ -200,7 +200,6 @@ message of some kind, but it should otherwise ignore it and keep going.
     + Dog
     = Cat
     = Dog
-
 
 Reactors can keep state.
 
