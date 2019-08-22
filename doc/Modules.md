@@ -2,7 +2,7 @@ Robin: Modules
 ==============
 
 In this document, "Robin" refers to the Robin programming language
-version 0.2.
+version 0.3.
 
 Robin's module system is this: Robin does not have a module system.
 
@@ -152,56 +152,34 @@ Markdown.)
         fun
 
         <table style="border: 1px solid; padding: 1em; margin: 1em">
-          <tr><th>Intrinsics-Wrappers</th></tr>
+          <tr><th>"Small"</th></tr>
           <tr><td>
-            head
-            tail
-            prepend
-            list?
-            symbol?
-            macro?
-            number?
-            equal?
-            subtract
-            sign
-            macro
-            eval
-            if
-            raise
-            catch
+            literal
+            list
+            bind
+            env
+            let
+            choose
+            bind-args
 
             <table style="border: 1px solid; padding: 1em; margin: 1em">
-              <tr><th>"Small"</th></tr>
+              <tr><th>Intrinsics</th></tr>
               <tr><td>
-                literal
-                list
-                bind
-                env
-                let
-                choose
-                bind-args
-
-                <table style="border: 1px solid; padding: 1em; margin: 1em">
-                  <tr><th>Intrinsics</th></tr>
-                  <tr><td>
-                    @head
-                    @tail
-                    @prepend
-                    @list?
-                    @symbol?
-                    @macro?
-                    @number?
-                    @equal?
-                    @subtract
-                    @sign
-                    @macro
-                    @eval
-                    @if
-                    @raise
-                    @catch
-                  </td></tr>
-                </table>
-
+                head
+                tail
+                prepend
+                list?
+                symbol?
+                macro?
+                number?
+                equal?
+                subtract
+                sign
+                macro
+                eval
+                if
+                raise
+                catch
               </td></tr>
             </table>
 
