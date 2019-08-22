@@ -1,8 +1,6 @@
 TODO
 ====
 
-Test that circular definitions are not allowed.
-
 Move all the tests to the bottom (or the top?) of each defining file.
 
 Long-term

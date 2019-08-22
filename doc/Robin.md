@@ -59,6 +59,21 @@ Names may not be redefined once defined.
     | (define true #f)
     ? symbol already defined: true
 
+Names previously defined can be used in a definition.
+
+    | (define true #t)
+    | (define also-true true)
+    | (display also-true)
+    = #t
+
+Names that are not yet defined cannot be used in a definition, even if
+they are defined later on in the file.
+
+    | (define also-true true)
+    | (define true #t)
+    | (display also-true)
+    ? unbound-identifier
+
 ### `reactor` ###
 
 `(reactor LIST-OF-ATOMS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
