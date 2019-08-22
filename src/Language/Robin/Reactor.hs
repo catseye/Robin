@@ -10,13 +10,13 @@ import Language.Robin.Eval
 data Reactor = Reactor {
          env :: Expr,
          state :: Expr,
-         body :: Expr   -- body takes three arguments: event-type event-payload state
+         body :: Expr   -- body takes three arguments: event state
      } deriving (Show, Eq)
 
 
-update :: Reactor -> Expr -> Expr -> (Reactor, [Expr])
-update reactor@Reactor{env=env, state=state, body=body} eventType payload =
-    case eval (IEnv stop) env (List [body, eventType, payload, state]) id of
+update :: Reactor -> Expr -> (Reactor, [Expr])
+update reactor@Reactor{env=env, state=state, body=body} event =
+    case eval (IEnv stop) env (List [body, event, state]) id of
         (List (state':commands)) ->
             (reactor{ state=state' }, commands)
         _ ->
@@ -24,12 +24,12 @@ update reactor@Reactor{env=env, state=state, body=body} eventType payload =
             (reactor, [])
 
 
-updateMany :: [Reactor] -> Expr -> Expr -> ([Reactor], [Expr])
-updateMany [] eventType payload = ([], [])
-updateMany (reactor:reactors) eventType payload =
+updateMany :: [Reactor] -> Expr -> ([Reactor], [Expr])
+updateMany [] event = ([], [])
+updateMany (reactor:reactors) event =
     let
-        (reactor', commands) = update reactor eventType payload
-        (reactors', commands') = updateMany reactors eventType payload
+        (reactor', commands) = update reactor event
+        (reactors', commands') = updateMany reactors event
     in
         ((reactor':reactors'), commands ++ commands')
 
@@ -37,14 +37,16 @@ updateMany (reactor:reactors) eventType payload =
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 --
 
-initReactors reactors = updateMany reactors (Symbol "init") (Number 0)
+initReactors reactors = updateMany reactors (List [(Symbol "init"), (Number 0)])
 
 eventLoop :: [Reactor] -> [Expr] -> IO ()
-eventLoop reactors (event:events) = do
-   handleLineTerminalEvent event
-   let (reactors', newEvents) = updateMany reactors event (Number 0)
-   eventLoop reactors' (events ++ newEvents)
 
+eventLoop reactors ((List [Symbol "stop", payload]):events) =
+    return ()
+eventLoop reactors (event:events) = do
+    handleLineTerminalEvent event
+    let (reactors', newEvents) = updateMany reactors event
+    eventLoop reactors' (events ++ newEvents)
 eventLoop reactors [] = do
     -- No events in queue, so wait for an event from the facilities that
     -- can produce them.  In our small case, this means the line-terminal.
@@ -62,7 +64,7 @@ eventLoop reactors [] = do
 waitForLineTerminalEvent = do
     inpStr <- getLine
     let payload = List (map (\x -> Number (fromIntegral $ Char.ord x)) inpStr)
-    return (Symbol "readln") -- payload?
+    return $ List [(Symbol "readln"), payload]
 
 handleLineTerminalEvent (List [Symbol "writeln", payload]) = do
     let List l = payload
