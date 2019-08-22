@@ -16,16 +16,6 @@ For the reference implementation,
 *   There is only one executable now, and it's called `robin`
 *   The Haskell modules are in the namespace `Language.Robin`
 
-### TODO ###
-
-*   vague plan to reform the "reactor" subsystem.
-*   evaluate a Robin expression and display it? REPL?
-*   test that circular definitions are not allowed.
-*   environments as abstract maps, alist->env, env->alist
-*   un-literate the .lhs files?
-*   bring together the docs into a single large spec?
-*   rename `raise` to `throw`
-
 Robin 0.2 (ca 2014)
 ---------
 
