@@ -28,4 +28,4 @@ driver [progElem, resultElem, runButtonElem] = do
         showResults results =
             (foldl (\a x -> x ++ "\n" ++ a) "" (map (showResult) results))
         showResult (Right result) = show result
-        showResult (Left result) = "ERROR: " ++ (show result)
+        showResult (Left result) = "uncaught exception: " ++ (show result)

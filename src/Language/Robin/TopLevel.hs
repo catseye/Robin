@@ -11,7 +11,8 @@ collect [] env reactors results = (env, reactors, results)
 collect ((List [Symbol "display", expr]):rest) env reactors results =
     let
         result = case eval (IEnv catchException) env expr id of
-            e@(List [(Symbol "uncaught-exception"), expr]) -> Left e
+            -- TODO This is less than fantastic. Should we have a dedicated error Expr?
+            e@(List [(Symbol "uncaught-exception"), expr]) -> Left expr
             other -> Right other
     in
         collect rest env reactors (result:results)
