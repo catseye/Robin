@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Boolean)"
 
@@ -28,7 +28,7 @@ exactly one argument.
     |   (boolean?))
     ? uncaught exception: (illegal-arguments ())
 
-'XXX'
+'<<SPEC'
 
 (define boolean? (macro (self args env)
   (bind-args (b) args env

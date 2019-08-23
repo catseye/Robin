@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -19,7 +19,7 @@ is not a very good test.)
     |   (map (macro (self args env) args) (literal (three dog night))))
     = (((head li)) ((head li)) ((head li)))
 
-'XXX'
+'<<SPEC'
 
 ;(requires empty?)
 (define map (fun (app li)

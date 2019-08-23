@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -17,7 +17,7 @@ is the empty list, `#f` otherwise.
     |   (empty? (list 1 2 3)))
     = #f
 
-'XXX'
+'<<SPEC'
 
 (define empty? (fun (li)
   (equal? li ())))

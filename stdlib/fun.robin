@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -84,7 +84,7 @@ supplied to a function call.
 
 `fun` is basically equivalent to Scheme's `lambda`.
 
-'XXX'
+'<<SPEC'
 
 (define fun (macro (self args env)
   (bind extend-with-args (macro (self args env)

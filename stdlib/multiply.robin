@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Arith)"
 
@@ -41,7 +41,7 @@ Both of the arguments to `multiply` must be numbers.
     |   (multiply #t 51))
     ? uncaught exception: (expected-number #t)
 
-'XXX'
+'<<SPEC'
 
 (define multiply (macro (self args env)
   (bind multiply-r (fun (self a b) ;(b must be positive)

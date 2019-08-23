@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Boolean)"
 
@@ -48,7 +48,7 @@ arguments.
     |   (and (or (xor (and #t (not (not #t))) #f) #f) #t))
     = #t
 
-'XXX'
+'<<SPEC'
 
 (define xor (macro (self args env)
   (bind-args (a b) args env

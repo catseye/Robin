@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Stdlib)"
 
@@ -29,7 +29,7 @@ a string representing that integer in decimal.
     |   (itoa (literal m)))
     ? uncaught exception: (expected-number m)
 
-'XXX'
+'<<SPEC'
 
 (define itoa (macro (self args env)
   (bind itoa-r (macro (self args env)

@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -85,7 +85,7 @@ become clear here: typically you would just pass the macro's `args` and
     |     (add 1 n)))
     ? uncaught exception: (unbound-identifier n)
 
-'XXX'
+'<<SPEC'
 
 (define bind-args
   (macro (self args env)

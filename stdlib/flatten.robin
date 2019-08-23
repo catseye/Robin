@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -30,7 +30,7 @@ sublists.
     |   (flatten (list 1 () 5)))
     = (1 5)
 
-'XXX'
+'<<SPEC'
 
 (define flatten (fun (li)
   (bind flatten-r (fun (self li acc)

@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -58,7 +58,7 @@ it evaluates.
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
 
-'XXX'
+'<<SPEC'
 
 (define bind (macro (self args env)
   (eval

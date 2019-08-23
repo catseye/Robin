@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -28,7 +28,7 @@ application of the function.
     |   (fold 99 (fun (x a) a) (literal (three dog night))))
     ? uncaught exception: (inapplicable-object 99)
 
-'XXX'
+'<<SPEC'
 
 ;(requires empty?)
 (define fold (fun (app acc li)

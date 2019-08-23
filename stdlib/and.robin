@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Boolean)"
 
@@ -51,7 +51,7 @@ but it can be demonstrated as follows.
     |   (and #f 100))
     = #f
 
-'XXX'
+'<<SPEC'
 
 (define and (macro (self args env)
   (if (equal? (tail (tail args)) ())

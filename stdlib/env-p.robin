@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Env)"
 
@@ -25,7 +25,7 @@ and only if it is a well-formed binding alist.
     |   (env? (env)))
     = #t
 
-'XXX'
+'<<SPEC'
 
 (define env? (fun (li)
   (bind env?-r (fun (self li)

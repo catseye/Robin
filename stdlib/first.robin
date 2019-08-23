@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -26,7 +26,7 @@ It then evaluates to the prefix of the given list of the desired length.
     |   (first 0 (literal foo)))
     = ()
 
-'XXX'
+'<<SPEC'
 
 (define first (fun (n li)
   (bind first-r (fun (self n li)

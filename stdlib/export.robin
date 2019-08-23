@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Env)"
 
@@ -38,7 +38,7 @@ thus these tests are written to search the resulting alist.
     |   (lookup (literal prepend) (export head tail)))
     = ()
 
-'XXX'
+'<<SPEC'
 
 (define export
   (macro (self args env)

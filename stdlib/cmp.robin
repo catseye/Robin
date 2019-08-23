@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Arith)"
 
@@ -142,7 +142,7 @@ if the first number is less than or equal to the second.
     |   (<= #t 51))
     ? uncaught exception: (expected-number #t)
 
-'XXX'
+'<<SPEC'
 
 (define > (macro (self args env)
   (bind-args (a b) args env

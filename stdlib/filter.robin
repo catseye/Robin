@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -16,7 +16,7 @@ order, which satisfy the predicate.
     |   (filter (fun (x) x) (literal (#t #t #f banana #t #f))))
     ? uncaught exception: (expected-boolean banana)
 
-'XXX'
+'<<SPEC'
 
 (define filter (fun (pred li)
   (reverse (fold

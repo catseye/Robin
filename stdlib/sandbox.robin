@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Env)"
 
@@ -16,7 +16,7 @@ for the listed identifiers have been unbound.
     |     (head (prepend 8 (prepend 9 ())))))
     ? uncaught exception: (unbound-identifier head)
 
-'XXX'
+'<<SPEC'
 
 (define sandbox
   (macro (self args env)

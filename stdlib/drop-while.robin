@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -27,7 +27,7 @@ predicate.
     |   (drop-while (fun (x) (symbol? x)) #f))
     ? uncaught exception: (expected-list #f)
 
-'XXX'
+'<<SPEC'
 
 (define drop-while (fun (pred li)
   (bind drop-while-r (fun (self pred li)

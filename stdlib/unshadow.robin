@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Env)"
 
@@ -49,7 +49,7 @@ to manipulate the evaluation environment.  In practice, the bindings
 can be determined lexically, and a different identifier could always
 be chosen instead.
 
-'XXX'
+'<<SPEC'
 
 (define unshadow
   (macro (self args env)
