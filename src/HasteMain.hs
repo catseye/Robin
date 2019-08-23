@@ -22,6 +22,10 @@ driver [progElem, resultElem, runButtonElem] = do
                 Right topExprs -> do
                     let env = (mergeEnvs robinIntrinsics robinBuiltins)
                     let (env', reactors, results) = TopLevel.collect topExprs env [] []
-                    setProp resultElem "textContent" $ (foldl (\a x -> x ++ "\n" ++ a) "" (map (show) results))
+                    setProp resultElem "textContent" $ showResults results
                 Left problem -> do
                     setProp resultElem "textContent" $ show $ problem
+        showResults results =
+            (foldl (\a x -> x ++ "\n" ++ a) "" (map (showResult) results))
+        showResult (Right result) = show result
+        showResult (Left result) = "ERROR: " ++ (show result)

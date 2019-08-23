@@ -5,6 +5,7 @@ import System.IO
 import System.Environment
 import System.Exit
 
+import Language.Robin.Expr
 import Language.Robin.Env (mergeEnvs)
 import Language.Robin.Parser (parseRobin)
 import Language.Robin.Intrinsics (robinIntrinsics)
@@ -50,9 +51,13 @@ processArgs args env = processArgs' args env [] [] where
 
 
 writeResults [] = return ()
-writeResults (result:results) = do
+writeResults ((Right result):results) = do
     putStrLn $ show result
     writeResults results
+writeResults ((Left (List [(Symbol "uncaught-exception"), expr])):results) =
+    error $ "uncaught exception: " ++ show expr
+writeResults ((Left expr):results) =
+    error $ show expr
 
 
 runReactors [] showEvents = return ()
