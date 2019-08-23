@@ -111,8 +111,7 @@ Further Documentation
 
 *   [doc/Tutorial.md](doc/Tutorial.md) — Robin tutorial.
 *   [doc/Robin.md](doc/Robin.md) — core language specification.
-*   [doc/Reactor.md](doc/Reactor.md) — reactors specification.
-*   [doc/Modules.md](doc/Modules.md) — description of modules.
+*   [doc/Modules.md](doc/Modules.md) — ideas about modules.
 *   [stdlib/](stdlib/) — normative definitions of standard symbols.
 *   [HISTORY.md](HISTORY.md) — history of the language.
 *   [TODO.md](TODO.md) — plans.

@@ -47,7 +47,7 @@ Robin 0.2 *discards* from Robin 0.1:
 Robin 0.2 *adds* to Robin 0.1:
 
 *   _reactors_, which I hope will be a cleaner and more system-agnostic
-    way to do I/O.  See [doc/Reactor.md](doc/Reactor.md).
+    way to do I/O.
 
 Robin 0.1 (ca 2012)
 ---------

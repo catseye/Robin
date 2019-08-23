@@ -1,13 +1,7 @@
 TODO
 ====
 
-See if the deleted tests from the instrinsics-wrappers
-need to be restored.
-
-Bring together the other parts of the docs into a single large spec.
-
-Long-term
----------
+(some of these are possibly long-term plans)
 
 A way to evaluate a Robin expression and display it, mainly
 to make the tests more concise - don't need to say `(display ...)` always.
