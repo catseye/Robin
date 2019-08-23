@@ -1,4 +1,6 @@
 *.o
 *.hi
+*.jsmod
 /bin/*.exe
 /pkg/*
+/demo/*.js

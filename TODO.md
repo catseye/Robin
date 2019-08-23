@@ -6,7 +6,7 @@ TODO
 A way to evaluate a Robin expression and display it, mainly
 to make the tests more concise - don't need to say `(display ...)` always.
 
-Build a Javascript version with the Haste compiler.
+Make the Javascript version display all errors.
 
 Environments as abstract maps, alist->env, env->alist
 
