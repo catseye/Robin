@@ -111,7 +111,6 @@ Further Documentation
 
 *   [doc/Tutorial.md](doc/Tutorial.md) — Robin tutorial.
 *   [doc/Robin.md](doc/Robin.md) — core language specification.
-*   [doc/Intrinsics.md](doc/Intrinsics.md) — intrinsics specification.
 *   [doc/Reactor.md](doc/Reactor.md) — reactors specification.
 *   [doc/Modules.md](doc/Modules.md) — description of modules.
 *   [stdlib/](stdlib/) — normative definitions of standard symbols.

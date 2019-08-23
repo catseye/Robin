@@ -1,0 +1,29 @@
+;'<<SPEC'
+
+### `subtract` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`subtract` evaluates its first argument to a number, then
+evaluates its second argument to a number, then evaluates
+to the difference between the first and second numbers.
+
+    | (display
+    |   (subtract 6 4))
+    = 2
+
+    | (display
+    |   (subtract 1000 8000))
+    = -7000
+
+Addition may be accomplished by negating the second argument.
+
+    | (display
+    |   (subtract 999 (subtract 0 999)))
+    = 1998
+
+`subtract` expects both of its arguments to be numbers.
+
+`subtract` expects exactly two arguments.
+
+'<<SPEC'

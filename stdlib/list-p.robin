@@ -1,0 +1,40 @@
+;'<<SPEC'
+
+### `list?` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`list?` evaluates its argument, then evaluates to `#t` if it is a list,
+`#f` otherwise.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (list? (literal (a b))))
+    = #t
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (list? (literal (a b c d e f))))
+    = #t
+
+    | (display
+    |   (list? (prepend 4 (prepend 5 ()))))
+    = #t
+
+The empty list is a list.
+
+    | (display
+    |   (list? ()))
+    = #t
+
+Symbols are not lists.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (list? (literal a)))
+    = #f
+
+The argument to `list?` may (naturally) be any type, but there must be
+exactly one argument.
+
+'<<SPEC'

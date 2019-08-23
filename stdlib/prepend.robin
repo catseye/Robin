@@ -1,0 +1,26 @@
+;'<<SPEC'
+
+### `prepend` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`prepend` evaluates both of its arguments, then evaluates to a list cell
+which contains the first value as its data and the second value as the
+continuation of the list.
+
+    | (display
+    |   (prepend () ()))
+    = (())
+
+    | (display
+    |   (prepend #t (prepend #f ())))
+    = (#t #f)
+
+`prepend` expects exactly two arguments.  The first may be of any type.
+The second`prepend` must be a list.  If these conditions are not met,
+the behaviour is undefined.
+
+`prepend` is basically equivalent to Scheme's `cons`, except for the
+requirement that the second argument be a list.
+
+'<<SPEC'

@@ -1,0 +1,33 @@
+;'<<SPEC'
+
+### `if` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`if` evaluates its first argument to a boolean value.  If that value is
+`#t`, it evaluates, and evaluates to, its second argument; or if that value
+is `#f` it evaluates, and evaluates to, its third argument.  In all cases,
+at most two arguments are evaluated.
+
+    | (display
+    |   (if #t 7 9))
+    = 7
+
+    | (display
+    |   (if #f 7 9))
+    = 9
+
+The identifiers named in the branch which is not evaluated need not be
+properly bound to values in the environment.
+
+    | (display
+    |   (if #t 1 (prepend fred ethel)))
+    = 1
+
+The second and third arguments can be arbitrary expressions, but `if`
+expects its first argument to be a boolean.  `if` expects exactly three
+arguments.  If these conditions are not met, the behaviour is undefined.
+
+`if` is basically equivalent to Scheme's `if`.
+
+'<<SPEC'

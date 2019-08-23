@@ -1,0 +1,33 @@
+;'<<SPEC'
+
+### `macro?` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`macro?` evaluates its argument, then evaluates to `#t` if it is a macro,
+or `#f` if it is not.
+
+    | (display
+    |   (macro? (macro (self args env) args)))
+    = #t
+
+TODO: this should probably be false.  Intrinsics are slightly different
+from macros.  Either that, or, it should be, like `applyable?`, or
+something.
+
+    | (display
+    |   (macro? macro))
+    = #t
+
+    | (display
+    |   (macro? ((macro (self args env) (head args)) macro)))
+    = #f
+
+    | (display
+    |   (macro? 5))
+    = #f
+
+The argument to `macro?` may (naturally) be any type, but there must be
+exactly one argument.
+
+'<<SPEC'

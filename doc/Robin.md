@@ -1,8 +1,9 @@
 Robin
 =====
 
-This document defines the fundamental semantics of Robin (except for the
-meanings of the intrinsics: see [Intrinsics.md](Intrinsics.md) for those.)
+This document defines the fundamental semantics of Robin (aside from
+intrinsics: the meaning of each intrinsic is defined in a file in the
+standard library; see the [Intrinsics](#intrinsics) section for details.)
 
     -> Tests for functionality "Interpret core Robin Program"
 
@@ -236,6 +237,20 @@ Macros can be applied, and that is the typical use of them.
 
 (This section needs rewriting.)
 
+An _intrinsic_ is one of the data types in Robin.  It is like a macro, except
+that it is implemented intrinsically (and thus does not support quite
+every operation that is supported on macros, for example, examining its
+internals.)
+
+Robin 0.3 provides 15 intrinsics.  These represent
+the fundamental functionality that is used to evaluate programs, and that
+cannot be expressed as macros written in Robin (not without resorting to
+meta-circularity, at any rate.)  All other macros are built up on top of
+the intrinsics.
+
+This set of intrinsics is not optional — every Robin implementation must
+provide them, or it's not Robin.
+
 There also exist functions which cannot effectively be expressed directly
 in Robin — these are the so-called _intrinsics_.  All symbols representing
 intrinsics directly begin with the character ``.
@@ -262,6 +277,27 @@ One upshot of intrinsics is that all intrinsic Robin functionality
     = (if head)
 
 Intrinsics can be applied, and that is the typical use of them.
+
+Each of the 15 intrinsics provided by Robin 0.3 is specified in
+its own file in the standard library.  Because these are intrinsics,
+no Robin implementation is given for them, but tests cases which
+describe their behaviour are.
+
+*   [catch](../stdlib/catch.robin)
+*   [equal?](../stdlib/equal-p.robin)
+*   [eval](../stdlib/eval.robin)
+*   [head](../stdlib/head.robin)
+*   [if](../stdlib/if.robin)
+*   [list?](../stdlib/list-p.robin)
+*   [macro?](../stdlib/macro-p.robin)
+*   [macro](../stdlib/macro.robin)
+*   [number?](../stdlib/number-p.robin)
+*   [prepend](../stdlib/prepend.robin)
+*   [raise](../stdlib/raise.robin)
+*   [sign](../stdlib/sign.robin)
+*   [subtract](../stdlib/subtract.robin)
+*   [symbol?](../stdlib/symbol-p.robin)
+*   [tail](../stdlib/tail.robin)
 
 ### Lists ###
 

@@ -1,0 +1,19 @@
+;'<<SPEC'
+
+### `tail` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`tail` evaluates its argument to a list, and evaluates to the tail of that
+list (the sublist obtained by removing the first element.)
+
+    | (display
+    |   (tail (prepend #t (prepend #f ()))))
+    = (#f)
+
+`tail` expects exactly one argument, and expects it to be a list.
+If these conditions are not met, the behaviour is undefined.
+
+`tail` is basically equivalent to Scheme's `cdr`.
+
+'<<SPEC'

@@ -1,0 +1,19 @@
+;'<<SPEC'
+
+### `head` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`head` evaluates its argument to a list, and evaluates to the first element
+of that list.
+
+    | (display
+    |   (head (prepend #t ())))
+    = #t
+
+`head` expects exactly one argument, and expects it to be a list.
+If these conditions are not met, the behaviour is undefined.
+
+`head` is basically equivalent to Scheme's `car`.
+
+'<<SPEC'

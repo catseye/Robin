@@ -1,0 +1,25 @@
+;'<<SPEC'
+
+### `sign` ###
+
+    -> Tests for functionality "Interpret core Robin Program"
+
+`sign` evaluates its sole argument to a number, then
+evaluates to 0 if that number is 0, 1 if that number is positive, or
+-1 if that number is negative.
+
+    | (display
+    |   (sign 26))
+    = 1
+
+    | (display
+    |   (sign 0))
+    = 0
+
+    | (display
+    |   (sign (subtract 0 200)))
+    = -1
+
+`sign` expects exactly one argument.
+
+'<<SPEC'
