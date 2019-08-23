@@ -27,4 +27,12 @@ Lists are not symbols.
 The argument to `symbol?` may (naturally) be any type, but there must be
 exactly one argument.
 
+    | (display
+    |   (symbol? 77 88))
+    ? uncaught exception: (illegal-arguments (77 88))
+
+    | (display
+    |   (symbol?))
+    ? uncaught exception: (illegal-arguments ())
+
 '<<SPEC'

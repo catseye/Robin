@@ -21,6 +21,14 @@ requirement.
 `raise`'s single argument may be any kind of value, but `raise` expects
 exactly one argument.
 
+    | (display
+    |   (raise))
+    ? uncaught exception: (illegal-arguments ())
+
+    | (display
+    |   (raise 2 3 4))
+    ? uncaught exception: (illegal-arguments (2 3 4))
+
 A Robin environment may install exception handlers which are not defined
 in Robin code itself.  (i.e. exiting to the operating system is not a
 strict requirement.)

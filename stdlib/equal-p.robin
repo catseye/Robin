@@ -50,6 +50,15 @@ Two values of different types are never equal.
     |           ()))
     = #f
 
-`equal?` expects exactly two arguments, of any type.
+Arguments to `equal?` can be any type, but fewer than or more than
+two arguments will raise an exception.
+
+    | (display
+    |   (equal? 7))
+    ? uncaught exception: (illegal-arguments (7))
+
+    | (display
+    |   (equal? 7 8 9))
+    ? uncaught exception: (illegal-arguments (7 8 9))
 
 '<<SPEC'

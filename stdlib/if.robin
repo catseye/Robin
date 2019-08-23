@@ -25,8 +25,21 @@ properly bound to values in the environment.
     = 1
 
 The second and third arguments can be arbitrary expressions, but `if`
-expects its first argument to be a boolean.  `if` expects exactly three
-arguments.  If these conditions are not met, the behaviour is undefined.
+expects its first argument to be a boolean.
+
+    | (display
+    |   (if 5 7 9))
+    ? uncaught exception: (expected-boolean 5)
+
+`if` expects exactly three arguments.
+
+    | (display
+    |   (if #t 7))
+    ? uncaught exception: (illegal-arguments (#t 7))
+
+    | (display
+    |   (if #t 7 8 9))
+    ? uncaught exception: (illegal-arguments (#t 7 8 9))
 
 `if` is basically equivalent to Scheme's `if`.
 

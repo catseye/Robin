@@ -24,6 +24,22 @@ Addition may be accomplished by negating the second argument.
 
 `subtract` expects both of its arguments to be numbers.
 
+    | (display
+    |   (subtract #f 100))
+    ? uncaught exception: (expected-number #f)
+
+    | (display
+    |   (subtract 100 ()))
+    ? uncaught exception: (expected-number ())
+
 `subtract` expects exactly two arguments.
+
+    | (display
+    |   (subtract 100 200 300))
+    ? uncaught exception: (illegal-arguments (100 200 300))
+
+    | (display
+    |   (subtract))
+    ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'

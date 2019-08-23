@@ -11,8 +11,21 @@ list (the sublist obtained by removing the first element.)
     |   (tail (prepend #t (prepend #f ()))))
     = (#f)
 
-`tail` expects exactly one argument, and expects it to be a list.
-If these conditions are not met, the behaviour is undefined.
+`tail` expects its argument to be a list.
+
+    | (display
+    |   (tail #f))
+    ? uncaught exception: (expected-list #f)
+
+`tail` expects exactly one argument.
+
+    | (display
+    |   (tail (@prepend #t ()) (@prepend #f ())))
+    ? uncaught exception: (illegal-arguments ((@prepend #t ()) (@prepend #f ())))
+
+    | (display
+    |   (tail))
+    ? uncaught exception: (illegal-arguments ())
 
 `tail` is basically equivalent to Scheme's `cdr`.
 

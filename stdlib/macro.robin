@@ -177,7 +177,31 @@ Your recursive `macro` application doesn't have to be tail-recursive.
 
 `macro` expects exactly two arguments.
 
+    | (display
+    |   ((macro (self args env)) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env)))
+
+    | (display
+    |   ((macro (self args env) prepend prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env) prepend prepend))
+
 `macro` expects its first argument to be a list of exactly three
 symbols.
+
+    | (display
+    |   ((macro 100 prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments (100 prepend))
+
+    | (display
+    |   ((macro (self args) prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args) prepend))
+
+    | (display
+    |   ((macro (self args env foo) prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args env foo) prepend))
+
+    | (display
+    |   ((macro (self args 99) prepend) (why hello there)))
+    ? uncaught exception: (illegal-arguments ((self args 99) prepend))
 
 '<<SPEC'

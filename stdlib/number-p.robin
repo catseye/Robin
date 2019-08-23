@@ -38,4 +38,12 @@ That's a good question...
 The argument to `number?` may (naturally) be any type, but there must be
 exactly one argument.
 
+    | (display
+    |   (number? 6 4))
+    ? uncaught exception: (illegal-arguments (6 4))
+
+    | (display
+    |   (number?))
+    ? uncaught exception: (illegal-arguments ())
+
 '<<SPEC'

@@ -11,8 +11,21 @@ of that list.
     |   (head (prepend #t ())))
     = #t
 
-`head` expects exactly one argument, and expects it to be a list.
-If these conditions are not met, the behaviour is undefined.
+`head` expects its argument to be a list.
+
+    | (display
+    |   (head #f))
+    ? uncaught exception: (expected-list #f)
+
+`head` expects exactly one argument.
+
+    | (display
+    |   (head (@prepend #t ()) (@prepend #f ())))
+    ? uncaught exception: (illegal-arguments ((@prepend #t ()) (@prepend #f ())))
+
+    | (display
+    |   (head))
+    ? uncaught exception: (illegal-arguments ())
 
 `head` is basically equivalent to Scheme's `car`.
 

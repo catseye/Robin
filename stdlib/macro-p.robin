@@ -30,4 +30,12 @@ something.
 The argument to `macro?` may (naturally) be any type, but there must be
 exactly one argument.
 
+    | (display
+    |   (macro? @macro @macro))
+    ? uncaught exception: (illegal-arguments (@macro @macro))
+
+    | (display
+    |   (macro?))
+    ? uncaught exception: (illegal-arguments ())
+
 '<<SPEC'
