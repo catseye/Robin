@@ -14,7 +14,7 @@ doc/Reactor.md
 echo "Running tests on core semantics..."
 falderal -b $APPLIANCES $TESTDOCS || exit 1
 
-for PACKAGE in intinsics small boolean arith list env misc; do
+for PACKAGE in intrinsics small boolean arith list env misc; do
     echo "Running tests on '$PACKAGE' package..."
     falderal -b $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
