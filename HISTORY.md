@@ -38,8 +38,8 @@ Robin 0.2 *discards* from Robin 0.1:
 
 *   bigrats.  Instead, in Robin 0.2 you get 32-bit signed integers (yes,
     precisely those.)  Anything else, you have to build.
-*   its module system.  Robin has its own, much less hermetic/holistic
-    system.  See the file [doc/Modules.md](doc/Modules.md).
+*   its module system.  Robin 0.2 has its own, much less hermetic/holistic
+    system.
 *   concurrency.
 *   I/O and side-effects.  It has reactors instead.
 *   its grand ambitions.  Robin would rather exist than be perfect.

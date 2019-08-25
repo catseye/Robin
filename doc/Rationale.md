@@ -1,8 +1,30 @@
-Robin: Modules
-==============
+Robin: Design Goals and Rationale
+=================================
 
 In this document, "Robin" refers to the Robin programming language
 version 0.3.
+
+Macro as fundamental abstraction
+--------------------------------
+
+This is certainly the most unorthodox feature, the one that departs
+the most from Scheme et al.
+
+It allows the language to have no "special forms" whatsoever.
+(Scheme would need at least `define-syntax` if it wanted to define
+`if`, `set!`, and the other parts of its syntax, as macros.)
+
+Whether having no special forms whatsoever is advantageous in any
+way, or not, remains to be seen.
+
+One thinks it might make analysis of the code simpler — an analyzer
+doesn't need to know about special forms.
+
+But, in practice, since everything is a macro, `eval` is called a
+lot, and `eval` poses a significant problem for analysis.
+
+Module System
+-------------
 
 Robin's module system is this: Robin does not have a module system.
 

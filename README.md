@@ -106,14 +106,14 @@ Deserves at least a passing mention here, as one thing that Robin
 discards from Scheme is its jargony terminology: no `cdr`, no `cons`,
 no `lambda`.
 
-Further Documentation
----------------------
+Repository Layout
+-----------------
 
-*   [doc/Tutorial.md](doc/Tutorial.md) — Robin tutorial.
-*   [doc/Robin.md](doc/Robin.md) — core language specification.
-*   [doc/Modules.md](doc/Modules.md) — ideas about modules.
-*   [stdlib/](stdlib/) — normative definitions of standard symbols.
-*   [HISTORY.md](HISTORY.md) — history of the language.
+*   bin/ — driver script, destination for executable when built.
+*   src/ — Haskell source for reference interpreter.
+*   [doc/](doc/README.md) — Tutorial, specification, rationale, etc.
+*   stdlib/ — normative definitions of standard library symbols.
+*   [HISTORY.md](HISTORY.md) — history of this distribution.
 *   [TODO.md](TODO.md) — plans.
 
 [Scheme]:    http://schemers.org/
