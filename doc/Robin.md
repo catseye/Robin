@@ -1,9 +1,28 @@
 Robin
 =====
 
-This document defines the fundamental semantics of Robin (aside from
-intrinsics: the meaning of each intrinsic is defined in a file in the
-standard library; see the [Intrinsics](#intrinsics) section for details.)
+This document defines version 0.3 of the Robin programming language.
+
+The Robin specification is modular in the sense that it consists
+of several smaller specifications, some of which depend on others,
+that can be composed or used in isolation.  These specifications are:
+
+*   Robin Syntax
+*   Robin Expressions
+*   Robin Reactors
+*   Robin Toplevel
+
+Expressions, Reactors, and Toplevel are written in the Syntax.
+
+Data Types and Intrinsics and "Small" Library and Standard Library are
+concepts used in Expressions.
+
+Reactors are defined using Expressions.  A Toplevel names Expressions
+and Reactors.
+
+For historical reasons, this document is not organized in sections
+corresponding to these sub-specifications.  In a future version of Robin,
+we hope that it will be.
 
     -> Tests for functionality "Interpret core Robin Program"
 
@@ -235,8 +254,6 @@ Macros can be applied, and that is the typical use of them.
 
 ### Intrinsics ###
 
-(This section needs rewriting.)
-
 An _intrinsic_ is one of the data types in Robin.  It is like a macro, except
 that it is implemented intrinsically (and thus does not support quite
 every operation that is supported on macros, for example, examining its
@@ -250,10 +267,6 @@ the intrinsics.
 
 This set of intrinsics is not optional — every Robin implementation must
 provide them, or it's not Robin.
-
-There also exist functions which cannot effectively be expressed directly
-in Robin — these are the so-called _intrinsics_.  All symbols representing
-intrinsics directly begin with the character ``.
 
 One important intrinsic is `eval`.  Many macros will make use of `eval`,
 to evaluate that literal tail they receive.  When they do this in the

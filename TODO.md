@@ -3,6 +3,15 @@ TODO
 
 (Note, some of these are possibly long-term plans.)
 
+Disjointness of types
+---------------------
+
+Insofar as the types of Robin are disjoint, we can have a
+`typeof` intrinsic which returns a literal symbol such as
+`number`, `list`, and so forth, instead of _n_ predicates.
+In practice the predicates are useful, and would be retained
+in the stdlib.  But this could make the set of intrinsics smaller.
+
 Opaque type
 -----------
 
@@ -22,6 +31,8 @@ to runtime system that an error occurred.
 
 Stdlib
 ------
+
+Rename "small" to "core" or "base" or something.
 
 `(bound? sym)` returns `#t` if the symbol is bound, `#f` if not.
 

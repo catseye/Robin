@@ -17,11 +17,21 @@ It allows the language to have no "special forms" whatsoever.
 Whether having no special forms whatsoever is advantageous in any
 way, or not, remains to be seen.
 
-One thinks it might make analysis of the code simpler — an analyzer
-doesn't need to know about special forms.
+One upshot is that any functionality expressible in the Robin
+expression language, can be passed to a macro or a function, as
+a parameter, or returned from a macro or function evaluation.
+
+One also thinks it might make analysis of the code simpler — a
+parser or analyzer doesn't need to account for any special forms.
 
 But, in practice, since everything is a macro, `eval` is called a
 lot, and `eval` poses a significant problem for analysis.
+
+But also in practice, an analysis tool will expect that the "small"
+library has been loaded, and that function calls will use `fun`
+as defined there, and thus can base their analysis on the semantics
+of that macro without caring about its definition, or that its
+definition contains `eval`.
 
 Module System
 -------------
