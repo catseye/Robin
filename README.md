@@ -106,12 +106,18 @@ Deserves at least a passing mention here, as one thing that Robin
 discards from Scheme is its jargony terminology: no `cdr`, no `cons`,
 no `lambda`.
 
+For a full description of the Robin language, see
+[the Robin specification document](doc/Robin.md).
+
 Repository Layout
 -----------------
 
+*   appliances/ — test appliances for the literate test suite.
 *   bin/ — driver script, destination for executable when built.
-*   src/ — Haskell source for reference interpreter.
+*   demo/ — contains HTML5 document demonstrating build to JS by Haste.
 *   [doc/](doc/README.md) — Tutorial, specification, rationale, etc.
+*   eg/ — example programs written in Robin
+*   src/ — Haskell source for reference interpreter.
 *   stdlib/ — normative definitions of standard library symbols.
 *   [HISTORY.md](HISTORY.md) — history of this distribution.
 *   [TODO.md](TODO.md) — plans.
