@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Stdlib)"
+    -> Tests for functionality "Execute Robin Program (with Stdlib)"
 
 `itoa` evaluates its sole argument to an integer, then evaluates to
 a string representing that integer in decimal.

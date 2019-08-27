@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Env)"
+    -> Tests for functionality "Execute Robin Program (with Env)"
 
 `env?` evaluates its single argument, and evaluates to `#t` if
 and only if it is a well-formed binding alist.

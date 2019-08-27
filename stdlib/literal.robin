@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Execute Robin Program (with Small)"
 
 One of the most basic identifiers available in `small` is `literal`,
 which evaluates to the literal content of its sole argument, which can be

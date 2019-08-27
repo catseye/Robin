@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Execute Robin Program (with Small)"
 
 You can define functions with `fun`.  They can be anonymous.
 

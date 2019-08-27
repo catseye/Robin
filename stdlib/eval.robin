@@ -2,7 +2,7 @@
 
 ### `eval` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `eval` evaluates its first argument to obtain an environment, then
 evaluates its second argument to obtain an S-expression; it then

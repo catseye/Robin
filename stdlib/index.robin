@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `index` evaluates its first argument to a natural number, and its
 second argument to a list.  It then evaluates to the element of the

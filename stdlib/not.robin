@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+    -> Tests for functionality "Execute Robin Program (with Boolean)"
 
 `not` evaluates its single argument to a boolean, then evaluates to
 the logical negation of that boolean.

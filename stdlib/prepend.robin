@@ -2,7 +2,7 @@
 
 ### `prepend` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `prepend` evaluates both of its arguments, then evaluates to a list cell
 which contains the first value as its data and the second value as the

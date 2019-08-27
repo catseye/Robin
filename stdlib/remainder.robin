@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Arith)"
+    -> Tests for functionality "Execute Robin Program (with Arith)"
 
 `remainder` evaluates both of its arguments to numbers and evaluates to the
 remainder of the division of the first number by the second.

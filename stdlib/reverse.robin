@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `reverse` evaluates its argument to a list, then evaluates to a list which
 is the same as the given list in every respect except that the order of

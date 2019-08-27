@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Execute Robin Program (with Small)"
 
 `bind-args` is a macro for binding the arguments of another value to
 identifiers, as well as asserting that the correct number of arguments

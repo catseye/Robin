@@ -24,7 +24,7 @@ For historical reasons, this document is not organized in sections
 corresponding to these sub-specifications.  In a future version of Robin,
 we hope that it will be.
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 Top-level S-expressions
 -----------------------
@@ -618,7 +618,7 @@ Let's describe one such facility for concreteness.
 
 ### `line-terminal` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Execute Robin Program (with Small)"
 
 The `line-terminal` facility allows a Robin program to interact with
 something or someone over a line-oriented protocol, similar to what

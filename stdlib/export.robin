@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Env)"
+    -> Tests for functionality "Execute Robin Program (with Env)"
 
 `export` treats its arguments as a list of identifiers, and returns an
 environment where only those identifiers are bound to values.

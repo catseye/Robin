@@ -2,7 +2,7 @@
 
 ### `sign` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `sign` evaluates its sole argument to a number, then
 evaluates to 0 if that number is 0, 1 if that number is positive, or

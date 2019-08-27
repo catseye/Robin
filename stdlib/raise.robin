@@ -2,7 +2,7 @@
 
 ### `raise` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `raise` evaluates its argument to obtain a value, then raises an
 exception with that value.

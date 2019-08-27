@@ -2,7 +2,7 @@
 
 ### `subtract` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `subtract` evaluates its first argument to a number, then
 evaluates its second argument to a number, then evaluates

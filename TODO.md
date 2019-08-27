@@ -71,9 +71,6 @@ be implemented, and available, and if it's not, it should fail.
 Tests
 -----
 
-"Execute", not "Interpret", a Robin program (as these tests could also
-be used to test compilers.)
-
 A way to evaluate a Robin expression and display it, mainly
 to make the tests more concise - don't need to say `(display ...)` always.
 

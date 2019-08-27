@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Execute Robin Program (with Small)"
 
 `bind` binds a single identifier to the result of evaluating a single
 expression, and makes that binding available in another expression which

@@ -2,7 +2,7 @@
 
 ### `macro` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `macro` takes its first argument to be a list of three formal
 parameters, and its second argument to be an arbitrary expression,

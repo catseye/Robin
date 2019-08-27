@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `append` evaluates both of its arguments to lists.  It then
 evaluates to a list which is the concatenation of these lists.

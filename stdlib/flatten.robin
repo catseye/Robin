@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `flatten` evaluates its first argument to obtain a list, then evaluates
 to the list obtained by interpolating all elements into a single list.

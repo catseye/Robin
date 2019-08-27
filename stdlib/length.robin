@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `length` evaluates its single argument to obtain a proper list, then
 evaluates to a non-negative integer which is the length of the list

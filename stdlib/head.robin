@@ -2,7 +2,7 @@
 
 ### `head` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `head` evaluates its argument to a list, and evaluates to the first element
 of that list.

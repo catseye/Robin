@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Execute Robin Program (with Small)"
 
 `list` is a macro which evaluates each of its arguments, and evaluates to a
 (proper) list containing each of the results, in the same order.

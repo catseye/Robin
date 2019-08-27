@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Env)"
+    -> Tests for functionality "Execute Robin Program (with Env)"
 
 `unshadow` is similar to `unbind`, but only removes the latest binding
 for the given identifier; previously shadowed bindings, if any exist,

@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Env)"
+    -> Tests for functionality "Execute Robin Program (with Env)"
 
 `unbind` removes the given identifier from the environment and evaluates its
 second argument in that reduced environment.

@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `empty?` evaluates its single argument, and evaluates to `#t` if that value
 is the empty list, `#f` otherwise.

@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `elem?` evaluates its first argument to a value of any type, and its
 second argument to obtain a list.  It then evaluates to `#t` if the value

@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Env)"
+    -> Tests for functionality "Execute Robin Program (with Env)"
 
 `sandbox` takes a list of identifiers as its first argument, and evaluates
 its second argument in an environment where all bindings *except* those

@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `prefix?` evaluates its first and second arguments to obtain lists.
 It then evaluates to `#t` if the first list is a prefix of the second

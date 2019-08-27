@@ -2,7 +2,7 @@
 
 ### `list?` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `list?` evaluates its argument, then evaluates to `#t` if it is a list,
 `#f` otherwise.

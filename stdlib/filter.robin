@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `filter` evaluates its first argument to obtain a macro, generally assumed
 to be a predicate (a one-argument function which evaluates to a boolean).

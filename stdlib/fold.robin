@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `fold` evaluates its first argument to obtain a macro, generally assumed to
 be a two-argument function, its second argument to obtain an initial value,

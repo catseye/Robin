@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+    -> Tests for functionality "Execute Robin Program (with Boolean)"
 
 `and` evaluates both of its arguments to booleans, and evaluates to the
 logical conjunction (boolean "and") of these two values.

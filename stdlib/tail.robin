@@ -2,7 +2,7 @@
 
 ### `tail` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `tail` evaluates its argument to a list, and evaluates to the tail of that
 list (the sublist obtained by removing the first element.)

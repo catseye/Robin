@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Arith)"
+    -> Tests for functionality "Execute Robin Program (with Arith)"
 
 ### `>` ###
 

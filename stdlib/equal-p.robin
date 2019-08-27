@@ -2,7 +2,7 @@
 
 ### `equal?` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `equal?` evaluates both of its arguments to arbitrary S-expressions
 and compares them for deep equality.

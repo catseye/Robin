@@ -2,7 +2,7 @@
 
 ### `catch` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `catch` installs an exception handler.
 

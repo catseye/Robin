@@ -2,7 +2,7 @@
 
 ### `if` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Execute core Robin Program"
 
 `if` evaluates its first argument to a boolean value.  If that value is
 `#t`, it evaluates, and evaluates to, its second argument; or if that value

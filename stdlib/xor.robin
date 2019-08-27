@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+    -> Tests for functionality "Execute Robin Program (with Boolean)"
 
 `xor` evaluates both of its arguments to boolean, then evaluates to
 the "exclusive-or" of those booleans.

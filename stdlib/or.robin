@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+    -> Tests for functionality "Execute Robin Program (with Boolean)"
 
 `or` evaluates both of its arguments to booleans, and evaluates to the
 logical disjunction (boolean "or") of these two values.

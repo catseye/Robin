@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `take-while` evaluates its first argument to obtain a predicate and its
 second argument to obtain a list.  It then evaluates to the longest prefix

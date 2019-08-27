@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Execute Robin Program (with List)"
 
 `rest` evaluates its first argument to obtain a non-negative integer,
 considered to be a desired position, and its second argument to obtain a
