@@ -88,6 +88,38 @@ You'll see the answer you probably expected,
 
     9
 
+Functions
+---------
+
+Let's write a factorial function, and compute 5!.
+
+    (define fact (fun (self n)
+      (multiply n
+        (if (> n 1)
+          (self self (subtract n 1))
+          1))))
+    (display (fact fact 5))
+
+`multiply` is not an intrinsic, so you'll need to run this with
+
+    bin/robin pkg/stdlib.robin fact.robin
+
+Some of this definition is probably what you would expect from a
+recursive definition of factorial in any Lisp-like language.
+However, some of it is probably not.
+
+It comes from the fact that Robin has no way to make a forward
+reference — no `letrec` or equivalent.  At the time the definition
+of `fact` is being read, the `fact` symbol is not yet defined,
+so `fact` cannot call itself directly.
+
+So we give `fact` a way to call itself by following a convention:
+whenever `fact` is called (including when `fact` needs to call
+itself), the `fact` function itself is passed as the first argument
+to `fact`.  By convention we call this parameter `self`.
+
+This is related to the so-called Y combinator.
+
 Builtins
 --------
 
