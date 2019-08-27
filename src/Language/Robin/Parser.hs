@@ -86,6 +86,7 @@ comment = do
 
 expr :: Parser Expr
 expr = do
+    spaces
     r <- (symbol <|> number <|> boolean <|> list <|> stringSugar)
     spaces
     many comment
