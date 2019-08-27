@@ -8,7 +8,7 @@ Overview
 
 **Robin** is a functional programming language with
 [eager evaluation, latent typing, and a homoiconic syntax](#scheme),
-based on a [radically simple core semantics](#pixley) in which
+based on a [radically simple core semantics](#forth) in which
 [the macro, rather than the function, is the fundamental abstraction](#picolisp).
 
 Expressions in Robin are [referentially transparent](#haskell); programs
@@ -74,7 +74,8 @@ below) diverges significantly from Scheme in other ways.
 Like [Forth][], Robin has a radically simple core semantics.  There are 15
 intrinsic operations; every symbol in the standard library is defined in terms
 of these intrinsics, while an implementation is free to provide its own
-(perhaps more efficient) implementation of any such symbol.
+(perhaps more efficient) implementation of any such symbol.  (See also
+[Pixley][]).
 
 ### PicoLisp ###
 
