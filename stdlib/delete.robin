@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -30,7 +30,7 @@ The following should be true for any identifier i and alist x.
     |   (delete (literal q) (literal ((a 7) 99 (q 4)))))
     ? uncaught exception: (expected-list 99)
 
-'XXX'
+'<<SPEC'
 
 (define delete (fun (id alist)
   (filter (fun (x) (if (equal? (head x) id) #f #t)) alist)))

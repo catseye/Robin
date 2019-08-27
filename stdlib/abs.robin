@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Arith)"
 
@@ -31,7 +31,7 @@ the absolute value of that number (where the sign is always positive.)
     |   (abs #t))
     ? uncaught exception: (expected-number #t)
 
-'XXX'
+'<<SPEC'
 
 (define abs (macro (self args env)
   (bind-args (a) args env

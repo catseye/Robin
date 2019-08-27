@@ -1,11 +1,4 @@
-(define bind (@macro (self args env)
-  (@eval
-    (@prepend
-      (@prepend (@head args) (@prepend (@eval env (@head (@tail args)))
-                                       ())) env)
-    (@head (@tail (@tail args))))))
-
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -19,32 +12,32 @@ it evaluates.
     = (hello hello)
 
     | (display
-    |   (bind dup (@macro (self args env)
-    |               (list (@head args) (@head args)))
+    |   (bind dup (macro (self args env)
+    |               (list (head args) (head args)))
     |     (dup g)))
     = (g g)
 
     | (display
-    |   (bind dup (@macro (self args env)
-    |               (bind x (@eval env (@head args))
+    |   (bind dup (macro (self args env)
+    |               (bind x (eval env (head args))
     |                 (list x x)))
     |     (dup (literal g))))
     = (g g)
 
     | (display
-    |   (bind dup (@macro (self args env)
-    |               (bind x (@eval env (@head args))
+    |   (bind dup (macro (self args env)
+    |               (bind x (eval env (head args))
     |                 (list x x)))
     |     (dup (dup (literal g)))))
     = ((g g) (g g))
 
     | (display
-    |   (bind find (@macro (self args env)
+    |   (bind find (macro (self args env)
     |                (bind-args (alist key) args env
-    |                  (@if (@equal? alist (literal ())) (literal ())
-    |                    (@if (@equal? key (@head (@head alist)))
-    |                       (@head alist)
-    |                       (self (@tail alist) key)))))
+    |                  (if (equal? alist (literal ())) (literal ())
+    |                    (if (equal? key (head (head alist)))
+    |                       (head alist)
+    |                       (self (tail alist) key)))))
     |     (find (literal ((c d) (e f) (a b))) (literal a))))
     = (a b)
 
@@ -65,4 +58,11 @@ it evaluates.
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
 
-'XXX'
+'<<SPEC'
+
+(define bind (macro (self args env)
+  (eval
+    (prepend
+      (prepend (head args) (prepend (eval env (head (tail args)))
+                                       ())) env)
+    (head (tail (tail args))))))

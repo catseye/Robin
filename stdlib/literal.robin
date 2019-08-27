@@ -1,6 +1,4 @@
-(define literal (@macro (self args env) (@head args)))
-
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -33,4 +31,6 @@ Any arguments beyond the first argument are simply ignored and discarded.
 
 `literal` is basically equivalent to Scheme's `quote`.
 
-'XXX'
+'<<SPEC'
+
+(define literal (macro (self args env) (head args)))

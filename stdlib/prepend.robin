@@ -1,14 +1,20 @@
-(define prepend (@macro (self args env)
-  (bind-args (h t) args env
-    (@prepend h t))))
+;'<<SPEC'
 
-;'XXX'
+### `prepend` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`prepend` is a wrapper for the `@prepend` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `prepend` should have
-semantics identical to `@prepend`.
+`prepend` evaluates both of its arguments, then evaluates to a list cell
+which contains the first value as its data and the second value as the
+continuation of the list.
+
+    | (display
+    |   (prepend () ()))
+    = (())
+
+    | (display
+    |   (prepend #t (prepend #f ())))
+    = (#t #f)
 
 The second argument to `prepend` must be a list.
 
@@ -27,4 +33,7 @@ two arguments will raise an exception.
     |   (prepend #f #t #f))
     ? uncaught exception: (illegal-arguments (#f #t #f))
 
-'XXX'
+`prepend` is basically equivalent to Scheme's `cons`, except for the
+requirement that the second argument be a list.
+
+'<<SPEC'

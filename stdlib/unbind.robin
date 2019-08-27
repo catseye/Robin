@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Env)"
 
@@ -27,7 +27,7 @@ in effect.
     |         x))))
     ? uncaught exception: (unbound-identifier x)
 
-'XXX'
+'<<SPEC'
 
 (define unbind
   (macro (self args env)

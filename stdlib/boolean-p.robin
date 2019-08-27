@@ -1,12 +1,4 @@
-(define boolean? (@macro (self args env)
-  (bind-args (b) args env
-    (@if (@equal? b #t)
-      #t
-      (@if (@equal? b #f)
-        #t
-        #f)))))
-
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Boolean)"
 
@@ -18,7 +10,7 @@ boolean value, `#f` otherwise.
     = #t
 
     | (display
-    |   (boolean? (@head (@prepend #f ()))))
+    |   (boolean? (head (prepend #f ()))))
     = #t
 
     | (display
@@ -36,4 +28,12 @@ exactly one argument.
     |   (boolean?))
     ? uncaught exception: (illegal-arguments ())
 
-'XXX'
+'<<SPEC'
+
+(define boolean? (macro (self args env)
+  (bind-args (b) args env
+    (if (equal? b #t)
+      #t
+      (if (equal? b #f)
+        #t
+        #f)))))

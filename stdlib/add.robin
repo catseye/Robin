@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Arith)"
 
@@ -29,7 +29,7 @@ Both of the arguments to `add` must be numbers.
     |   (add #t 51))
     ? uncaught exception: (expected-number #t)
 
-'XXX'
+'<<SPEC'
 
 (define add (macro (self args env)
   (bind-args (a b) args env

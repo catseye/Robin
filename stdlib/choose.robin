@@ -1,14 +1,4 @@
-(define choose (@macro (self args env)
-  (bind branch (@head args)
-    (bind test (@head branch)
-      (bind then (@head (@tail branch))
-        (@if (@equal? test (literal else))
-          (@eval env then)
-          (@if (@eval env test)
-            (@eval env then)
-            (@eval env (@prepend self (@tail args))))))))))
-
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -54,4 +44,14 @@ exception will be raised.
 
 `choose` is basically equivalent to Scheme's `cond`.
 
-'XXX'
+'<<SPEC'
+
+(define choose (macro (self args env)
+  (bind branch (head args)
+    (bind test (head branch)
+      (bind then (head (tail branch))
+        (if (equal? test (literal else))
+          (eval env then)
+          (if (eval env test)
+            (eval env then)
+            (eval env (prepend self (tail args))))))))))

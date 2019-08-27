@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -22,7 +22,7 @@ The following should be true for any identifier i and alist x.
     |   (extend (literal b) 6 81))
     ? uncaught exception: (expected-list 81)
 
-'XXX'
+'<<SPEC'
 
 (define extend (fun (id val alist)
   (prepend (list id val) alist)))

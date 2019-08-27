@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -19,7 +19,7 @@ empty list at the very tail.)
     |   (length (literal whatnot)))
     ? uncaught exception: (expected-list whatnot)
 
-'XXX'
+'<<SPEC'
 
 (define length (fun (li)
   (subtract 0 (fold (fun (x acc) (subtract acc 1)) 0 li))))

@@ -1,8 +1,0 @@
-(reactor (line-terminal) 0 (macro (self args env)
-  (bind event (head args)
-    (bind payload (head (tail args))
-      (if (equal? event (literal readln))
-        (list 0
-              (literal what-is-this)
-              (literal i-dont-even))
-        (list 0))))))

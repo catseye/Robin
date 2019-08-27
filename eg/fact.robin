@@ -1,0 +1,6 @@
+(define fact (fun (self n)
+  (multiply n
+    (if (> n 1)
+      (self self (subtract n 1))
+      1))))
+(display (fact fact 5))

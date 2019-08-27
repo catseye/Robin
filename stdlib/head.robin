@@ -1,14 +1,15 @@
-(define head (@macro (self args env)
-  (bind-args (l) args env
-    (@head l))))
+;'<<SPEC'
 
-;'XXX'
+### `head` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`head` is a wrapper for the `@head` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `head` should have
-semantics identical to `@head`.
+`head` evaluates its argument to a list, and evaluates to the first element
+of that list.
+
+    | (display
+    |   (head (prepend #t ())))
+    = #t
 
 `head` expects its argument to be a list.
 
@@ -26,4 +27,6 @@ semantics identical to `@head`.
     |   (head))
     ? uncaught exception: (illegal-arguments ())
 
-'XXX'
+`head` is basically equivalent to Scheme's `car`.
+
+'<<SPEC'

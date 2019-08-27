@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -38,7 +38,7 @@ Attempting to index beyond the end of the list will raise an exception.
     |   (index 8 (literal whatnot)))
     ? uncaught exception: (expected-list whatnot)
 
-'XXX'
+'<<SPEC'
 
 (define index (fun (index li)
   (bind index-r (fun (self index li)

@@ -1,14 +1,28 @@
-(define symbol? (@macro (self args env)
-  (bind-args (s) args env
-    (@symbol? s))))
+;'<<SPEC'
 
-;'XXX'
+### `symbol?` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`symbol?` is a wrapper for the `@symbol?` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `symbol?` should have
-semantics identical to `@symbol?`.
+`symbol?` evaluates its argument, then evaluates to `#t` if it is a symbol,
+`#f` otherwise.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (symbol? (literal this-symbol)))
+    = #t
+
+Numbers are not symbols.
+
+    | (display
+    |   (symbol? 9))
+    = #f
+
+Lists are not symbols.
+
+    | (display
+    |   (symbol? (prepend 1 ())))
+    = #f
 
 The argument to `symbol?` may (naturally) be any type, but there must be
 exactly one argument.
@@ -21,4 +35,4 @@ exactly one argument.
     |   (symbol?))
     ? uncaught exception: (illegal-arguments ())
 
-'XXX'
+'<<SPEC'

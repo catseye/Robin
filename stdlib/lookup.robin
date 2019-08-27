@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -26,7 +26,7 @@
     |   (lookup (literal q) (literal ((a 7) 99 (q 4)))))
     ? uncaught exception: (expected-list 99)
 
-'XXX'
+'<<SPEC'
 
 (define lookup (fun (id alist)
   (bind lookup-r (fun (self id alist)

@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -31,7 +31,7 @@ desired position.  The position 0 indicates the beginning of the list.
     |   (rest 0 (literal foo)))
     = foo
 
-'XXX'
+'<<SPEC'
 
 (define rest (fun (n li)
   (bind rest-r (fun (self n li)

@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Arith)"
 
@@ -55,7 +55,7 @@ Division by zero is undefined, and an exception will be raised.
     |   (divide #t 51))
     ? uncaught exception: (expected-number #t)
 
-'XXX'
+'<<SPEC'
 
 ;(d is positive)
 (define divide-r-pos (fun (self n d acc)

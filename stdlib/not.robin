@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Boolean)"
 
@@ -29,7 +29,7 @@ the logical negation of that boolean.
     |   (not 33))
     ? uncaught exception: (expected-boolean 33)
 
-'XXX'
+'<<SPEC'
 
 (define not (macro (self args env)
   (bind-args (a) args env

@@ -1,8 +1,44 @@
-Robin: Modules
-==============
+Robin: Design Goals and Rationale
+=================================
+
+This document documents some of the design goals and rationale
+for the design of Robin 0.3.  The contents are not well organized,
+and the document is not very comprehensive.
 
 In this document, "Robin" refers to the Robin programming language
-version 0.2.
+version 0.3.
+
+Macro as fundamental abstraction
+--------------------------------
+
+This is certainly the most unorthodox feature, the one that departs
+the most from Scheme et al.
+
+It allows the language to have no "special forms" whatsoever.
+(Scheme would need at least `define-syntax` if it wanted to define
+`if`, `set!`, and the other parts of its syntax, as macros.)
+
+Whether having no special forms whatsoever is advantageous in any
+way, or not, remains to be seen.
+
+One upshot is that any functionality expressible in the Robin
+expression language, can be passed to a macro or a function, as
+a parameter, or returned from a macro or function evaluation.
+
+One also thinks it might make analysis of the code simpler — a
+parser or analyzer doesn't need to account for any special forms.
+
+But, in practice, since everything is a macro, `eval` is called a
+lot, and `eval` poses a significant problem for analysis.
+
+But also in practice, an analysis tool will expect that the "small"
+library has been loaded, and that function calls will use `fun`
+as defined there, and thus can base their analysis on the semantics
+of that macro without caring about its definition, or that its
+definition contains `eval`.
+
+Module System
+-------------
 
 Robin's module system is this: Robin does not have a module system.
 
@@ -87,6 +123,11 @@ Some implications of this setup in practice are:
     whatsoever, as long as the implementation knows what the
     semantics of the symbol is.
 
+*   To signal that a program requires some symbol to be defined
+    before the program can be considered meaningful, it may
+    assert that the symbol is defined, using the `assert`
+    top-level form.
+
 The more pragmatic aspect of how the reference implementation
 currently handles the issue of dependencies between Robin programs,
 keeping in mind that this is an implementation issue and _not_ a
@@ -116,29 +157,70 @@ normative in this regard:
     and to make dependencies work out "nicely", so that symbols can
     be implemented in terms of other symbols.
 
-*   However, two packages have the following justifications:
+*   However, this package has the following justification:
+    The package `small` is identified as a fairly minimal set
+    of symbols to make programming tolerable
+    (somewhere between possible and liveable in that "Maslow's
+    hierarchy" analogy.)  No symbol in it depends on any symbol
+    defined in any other package; only intrinsics and other symbols
+    in `small`.  The functions in the `small` package have also
+    been implemented directly in Haskell, in the reference interpreter.
+
+Here is a graphical depiction of the "hierarchy" of defined symbols
+(it's in HTML because it'd be trickier to depict in plain text or
+Markdown.)
+
+<table style="border: 1px solid; padding: 1em; margin: 1em">
+  <tr><th>Standard Library</th></tr>
+  <tr><td>
+
+    <p><i>(boolean)</i> and or xor not boolean?</p>
+
+    <p><i>(list)</i> empty? map fold reverse filter find append elem? length index
+    take-while drop-while first rest last prefix? flatten</p>
     
-    *   The package `intrinsics-wrappers` contains macros which are
-        simply wrappers for the intrinsics with the same names
-        (prefixed with `@`).  These serve two purposes: to let
-        you not have to type `@` all the time, and to perform
-        better argument type and number checking than the intrinsics
-        are defined to do.
-    
-    *   The package `small` is identified as a fairly minimal set
-        of symbols to make programming tolerable
-        (somewhere between possible and liveable in that "Maslow's
-        hierarchy" analogy.)  No symbol in it depends on any symbol
-        defined in any other package; only intrinsics and other symbols
-        in `small`.  The price paid for this is that macros in
-        `small`, like the intrinsics, do not have very good argument
-        checking.
-    
-    Note that `intrinsics-wrappers` depends on `small`; the use
-    `bind-args` to do the argument checking, which in turn needs
-    `let` and `bind` and so forth.
-    
-    For a graphical depiction of the "hierarchy" of defined symbols
-    (which is not really a proper hierarchy), please see
-    `doc/Hierarchy_of_Defined_Symbols.html` (it's in HTML because it'd
-    be trickier to depict in plain text or Markdown.)
+    <p><i>(alist)</i> lookup extend delete</p>
+
+    <p><i>(env)</i> env? export sandbox unbind unshadow</p>
+
+    <p><i>(arith)</i> abs add &gt; &gt;= &lt; &lt;= multiply divide remainder</p>
+
+    <p><i>(misc)</i> itoa</p>
+
+    <table style="border: 1px solid; padding: 1em; margin: 1em">
+      <tr><th>"Small" Library</th></tr>
+      <tr><td>
+        literal
+        list
+        bind
+        env
+        let
+        choose
+        bind-args
+
+        <table style="border: 1px solid; padding: 1em; margin: 1em">
+          <tr><th>Intrinsics</th></tr>
+          <tr><td>
+            head
+            tail
+            prepend
+            list?
+            symbol?
+            macro?
+            number?
+            equal?
+            subtract
+            sign
+            macro
+            eval
+            if
+            raise
+            catch
+          </td></tr>
+        </table>
+
+      </td></tr>
+    </table>
+
+  </td></tr>
+</table>

@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -13,7 +13,7 @@ evaluates to a list which is the concatenation of these lists.
     |   (append () ()))
     = ()
 
-'XXX'
+'<<SPEC'
 
 (define append (fun (li new-tail)
   (bind append-r (fun (self li new-tail)

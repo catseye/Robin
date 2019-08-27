@@ -1,18 +1,4 @@
-(define let (@macro (self args env)
-  (bind bindings (@head args)
-    (@if (@equal? bindings ())
-      (@eval env (@head (@tail args)))
-      (bind binding (@head bindings)
-        (bind name (@head binding)
-          (@if (@symbol? name)
-            (bind value (@eval env (@head (@tail binding)))
-              (bind newenv (@prepend (@prepend name (@prepend value ())) env)
-                (bind newbindings (@tail bindings)
-                  (bind newargs (@prepend newbindings (@tail args))
-                    (@eval newenv (@prepend self newargs))))))
-            (@raise (@prepend (literal illegal-binding) (@prepend binding ()))))))))))
-
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -33,9 +19,9 @@ An identifier can be bound to a symbol.
 `let` can bind a symbol to a macro.
 
     | (display
-    |   (let ((a (@macro (self args env)
-    |                (let ((x (@eval env (@head args)))
-    |                      (y (@eval env (@head (@tail args)))))
+    |   (let ((a (macro (self args env)
+    |                (let ((x (eval env (head args)))
+    |                      (y (eval env (head (tail args)))))
     |                  (prepend y x)))))
     |     (a () (literal foo))))
     = (foo)
@@ -44,8 +30,8 @@ Bindings established in a `let` remain in effect when evaluating
 the arguments things in the body of the `let`.
 
     | (display
-    |   (let ((dup (@macro (self args env)
-    |                (bind x (@eval env (@head args))
+    |   (let ((dup (macro (self args env)
+    |                (bind x (eval env (head args))
     |                  (list x x)))))
     |     (dup (dup (literal g)))))
     = ((g g) (g g))
@@ -125,4 +111,18 @@ The identifier in a binding must be a symbol.
 
 `let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
 
-'XXX'
+'<<SPEC'
+
+(define let (macro (self args env)
+  (bind bindings (head args)
+    (if (equal? bindings ())
+      (eval env (head (tail args)))
+      (bind binding (head bindings)
+        (bind name (head binding)
+          (if (symbol? name)
+            (bind value (eval env (head (tail binding)))
+              (bind newenv (prepend (prepend name (prepend value ())) env)
+                (bind newbindings (tail bindings)
+                  (bind newargs (prepend newbindings (tail args))
+                    (eval newenv (prepend self newargs))))))
+            (raise (prepend (literal illegal-binding) (prepend binding ()))))))))))

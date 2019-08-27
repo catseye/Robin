@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -26,7 +26,7 @@ of the list whose elements all satisfy the predicate.
     |   (take-while (fun (x) (symbol? x)) #f))
     ? uncaught exception: (expected-list #f)
 
-'XXX'
+'<<SPEC'
 
 (define take-while (fun (pred li)
   (bind take-while-r (fun (self pred li)

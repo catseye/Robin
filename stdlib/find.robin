@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -27,7 +27,7 @@ element from the list which satisfies the predicate.
 `find` could be defined in terms of `filter`, but in practice it would
 be implemented in a way which need not examine the entire list.
 
-'XXX'
+'<<SPEC'
 
 (define find (fun (pred li)
   (bind find-r (fun (self pred li)

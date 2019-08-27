@@ -1,14 +1,24 @@
-(define sign (@macro (self args env)
-  (bind-args (n) args env
-    (@sign n))))
+;'<<SPEC'
 
-;'XXX'
+### `sign` ###
 
-`sign` is a wrapper for the `@sign` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `sign` should have
-semantics identical to `@sign`.
+    -> Tests for functionality "Interpret core Robin Program"
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+`sign` evaluates its sole argument to a number, then
+evaluates to 0 if that number is 0, 1 if that number is positive, or
+-1 if that number is negative.
+
+    | (display
+    |   (sign 26))
+    = 1
+
+    | (display
+    |   (sign 0))
+    = 0
+
+    | (display
+    |   (sign (subtract 0 200)))
+    = -1
 
 `sign` expects a number.
 
@@ -16,6 +26,7 @@ semantics identical to `@sign`.
     |   (sign #f))
     ? uncaught exception: (expected-number #f)
 
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (sign (literal k)))
     ? uncaught exception: (expected-number k)
@@ -30,4 +41,4 @@ semantics identical to `@sign`.
     |   (sign))
     ? uncaught exception: (illegal-arguments ())
 
-'XXX'
+'<<SPEC'

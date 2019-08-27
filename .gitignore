@@ -1,6 +1,6 @@
 *.o
 *.hi
-/bin/*
+*.jsmod
+/bin/*.exe
 /pkg/*
-/src/Main.lhs
-/Robin/Builtins.hs
+/demo/*.js

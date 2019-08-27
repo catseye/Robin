@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -34,7 +34,7 @@ is zero.
     |   (last 0 (literal foo)))
     ? uncaught exception: (expected-list foo)
 
-'XXX'
+'<<SPEC'
 
 (define last (fun (n li)
   (reverse (first n (reverse li)))))

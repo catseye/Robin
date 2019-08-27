@@ -1,10 +1,4 @@
-(define list (@macro (self args env)
-  (@if (@equal? args ())
-    ()
-    (@prepend (@eval env (@head args))
-              (@eval env (@prepend self (@tail args)))))))
-
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with Small)"
 
@@ -37,4 +31,11 @@ Unlike `literal`, `list` does evaluate its arguments, all of them.
     |   (list))
     = ()
 
-'XXX'
+'<<SPEC'
+
+(define list (macro (self args env)
+  (if (equal? args ())
+    ()
+    (prepend (eval env (head args))
+              (eval env (prepend self (tail args)))))))
+

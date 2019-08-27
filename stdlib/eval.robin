@@ -1,46 +1,40 @@
-(define eval (macro (self args macro-env)
-  (@if (@equal? args ())
-    (@raise (list (literal illegal-arguments) args))
-    (@if (@equal? (@tail args) ())
-      (@raise (list (literal illegal-arguments) args))
-      (@if (@equal? (@tail (@tail args)) ())
-        (@eval macro-env
-          (list (literal @eval)
-                (@head args)
-                (@head (@tail args))))
-        (@raise (list (literal illegal-arguments) args)))))))
+;'<<SPEC'
 
-;'XXX'
+### `eval` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
-
-`eval` is a wrapper for the `@eval` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `eval` should have
-semantics identical to `@eval`.
+    -> Tests for functionality "Interpret core Robin Program"
 
 `eval` evaluates its first argument to obtain an environment, then
 evaluates its second argument to obtain an S-expression; it then
 evaluates that S-expression in the given environment.
 
+    | (define literal (macro (s a e) (head a)))
+    | (define env (macro (s a e) e))
     | (display
     |   (eval (env) (literal
-    |     (@prepend (literal a)
-    |               (@prepend (literal b) ())))))
+    |     (prepend (literal a)
+    |               (prepend (literal b) ())))))
     = (a b)
 
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (eval () (literal
-    |     (@prepend (literal a)
-    |               (@prepend (literal b) ())))))
-    ? uncaught exception: (unbound-identifier @prepend)
+    |     (prepend (literal a)
+    |               (prepend (literal b) ())))))
+    ? uncaught exception: (unbound-identifier prepend)
 
 Something fairly complicated that uses `bind`...?
 
+    | (define literal (macro (s a e) (head a)))
+    | (define bind (macro (self args env)
+    |   (eval
+    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
+    |     (head (tail (tail args))))))
     | (display
-    |   (bind bindings (@prepend
-    |                    (@prepend (literal same) (@prepend @equal? ()))
-    |                    (@prepend
-    |                      (@prepend (literal x) (@prepend #f ()))
+    |   (bind bindings (prepend
+    |                    (prepend (literal same) (prepend equal? ()))
+    |                    (prepend
+    |                      (prepend (literal x) (prepend #f ()))
     |                      ()))
     |     (eval bindings (literal (same x x)))))
     = #t
@@ -49,20 +43,16 @@ If two bindings for the same identifier are supplied in the environment
 alist passed to `eval`, the one closer to the front of the alist takes
 precedence.
 
+    | (define literal (macro (s a e) (head a)))
+    | (define bind (macro (self args env)
+    |   (eval
+    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
+    |     (head (tail (tail args))))))
     | (display
-    |   (bind bindings (@prepend
-    |                    (@prepend (literal foo) (@prepend (literal yes) ()))
-    |                    (@prepend
-    |                       (@prepend (literal foo) (@prepend (literal no) ()))
-    |                       ()))
-    |     bindings))
-    = ((foo yes) (foo no))
-
-    | (display
-    |   (bind bindings (@prepend
-    |                    (@prepend (literal foo) (@prepend (literal yes) ()))
-    |                    (@prepend
-    |                       (@prepend (literal foo) (@prepend (literal no) ()))
+    |   (bind bindings (prepend
+    |                    (prepend (literal foo) (prepend (literal yes) ()))
+    |                    (prepend
+    |                       (prepend (literal foo) (prepend (literal no) ()))
     |                       ()))
     |     (eval bindings (literal foo))))
     = yes
@@ -71,6 +61,7 @@ precedence.
 environment, however, subsequent evaluation will fail when it
 tries to look up things in that environment.
 
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (eval 103 (literal
     |     (prepend (literal a)
@@ -80,6 +71,7 @@ tries to look up things in that environment.
 Evaluation expects the contents of the list which makes up the
 environment to be two-element lists.
 
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (eval (prepend #f ()) (literal
     |     (prepend (literal a)
@@ -89,6 +81,7 @@ environment to be two-element lists.
 Evaluation expects the head of each sublist in the list which makes up the
 environment to be a symbol.
 
+    | (define literal (macro (s a e) (head a)))
     | (display
     |   (eval (prepend (prepend 7 (prepend #f ())) ()) (literal
     |     (prepend (literal a)
@@ -105,4 +98,4 @@ environment to be a symbol.
     |   (eval 4 5 6))
     ? uncaught exception: (illegal-arguments (4 5 6))
 
-'XXX'
+'<<SPEC'

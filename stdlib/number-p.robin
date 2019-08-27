@@ -1,14 +1,39 @@
-(define number? (@macro (self args env)
-  (bind-args (n) args env
-    (@number? n))))
+;'<<SPEC'
 
-;'XXX'
+### `number?` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`number?` is a wrapper for the `@number?` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `number?` should have
-semantics identical to `@number?`.
+`number?` evaluates its argument, then evaluates to `#t` if it is a
+number, `#f` otherwise.
+
+    | (display
+    |   (number? 7))
+    = #t
+
+    | (display
+    |   (number? 0))
+    = #t
+
+    | (display
+    |   (number? ()))
+    = #f
+
+    | (display
+    |   (number? #t))
+    = #f
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (number? (literal seven)))
+    = #f
+
+That's a good question...
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (number? (literal 7)))
+    = #t
 
 The argument to `number?` may (naturally) be any type, but there must be
 exactly one argument.
@@ -21,4 +46,4 @@ exactly one argument.
     |   (number?))
     ? uncaught exception: (illegal-arguments ())
 
-'XXX'
+'<<SPEC'

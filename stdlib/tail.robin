@@ -1,14 +1,15 @@
-(define tail (@macro (self args env)
-  (bind-args (l) args env
-    (@tail l))))
+;'<<SPEC'
 
-;'XXX'
+### `tail` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`tail` is a wrapper for the `@tail` intrinsic, for which it provides predictable
-failure modes.  In non-failure modes, `tail` should have semantics identical
-to `@tail`.
+`tail` evaluates its argument to a list, and evaluates to the tail of that
+list (the sublist obtained by removing the first element.)
+
+    | (display
+    |   (tail (prepend #t (prepend #f ()))))
+    = (#f)
 
 `tail` expects its argument to be a list.
 
@@ -26,4 +27,6 @@ to `@tail`.
     |   (tail))
     ? uncaught exception: (illegal-arguments ())
 
-'XXX'
+`tail` is basically equivalent to Scheme's `cdr`.
+
+'<<SPEC'

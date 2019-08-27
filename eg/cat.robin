@@ -1,6 +1,9 @@
-(reactor (line-terminal) 0 (macro (self args env)
-  (bind event (head args)
-    (bind payload (head (tail args))
-      (if (equal? event (literal readln))
-        (list 0 (list (literal writeln) payload))
-        (list 0))))))
+(reactor (line-terminal) 0
+  (macro (self args env)
+    (bind event (head args)
+      (bind event-type (head event)
+        (bind event-payload (head (tail event))
+          (if (equal? event-type (literal readln))
+            (list 0
+              (list (literal writeln) event-payload))
+            (list 0)))))))

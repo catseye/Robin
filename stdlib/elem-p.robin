@@ -1,4 +1,4 @@
-;'XXX'
+;'<<SPEC'
 
     -> Tests for functionality "Interpret Robin Program (with List)"
 
@@ -26,7 +26,7 @@ is `equal?` to some element of the list, `#f` otherwise.
 
     (not (empty? (find (fun (x) (equal? x y)) li)))
 
-'XXX'
+'<<SPEC'
 
 (define elem? (fun (item li)
   (bind elem?-r (fun (self item li)

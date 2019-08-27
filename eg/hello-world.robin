@@ -1,7 +1,9 @@
-(reactor (line-terminal) 0 (macro (self args env)
-  (bind event (head args)
-    (if (equal? event (literal init))
-      (list 0
+(reactor (line-terminal) 0
+  (macro (self args env)
+    (bind event (head args)
+      (bind event-type (head event)
+        (if (equal? event-type (literal init))
+          (list 0
             (list (literal writeln) (literal ''Hello, world!''))
-            (list (literal close) 0))
-      (list 0)))))
+            (list (literal stop) 0))
+          (list 0))))))

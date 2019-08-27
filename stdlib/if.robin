@@ -1,26 +1,28 @@
-(define if (@macro (self args macro-env)
-  (choose
-    ((@equal? args ())
-      (@raise (list (literal illegal-arguments) args)))
-    ((@equal? (@tail args) ())
-      (@raise (list (literal illegal-arguments) args)))
-    ((@equal? (@tail (@tail args)) ())
-      (@raise (list (literal illegal-arguments) args)))
-    ((@equal? (@tail (@tail (@tail args))) ())
-      (@eval macro-env (list (literal @if)
-                         (@head args)
-                         (@head (@tail args))
-                         (@head (@tail (@tail args))))))
-    (else
-      (@raise (list (literal illegal-arguments) args))))))
+;'<<SPEC'
 
-;'XXX'
+### `if` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`if` is a wrapper for the `@if` intrinsic, for which it provides predictable
-failure modes.  In non-failure modes, `if` should have semantics identical
-to `@if`.
+`if` evaluates its first argument to a boolean value.  If that value is
+`#t`, it evaluates, and evaluates to, its second argument; or if that value
+is `#f` it evaluates, and evaluates to, its third argument.  In all cases,
+at most two arguments are evaluated.
+
+    | (display
+    |   (if #t 7 9))
+    = 7
+
+    | (display
+    |   (if #f 7 9))
+    = 9
+
+The identifiers named in the branch which is not evaluated need not be
+properly bound to values in the environment.
+
+    | (display
+    |   (if #t 1 (prepend fred ethel)))
+    = 1
 
 The second and third arguments can be arbitrary expressions, but `if`
 expects its first argument to be a boolean.
@@ -39,4 +41,6 @@ expects its first argument to be a boolean.
     |   (if #t 7 8 9))
     ? uncaught exception: (illegal-arguments (#t 7 8 9))
 
-'XXX'
+`if` is basically equivalent to Scheme's `if`.
+
+'<<SPEC'

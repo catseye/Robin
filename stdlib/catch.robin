@@ -1,50 +1,65 @@
-(define catch (@macro (self args macro-env)
-  (choose
-    ((@equal? args ())
-      (@raise (list (literal illegal-arguments) args)))
-    ((@equal? (@tail args) ())
-      (@raise (list (literal illegal-arguments) args)))
-    ((@equal? (@tail (@tail args)) ())
-      (@raise (list (literal illegal-arguments) args)))
-    ((@equal? (@tail (@tail (@tail args))) ())
-      (@if (symbol? (@head args))
-        (@eval (env) (list (literal @catch)
-                           (@head args)
-                           (@head (@tail args))
-                           (@head (@tail (@tail args)))))
-        (@raise (list (literal illegal-arguments) args))))
-    (else
-      (@raise (list (literal illegal-arguments) args))))))
+;'<<SPEC'
 
-;'XXX'
+### `catch` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`catch` is a wrapper for the `@catch` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `catch` should have
-semantics identical to `@catch`.
+`catch` installs an exception handler.
 
-`catch` expects its first argument to be a symbol.
+If an exception is raised when evaluating the final argument of
+`catch`, the exception value is bound to the symbol given as the
+first argument of `catch`, and the second argument of `catch` is
+evaluated in that new environment.
 
+    | (define literal (macro (s a e) (head a)))
+    | (define list (macro (self args env)
+    |   (if (equal? args ())
+    |     ()
+    |     (prepend (eval env (head args))
+    |               (eval env (prepend self (tail args)))))))
     | (display
-    |   (catch #f 23 (head #f)))
-    ? uncaught exception: (illegal-arguments (#f 23 (head #f)))
+    |   (catch error (list error #f)
+    |     (raise (literal (nasty-value 999999)))))
+    = ((nasty-value 999999) #f)
+
+`catch` *cannot necessarily* catch exceptions raised by intrinsics.
+It ought to be able to catch exceptions raised by intrinsics wrappers,
+though.
+
+The innermost `catch` will catch the exception.
+
+    | (define literal (macro (s a e) (head a)))
+    | (define list (macro (self args env)
+    |   (if (equal? args ())
+    |     ()
+    |     (prepend (eval env (head args))
+    |               (eval env (prepend self (tail args)))))))
+    | (display
+    |   (catch error (list error 5)
+    |     (catch error (list error 9)
+    |       (raise (literal derpy-value)))))
+    = (derpy-value 9)
+
+An exception raised from within an exception handler is
+caught by the next innermost exception handler.
+
+    | (define list (macro (self args env)
+    |   (if (equal? args ())
+    |     ()
+    |     (prepend (eval env (head args))
+    |               (eval env (prepend self (tail args)))))))
+    | (display
+    |   (catch error (list error 5)
+    |     (catch error (list error 9)
+    |       (catch error (raise (list error error))
+    |         (raise 7)))))
+    = ((7 7) 9)
+
+`catch` expects its first argument to be an identifier.
 
 `catch` expects exactly three arguments.
 
-    | (display
-    |   (catch error error))
-    ? uncaught exception: (illegal-arguments (error error))
+TODO we should probably have some tests that prove that `catch` can
+catch errors raised from inside macros.
 
-    | (display
-    |   (catch error error (head #f) 23))
-    ? uncaught exception: (illegal-arguments (error error (head #f) 23))
-
-`catch` can catch exceptions raised by builtin wrappers.
-
-    | (display
-    |   (catch error (list error 5)
-    |     (head #f)))
-    = ((expected-list #f) 5)
-
-'XXX'
+'<<SPEC'

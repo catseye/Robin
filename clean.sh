@@ -1,5 +1,7 @@
 #!/bin/sh
 
-rm -rf src/Robin/*.o src/Robin/*.hi
-rm -rf src/main/*/*.o src/main/*/*.hi
-rm -rf pkg/*.robin
+find . -name "*.o"  -exec rm {} \;
+find . -name "*.hi" -exec rm {} \;
+find . -name "*.jsmod" -exec rm {} \;
+find . -name "*.exe" -exec rm {} \;
+rm -rf pkg/*.robin demo/robin.js

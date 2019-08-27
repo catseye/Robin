@@ -2,23 +2,14 @@
 
 ./build.sh || exit 1
 
-TESTDOCS1="
-doc/Robin.markdown
-doc/Intrinsics.markdown
-doc/Reactor.markdown
-"
-
-if [ "${FIXTURE}x" = "x" ]; then
-    FIXTURE=fixture/whitecap.markdown
+if [ "${APPLIANCES}x" = "x" ]; then
+  APPLIANCES="appliances/robin.md appliances/robin-no-builtins.md"
 fi
-echo "Using fixture $FIXTURE..."
 
 echo "Running tests on core semantics..."
-falderal -b $FIXTURE $TESTDOCS1 || exit 1
+falderal -b $APPLIANCES doc/Robin.md || exit 1
 
-for PACKAGE in small intrinsics-wrappers fun boolean arith list env misc; do
+for PACKAGE in intrinsics small boolean arith list env misc; do
     echo "Running tests on '$PACKAGE' package..."
-    falderal -b $FIXTURE pkg/$PACKAGE.robin || exit 1
+    falderal -b $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
-
-rm -f config.markdown

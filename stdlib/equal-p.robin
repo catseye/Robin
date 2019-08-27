@@ -1,14 +1,54 @@
-(define equal? (@macro (self args env)
-  (bind-args (lhs rhs) args env
-    (@equal? lhs rhs))))
+;'<<SPEC'
 
-;'XXX'
+### `equal?` ###
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Interpret core Robin Program"
 
-`equal?` is a wrapper for the `@equal?` intrinsic, for which it provides
-predictable failure modes.  In non-failure modes, `equal?` should have
-semantics identical to `@equal?`.
+`equal?` evaluates both of its arguments to arbitrary S-expressions
+and compares them for deep equality.
+
+`equal?` works on symbols.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (equal?
+    |     (literal this-symbol)
+    |     (literal this-symbol)))
+    = #t
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (equal?
+    |     (literal this-symbol)
+    |     (literal that-symbol)))
+    = #f
+
+`equal?` works on lists.
+
+    | (display
+    |   (equal? (prepend 1 (prepend 2 (prepend 3 ())))
+    |           (prepend 1 (prepend 2 (prepend 3 ())))))
+    = #t
+
+`equal?` works on lists, deeply.
+
+    | (display
+    |   (equal? (prepend 1 (prepend 2 (prepend 7 ())))
+    |           (prepend 1 (prepend 2 (prepend 3 ())))))
+    = #f
+
+Two values of different types are never equal.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (equal? #t
+    |            (prepend (literal a) ())))
+    = #f
+
+    | (display
+    |   (equal? #f
+    |           ()))
+    = #f
 
 Arguments to `equal?` can be any type, but fewer than or more than
 two arguments will raise an exception.
@@ -21,4 +61,4 @@ two arguments will raise an exception.
     |   (equal? 7 8 9))
     ? uncaught exception: (illegal-arguments (7 8 9))
 
-'XXX'
+'<<SPEC'
