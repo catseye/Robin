@@ -4,9 +4,11 @@ A Short Robin Tutorial
 This document will lead you through writing a few simple Robin programs.
 
 We will assume you've written some programs in a Lisp-like language
-such as Scheme or Racket or Irken.  If you haven't, it will probably
+such as Scheme or Racket or [Irken][].  If you haven't, it will probably
 help a lot if you work through one of the many excellent tutorials
 available for these languages.
+
+[Irken]: https://github.com/samrushing/irken-compiler/blob/master/docs/intro.md
 
 Basic usage
 -----------
@@ -134,11 +136,22 @@ In particular, the reference implementation exposes, by default,
 a set of "builtins" which map to the "small" subset of the standard
 library.  You can turn them off with:
 
-    bin/robin --no-builtins difference.robin
+    bin/robin --no-builtins pkg/stdlib.robin fact.robin
 
-`difference.robin` doesn't rely on any of these builtins, so it
-still runs.
+If you do this, you'll see
 
-...
+    Main.hs: uncaught exception: (unbound-identifier fun)
 
-(Remainder TBW.)
+You might conclude from this that `fun` is not a built-in — and you'd
+be right!  Unlike basically every other Lisp-like language, in Robin,
+`fun` is a derived form.  It's implemented as a macro.
+
+Macros
+------
+
+(To be written).
+
+Reactors
+--------
+
+(To be written).
