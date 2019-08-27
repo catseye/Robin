@@ -1,32 +1,27 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Boolean)"
+    -> Tests for functionality "Evaluate Robin Expression (with Boolean)"
 
 `not` evaluates its single argument to a boolean, then evaluates to
 the logical negation of that boolean.
 
-    | (display
-    |   (not #t))
+    | (not #t)
     = #f
 
-    | (display
-    |   (not #f))
+    | (not #f)
     = #t
 
 `not` expects exactly one argument.
 
-    | (display
-    |   (not))
+    | (not)
     ? uncaught exception: (illegal-arguments ())
 
-    | (display
-    |   (not #t #f))
+    | (not #t #f)
     ? uncaught exception: (illegal-arguments (#t #f))
 
 `not` expects its single argument to be a boolean.
 
-    | (display
-    |   (not 33))
+    | (not 33)
     ? uncaught exception: (expected-boolean 33)
 
 '<<SPEC'

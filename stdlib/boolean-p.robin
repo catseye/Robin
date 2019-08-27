@@ -1,31 +1,26 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Boolean)"
+    -> Tests for functionality "Evaluate Robin Expression (with Boolean)"
 
 `boolean?` evaluates its argument, then evaluates to `#t` if it is a
 boolean value, `#f` otherwise.
 
-    | (display
-    |   (boolean? #t))
+    | (boolean? #t)
     = #t
 
-    | (display
-    |   (boolean? (head (prepend #f ()))))
+    | (boolean? (head (prepend #f ())))
     = #t
 
-    | (display
-    |   (boolean? ()))
+    | (boolean? ())
     = #f
 
 The argument to `boolean?` may (naturally) be any type, but there must be
 exactly one argument.
 
-    | (display
-    |   (boolean? #t #f))
+    | (boolean? #t #f)
     ? uncaught exception: (illegal-arguments (#t #f))
 
-    | (display
-    |   (boolean?))
+    | (boolean?)
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'

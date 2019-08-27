@@ -10,8 +10,8 @@
     -> Functionality "Execute Robin Program (with List)" is implemented by shell command
     -> "bin/robin pkg/list.robin %(test-body-file)"
 
-    -> Functionality "Execute Robin Program (with Boolean)" is implemented by shell command
-    -> "bin/robin pkg/boolean.robin %(test-body-file)"
+    -> Functionality "Evaluate Robin Expression (with Boolean)" is implemented by shell command
+    -> "bin/robin pkg/boolean.robin eval %(test-body-file)"
 
     -> Functionality "Execute Robin Program (with Env)" is implemented by shell command
     -> "bin/robin pkg/list.robin pkg/env.robin %(test-body-file)"
