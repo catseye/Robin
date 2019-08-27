@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Language.Robin.Parser (parseRobin, insistParse) where
+module Language.Robin.Parser (parseRobin, parseRobinExpr) where
 
 import Data.Char
 import Data.Int
@@ -100,9 +100,4 @@ robinProgram = do
 -- Convenience functions for parsing Robin programs.
 
 parseRobin = parse robinProgram ""
-
-insistParse programText =
-    let
-        Right ast = parseRobin programText
-    in
-        ast
+parseRobinExpr = parse expr ""

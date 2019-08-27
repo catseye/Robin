@@ -15,3 +15,5 @@ if command -v hastec >/dev/null 2>&1; then
 else
     echo "hastec not found, not building $PROG.js"
 fi
+
+./build-packages.sh

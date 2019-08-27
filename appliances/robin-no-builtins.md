@@ -22,5 +22,5 @@
     -> Functionality "Execute Robin Program (with List-Arith)" is implemented by shell command
     -> "bin/robin --no-builtins pkg/small.robin pkg/list.robin pkg/arith.robin pkg/list-arith.robin %(test-body-file)"
 
-    -> Functionality "Execute Robin Program (with Stdlib)" is implemented by shell command
-    -> "bin/robin --no-builtins pkg/stdlib-no-builtins.robin %(test-body-file)"
+    -> Functionality "Evaluate Robin Expression (with Stdlib)" is implemented by shell command
+    -> "bin/robin --no-builtins pkg/stdlib-no-builtins.robin eval %(test-body-file)"
