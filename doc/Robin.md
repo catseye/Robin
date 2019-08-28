@@ -246,15 +246,18 @@ ones.)
 When in a Robin program proper, a symbol can be bound to a value, and
 in this context is it referred to as an _identifier_.  However, if an
 attempt is made to evaluate a symbol which is not an identifier,
-an exception will be raised.  For a symbol to appear unevaluated in a Robin
-program, it must be an argument to a macro.  For that reason, we can't
-show an example of a literal symbol without first defining a macro... but
-will go ahead and show the example, and will explain macros later.
+an exception will be raised.
 
-    -> Tests for functionality "Execute core Robin Program"
+    | this-symbol-is-not-bound
+    ? uncaught exception: (unbound-identifier this-symbol-is-not-bound)
 
-    | (define literal (macro (self args env) (head args)))
-    | (display (literal hello))
+For a symbol to appear unevaluated in a Robin program, it must be
+introduced as a literal.  However, there is no intrinsic way to do this,
+so in order to demonstrate it, we must use something we haven't
+covered yet: a macro.  We'll just go ahead and show the example, and
+will explain macros later.
+
+    | ((macro (s a e) (head a)) hello)
     = hello
 
 A Robin implementation is not expected to be able to generate new symbols
@@ -264,8 +267,6 @@ Symbols can be applied, and that is a typical use of them.  But actually,
 it is what the symbol is bound to in the environment that is applied.
 
 ### Booleans ###
-
-    -> Tests for functionality "Evaluate core Robin Expression"
 
 There are two values of Boolean type, `#t`, representing truth, and `#f`,
 representing falsehood.  By convention, an identifier which ends in `?`
@@ -434,7 +435,7 @@ by whitespace.
 
 Non-empty lists do not evaluate to themselves; rather, they represent a macro
 application.  However, the `literal` macro (whose definition is
-`(macro (s a e) (head a))` may be used to obtain a literal list.
+`(macro (s a e) (head a))`) may be used to obtain a literal list.
 
     | ((macro (s a e) (head a)) (7 8)))
     = (7 8)
