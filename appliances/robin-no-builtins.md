@@ -1,9 +1,6 @@
     -> Functionality "Execute core Robin Program" is implemented by shell command
     -> "bin/robin --no-builtins %(test-body-file)"
 
-    -> Functionality "Execute Robin Program" is implemented by shell command
-    -> "bin/robin --no-builtins pkg/small.robin %(test-body-file)"
-
     -> Functionality "Execute Robin Program (with Small)" is implemented by shell command
     -> "bin/robin --no-builtins pkg/small.robin %(test-body-file)"
 
