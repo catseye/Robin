@@ -28,10 +28,10 @@ like to show that it allows one to write Robin Expressions.)  Thus
 many of these examples are given in the Robin Toplevel Language,
 even though they need not strictly be.
 
-    -> Tests for functionality "Execute core Robin Program"
-
 Part 0. Robin Syntax
 --------------------
+
+    -> Tests for functionality "Execute core Robin Program"
 
 ### S-expressions ###
 
@@ -134,6 +134,8 @@ Adjacent string literals are not automatically concatenated.
 
 ### Comments
 
+    -> Tests for functionality "Execute core Robin Program"
+
 Any S-expression preceded by a `;` symbol is a comment.  It will still
 be parsed, but it will be ignored.
 
@@ -205,6 +207,8 @@ Part 1. Robin Expression Language
 Intrinsic Data Types
 --------------------
 
+    -> Tests for functionality "Evaluate core Robin Expression"
+
 ### Terms ###
 
 Whereas an S-expression is a syntactic concept, a term is a semantic
@@ -247,6 +251,8 @@ program, it must be an argument to a macro.  For that reason, we can't
 show an example of a literal symbol without first defining a macro... but
 will go ahead and show the example, and will explain macros later.
 
+    -> Tests for functionality "Execute core Robin Program"
+
     | (define literal (macro (self args env) (head args)))
     | (display (literal hello))
     = hello
@@ -259,6 +265,8 @@ it is what the symbol is bound to in the environment that is applied.
 
 ### Booleans ###
 
+    -> Tests for functionality "Evaluate core Robin Expression"
+
 There are two values of Boolean type, `#t`, representing truth, and `#f`,
 representing falsehood.  By convention, an identifier which ends in `?`
 is a macro or function which evaluates to a Boolean.  The `if` intrinsic
@@ -266,15 +274,15 @@ expects a Boolean expression as its first argument.
 
 Booleans always evaluate to themselves.
 
-    | (display #t)
+    | #t
     = #t
 
-    | (display #f)
+    | #f
     = #f
 
 Booleans cannot be applied.
 
-    | (display (#t 1 2 3))
+    | (#t 1 2 3)
     ? uncaught exception: (inapplicable-object #t)
 
 ### Integers ###
@@ -285,20 +293,20 @@ bigint library or such.
 
 For example, 5 is an integer:
 
-    | (display 5)
+    | 5
     = 5
 
 Whereas 6167172726261721 is not, and you get the 32-bit signed integer
 equivalent:
 
-    | (display 6167172726261721)
+    | 6167172726261721
     = -878835751
 
 Integers always evaluate to themselves.
 
 Integers cannot be applied.
 
-    | (display (900 1 2 3))
+    | (900 1 2 3)
     ? uncaught exception: (inapplicable-object 900)
 
 ### Macros ###
@@ -339,8 +347,7 @@ Macros evaluate to themselves.
 Macros are represented as the S-expression expansion of their
 implementation.
 
-    | (display
-    |   (macro (self args env) args))
+    | (macro (self args env) args)
     = (macro (self args env) args)
 
 Macros can be applied, and that is the typical use of them.
@@ -372,14 +379,13 @@ Intrinsics evaluate to themselves.
 
 An intrinsic is represented thusly.
 
-    | (display head)
+    | head
     = head
 
 One upshot of intrinsics is that all intrinsic Robin functionality
 (excepting top-level forms) can be passed around as values.
 
-    | (display
-    |   (prepend if (prepend head ())))
+    | (prepend if (prepend head ()))
     = (if head)
 
 Intrinsics can be applied, and that is the typical use of them.
@@ -419,8 +425,7 @@ syntax.
 
 The empty list is notated `()` and it evaluates to itself.
 
-    | (display
-    |    ())
+    | ()
     = ()
 
 A list with several elements is notated as a sequence of those
@@ -428,12 +433,10 @@ elements, preceded by a `(`, followed by a `)`, and delimited
 by whitespace.
 
 Non-empty lists do not evaluate to themselves; rather, they represent a macro
-application.  However, the `literal` macro may be used to obtain a
-literal list.
+application.  However, the `literal` macro (whose definition is
+`(macro (s a e) (head a))` may be used to obtain a literal list.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal (7 8)))
+    | ((macro (s a e) (head a)) (7 8)))
     = (7 8)
 
 Lists cannot be directly applied, but since a list itself represents an
@@ -471,6 +474,8 @@ environment that is in effect (such as in the first argument to `eval`.)
 
 Part 2. Robin Toplevel Language
 -------------------------------
+
+    -> Tests for functionality "Execute core Robin Program"
 
 A Robin program consists of a series of "top-level" S-expressions.
 Each top-level S-expression must have a particular form, but most of these
@@ -559,6 +564,8 @@ permit the construction of reactive Robin programs.  See the
 
 Part 3. Robin Reactors
 ----------------------
+
+    -> Tests for functionality "Execute core Robin Program"
 
 To separate the concerns of computation and interaction, Robin provides
 a construct called a _reactor_.  While evaluation of a Robin expression
