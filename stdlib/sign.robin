@@ -2,43 +2,35 @@
 
 ### `sign` ###
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `sign` evaluates its sole argument to a number, then
 evaluates to 0 if that number is 0, 1 if that number is positive, or
 -1 if that number is negative.
 
-    | (display
-    |   (sign 26))
+    | (sign 26)
     = 1
 
-    | (display
-    |   (sign 0))
+    | (sign 0)
     = 0
 
-    | (display
-    |   (sign (subtract 0 200)))
+    | (sign (subtract 0 200))
     = -1
 
 `sign` expects a number.
 
-    | (display
-    |   (sign #f))
+    | (sign #f)
     ? uncaught exception: (expected-number #f)
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (sign (literal k)))
+    | (sign ((macro (s a e) (head a)) k))
     ? uncaught exception: (expected-number k)
 
 `sign` expects exactly one argument.
 
-    | (display
-    |   (sign 100 200 300))
+    | (sign 100 200 300)
     ? uncaught exception: (illegal-arguments (100 200 300))
 
-    | (display
-    |   (sign))
+    | (sign)
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'

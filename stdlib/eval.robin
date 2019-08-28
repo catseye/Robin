@@ -2,6 +2,9 @@
 
 ### `eval` ###
 
+FIXME: These tests should ideally be for expressions in the Robin Expression Language
+rather than programs in the Robin Toplevel Language.
+
     -> Tests for functionality "Execute core Robin Program"
 
 `eval` evaluates its first argument to obtain an environment, then

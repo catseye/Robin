@@ -71,8 +71,7 @@ be implemented, and available, and if it's not, it should fail.
 Tests
 -----
 
-A way to evaluate a Robin expression and display it, mainly
-to make the tests more concise - don't need to say `(display ...)` always.
+Grep for FIXME and TODO in stdlib.
 
 Reactors
 --------

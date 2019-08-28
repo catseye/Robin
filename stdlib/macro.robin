@@ -2,6 +2,9 @@
 
 ### `macro` ###
 
+FIXME: These tests should ideally be for expressions in the Robin Expression Language
+rather than programs in the Robin Toplevel Language.
+
     -> Tests for functionality "Execute core Robin Program"
 
 `macro` takes its first argument to be a list of three formal

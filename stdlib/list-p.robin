@@ -2,47 +2,37 @@
 
 ### `list?` ###
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `list?` evaluates its argument, then evaluates to `#t` if it is a list,
 `#f` otherwise.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (list? (literal (a b))))
+    |   (list? ((macro (s a e) (head a)) (a b)))
     = #t
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (list? (literal (a b c d e f))))
+    |   (list? ((macro (s a e) (head a)) (a b c d e f)))
     = #t
 
-    | (display
-    |   (list? (prepend 4 (prepend 5 ()))))
+    |   (list? (prepend 4 (prepend 5 ())))
     = #t
 
 The empty list is a list.
 
-    | (display
-    |   (list? ()))
+    |   (list? ())
     = #t
 
 Symbols are not lists.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (list? (literal a)))
+    |   (list? ((macro (s a e) (head a)) a))
     = #f
 
 The argument to `list?` may (naturally) be any type, but there must be
 exactly one argument.
 
-    | (display
-    |   (list? (prepend 4 ()) (prepend 6 ())))
+    |   (list? (prepend 4 ()) (prepend 6 ()))
     ? uncaught exception: (illegal-arguments ((prepend 4 ()) (prepend 6 ())))
 
-    | (display
-    |   (list?))
+    |   (list?)
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'

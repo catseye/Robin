@@ -2,29 +2,25 @@
 
 ### `head` ###
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `head` evaluates its argument to a list, and evaluates to the first element
 of that list.
 
-    | (display
-    |   (head (prepend #t ())))
+    | (head (prepend #t ()))
     = #t
 
 `head` expects its argument to be a list.
 
-    | (display
-    |   (head #f))
+    | (head #f)
     ? uncaught exception: (expected-list #f)
 
 `head` expects exactly one argument.
 
-    | (display
-    |   (head (@prepend #t ()) (@prepend #f ())))
-    ? uncaught exception: (illegal-arguments ((@prepend #t ()) (@prepend #f ())))
+    | (head (prepend #t ()) (prepend #f ()))
+    ? uncaught exception: (illegal-arguments ((prepend #t ()) (prepend #f ())))
 
-    | (display
-    |   (head))
+    | (head)
     ? uncaught exception: (illegal-arguments ())
 
 `head` is basically equivalent to Scheme's `car`.

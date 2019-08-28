@@ -2,48 +2,38 @@
 
 ### `number?` ###
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `number?` evaluates its argument, then evaluates to `#t` if it is a
 number, `#f` otherwise.
 
-    | (display
-    |   (number? 7))
+    | (number? 7)
     = #t
 
-    | (display
-    |   (number? 0))
+    | (number? 0)
     = #t
 
-    | (display
-    |   (number? ()))
+    | (number? ())
     = #f
 
-    | (display
-    |   (number? #t))
+    | (number? #t)
     = #f
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (number? (literal seven)))
+    | (number? ((macro (s a e) (head a)) seven))
     = #f
 
 That's a good question...
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (number? (literal 7)))
+    | (number? ((macro (s a e) (head a)) 7))
     = #t
 
 The argument to `number?` may (naturally) be any type, but there must be
 exactly one argument.
 
-    | (display
-    |   (number? 6 4))
+    | (number? 6 4)
     ? uncaught exception: (illegal-arguments (6 4))
 
-    | (display
-    |   (number?))
+    | (number?)
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'

@@ -2,44 +2,37 @@
 
 ### `subtract` ###
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `subtract` evaluates its first argument to a number, then
 evaluates its second argument to a number, then evaluates
 to the difference between the first and second numbers.
 
-    | (display
-    |   (subtract 6 4))
+    | (subtract 6 4)
     = 2
 
-    | (display
-    |   (subtract 1000 8000))
+    | (subtract 1000 8000)
     = -7000
 
 Addition may be accomplished by negating the second argument.
 
-    | (display
-    |   (subtract 999 (subtract 0 999)))
+    | (subtract 999 (subtract 0 999))
     = 1998
 
 `subtract` expects both of its arguments to be numbers.
 
-    | (display
-    |   (subtract #f 100))
+    | (subtract #f 100)
     ? uncaught exception: (expected-number #f)
 
-    | (display
-    |   (subtract 100 ()))
+    | (subtract 100 ())
     ? uncaught exception: (expected-number ())
 
 `subtract` expects exactly two arguments.
 
-    | (display
-    |   (subtract 100 200 300))
+    | (subtract 100 200 300)
     ? uncaught exception: (illegal-arguments (100 200 300))
 
-    | (display
-    |   (subtract))
+    | (subtract)
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'

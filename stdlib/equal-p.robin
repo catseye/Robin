@@ -2,63 +2,50 @@
 
 ### `equal?` ###
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `equal?` evaluates both of its arguments to arbitrary S-expressions
 and compares them for deep equality.
 
 `equal?` works on symbols.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (equal?
-    |     (literal this-symbol)
-    |     (literal this-symbol)))
+    | (equal?
+    |   ((macro (s a e) (head a)) this-symbol)
+    |   ((macro (s a e) (head a)) this-symbol))
     = #t
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (equal?
-    |     (literal this-symbol)
-    |     (literal that-symbol)))
+    | (equal?
+    |   ((macro (s a e) (head a)) this-symbol)
+    |   ((macro (s a e) (head a)) that-symbol))
     = #f
 
 `equal?` works on lists.
 
-    | (display
-    |   (equal? (prepend 1 (prepend 2 (prepend 3 ())))
-    |           (prepend 1 (prepend 2 (prepend 3 ())))))
+    | (equal? (prepend 1 (prepend 2 (prepend 3 ())))
+    |         (prepend 1 (prepend 2 (prepend 3 ()))))
     = #t
 
 `equal?` works on lists, deeply.
 
-    | (display
-    |   (equal? (prepend 1 (prepend 2 (prepend 7 ())))
-    |           (prepend 1 (prepend 2 (prepend 3 ())))))
+    | (equal? (prepend 1 (prepend 2 (prepend 7 ())))
+    |         (prepend 1 (prepend 2 (prepend 3 ()))))
     = #f
 
 Two values of different types are never equal.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (equal? #t
-    |            (prepend (literal a) ())))
+    | (equal? #t (prepend ((macro (s a e) (head a)) a) ()))
     = #f
 
-    | (display
-    |   (equal? #f
-    |           ()))
+    | (equal? #f ())
     = #f
 
 Arguments to `equal?` can be any type, but fewer than or more than
 two arguments will raise an exception.
 
-    | (display
-    |   (equal? 7))
+    | (equal? 7)
     ? uncaught exception: (illegal-arguments (7))
 
-    | (display
-    |   (equal? 7 8 9))
+    | (equal? 7 8 9)
     ? uncaught exception: (illegal-arguments (7 8 9))
 
 '<<SPEC'
