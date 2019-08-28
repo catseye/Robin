@@ -1,34 +1,28 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Arith)"
+    -> Tests for functionality "Evaluate Robin Expression (with Arith)"
 
 `abs` evaluates its single argument to a number, and evaluates to
 the absolute value of that number (where the sign is always positive.)
 
-    | (display
-    |   (abs 5))
+    |   (abs 5)
     = 5
 
-    | (display
-    |   (abs (subtract 0 5)))
+    |   (abs (subtract 0 5))
     = 5
 
-    | (display
-    |   (abs 0))
+    |   (abs 0)
     = 0
 
 `abs` expects exactly one numeric argument.
 
-    | (display
-    |   (abs))
+    |   (abs)
     ? uncaught exception: (illegal-arguments ())
 
-    | (display
-    |   (abs 14 23))
+    |   (abs 14 23)
     ? uncaught exception: (illegal-arguments (14 23))
 
-    | (display
-    |   (abs #t))
+    |   (abs #t)
     ? uncaught exception: (expected-number #t)
 
 '<<SPEC'

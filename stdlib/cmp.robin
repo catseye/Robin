@@ -1,40 +1,33 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Arith)"
+    -> Tests for functionality "Evaluate Robin Expression (with Arith)"
 
 ### `>` ###
 
 `>` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is strictly greater than the second.
 
-    | (display
-    |   (> 6 4))
+    |   (> 6 4)
     = #t
 
-    | (display
-    |   (> 6 8))
+    |   (> 6 8)
     = #f
 
-    | (display
-    |   (> 6 6))
+    |   (> 6 6)
     = #f
 
 `>` expects exactly two arguments, both numbers.
 
-    | (display
-    |   (> 14))
+    |   (> 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (display
-    |   (> 14 23 57))
+    |   (> 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (display
-    |   (> 14 #t))
+    |   (> 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (display
-    |   (> #t 51))
+    |   (> #t 51)
     ? uncaught exception: (expected-number #t)
 
 ### `<` ###
@@ -42,34 +35,27 @@ if the first number is strictly greater than the second.
 `<` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is strictly less than the second.
 
-    | (display
-    |   (< 6 4))
+    |   (< 6 4)
     = #f
 
-    | (display
-    |   (< 6 8))
+    |   (< 6 8)
     = #t
 
-    | (display
-    |   (< 6 6))
+    |   (< 6 6)
     = #f
 
 `<` expects exactly two arguments, both numbers.
 
-    | (display
-    |   (< 14))
+    |   (< 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (display
-    |   (< 14 23 57))
+    |   (< 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (display
-    |   (< 14 #t))
+    |   (< 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (display
-    |   (< #t 51))
+    |   (< #t 51)
     ? uncaught exception: (expected-number #t)
 
 ### `>=` ###
@@ -77,34 +63,27 @@ if the first number is strictly less than the second.
 `>=` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is greater than or equal to the second.
 
-    | (display
-    |   (>= 6 4))
+    |   (>= 6 4)
     = #t
 
-    | (display
-    |   (>= 6 8))
+    |   (>= 6 8)
     = #f
 
-    | (display
-    |   (>= 6 6))
+    |   (>= 6 6)
     = #t
 
 `>=` expects exactly two arguments, both numbers.
 
-    | (display
-    |   (>= 14))
+    |   (>= 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (display
-    |   (>= 14 23 57))
+    |   (>= 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (display
-    |   (>= 14 #t))
+    |   (>= 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (display
-    |   (>= #t 51))
+    |   (>= #t 51)
     ? uncaught exception: (expected-number #t)
 
 ### `<=` ###
@@ -112,34 +91,27 @@ if the first number is greater than or equal to the second.
 `<=` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is less than or equal to the second.
 
-    | (display
-    |   (<= 6 4))
+    |   (<= 6 4)
     = #f
 
-    | (display
-    |   (<= 6 8))
+    |   (<= 6 8)
     = #t
 
-    | (display
-    |   (<= 6 6))
+    |   (<= 6 6)
     = #t
 
 `<=` expects exactly two arguments, both numbers.
 
-    | (display
-    |   (<= 14))
+    |   (<= 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (display
-    |   (<= 14 23 57))
+    |   (<= 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (display
-    |   (<= 14 #t))
+    |   (<= 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (display
-    |   (<= #t 51))
+    |   (<= #t 51)
     ? uncaught exception: (expected-number #t)
 
 '<<SPEC'

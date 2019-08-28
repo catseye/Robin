@@ -1,58 +1,47 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Arith)"
+    -> Tests for functionality "Evaluate Robin Expression (with Arith)"
 
 `divide` evaluates both of its arguments to numbers and evaluates to the
 result of integer division of the first number by the second.  Integer
 division computes by what integer the second number can be multiplied
 to make it as big as possible without exceeding the first number.
 
-    | (display
-    |   (divide 100 3))
+    |   (divide 100 3)
     = 33
 
-    | (display
-    |   (divide (subtract 0 100) 3))
+    |   (divide (subtract 0 100) 3)
     = -34
 
-    | (display
-    |   (divide 100 (subtract 0 3)))
+    |   (divide 100 (subtract 0 3))
     = -34
 
-    | (display
-    |   (divide 33 33))
+    |   (divide 33 33)
     = 1
 
-    | (display
-    |   (divide 33 34))
+    |   (divide 33 34)
     = 0
 
-    | (display
-    |   (divide 10 0))
+    |   (divide 10 0)
     ? uncaught exception: (division-by-zero 10)
 
 Division by zero is undefined, and an exception will be raised.
 
-    | (display
-    |   (divide 10 0))
+    |   (divide 10 0)
     ? uncaught exception: (division-by-zero 10)
 
 `div` expects exactly two arguments, both numbers.
 
-    | (display
-    |   (divide 14))
+    |   (divide 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (display
-    |   (divide 14 23 57))
+    |   (divide 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (display
-    |   (divide 14 #t))
+    |   (divide 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (display
-    |   (divide #t 51))
+    |   (divide #t 51)
     ? uncaught exception: (expected-number #t)
 
 '<<SPEC'
