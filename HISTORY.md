@@ -1,12 +1,13 @@
 History of Robin
 ================
 
-Robin 0.4 (late 2019)
+Robin 0.4 (autumn 2019)
 ---------
 
 *   Improved modularity of the specification.
 *   Many tests are for the Robin Expression Language, and have been
     made explicitly so, instead of for the Robin Toplevel Language.
+*   Added `bound?` predicate to env lib in stdlib.
 
 Robin 0.3 (Aug 2019)
 ---------

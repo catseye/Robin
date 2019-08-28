@@ -1,0 +1,41 @@
+;'<<SPEC'
+
+    -> Tests for functionality "Evaluate Robin Expression (with Env)"
+
+`bound?` takes a single argument, which should be a symbol, and
+evaluates to `#t` if it the symbol is bound to a value in the
+current environment, or `#f` if it is not.
+
+    | (bound? bound?)
+    = #t
+
+    | (bound? xuzumsunazun)
+    = #f
+
+    | (bind xuzumsunazun 3 (bound? xuzumsunazun))
+    = #t
+
+The single argument to `bound?` should be a symbol.
+
+    | (bound? 3)
+    ? uncaught exception: (expected-symbol 3)
+
+`bound?` expects exactly two arguments.
+
+    | (bound? bound? bound?)
+    ? uncaught exception: (illegal-arguments (bound? bound?))
+
+    | (bound?)
+    ? uncaught exception: (illegal-arguments ())
+
+'<<SPEC'
+
+(define bound? (macro (self args env)
+  (if (equal? args ())
+    (raise (list (literal illegal-arguments) args))
+    (if (equal? (tail args) ())
+      (bind symbol (head args)
+        (if (symbol? symbol)
+          (if (equal? (lookup symbol env) ()) #f #t)
+          (raise (list (literal expected-symbol) symbol))))
+      (raise (list (literal illegal-arguments) args))))))

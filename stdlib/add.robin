@@ -5,23 +5,23 @@
 `add` evaluates both of its arguments to numbers and evaluates to the sum
 of those two numbers.
 
-    |   (add 14 23)
+    | (add 14 23)
     = 37
 
 `add` expects exactly two arguments.
 
-    |   (add 14)
+    | (add 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    |   (add 6 7 7)
+    | (add 6 7 7)
     ? uncaught exception: (illegal-arguments (6 7 7))
 
 Both of the arguments to `add` must be numbers.
 
-    |   (add 14 #t)
+    | (add 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    |   (add #t 51)
+    | (add #t 51)
     ? uncaught exception: (expected-number #t)
 
 '<<SPEC'

@@ -181,7 +181,7 @@ Markdown.)
     
     <p><i>(alist)</i> lookup extend delete</p>
 
-    <p><i>(env)</i> env? export sandbox unbind unshadow</p>
+    <p><i>(env)</i> env? bound? export sandbox unbind unshadow</p>
 
     <p><i>(arith)</i> abs add &gt; &gt;= &lt; &lt;= multiply divide remainder</p>
 
