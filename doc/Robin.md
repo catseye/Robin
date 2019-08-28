@@ -7,10 +7,10 @@ The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
 that can be composed or used in isolation.  These specifications are:
 
-*   0. Robin Syntax
-*   1. Robin Expression Language
-*   2. Robin Toplevel Language
-*   3. Robin Reactors
+*   Part 0. Robin Syntax
+*   Part 1. Robin Expression Language
+*   Part 2. Robin Toplevel Language
+*   Part 3. Robin Reactors
 
 Robin Expressions and Robin Toplevels are written in the Robin Syntax.
 
@@ -20,15 +20,117 @@ concepts used in Expressions.
 A Reactor is defined with Robin Expressions.  A Toplevel contains
 Expressions used for various purposes, including Reactors.
 
+Note that, although each part of the specification builds on the
+parts before it, it is not really possible to give testable examples
+of some of the parts, without referring to parts that have not yet
+been seen.  (For example, when describing Robin Syntax, we would
+like to show that it allows one to write Robin Expressions.)  Thus
+many of these examples are given in the Robin Toplevel Language,
+even though they need not strictly be.
+
     -> Tests for functionality "Execute core Robin Program"
 
 Part 0. Robin Syntax
 --------------------
 
+### S-expressions ###
+
 Robin is an S-expression based language, so it has a syntax similar to
 Common Lisp, Scheme, Racket, and so forth.
 
-TODO: write more about it here.
+The basic grammar of these S-Expressions, given in EBNF, is:
+
+    SExpr  ::= [";"] (symbol | number | boolean | Quoted | "(" {SExpr} ")")
+    Quoted ::= "'" sentinel "'" arbitrary-text-not-containing-sentinel "'" sentinel "'"
+
+A symbol is denoted by a string which may contain only alphanumeric
+characters and certain other characters.
+
+A number is denoted by a string of decimal digits.
+
+A boolean is denoted `#t` or `#f`.
+
+A sentinel is any string not containing a single quote (`'`).  In a Quoted
+production, the start sentinel and the end sentinel must match.
+
+### Arbitrary literal strings
+
+Robin supports a sugared syntax for specifying literal strings.
+The characters of the string are given between pairs of single quotes.
+Such a form is parsed as a conventional string data type (see
+the "String" section in the Robin Expression Language for details.)
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal ''Hello''))
+    = (72 101 108 108 111)
+
+A single single quote may appear in string literals of this kind.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal ''He'llo''))
+    = (72 101 39 108 108 111)
+
+Between the single quotes delimiting the string literal, a *sentinel*
+may be given.  The sentinel between the leading single quote pair must
+match the sentinel given between the trailing single quote pair.  The
+sentinel may consist of any text not containing a single quote.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal 'X'Hello'X'))
+    = (72 101 108 108 111)
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal '...('Hello'...('))
+    = (72 101 108 108 111)
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal 'X'Hello'Y'))
+    ? unexpected end of input
+
+A sentinelized literal like this may embed a pair of single quotes.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal 'X'Hel''lo'X'))
+    = (72 101 108 39 39 108 111)
+
+By choosing different sentinels, string literals may contain any other
+string literal.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal 'X'Hel'Y'bye'Y'lo'X'))
+    = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
+
+No interpolation of escape sequences is done in a Robin string literal.
+(Functions to convert escape sequences commonly found in other languages
+may one day be available in a standard module.)
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal ''Hello\nworld''))
+    = (72 101 108 108 111 92 110 119 111 114 108 100)
+
+All characters which appear in the source text between the delimiters
+of the string literal are literally included in the string.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal ''Hello
+    | world''))
+    = (72 101 108 108 111 10 119 111 114 108 100)
+
+Adjacent string literals are not automatically concatenated.
+
+    | (define literal (macro (s a e) (head a)))
+    | (display
+    |   (literal (''Hello'' ''world'')))
+    = ((72 101 108 108 111) (119 111 114 108 100))
 
 ### Comments
 
@@ -103,30 +205,35 @@ Part 1. Robin Expression Language
 Intrinsic Data Types
 --------------------
 
-### S-expressions ###
+### Terms ###
 
-An S-expression is a sort of catch-all data type which includes
+Whereas an S-expression is a syntactic concept, a term is a semantic
+concept.  Every term maps to an S-expression.  Most S-expressions
+map to a term.  By abuse of notation, sometimes we call terms S-expressions
+(but we'll try to avoid overdoing this.)
+
+In Robin, a term is a sort of catch-all data type which includes
 all the other data types.  It is inductively defined as follows:
 
-*   A symbol is an S-expression.
-*   A boolean is an S-expression.
-*   An integer is an S-expression.
-*   A macro is an S-expression.
-*   An intrinsic is an S-expression.
-*   An empty list is an S-expression.
-*   A list cell containing an S-expression, prepended to another list,
-    is an S-expression.
-*   Nothing else is an S-expression.
+*   A symbol is a term.
+*   A boolean is a term.
+*   An integer is a term.
+*   A macro is a term.
+*   An intrinsic is a term.
+*   An empty list is a term.
+*   A list cell containing a term, prepended to another list
+    (which may be empty), is a term.
+*   Nothing else is a term.
 
-S-expressions have a textual representation, but not all types have values
-that can be directly expressed in this textual representation.  All
-S-expressions have some meaning when interpeted as Robin programs, as
+Terms have a textual representation (as S-expressions), but not all types
+have values that can be directly expressed in this textual representation.
+All terms have some meaning when interpeted as Robin programs, as
 defined by Robin's evaluation rules, but that meaning might be to
 raise an exception to indicate an error.
 
 ### Symbol ###
 
-A symbol is an atomic value represented by a string of  characters
+A symbol is an atomic value represented by a string of characters
 which may not include whitespace or parentheses or a few other
 characters (TODO: decide which ones) and which may not begin with
 a `#` (pound sign) or a few other characters (TODO: decide which
@@ -196,7 +303,7 @@ Integers cannot be applied.
 
 ### Macros ###
 
-A macro is an S-expression, in an environment, which describes how to
+A macro is a term which, in an environment, describes how to
 translate one S-expression to another.
 
 One area where Robin diverges significantly from Lisp and Scheme is that,
@@ -342,81 +449,9 @@ arrangements of intrinsic types in a way that follows a convention.
 ### Strings ###
 
 Strings are just lists of integers, where each integer refers to a
-particular Unicode codepoint.  Robin supports a sugared syntax for
-specifying literal strings.  The characters of the string are given
-between pairs of single quotes.
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal ''Hello''))
-    = (72 101 108 108 111)
-
-A single single quote may appear in string literals of this kind.
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal ''He'llo''))
-    = (72 101 39 108 108 111)
-
-Between the single quotes delimiting the string literal, a *sentinel*
-may be given.  The sentinel between the leading single quote pair must
-match the sentinel given between the trailing single quote pair.  The
-sentinel may consist of any text not containing a single quote.
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal 'X'Hello'X'))
-    = (72 101 108 108 111)
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal '...('Hello'...('))
-    = (72 101 108 108 111)
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal 'X'Hello'Y'))
-    ? unexpected end of input
-
-A sentinelized literal like this may embed a pair of single quotes.
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal 'X'Hel''lo'X'))
-    = (72 101 108 39 39 108 111)
-
-By choosing different sentinels, string literals may contain any other
-string literal.
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal 'X'Hel'Y'bye'Y'lo'X'))
-    = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
-
-No interpolation of escape sequences is done in a Robin string literal.
-(Functions to convert escape sequences commonly found in other languages
-may one day be available in a standard module.)
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal ''Hello\nworld''))
-    = (72 101 108 108 111 92 110 119 111 114 108 100)
-
-All characters which appear in the source text between the delimiters
-of the string literal are literally included in the string.
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal ''Hello
-    | world''))
-    = (72 101 108 108 111 10 119 111 114 108 100)
-
-Adjacent string literals are not automatically concatenated.
-
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (literal (''Hello'' ''world'')))
-    = ((72 101 108 108 111) (119 111 114 108 100))
+particular Unicode codepoint.  There is syntactic sugar for embedding
+arbitrary text into a Robin Expression (see the Robin Syntax section)
+and this form parses as a literal string of this type.
 
 ### Alists ###
 
@@ -433,8 +468,6 @@ are bound to the values in the tails of the pairs.  Binding alists can be
 created from the environment currently in effect (such as in the case of the
 third argument of a macro) and can be used to change the evaluation
 environment that is in effect (such as in the first argument to `eval`.)
-
-TODO: binding alists may be replaced by abstract map objects of some kind.
 
 Part 2. Robin Toplevel Language
 -------------------------------
