@@ -34,3 +34,5 @@ evaluates to 0 if that number is 0, 1 if that number is positive, or
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'
+
+(require sign)

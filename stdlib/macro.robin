@@ -208,3 +208,5 @@ symbols.
     ? uncaught exception: (illegal-arguments ((self args 99) prepend))
 
 '<<SPEC'
+
+(require macro)

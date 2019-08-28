@@ -66,3 +66,5 @@ TODO we should probably have some tests that prove that `catch` can
 catch errors raised from inside macros.
 
 '<<SPEC'
+
+(require catch)

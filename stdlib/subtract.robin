@@ -36,3 +36,5 @@ Addition may be accomplished by negating the second argument.
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'
+
+(require subtract)

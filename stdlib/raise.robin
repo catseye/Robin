@@ -31,3 +31,5 @@ in Robin code itself.  (i.e. exiting to the operating system is not a
 strict requirement.)
 
 '<<SPEC'
+
+(require raise)

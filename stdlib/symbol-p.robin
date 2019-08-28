@@ -30,3 +30,5 @@ exactly one argument.
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'
+
+(require symbol?)

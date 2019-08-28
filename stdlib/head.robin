@@ -26,3 +26,5 @@ of that list.
 `head` is basically equivalent to Scheme's `car`.
 
 '<<SPEC'
+
+(require head)

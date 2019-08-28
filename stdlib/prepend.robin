@@ -32,3 +32,5 @@ two arguments will raise an exception.
 requirement that the second argument be a list.
 
 '<<SPEC'
+
+(require prepend)

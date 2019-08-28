@@ -49,3 +49,5 @@ two arguments will raise an exception.
     ? uncaught exception: (illegal-arguments (7 8 9))
 
 '<<SPEC'
+
+(require equal?)

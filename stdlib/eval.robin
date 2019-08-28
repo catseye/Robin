@@ -102,3 +102,5 @@ environment to be a symbol.
     ? uncaught exception: (illegal-arguments (4 5 6))
 
 '<<SPEC'
+
+(require eval)

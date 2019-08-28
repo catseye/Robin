@@ -26,3 +26,5 @@ list (the sublist obtained by removing the first element.)
 `tail` is basically equivalent to Scheme's `cdr`.
 
 '<<SPEC'
+
+(require tail)

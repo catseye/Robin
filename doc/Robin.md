@@ -509,12 +509,11 @@ the EXPR, or if the EXPR evaluates to `#f`, aborts processing the file.
 
 ### `require` ###
 
-`(require SYMBOLS)` is conceptually not different from
-`(assert (bound? SYMBOL))` for each SYMBOL in SYMBOLS (see `bound?` in the
-stdlib for the meaning of `bound?`.)  However, it is given in a declarative
-fashion, so that implementations may examine this list of symbols that
-are required to be bound and try to fulfill the requirement by e.g.
-loading external definition files.  Note that an implementation is not
+`(require SYMBOL)` is conceptually not different from `(assert (bound? SYMBOL))`
+(see `bound?` in the stdlib for the meaning of `bound?`.)  However, since it
+is given in a declarative fashion, an implementations may examine this symbol
+and try to fulfill the requirement that it be bound by e.g. locating and
+loading an external definition file.  Note that an implementation is not
 required to do this, it is simply permitted.
 
     | (require if)

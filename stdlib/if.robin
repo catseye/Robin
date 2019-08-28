@@ -38,3 +38,5 @@ expects its first argument to be a boolean.
 `if` is basically equivalent to Scheme's `if`.
 
 '<<SPEC'
+
+(require if)

@@ -54,13 +54,6 @@ statically check the arity of every application, for instance.
 Note that this relies on the assumption that all standard symbols
 have their standard meanings.
 
-Toplevels
----------
-
-The intrinsics defining files need not be entirely empty; they
-should `(requires thesym)` because, being an intrinsic, it should
-be implemented, and available, and if it's not, it should fail.
-
 Tests
 -----
 
