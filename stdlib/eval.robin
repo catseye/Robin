@@ -5,7 +5,7 @@
 FIXME: These tests should ideally be for expressions in the Robin Expression Language
 rather than programs in the Robin Toplevel Language.
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Execute core Robin Toplevel Program"
 
 `eval` evaluates its first argument to obtain an environment, then
 evaluates its second argument to obtain an S-expression; it then

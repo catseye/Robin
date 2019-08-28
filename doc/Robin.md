@@ -31,7 +31,7 @@ even though they need not strictly be.
 Part 0. Robin Syntax
 --------------------
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Execute core Robin Toplevel Program"
 
 ### S-expressions ###
 
