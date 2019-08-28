@@ -8,6 +8,7 @@ Robin 0.4 (autumn 2019)
 *   Many tests are for the Robin Expression Language, and have been
     made explicitly so, instead of for the Robin Toplevel Language.
 *   Added `bound?` predicate to env lib in stdlib.
+*   The `require` top-level form was added.
 
 Robin 0.3 (Aug 2019)
 ---------

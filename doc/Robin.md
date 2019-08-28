@@ -507,15 +507,35 @@ the EXPR, or if the EXPR evaluates to `#f`, aborts processing the file.
     | (assert this-identfier-is-not-bound)
     ? unbound-identifier
 
+### `require` ###
+
+`(require SYMBOLS)` is conceptually not different from
+`(assert (bound? SYMBOL))` for each SYMBOL in SYMBOLS (see `bound?` in the
+stdlib for the meaning of `bound?`.)  However, it is given in a declarative
+fashion, so that implementations may examine this list of symbols that
+are required to be bound and try to fulfill the requirement by e.g.
+loading external definition files.  Note that an implementation is not
+required to do this, it is simply permitted.
+
+    | (require if)
+    = 
+
+    | (require mumbo-jumbo)
+    ? assertion failed: (bound? mumbo-jumbo)
+
+    | (define mumbo-jumbo 1)
+    | (require mumbo-jumbo)
+    = 
+
 ### `define` ###
 
-`(define ATOM EXPR)` defines a global name.
+`(define SYMBOL EXPR)` defines a global name.
 
     | (define true #t)
     | (display true)
     = #t
 
-You may not try to define anything that's not an atom.
+You may not try to define anything that's not a symbol.
 
     | (define #f #t)
     | (display #f)
@@ -553,7 +573,7 @@ they are defined later on in the file.
 
 ### `reactor` ###
 
-`(reactor LIST-OF-ATOMS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
+`(reactor LIST-OF-SYMBOLS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
 permit the construction of reactive Robin programs.  See the
 [Reactors](#reactors) section for more information on reactors.
 

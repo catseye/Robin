@@ -26,6 +26,13 @@ collect ((List [Symbol "assert", expr]):rest) env reactors results =
         _ ->
             collect rest env reactors results
 
+collect ((List [Symbol "require", expr]):rest) env reactors results =
+    case Env.find expr env of
+        Nothing ->
+            error ("assertion failed: (bound? " ++ show expr ++ ")")
+        _ ->
+            collect rest env reactors results
+
 collect ((List [Symbol "define", name@(Symbol _), expr]):rest) env reactors results =
     case Env.find name env of
         Just _ ->

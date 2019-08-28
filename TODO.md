@@ -34,8 +34,6 @@ Stdlib
 
 Rename "small" to "core" or "base" or something.
 
-`(bound? sym)` returns `#t` if the symbol is bound, `#f` if not.
-
 `(compose f1 f2)` composes two functions.
 
 `macro?` should return `#t` on intrinsics, because they are
@@ -59,17 +57,14 @@ have their standard meanings.
 Toplevels
 ---------
 
-`(require foo)` is conceptually sugar for `(assert (bound? foo))`
-but doesn't need `bound?` to be defined, and is also declarative,
-so an implementation can read it and perhaps try to find `foo`
-and load it.
-
 The intrinsics defining files need not be entirely empty; they
 should `(requires thesym)` because, being an intrinsic, it should
 be implemented, and available, and if it's not, it should fail.
 
 Tests
 -----
+
+Tests for Evaluate Robin Expression (with literal)
 
 Grep for FIXME and TODO in stdlib.
 
