@@ -1,7 +1,14 @@
 History of Robin
 ================
 
-Robin 0.3 (ca 2019)
+Robin 0.4 (late 2019)
+---------
+
+*   Improved modularity of the specification.
+*   Many tests are for the Robin Expression Language, and have been
+    made explicitly so.
+
+Robin 0.3 (Aug 2019)
 ---------
 
 *   The "intrinsics wrappers" were removed.  Their semantics have been

@@ -1,7 +1,7 @@
 Robin
 =====
 
-_Version 0.3.  Work-in-progress, subject to change._
+_Version 0.4.  Work-in-progress, subject to change._
 
 Overview
 --------
@@ -79,9 +79,9 @@ of these intrinsics, while an implementation is free to provide its own
 
 ### PicoLisp ###
 
-[PicoLisp][] has both macros and functions, but in Robin, the macro, rather
-than the function, is the fundamental abstraction.  There is a `function`
-form, but it's defined as a macro!
+[PicoLisp][] allows functions that do not evaluate their arguments.  Robin
+takes this concept and calls it a `macro`, and builds everything else on
+top of it.  There is a `function` form in Robin, but it's defined as a macro!
 
 ### Haskell ###
 

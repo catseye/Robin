@@ -1,118 +1,104 @@
 Robin
 =====
 
-This document defines version 0.3 of the Robin programming language.
+This document defines version 0.4 of the Robin programming language.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
 that can be composed or used in isolation.  These specifications are:
 
-*   Robin Syntax
-*   Robin Expressions
-*   Robin Reactors
-*   Robin Toplevel
+*   0. Robin Syntax
+*   1. Robin Expression Language
+*   2. Robin Toplevel Language
+*   3. Robin Reactors
 
-Expressions, Reactors, and Toplevel are written in the Syntax.
+Robin Expressions and Robin Toplevels are written in the Robin Syntax.
 
 Data Types and Intrinsics and "Small" Library and Standard Library are
 concepts used in Expressions.
 
-Reactors are defined using Expressions.  A Toplevel names Expressions
-and Reactors.
-
-For historical reasons, this document is not organized in sections
-corresponding to these sub-specifications.  In a future version of Robin,
-we hope that it will be.
+A Reactor is defined with Robin Expressions.  A Toplevel contains
+Expressions used for various purposes, including Reactors.
 
     -> Tests for functionality "Execute core Robin Program"
 
-Top-level S-expressions
------------------------
+Part 0. Robin Syntax
+--------------------
 
-A Robin program consists of a series of "top-level" S-expressions.
-Each top-level S-expression must have a particular form, but most of these
-top-level S-expressions may contain general, evaluatable S-expressions
-themselves.  Allowable top-level forms are given in the subsections below.
+Robin is an S-expression based language, so it has a syntax similar to
+Common Lisp, Scheme, Racket, and so forth.
 
-### `display` ###
+TODO: write more about it here.
 
-`(display EXPR)` evaluates the EXPR and displays the result in a canonical
-S-expression rendering, followed by a newline.
+### Comments
 
-    | (display #t)
-    = #t
+Any S-expression preceded by a `;` symbol is a comment.  It will still
+be parsed, but it will be ignored.
 
-Note that a Robin program may be split over several files in the filesystem.
-Also, more than one top-level S-expression may appear in a single file.
+    | (display
+    |   ;(this program produces a list of two booleans)
+    |   (prepend #f (prepend #f ())))
+    = (#f #f)
 
-    | (display #t)
-    | (display #f)
-    = #t
-    = #f
+Because S-expressions may nest, and because comments may appear
+inside S-expressions, comments may nest.
 
-### `assert` ###
+    | (display
+    |   ;(this program produces
+    |     ;(what you might call)
+    |     a list of two booleans)
+    |   (prepend #f (prepend #f ())))
+    = (#f #f)
 
-`(assert EXPR)` evaluates the EXPR and, if there was an error evaluating
-the EXPR, or if the EXPR evaluates to `#f`, aborts processing the file.
+Comments are still parsed.  A syntax error in a comment is an error!
 
-    | (assert #t)
-    = 
+    | (display
+    |   ;(this program produces
+    |     #k
+    |     a list of booleans)
+    |   (prepend #f (prepend #f ())))
+    ? (line 3, column 6):
+    ? unexpected "k"
+    ? expecting "t" or "f"
 
-    | (assert #f)
-    ? assertion failed: #f
+Any number of comments may appear together.
 
-    | (assert this-identfier-is-not-bound)
-    ? unbound-identifier
+    | (display
+    |   (prepend ;what ;on ;earth #f (prepend #f ())))
+    = (#f #f)
 
-### `define` ###
+Comments may appear before a closing parenthesis.
 
-`(define ATOM EXPR)` defines a global name.
+    | (display
+    |   (prepend #f (prepend #f ()) ;foo))
+    = (#f #f)
 
-    | (define true #t)
-    | (display true)
-    = #t
+    | (display
+    |   (prepend #f (prepend #f ()) ;peace ;(on) ;earth))
+    = (#f #f)
 
-You may not try to define anything that's not an atom.
+Comments may appear in an empty list.
 
-    | (define #f #t)
-    | (display #f)
-    ? illegal top-level form: (define #f #t)
+    | (display
+    |   ( ;hi ;there))
+    = ()
 
-You may define multiple names.
+Comments need not be preceded by spaces.
 
-    | (define true #t)
-    | (define false #f)
-    | (display false)
-    | (display true)
-    = #f
-    = #t
+    | (display
+    |   (;north;by;north;west))
+    = ()
 
-Names may not be redefined once defined.
+To put truly arbitrary text in a comment, the string sugar syntax may be
+used.
 
-    | (define true #t)
-    | (define true #f)
-    ? symbol already defined: true
+    | (display
+    |   ;''This program, it produces a list of two booleans. #k ?''
+    |   (prepend #f (prepend #f ())))
+    = (#f #f)
 
-Names previously defined can be used in a definition.
-
-    | (define true #t)
-    | (define also-true true)
-    | (display also-true)
-    = #t
-
-Names that are not yet defined cannot be used in a definition, even if
-they are defined later on in the file.
-
-    | (define also-true true)
-    | (define true #t)
-    | (display also-true)
-    ? unbound-identifier
-
-### `reactor` ###
-
-`(reactor LIST-OF-ATOMS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
-permit the construction of reactive Robin programs.  See the
-[Reactors](#reactors) section for more information on reactors.
+Part 1. Robin Expression Language
+---------------------------------
 
 Intrinsic Data Types
 --------------------
@@ -450,76 +436,96 @@ environment that is in effect (such as in the first argument to `eval`.)
 
 TODO: binding alists may be replaced by abstract map objects of some kind.
 
-Comments
---------
+Part 2. Robin Toplevel Language
+-------------------------------
 
-Any S-expression preceded by a `;` symbol is a comment.  It will still
-be parsed, but it will be ignored.
+A Robin program consists of a series of "top-level" S-expressions.
+Each top-level S-expression must have a particular form, but most of these
+top-level S-expressions may contain general, evaluatable S-expressions
+themselves.  Allowable top-level forms are given in the subsections below.
 
-    | (display
-    |   ;(this program produces a list of two booleans)
-    |   (prepend #f (prepend #f ())))
-    = (#f #f)
+### `display` ###
 
-Because S-expressions may nest, and because comments may appear
-inside S-expressions, comments may nest.
+`(display EXPR)` evaluates the EXPR and displays the result in a canonical
+S-expression rendering, followed by a newline.
 
-    | (display
-    |   ;(this program produces
-    |     ;(what you might call)
-    |     a list of two booleans)
-    |   (prepend #f (prepend #f ())))
-    = (#f #f)
+    | (display #t)
+    = #t
 
-Comments are still parsed.  A syntax error in a comment is an error!
+Note that a Robin program may be split over several files in the filesystem.
+Also, more than one top-level S-expression may appear in a single file.
 
-    | (display
-    |   ;(this program produces
-    |     #k
-    |     a list of booleans)
-    |   (prepend #f (prepend #f ())))
-    ? (line 3, column 6):
-    ? unexpected "k"
-    ? expecting "t" or "f"
+    | (display #t)
+    | (display #f)
+    = #t
+    = #f
 
-Any number of comments may appear together.
+### `assert` ###
 
-    | (display
-    |   (prepend ;what ;on ;earth #f (prepend #f ())))
-    = (#f #f)
+`(assert EXPR)` evaluates the EXPR and, if there was an error evaluating
+the EXPR, or if the EXPR evaluates to `#f`, aborts processing the file.
 
-Comments may appear before a closing parenthesis.
+    | (assert #t)
+    = 
 
-    | (display
-    |   (prepend #f (prepend #f ()) ;foo))
-    = (#f #f)
+    | (assert #f)
+    ? assertion failed: #f
 
-    | (display
-    |   (prepend #f (prepend #f ()) ;peace ;(on) ;earth))
-    = (#f #f)
+    | (assert this-identfier-is-not-bound)
+    ? unbound-identifier
 
-Comments may appear in an empty list.
+### `define` ###
 
-    | (display
-    |   ( ;hi ;there))
-    = ()
+`(define ATOM EXPR)` defines a global name.
 
-Comments need not be preceded by spaces.
+    | (define true #t)
+    | (display true)
+    = #t
 
-    | (display
-    |   (;north;by;north;west))
-    = ()
+You may not try to define anything that's not an atom.
 
-To put truly arbitrary text in a comment, the string sugar syntax may be
-used.
+    | (define #f #t)
+    | (display #f)
+    ? illegal top-level form: (define #f #t)
 
-    | (display
-    |   ;''This program, it produces a list of two booleans. #k ?''
-    |   (prepend #f (prepend #f ())))
-    = (#f #f)
+You may define multiple names.
 
-Reactors
---------
+    | (define true #t)
+    | (define false #f)
+    | (display false)
+    | (display true)
+    = #f
+    = #t
+
+Names may not be redefined once defined.
+
+    | (define true #t)
+    | (define true #f)
+    ? symbol already defined: true
+
+Names previously defined can be used in a definition.
+
+    | (define true #t)
+    | (define also-true true)
+    | (display also-true)
+    = #t
+
+Names that are not yet defined cannot be used in a definition, even if
+they are defined later on in the file.
+
+    | (define also-true true)
+    | (define true #t)
+    | (display also-true)
+    ? unbound-identifier
+
+### `reactor` ###
+
+`(reactor LIST-OF-ATOMS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
+permit the construction of reactive Robin programs.  See the
+[Reactors](#reactors) section for more information on reactors.
+
+Part 3. Robin Reactors
+----------------------
 
 To separate the concerns of computation and interaction, Robin provides
 a construct called a _reactor_.  While evaluation of a Robin expression
@@ -574,10 +580,9 @@ should allow such occurrences to be visible and/or logged.
 In fact, commands _are_ events.  We just call them commands when it is
 a reactor producing them, and events when a reactor is receiving them.
 
-Standard Events
----------------
+### Standard Events ###
 
-### `init` ###
+#### `init` ####
 
 When a reactor first starts up it will receive an event telling it that
 it has started up.  The event type for this event is the literal symbol
@@ -596,16 +601,14 @@ subscription to those facilities.  Once subscribed, it will receive
 will receive a `not-available` event.  It may then elect to abort,
 or choose an alternate facility, or so forth.
 
-Standard Commands
------------------
+### Standard Commands ###
 
-### `stop` ###
+#### `stop` ####
 
 Stops the current reactor, and removes it from the list of active
 reactors.  It will no longer receive any events.
 
-Standard Facilities
--------------------
+### Standard Facilities ###
 
 If a reactor isn't subscribed to any facilities, it won't necessarily
 receive any events, although this is implementation-specific.
@@ -616,7 +619,7 @@ All the same, there will probably be a set of standard facilities.
 
 Let's describe one such facility for concreteness.
 
-### `line-terminal` ###
+#### `line-terminal` ####
 
     -> Tests for functionality "Execute Robin Program (with Small)"
 
@@ -677,8 +680,7 @@ Thus we can construct a simple `cat` program:
     = Cat
     = Dog
 
-General Reactor properties
---------------------------
+### General Reactor properties ###
 
 A reactor can issue multiple commands in its response to an event.
 
