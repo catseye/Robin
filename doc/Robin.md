@@ -134,71 +134,65 @@ Adjacent string literals are not automatically concatenated.
 
 ### Comments
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 Any S-expression preceded by a `;` symbol is a comment.  It will still
 be parsed, but it will be ignored.
 
-    | (display
-    |   ;(this program produces a list of two booleans)
-    |   (prepend #f (prepend #f ())))
+    | (
+    |   ;(this expression evaluates to a list of two booleans)
+    |   prepend #f (prepend #f ()))
     = (#f #f)
 
 Because S-expressions may nest, and because comments may appear
 inside S-expressions, comments may nest.
 
-    | (display
-    |   ;(this program produces
+    | (
+    |   ;(this expression evaluates to
     |     ;(what you might call)
     |     a list of two booleans)
-    |   (prepend #f (prepend #f ())))
+    |   prepend #f (prepend #f ()))
     = (#f #f)
 
 Comments are still parsed.  A syntax error in a comment is an error!
 
-    | (display
-    |   ;(this program produces
+    | (
+    |   ;(this expression evaluates to
     |     #k
     |     a list of booleans)
-    |   (prepend #f (prepend #f ())))
+    |    prepend #f (prepend #f ()))
     ? (line 3, column 6):
     ? unexpected "k"
     ? expecting "t" or "f"
 
 Any number of comments may appear together.
 
-    | (display
-    |   (prepend ;what ;on ;earth #f (prepend #f ())))
+    | (prepend ;what ;on ;earth #f (prepend #f ())))
     = (#f #f)
 
 Comments may appear before a closing parenthesis.
 
-    | (display
-    |   (prepend #f (prepend #f ()) ;foo))
+    | (prepend #f (prepend #f ()) ;foo))
     = (#f #f)
 
-    | (display
-    |   (prepend #f (prepend #f ()) ;peace ;(on) ;earth))
+    | (prepend #f (prepend #f ()) ;peace ;(on) ;earth))
     = (#f #f)
 
 Comments may appear in an empty list.
 
-    | (display
-    |   ( ;hi ;there))
+    | ( ;hi ;there))
     = ()
 
 Comments need not be preceded by spaces.
 
-    | (display
-    |   (;north;by;north;west))
+    | (;north;by;north;west))
     = ()
 
 To put truly arbitrary text in a comment, the string sugar syntax may be
 used.
 
-    | (display
-    |   ;''This program, it produces a list of two booleans. #k ?''
-    |   (prepend #f (prepend #f ())))
+    | (;''This expression, it evaluates to a list of two booleans. #k ?''
+    |  prepend #f (prepend #f ()))
     = (#f #f)
 
 Part 1. Robin Expression Language
