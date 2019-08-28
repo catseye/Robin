@@ -1,45 +1,37 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
-    | (display
-    |   (choose (#t (literal hi)) (else (literal lo))))
+    |   (choose (#t (literal hi)) (else (literal lo)))
     = hi
 
-    | (display
-    |   (choose (#f (literal hi)) (#t (literal med)) (else (literal lo))))
+    |   (choose (#f (literal hi)) (#t (literal med)) (else (literal lo)))
     = med
 
-    | (display
-    |   (choose (#f (literal hi)) (#f (literal med)) (else (literal lo))))
+    |   (choose (#f (literal hi)) (#f (literal med)) (else (literal lo)))
     = lo
 
 `choose` can have zero tests before the `else`.
 
-    | (display
-    |   (choose (else (literal woo))))
+    |   (choose (else (literal woo)))
     = woo
     
 `choose` does require an `else` branch, or else an exception will be
 raised.
 
-    | (display
-    |   (choose (#f (literal hi)) (#f (literal med))))
+    |   (choose (#f (literal hi)) (#f (literal med)))
     ? uncaught exception
 
-    | (display
-    |   (choose))
+    |   (choose)
     ? uncaught exception
 
 Each branch of a `choose` needs to be a two-element list, or else an
 exception will be raised.
 
-    | (display
-    |   (choose (#t) (else (literal lo))))
+    |   (choose (#t) (else (literal lo)))
     ? uncaught exception
 
-    | (display
-    |   (choose (#f 66) (else)))
+    |   (choose (#f 66) (else))
     ? uncaught exception
 
 `choose` is basically equivalent to Scheme's `cond`.

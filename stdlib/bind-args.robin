@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 `bind-args` is a macro for binding the arguments of another value to
 identifiers, as well as asserting that the correct number of arguments
@@ -12,36 +12,31 @@ to those identifiers, an expresion which evaluates to the environment in
 which those expressions will be evaluated, and an expression to evaluate
 in the new environment in which the identifiers are bound.
 
-    | (display
     |   (bind-args (a b) (literal (1 2)) (env)
-    |     (list a b)))
+    |     (list a b))
     = (1 2)
 
 Expressions in the list of values are evaluated.
 
-    | (display
     |   (bind-args (a b) (literal ((subtract 5 4) (subtract 10 1))) (env)
-    |     (list a b)))
+    |     (list a b))
     = (1 9)
 
 Too many or too few arguments will raise an `illegal-arguments`
 exception.
 
-    | (display
     |   (bind-args (a b) (literal (1)) (env)
-    |     (list a b)))
+    |     (list a b))
     ? uncaught exception: (illegal-arguments (1))
 
-    | (display
     |   (bind-args (a b) (literal (1 2 3)) (env)
-    |     (list a b)))
+    |     (list a b))
     ? uncaught exception: (illegal-arguments (1 2 3))
 
 The literal arguments are reported in the exception.
 
-    | (display
     |   (bind-args (a) (literal ((subtract 5 4) (subtract 1 0))) (env)
-    |     a))
+    |     a)
     ? uncaught exception: (illegal-arguments ((subtract 5 4) (subtract 1 0)))
 
 This is how it might be used in a macro definition.  The reason for the
@@ -49,40 +44,35 @@ seemingly strange requirements of the second and third arguments should
 become clear here: typically you would just pass the macro's `args` and
 `env` to those arguments.
 
-    | (display
     |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
-    |     (add 4 (add 5 6))))
+    |     (add 4 (add 5 6)))
     = 15
 
-    | (display
     |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
     |     (bind r 7
-    |       (add r r))))
+    |       (add r r)))
     = 14
 
-    | (display
     |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
-    |     (add (subtract 0 0))))
+    |     (add (subtract 0 0)))
     ? uncaught exception: (illegal-arguments ((subtract 0 0)))
 
-    | (display
     |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
-    |     (add 9 9 9)))
+    |     (add 9 9 9))
     ? uncaught exception: (illegal-arguments (9 9 9))
 
-    | (display
     |   (bind add (macro (self args env)
     |     (bind-args (a b) args env
     |       (subtract a (subtract 0 b))))
-    |     (add 1 n)))
+    |     (add 1 n))
     ? uncaught exception: (unbound-identifier n)
 
 '<<SPEC'

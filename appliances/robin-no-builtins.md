@@ -1,7 +1,7 @@
 The following functionalities are used to test Robin Expressions.
 
-    -> Functionality "Execute Robin Program (with Small)" is implemented by shell command
-    -> "bin/robin --no-builtins pkg/small.robin %(test-body-file)"
+    -> Functionality "Evaluate Robin Expression (with Small)" is implemented by shell command
+    -> "bin/robin --no-builtins pkg/small.robin eval %(test-body-file)"
 
     -> Functionality "Evaluate Robin Expression (with List)" is implemented by shell command
     -> "bin/robin --no-builtins pkg/small.robin pkg/list.robin eval %(test-body-file)"
@@ -22,3 +22,6 @@ The following functionalities are used to test Robin Toplevel programs.
 
     -> Functionality "Execute core Robin Program" is implemented by shell command
     -> "bin/robin --no-builtins %(test-body-file)"
+
+    -> Functionality "Execute Robin Program (with Small)" is implemented by shell command
+    -> "bin/robin --no-builtins pkg/small.robin %(test-body-file)"

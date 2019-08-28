@@ -1,112 +1,96 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 `let` lets you bind multiple identifiers to multiple values.
 
 An identifier can be bound to a symbol.
 
-    | (display
-    |   (let ((a (literal hello))) a))
+    | (let ((a (literal hello))) a)
     = hello
 
 `let` can appear in the binding expression in a `let`.
 
-    | (display
-    |   (let ((a (let ((b (literal c))) b))) a))
+    | (let ((a (let ((b (literal c))) b))) a)
     = c
 
 `let` can bind a symbol to a macro.
 
-    | (display
-    |   (let ((a (macro (self args env)
-    |                (let ((x (eval env (head args)))
-    |                      (y (eval env (head (tail args)))))
-    |                  (prepend y x)))))
-    |     (a () (literal foo))))
+    | (let ((a (macro (self args env)
+    |              (let ((x (eval env (head args)))
+    |                    (y (eval env (head (tail args)))))
+    |                (prepend y x)))))
+    |   (a () (literal foo)))
     = (foo)
 
 Bindings established in a `let` remain in effect when evaluating
 the arguments things in the body of the `let`.
 
-    | (display
-    |   (let ((dup (macro (self args env)
-    |                (bind x (eval env (head args))
-    |                  (list x x)))))
-    |     (dup (dup (literal g)))))
+    | (let ((dup (macro (self args env)
+    |              (bind x (eval env (head args))
+    |                (list x x)))))
+    |   (dup (dup (literal g))))
     = ((g g) (g g))
 
 Bindings established in a binding in a `let` can be seen in
 subsequent bindings in the same `let`.
 
-    | (display
-    |   (let ((a (literal hello)) (b (list a))) b))
+    | (let ((a (literal hello)) (b (list a))) b)
     = (hello)
 
 Shadowing happens.
 
-    | (display
-    |   (let ((a (literal hello))) (let ((a (literal goodbye))) a)))
+    | (let ((a (literal hello))) (let ((a (literal goodbye))) a))
     = goodbye
 
 `let` can have an empty list of bindings.
 
-    | (display
-    |   (let () (literal hi)))
+    | (let () (literal hi))
     = hi
 
 The list of bindings must be a list, or else an exception will be raised.
 
-    | (display
-    |   (let 999 (literal hi)))
+    | (let 999 (literal hi))
     ? uncaught exception
 
 Each binding in a list must be a list, or else an exception will be raised.
 
-    | (display
-    |   (let (999) (literal hi)))
+    | (let (999) (literal hi))
     ? uncaught exception
 
 Both the body and the list of bindings are required, or else an exception
 will be raised.
 
-    | (display
-    |   (let ()))
+    | (let ()))
     ? uncaught exception
 
-    | (display
-    |   (let))
+    | (let)
     ? uncaught exception
 
 Any arguments given beyond the body and list of bindings will be ignored
 and discarded, without being evaluated.
 
-    | (display
-    |   (let ((a 1)) a foo))
+    | (let ((a 1)) a foo)
     = 1
 
 Each binding must have at least a name and a value, or else an exception
 will be raised.
-    
-    | (display
-    |   (let ((a)) a))
+
+    | (let ((a)) a)
     ? uncaught exception
 
-    | (display
-    |   (let (()) 7))
+    | (let (()) 7)
     ? uncaught exception
 
 Anything given in a binding beyond the name and the value will simply be
 ignored and discarded, without being evaluated or otherwise examined.
 
-    | (display
-    |   (let ((a 1 foo)) a))
+    | (let ((a 1 foo)) a)
     = 1
 
 The identifier in a binding must be a symbol.
 
-    | (display
-    |   (let ((3 1)) 3))
+    | (let ((3 1)) 3)
     ? uncaught exception: (illegal-binding (3 1))
 
 `let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
