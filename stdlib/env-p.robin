@@ -1,28 +1,23 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Env)"
+    -> Tests for functionality "Evaluate Robin Expression (with Env)"
 
 `env?` evaluates its single argument, and evaluates to `#t` if
 and only if it is a well-formed binding alist.
 
-    | (display
-    |   (env? (literal ((a 1) (b 2) (c 3)))))
+    | (env? (literal ((a 1) (b 2) (c 3))))
     = #t
 
-    | (display
-    |   (env? (literal ((a 1) (999 2) (c 3)))))
+    | (env? (literal ((a 1) (999 2) (c 3))))
     = #f
 
-    | (display
-    |   (env? (literal ((a 1) (b 2) c))))
+    | (env? (literal ((a 1) (b 2) c)))
     = #f
 
-    | (display
-    |   (env? 7))
+    | (env? 7)
     = #f
 
-    | (display
-    |   (env? (env)))
+    | (env? (env))
     = #t
 
 '<<SPEC'

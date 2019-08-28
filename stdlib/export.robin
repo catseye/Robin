@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with Env)"
+    -> Tests for functionality "Evaluate Robin Expression (with Env)"
 
 `export` treats its arguments as a list of identifiers, and returns an
 environment where only those identifiers are bound to values.
@@ -15,27 +15,22 @@ directly.
 Note: the order of the bindings in the binding alist isn't guaranteed;
 thus these tests are written to search the resulting alist.
 
-    | (display
-    |   (let ((a 1) (b 6))
-    |     (length (export a b))))
+    | (let ((a 1) (b 6))
+    |   (length (export a b)))
     = 2
 
-    | (display
-    |   (let ((a 1) (b 6))
-    |     (lookup (literal a) (export a b))))
+    | (let ((a 1) (b 6))
+    |   (lookup (literal a) (export a b)))
     = (1)
 
-    | (display
-    |   (let ((a 1) (b 6))
-    |     (lookup (literal b) (export a b))))
+    | (let ((a 1) (b 6))
+    |   (lookup (literal b) (export a b)))
     = (6)
 
-    | (display
-    |   (lookup (literal head) (export head tail)))
+    | (lookup (literal head) (export head tail))
     = (head)
 
-    | (display
-    |   (lookup (literal prepend) (export head tail)))
+    | (lookup (literal prepend) (export head tail))
     = ()
 
 '<<SPEC'
