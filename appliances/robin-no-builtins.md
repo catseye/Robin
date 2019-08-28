@@ -26,5 +26,8 @@ The following functionalities are used to test Robin Toplevel programs.
     -> Functionality "Execute core Robin Program" is implemented by shell command
     -> "bin/robin --no-builtins %(test-body-file)"
 
+    -> Functionality "Execute core Robin Toplevel Program" is implemented by shell command
+    -> "bin/robin --no-builtins %(test-body-file)"
+
     -> Functionality "Execute Robin Program (with Small)" is implemented by shell command
     -> "bin/robin --no-builtins pkg/small.robin %(test-body-file)"

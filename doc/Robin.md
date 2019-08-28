@@ -470,7 +470,7 @@ environment that is in effect (such as in the first argument to `eval`.)
 Part 2. Robin Toplevel Language
 -------------------------------
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Execute core Robin Toplevel Program"
 
 A Robin program consists of a series of "top-level" S-expressions.
 Each top-level S-expression must have a particular form, but most of these
@@ -560,7 +560,7 @@ permit the construction of reactive Robin programs.  See the
 Part 3. Robin Reactors
 ----------------------
 
-    -> Tests for functionality "Execute core Robin Program"
+    -> Tests for functionality "Execute core Robin Toplevel Program"
 
 To separate the concerns of computation and interaction, Robin provides
 a construct called a _reactor_.  While evaluation of a Robin expression
@@ -656,7 +656,7 @@ Let's describe one such facility for concreteness.
 
 #### `line-terminal` ####
 
-    -> Tests for functionality "Execute Robin Program (with Small)"
+    -> Tests for functionality "Execute Robin Toplevel Program (with Small)"
 
 The `line-terminal` facility allows a Robin program to interact with
 something or someone over a line-oriented protocol, similar to what
