@@ -1,16 +1,14 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `append` evaluates both of its arguments to lists.  It then
 evaluates to a list which is the concatenation of these lists.
 
-    | (display
-    |   (append (list 1 2 3) (list 4 5 6)))
+    |   (append (list 1 2 3) (list 4 5 6))
     = (1 2 3 4 5 6)
 
-    | (display
-    |   (append () ()))
+    |   (append () ())
     = ()
 
 '<<SPEC'

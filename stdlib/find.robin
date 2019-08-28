@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `find` evaluates its first argument to obtain a predicate, then evaluates
 its second argument to obtain a list.  It then evaluates to a list which
@@ -8,20 +8,16 @@ is either empty, if no element of the list satisfies the predicate, or
 a list which contains exactly one element, which will be the first
 element from the list which satisfies the predicate.
 
-    | (display
-    |   (find (fun (x) (symbol? x)) ()))
+    |   (find (fun (x) (symbol? x)) ())
     = ()
 
-    | (display
-    |   (find (fun (x) (symbol? x)) (list 1 2 3)))
+    |   (find (fun (x) (symbol? x)) (list 1 2 3))
     = ()
 
-    | (display
-    |   (find (fun (x) #t) (list 1 2 3)))
+    |   (find (fun (x) #t) (list 1 2 3))
     = (1)
 
-    | (display
-    |   (find (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
+    |   (find (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six)))
     = (two)
 
 `find` could be defined in terms of `filter`, but in practice it would

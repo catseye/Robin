@@ -1,30 +1,25 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `drop-while` evaluates its first argument to obtain a predicate and its
 second argument to obtain a list.  It then evaluates to the suffix of the
 given list, starting at the first element which does not satisfy the
 predicate.
 
-    | (display
-    |   (drop-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+    |   (drop-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven)))
     = (3 4 five 6 seven)
 
-    | (display
-    |   (drop-while (fun (x) (symbol? x)) (literal (1 2 3 4 5 6))))
+    |   (drop-while (fun (x) (symbol? x)) (literal (1 2 3 4 5 6)))
     = (1 2 3 4 5 6)
 
-    | (display
-    |   (drop-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+    |   (drop-while (fun (x) (number? x)) (literal (1 2 3 4 5 6)))
     = ()
 
-    | (display
-    |   (drop-while (fun (x) (symbol? x)) ()))
+    |   (drop-while (fun (x) (symbol? x)) ())
     = ()
 
-    | (display
-    |   (drop-while (fun (x) (symbol? x)) #f))
+    |   (drop-while (fun (x) (symbol? x)) #f)
     ? uncaught exception: (expected-list #f)
 
 '<<SPEC'

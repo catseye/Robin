@@ -1,22 +1,19 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `length` evaluates its single argument to obtain a proper list, then
 evaluates to a non-negative integer which is the length of the list
 (the number of cells, not counting nested cells and not counting the
 empty list at the very tail.)
 
-    | (display
-    |   (length ()))
+    |   (length ())
     = 0
 
-    | (display
-    |   (length (list 1 2 #t #f 3)))
+    |   (length (list 1 2 #t #f 3))
     = 5
 
-    | (display
-    |   (length (literal whatnot)))
+    |   (length (literal whatnot))
     ? uncaught exception: (expected-list whatnot)
 
 '<<SPEC'

@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Execute Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `fold` evaluates its first argument to obtain a macro, generally assumed to
 be a two-argument function, its second argument to obtain an initial value,
@@ -12,20 +12,16 @@ each subsequent time, the result of the previous application is passed as
 the second argument.  `fold` evaluates to the result of the the final
 application of the function.
 
-    | (display
-    |   (fold (fun (x a) x) () (literal (three dog night))))
+    | (fold (fun (x a) x) () (literal (three dog night)))
     = night
 
-    | (display
-    |   (fold (fun (x a) a) 541 (literal (archie moffam))))
+    | (fold (fun (x a) a) 541 (literal (archie moffam)))
     = 541
 
-    | (display
-    |   (fold (fun (x a) (list a x)) () (literal (three dog night))))
+    | (fold (fun (x a) (list a x)) () (literal (three dog night)))
     = (((() three) dog) night)
 
-    | (display
-    |   (fold 99 (fun (x a) a) (literal (three dog night))))
+    | (fold 99 (fun (x a) a) (literal (three dog night)))
     ? uncaught exception: (inapplicable-object 99)
 
 '<<SPEC'
