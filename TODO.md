@@ -36,9 +36,6 @@ Rename "small" to "core" or "base" or something.
 
 `(compose f1 f2)` composes two functions.
 
-`macro?` should return `#t` on intrinsics, because they are
-intrinsic macros.  Maybe a separate `intrinsic?` predicate.
-
 Other libs
 ----------
 

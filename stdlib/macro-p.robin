@@ -10,15 +10,17 @@ or `#f` if it is not.
     | (macro? (macro (self args env) args))
     = #t
 
-TODO: this should probably be false.  Intrinsics are slightly different
-from macros.  Either that, or, it should be, like `applyable?`, or
-something.
+Intrinsic macros are macros.
 
     | (macro? macro)
     = #t
 
+Literal symbols are not macros, even if they're the name of one.
+
     | (macro? ((macro (self args env) (head args)) macro))
     = #f
+
+Numbers are not macros.
 
     | (macro? 5)
     = #f

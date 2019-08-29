@@ -9,14 +9,14 @@ that can be composed or used in isolation.  These specifications are:
 
 *   Part 0. Robin Syntax
 *   Part 1. Robin Expression Language
+    *   (a) Evaluation Rules
+    *   (b) Intrinsic Data Types
+    *   (c) Conventional Data Types
+    *   (d) Standard Environments
 *   Part 2. Robin Toplevel Language
 *   Part 3. Robin Reactors
 
 Robin Expressions and Robin Toplevels are written in the Robin Syntax.
-
-Data Types and Intrinsics and "Small" Library and Standard Library are
-concepts used in Expressions.
-
 A Reactor is defined with Robin Expressions.  A Toplevel contains
 Expressions used for various purposes, including Reactors.
 
@@ -198,8 +198,14 @@ used.
 Part 1. Robin Expression Language
 ---------------------------------
 
-Intrinsic Data Types
+(a) Evaluation Rules
 --------------------
+
+To be written.  The information might be strewn about other sections,
+should be gathered together here someday.
+
+(b) Intrinsic Data Types
+------------------------
 
     -> Tests for functionality "Evaluate core Robin Expression"
 
@@ -217,7 +223,6 @@ all the other data types.  It is inductively defined as follows:
 *   A boolean is a term.
 *   An integer is a term.
 *   A macro is a term.
-*   An intrinsic is a term.
 *   An empty list is a term.
 *   A list cell containing a term, prepended to another list
     (which may be empty), is a term.
@@ -347,64 +352,8 @@ implementation.
 
 Macros can be applied, and that is the typical use of them.
 
-### Intrinsics ###
-
-An _intrinsic_ is one of the data types in Robin.  It is like a macro, except
-that it is implemented intrinsically (and thus does not support quite
-every operation that is supported on macros, for example, examining its
-internals.)
-
-Robin 0.3 provides 15 intrinsics.  These represent
-the fundamental functionality that is used to evaluate programs, and that
-cannot be expressed as macros written in Robin (not without resorting to
-meta-circularity, at any rate.)  All other macros are built up on top of
-the intrinsics.
-
-This set of intrinsics is not optional — every Robin implementation must
-provide them, or it's not Robin.
-
-One important intrinsic is `eval`.  Many macros will make use of `eval`,
-to evaluate that literal tail they receive.  When they do this in the
-environment in which they were called, they behave a lot like functions.
-But they are not obligated to; they might evaluate them in a modified
-environment, or not evaluate them at all and treat them as a literal
-S-expression.
-
-Intrinsics evaluate to themselves.
-
-An intrinsic is represented thusly.
-
-    | head
-    = head
-
-One upshot of intrinsics is that all intrinsic Robin functionality
-(excepting top-level forms) can be passed around as values.
-
-    | (prepend if (prepend head ()))
-    = (if head)
-
-Intrinsics can be applied, and that is the typical use of them.
-
-Each of the 15 intrinsics provided by Robin 0.3 is specified in
-its own file in the standard library.  Because these are intrinsics,
-no Robin implementation is given for them, but tests cases which
-describe their behaviour are.
-
-*   [catch](../stdlib/catch.robin)
-*   [equal?](../stdlib/equal-p.robin)
-*   [eval](../stdlib/eval.robin)
-*   [head](../stdlib/head.robin)
-*   [if](../stdlib/if.robin)
-*   [list?](../stdlib/list-p.robin)
-*   [macro?](../stdlib/macro-p.robin)
-*   [macro](../stdlib/macro.robin)
-*   [number?](../stdlib/number-p.robin)
-*   [prepend](../stdlib/prepend.robin)
-*   [raise](../stdlib/raise.robin)
-*   [sign](../stdlib/sign.robin)
-*   [subtract](../stdlib/subtract.robin)
-*   [symbol?](../stdlib/symbol-p.robin)
-*   [tail](../stdlib/tail.robin)
+    | ((macro (self args env) args) 1)
+    = (1)
 
 ### Lists ###
 
@@ -438,8 +387,8 @@ Lists cannot be directly applied, but since a list itself represents an
 application, that application is undertaken, and the result of it can
 be applied.
 
-Conventional Data Types
------------------------
+(c) Conventional Data Types
+-----------------------------
 
 This section lists data types that are not intrinsic, but are rather
 arrangements of intrinsic types in a way that follows a convention.
@@ -466,6 +415,102 @@ are bound to the values in the tails of the pairs.  Binding alists can be
 created from the environment currently in effect (such as in the case of the
 third argument of a macro) and can be used to change the evaluation
 environment that is in effect (such as in the first argument to `eval`.)
+
+(d) Standard Environments
+-------------------------
+
+Every Robin Expression is evaluated in some kind of environment
+(a mapping from symbols to the terms they are bound to.)  Robin
+defines several standard environments in which expressions can be
+evaluated.  Each of these environments is a superset of the others.
+
+The smallest environment consists only of intrinsics.  The next-smallest
+environment is called "small".  The largest environment is called
+"stdlib", short for "standard library".  The definitions in the standard
+library are split up into purpose-oriented "packages" (for example,
+list functions, arithmetic functions, etc.)
+
+### Intrinsics ###
+
+Robin 0.3 provides 15 intrinsics.  These represent
+the fundamental functionality that is used to evaluate programs, and that
+cannot be expressed as macros written in Robin (not without resorting to
+meta-circularity, at any rate.)  All other macros are built up on top of
+the intrinsics.
+
+This set of intrinsics is not optional — every Robin implementation must
+provide them, or it's not Robin.
+
+One important intrinsic is `eval`.  Many macros will make use of `eval`,
+to evaluate the literal args they receive.  When they do this in the
+environment in which they were called, they behave a lot like functions.
+But they are not obligated to; they might evaluate them in a modified
+environment, or not evaluate them at all and treat them as a literal
+S-expression.
+
+Macros that are defined intrinsically does not support every operation
+that defined macro support; for example, they do not support examining
+their internals.  The canonical representation of an intrinsic is the name
+its bound to.
+
+    | head
+    = head
+
+All parts of the Robin Expression Language, including intrinsics,
+can be passed around as values.
+
+    | (prepend if (prepend head ()))
+    = (if head)
+
+All of the 15 intrinsics are macros, but there is nothing ontologically
+requiring an intrinsic to be a value of macro type.
+
+Each of the 15 intrinsics provided by Robin 0.3 is specified in
+its own file in the standard library.  Because these are intrinsics,
+no Robin implementation is given for them in these files, but tests cases
+which describe their behaviour are.
+
+*   [catch](../stdlib/catch.robin)
+*   [equal?](../stdlib/equal-p.robin)
+*   [eval](../stdlib/eval.robin)
+*   [head](../stdlib/head.robin)
+*   [if](../stdlib/if.robin)
+*   [list?](../stdlib/list-p.robin)
+*   [macro?](../stdlib/macro-p.robin)
+*   [macro](../stdlib/macro.robin)
+*   [number?](../stdlib/number-p.robin)
+*   [prepend](../stdlib/prepend.robin)
+*   [raise](../stdlib/raise.robin)
+*   [sign](../stdlib/sign.robin)
+*   [subtract](../stdlib/subtract.robin)
+*   [symbol?](../stdlib/symbol-p.robin)
+*   [tail](../stdlib/tail.robin)
+
+### Small ###
+
+The "small" library represents indispensible functionality that
+all but the most austere Robin programs would like to be built on.
+
+*   [literal](../stdlib/literal.robin)
+*   [list](../stdlib/list.robin)
+*   [bind](../stdlib/bind.robin)
+*   [env](../stdlib/env.robin)
+*   [let](../stdlib/let.robin)
+*   [choose](../stdlib/choose.robin)
+*   [bind-args](../stdlib/bind-args.robin)
+
+### Standard Library ###
+
+The "standard" library represents a rich collection of functionality.
+It's categorized in "packages".
+
+*   *boolean*: and or xor not boolean?
+*   *list*: empty? map fold reverse filter find append elem? length index
+    take-while drop-while first rest last prefix? flatten
+*   *alist*: lookup extend delete
+*   *env*: env? bound? export sandbox unbind unshadow
+*   *arith*: abs add > >= < <= multiply divide remainder
+*   *misc*: itoa
 
 Part 2. Robin Toplevel Language
 -------------------------------
