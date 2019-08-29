@@ -2,10 +2,10 @@
 
 ### `catch` ###
 
-FIXME: These tests should ideally be for expressions in the Robin Expression Language
-rather than programs in the Robin Toplevel Language.
+FIXME: We don't really need all of List for these tests, just `list`
+and `literal`.
 
-    -> Tests for functionality "Execute core Robin Toplevel Program"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `catch` installs an exception handler.
 
@@ -14,56 +14,52 @@ If an exception is raised when evaluating the final argument of
 first argument of `catch`, and the second argument of `catch` is
 evaluated in that new environment.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define list (macro (self args env)
-    |   (if (equal? args ())
-    |     ()
-    |     (prepend (eval env (head args))
-    |               (eval env (prepend self (tail args)))))))
-    | (display
-    |   (catch error (list error #f)
-    |     (raise (literal (nasty-value 999999)))))
+    | (catch error (list error #f)
+    |   (raise (literal (nasty-value 999999))))
     = ((nasty-value 999999) #f)
 
-`catch` *cannot necessarily* catch exceptions raised by intrinsics.
-It ought to be able to catch exceptions raised by intrinsics wrappers,
-though.
+If an exception is raised in the body of a macro that is applied
+in the context of a `catch`, it will still be catched.
+
+    | (bind errorful (macro (self args env) (raise (literal (nasty-value 1111))))
+    |   (catch error (list error #f)
+    |     (errorful joe)))
+    = ((nasty-value 1111) #f)
+
+If nothing is raised, `catch` will evaluate to whatever its body
+evaluated to.
+
+    | (catch error (list error #f) 42)
+    = 42
 
 The innermost `catch` will catch the exception.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define list (macro (self args env)
-    |   (if (equal? args ())
-    |     ()
-    |     (prepend (eval env (head args))
-    |               (eval env (prepend self (tail args)))))))
-    | (display
-    |   (catch error (list error 5)
-    |     (catch error (list error 9)
-    |       (raise (literal derpy-value)))))
+    | (catch error (list error 5)
+    |   (catch error (list error 9)
+    |     (raise (literal derpy-value))))
     = (derpy-value 9)
 
 An exception raised from within an exception handler is
 caught by the next innermost exception handler.
 
-    | (define list (macro (self args env)
-    |   (if (equal? args ())
-    |     ()
-    |     (prepend (eval env (head args))
-    |               (eval env (prepend self (tail args)))))))
-    | (display
-    |   (catch error (list error 5)
-    |     (catch error (list error 9)
-    |       (catch error (raise (list error error))
-    |         (raise 7)))))
+    | (catch error (list error 5)
+    |   (catch error (list error 9)
+    |     (catch error (raise (list error error))
+    |       (raise 7))))
     = ((7 7) 9)
 
-`catch` expects its first argument to be an identifier.
+`catch` expects its first argument to be a symbol.
+
+    | (catch (3 4) (list error #f) 42)
+    ? uncaught exception: (illegal-arguments ((3 4) (list error #f) 42))
 
 `catch` expects exactly three arguments.
 
-TODO we should probably have some tests that prove that `catch` can
-catch errors raised from inside macros.
+    | (catch error (list error #f))
+    ? uncaught exception: (illegal-arguments (error (list error #f)))
+
+    | (catch error (list error #f) 42 43)
+    ? uncaught exception: (illegal-arguments (error (list error #f) 42 43))
 
 '<<SPEC'
 
