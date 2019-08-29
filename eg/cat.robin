@@ -1,3 +1,5 @@
+(require bind)
+
 (reactor (line-terminal) 0
   (macro (self args env)
     (bind event (head args)

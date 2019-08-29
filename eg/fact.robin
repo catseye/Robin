@@ -1,3 +1,5 @@
+(require multiply)
+
 (define fact (fun (self n)
   (multiply n
     (if (> n 1)

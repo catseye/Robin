@@ -7,8 +7,9 @@ Robin 0.4 (autumn 2019)
 *   Improved modularity of the specification.
 *   Many tests are for the Robin Expression Language, and have been
     made explicitly so, instead of for the Robin Toplevel Language.
-*   Added `bound?` predicate to env lib in stdlib.
+*   The `bound?` predicate was added to env lib in stdlib.
 *   The `require` top-level form was added.
+*   The `write` command was added to the definition of `line-terminal`.
 
 Robin 0.3 (Aug 2019)
 ---------

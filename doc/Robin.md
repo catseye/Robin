@@ -686,13 +686,19 @@ page under Javascript, or so forth.
 
 The `line-terminal` facility understands commands of the form
 
-    (writeln <STRING>)
+    (writeln STRING)
 
-The `<STRING>` argument should be a Robin string (list of integers).  Those
+The `STRING` argument should be a Robin string (list of integers).  Those
 integers, as bytes, are sent to whetever is listening on the other end of
 the line terminal.  When attached to an actual terminal console (whether real
 or emulated), this would typically cause an ASCII representation of those bytes
 to be displayed.
+
+It also understands
+
+    (write STRING)
+
+which will write the STRING but not terminate the line.
 
 Knowing this, we can write a "Hello, world!" program.  To keep it
 simple, we'll simply assume the line-terminal facility exists.
