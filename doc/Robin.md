@@ -785,6 +785,22 @@ Thus we can construct a simple `cat` program:
     = Cat
     = Dog
 
+#### `random-source` ####
+
+The `random-source` facility allows a Robin program to request,
+and obtain, numbers whose value is (ideally) unpredictable.
+
+The `random-source` facility understands commands of the form
+
+    (obtain-random 0)
+
+In response to one of these commands, this facility generates
+an event of the form
+
+    (random NUMBER)
+
+where NUMBER is a random number between -2147483648 and 2147483647.
+
 ### General Reactor properties ###
 
 A reactor can issue multiple commands in its response to an event.

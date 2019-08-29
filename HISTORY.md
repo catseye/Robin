@@ -10,6 +10,7 @@ Robin 0.4 (autumn 2019)
 *   The `bound?` predicate was added to env lib in stdlib.
 *   The `require` top-level form was added.
 *   The `write` command was added to the definition of `line-terminal`.
+*   Added `random-source` facility to reactors in reference implementation.
 
 Robin 0.3 (Aug 2019)
 ---------

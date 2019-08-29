@@ -1,0 +1,17 @@
+(require let) (require choose) (require itoa) (require abs) (require remainder)
+
+(reactor (line-terminal random-source) 0
+  (macro (self args env)
+    (let ((event (head args))
+          (event-type (head event))
+          (event-payload (head (tail event))))
+      (choose
+        ((equal? event-type (literal init))
+          (list 0
+            (list (literal obtain-random) 0)))
+        ((equal? event-type (literal random))
+          (list 0
+            (list (literal writeln) (itoa (remainder (abs event-payload) 100)))
+            (list (literal obtain-random) 0)))
+        (else
+          (list 0))))))
