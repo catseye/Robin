@@ -111,8 +111,7 @@ handleLineTerminalEvent (List [Symbol "writeln", payload]) = do
     return []
 handleLineTerminalEvent _ = return []
 
-handleRandomSourceEvent (List [Symbol "obtain-random", payload]) = do
-    -- FIXME should be: v <- randomRIO (minBound :: Int32, maxBound :: Int32)
-    v <- randomRIO (0, 1000)
-    return $ [List [Symbol "random", Number v]]
+handleRandomSourceEvent (List [Symbol "obtain-random-u16", payload]) = do
+    v <- randomRIO (0, 65535)
+    return $ [List [Symbol "random-u16", Number v]]
 handleRandomSourceEvent _ = return []

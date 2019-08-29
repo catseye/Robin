@@ -785,21 +785,22 @@ Thus we can construct a simple `cat` program:
     = Cat
     = Dog
 
-#### `random-source` ####
+#### `random-u16-source` ####
 
-The `random-source` facility allows a Robin program to request,
-and obtain, numbers whose value is (ideally) unpredictable.
+The `random-u16-source` facility allows a Robin program to request,
+and obtain, unsigned 16-bit numbers whose value is (ideally speaking)
+unpredictable.
 
-The `random-source` facility understands commands of the form
+The `random-u16-source` facility understands commands of the form
 
-    (obtain-random 0)
+    (obtain-random-u16 0)
 
 In response to one of these commands, this facility generates
 an event of the form
 
-    (random NUMBER)
+    (random-u16 NUMBER)
 
-where NUMBER is a random number between -2147483648 and 2147483647.
+where NUMBER is a random number between 0 and 65535.
 
 ### General Reactor properties ###
 
