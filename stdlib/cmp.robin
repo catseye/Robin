@@ -7,13 +7,19 @@
 `>` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is strictly greater than the second.
 
-    |   (> 6 4)
+    | (> 6 4)
     = #t
 
-    |   (> 6 8)
+    | (> 6 8)
     = #f
 
-    |   (> 6 6)
+    | (> 6 6)
+    = #f
+
+    | (> 1610612736 (subtract 0 1610612736)))
+    = #t
+
+    | (> (subtract 0 1610612736) 1610612736)
     = #f
 
 `>` expects exactly two arguments, both numbers.
@@ -44,18 +50,24 @@ if the first number is strictly less than the second.
     |   (< 6 6)
     = #f
 
+    | (< 1610612736 (subtract 0 1610612736)))
+    = #f
+
+    | (< (subtract 0 1610612736) 1610612736)
+    = #t
+
 `<` expects exactly two arguments, both numbers.
 
-    |   (< 14)
+    | (< 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    |   (< 14 23 57)
+    | (< 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    |   (< 14 #t)
+    | (< 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    |   (< #t 51)
+    | (< #t 51)
     ? uncaught exception: (expected-number #t)
 
 ### `>=` ###
@@ -63,27 +75,33 @@ if the first number is strictly less than the second.
 `>=` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is greater than or equal to the second.
 
-    |   (>= 6 4)
+    | (>= 6 4)
     = #t
 
-    |   (>= 6 8)
+    | (>= 6 8)
     = #f
 
-    |   (>= 6 6)
+    | (>= 6 6)
     = #t
+
+    | (>= 1610612736 (subtract 0 1610612736)))
+    = #t
+
+    | (>= (subtract 0 1610612736) 1610612736)
+    = #f
 
 `>=` expects exactly two arguments, both numbers.
 
-    |   (>= 14)
+    | (>= 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    |   (>= 14 23 57)
+    | (>= 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    |   (>= 14 #t)
+    | (>= 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    |   (>= #t 51)
+    | (>= #t 51)
     ? uncaught exception: (expected-number #t)
 
 ### `<=` ###
@@ -91,13 +109,19 @@ if the first number is greater than or equal to the second.
 `<=` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is less than or equal to the second.
 
-    |   (<= 6 4)
+    | (<= 6 4)
     = #f
 
-    |   (<= 6 8)
+    | (<= 6 8)
     = #t
 
-    |   (<= 6 6)
+    | (<= 6 6)
+    = #t
+
+    | (<= 1610612736 (subtract 0 1610612736)))
+    = #f
+
+    | (<= (subtract 0 1610612736) 1610612736)
     = #t
 
 `<=` expects exactly two arguments, both numbers.
