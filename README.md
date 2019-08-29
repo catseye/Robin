@@ -57,6 +57,10 @@ slow, so you may want to skip them.  You can skip them by running
 
     APPLIANCES="appliances/robin.md" ./test.sh
 
+There are also some QuickCheck tests which you can run with
+
+    ghc -isrc src/QuickCheckTests.hs -e allTests
+
 Extended Description
 --------------------
 
@@ -66,6 +70,7 @@ the languages that have had the strongest influences on it:
 ### Scheme ###
 
 Like [Scheme][], Robin is eagerly evaluated, latently typed, and homoiconic,
+as well as properly tail-recursive and lexically scoped (at least by default),
 and tries hard to be well-defined and system-agnostic, but (as you can read
 below) diverges significantly from Scheme in other ways.
 
