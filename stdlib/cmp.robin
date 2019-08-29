@@ -22,18 +22,30 @@ if the first number is strictly greater than the second.
     | (> (subtract 0 1610612736) 1610612736)
     = #f
 
+    | (> 2147483646 2147483647)
+    = #f
+
+    | (> 1 2147483647)
+    = #f
+
+    | (> (subtract 0 2147483647) (subtract 0 2147483646))
+    = #f
+
+    | (> (subtract 0 2147483647) (subtract 0 1))
+    = #f
+
 `>` expects exactly two arguments, both numbers.
 
-    |   (> 14)
+    | (> 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    |   (> 14 23 57)
+    | (> 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    |   (> 14 #t)
+    | (> 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    |   (> #t 51)
+    | (> #t 51)
     ? uncaught exception: (expected-number #t)
 
 ### `<` ###
@@ -54,6 +66,18 @@ if the first number is strictly less than the second.
     = #f
 
     | (< (subtract 0 1610612736) 1610612736)
+    = #t
+
+    | (< 2147483646 2147483647)
+    = #t
+
+    | (< 1 2147483647)
+    = #t
+
+    | (< (subtract 0 2147483647) (subtract 0 2147483646))
+    = #t
+
+    | (< (subtract 0 2147483647) (subtract 0 1))
     = #t
 
 `<` expects exactly two arguments, both numbers.
@@ -142,13 +166,24 @@ if the first number is less than or equal to the second.
 
 (define > (macro (self args env)
   (bind-args (a b) args env
-    (equal? (sign (subtract a b)) 1))))
+    (if (equal? (list (sign a) (sign b)) (list (subtract 0 1) 1))
+      #f
+      (if (equal? (list (sign a) (sign b)) (list 1 (subtract 0 1)))
+        #t
+        (equal? (sign (subtract a b)) 1))))))
+
 (define >= (macro (self args env)
   (bind-args (a b) args env
-    (if (equal? a b) #t (equal? (sign (subtract a b)) 1)))))
+    (if (equal? a b) #t (> a b)))))
+
 (define < (macro (self args env)
   (bind-args (a b) args env
-    (equal? (sign (subtract a b)) (subtract 0 1)))))
+    (if (equal? (list (sign a) (sign b)) (list (subtract 0 1) 1))
+      #t
+      (if (equal? (list (sign a) (sign b)) (list 1 (subtract 0 1)))
+        #f
+        (equal? (sign (subtract a b)) (subtract 0 1)))))))
+
 (define <= (macro (self args env)
   (bind-args (a b) args env
-    (if (equal? a b) #t (equal? (sign (subtract a b)) (subtract 0 1))))))
+    (if (equal? a b) #t (< a b)))))

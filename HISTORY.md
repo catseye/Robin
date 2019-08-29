@@ -4,13 +4,16 @@ History of Robin
 Robin 0.4 (autumn 2019)
 ---------
 
-*   Improved modularity of the specification.
+*   Reworked entire specification document, making it properly modular.
 *   Many tests are for the Robin Expression Language, and have been
     made explicitly so, instead of for the Robin Toplevel Language.
 *   The `bound?` predicate was added to env lib in stdlib.
 *   The `require` top-level form was added.
 *   The `write` command was added to the definition of `line-terminal`.
 *   Added `random-source` facility to reactors in reference implementation.
+*   Fixed shortcomings in `<` and `>` when operating on large numbers
+    would give incorrect results (thanks wob_jonas!)
+*   Clarified what Robin borrows from PicoLisp (thanks arseniiv!)
 
 Robin 0.3 (Aug 2019)
 ---------
