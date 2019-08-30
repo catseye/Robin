@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Language.Robin.Parser (parseRobin, parseRobinExpr) where
+module Language.Robin.Parser (parseToplevel, parseExpr) where
 
 import Data.Char
 import Data.Int
@@ -79,7 +79,7 @@ comment = do
     expr
 
 --
--- The top-level parsing function implements the overall grammar given above.
+-- The expression parsing function implements the overall grammar given above.
 -- Note that we need to give the type of this parser here -- otherwise the
 -- type inferencer freaks out for some reason.
 --
@@ -92,13 +92,16 @@ expr = do
     many comment
     return r
 
-robinProgram = do
+toplevel = do
     spaces
     many comment
     e <- many expr
     return $ e
 
--- Convenience functions for parsing Robin programs.
+-- Convenience functions for parsing Robin forms.
 
-parseRobin = parse robinProgram ""
-parseRobinExpr = parse expr ""
+parseToplevel :: String -> Either ParseError [Expr]
+parseToplevel = parse toplevel ""
+
+parseExpr :: String -> Either ParseError Expr
+parseExpr = parse expr ""

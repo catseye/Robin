@@ -11,7 +11,7 @@ import System.Exit
 import Language.Robin.Expr
 import Language.Robin.Env (mergeEnvs, fromList)
 import Language.Robin.Eval (eval)
-import Language.Robin.Parser (parseRobin, parseRobinExpr)
+import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
@@ -59,7 +59,7 @@ testAll = do
 
 loadEnv filename env reactors results = do
     program <- readFile filename
-    case parseRobin program of
+    case parseToplevel program of
         Right topExprs -> do
             (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
             return env'

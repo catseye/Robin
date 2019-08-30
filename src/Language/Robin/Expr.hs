@@ -35,11 +35,10 @@ instance Show Expr where
     show (Macro env args body) = ("(macro " ++ (show args) ++
                                   " " ++ (show body) ++ ")")
     show (Intrinsic name _)    = name
-    show (List exprs)          = "(" ++ (showl exprs) ++ ")"
-
-showl [] = ""
-showl [expr] = show expr
-showl (expr:exprs) = (show expr) ++ " " ++ (showl exprs)
+    show (List exprs)          = "(" ++ (showl exprs) ++ ")" where
+                                     showl [] = ""
+                                     showl [expr] = show expr
+                                     showl (expr:exprs) = (show expr) ++ " " ++ (showl exprs)
 
 --
 -- Helpers

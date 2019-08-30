@@ -7,7 +7,7 @@ import System.Exit
 
 import Language.Robin.Expr
 import Language.Robin.Env (mergeEnvs)
-import Language.Robin.Parser (parseRobin, parseRobinExpr)
+import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
@@ -41,7 +41,7 @@ processArgs args env = processArgs' args env [] [] where
     processArgs' [] env reactors results = return (env, reactors, results)
     processArgs' ("eval":filename:rest) env reactors results = do
         exprText <- readFile filename
-        case parseRobinExpr exprText of
+        case parseExpr exprText of
             Right expr -> do
                 let topExprs = [List [Symbol "display", expr]]
                 (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
@@ -51,7 +51,7 @@ processArgs args env = processArgs' args env [] [] where
                 exitWith $ ExitFailure 1
     processArgs' (filename:rest) env reactors results = do
         program <- readFile filename
-        case parseRobin program of
+        case parseToplevel program of
             Right topExprs -> do
                 (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
                 processArgs' rest env' reactors' results'
