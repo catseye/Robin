@@ -9,7 +9,7 @@ import System.Environment
 import System.Exit
 
 import Language.Robin.Expr
-import Language.Robin.Env (mergeEnvs)
+import Language.Robin.Env (mergeEnvs, fromList)
 import Language.Robin.Eval (eval)
 import Language.Robin.Parser (parseRobin, parseRobinExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
@@ -31,13 +31,14 @@ propLt env a b =
     where
         expr = List [Symbol "<", Number a, Number b]
 
--- The following should be true for any identifier i and alist x:
--- (lookup i (delete i x))) == ()
-propDel :: Expr -> String -> Expr -> Bool
-propDel env i x =
+-- The following should be true for any symbol s and alist a:
+-- (lookup s (delete s a))) == ()
+propDel :: Expr -> String -> [(String, Int32)] -> Bool
+propDel env sym entries =
     eval (IEnv stop) env expr id == List []
     where
-        expr = List [Symbol "lookup", Symbol i, List [Symbol "delete", Symbol i, x]]
+        expr = List [Symbol "lookup", Symbol sym, List [Symbol "delete", Symbol sym, List [Symbol "literal", alist]]]
+        alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 -- The following should be true for any identifier i and alist x:
 -- (lookup i (extend i 1 x))) == (1)
