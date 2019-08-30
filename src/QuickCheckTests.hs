@@ -17,24 +17,43 @@ import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
 
 
+-- (> a b) should match Haskell's `a > b`
 propGt :: Expr -> Int32 -> Int32 -> Bool
 propGt env a b =
     eval (IEnv stop) env expr id == Boolean (a > b)
     where
         expr = List [Symbol ">", Number a, Number b]
 
-
+-- (< a b) should match Haskell's `a < b`
 propLt :: Expr -> Int32 -> Int32 -> Bool
 propLt env a b =
     eval (IEnv stop) env expr id == Boolean (a < b)
     where
         expr = List [Symbol "<", Number a, Number b]
 
+-- The following should be true for any identifier i and alist x:
+-- (lookup i (delete i x))) == ()
+propDel :: Expr -> String -> Expr -> Bool
+propDel env i x =
+    eval (IEnv stop) env expr id == List []
+    where
+        expr = List [Symbol "lookup", Symbol i, List [Symbol "delete", Symbol i, x]]
+
+-- The following should be true for any identifier i and alist x:
+-- (lookup i (extend i 1 x))) == (1)
+propExt :: Expr -> String -> Expr -> Bool
+propExt env i x =
+    eval (IEnv stop) env expr id == Number 1
+    where
+        expr = List [Symbol "lookup", Symbol i, List [Symbol "extend", Symbol i, Number 1, x]]
+
 
 testAll = do
     env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
     quickCheck (propGt env)
     quickCheck (propLt env)
+    --quickCheck (propDel env)
+    --quickCheck (propExt env)
 
 
 loadEnv filename env reactors results = do
