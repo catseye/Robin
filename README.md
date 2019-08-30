@@ -59,7 +59,7 @@ slow, so you may want to skip them.  You can skip them by running
 
 There are also some QuickCheck tests which you can run with
 
-    ghc -isrc src/QuickCheckTests.hs -e allTests
+    ghc -isrc src/QuickCheckTests.hs -e testAll
 
 Extended Description
 --------------------

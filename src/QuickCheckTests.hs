@@ -31,17 +31,26 @@ propLt env a b =
     where
         expr = List [Symbol "<", Number a, Number b]
 
+propEnv :: Expr -> [(String, Int32)] -> Bool
+propEnv env entries =
+    eval (IEnv stop) env expr id == Boolean True
+    where
+        expr = List [Symbol "env?", List [Symbol "literal", alist]]
+        alist = fromList $ map (\(k,v) -> (k, Number v)) entries
+
 -- The following should be true for any symbol s and alist a:
 -- (lookup s (delete s a))) == ()
+-- FIXME: apparently QuickCheck feels free to generate "" as an identifier; can we stop that?
 propDel :: Expr -> String -> [(String, Int32)] -> Bool
 propDel env sym entries =
-    eval (IEnv stop) env expr id == List []
+    eval (IEnv stop) env expr id == Number 4
     where
         expr = List [Symbol "lookup", Symbol sym, List [Symbol "delete", Symbol sym, List [Symbol "literal", alist]]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 -- The following should be true for any identifier i and alist x:
 -- (lookup i (extend i 1 x))) == (1)
+-- FIXME: apparently QuickCheck feels free to generate "" as an identifier; can we stop that?
 propExt :: Expr -> String -> Expr -> Bool
 propExt env i x =
     eval (IEnv stop) env expr id == Number 1
@@ -53,6 +62,7 @@ testAll = do
     env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
     quickCheck (propGt env)
     quickCheck (propLt env)
+    quickCheck (propEnv env)
     --quickCheck (propDel env)
     --quickCheck (propExt env)
 
