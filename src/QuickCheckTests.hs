@@ -17,20 +17,29 @@ import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
 
 
--- (> a b) should match Haskell's `a > b`
+insist (Right x) = x
+
+--
+-- (> a b) should match Haskell's `a > b` in all cases.
+--
 propGt :: Expr -> Int32 -> Int32 -> Bool
 propGt env a b =
     eval (IEnv stop) env expr id == Boolean (a > b)
     where
         expr = List [Symbol ">", Number a, Number b]
 
--- (< a b) should match Haskell's `a < b`
+--
+-- (< a b) should match Haskell's `a < b` in all cases.
+--
 propLt :: Expr -> Int32 -> Int32 -> Bool
 propLt env a b =
     eval (IEnv stop) env expr id == Boolean (a < b)
     where
         expr = List [Symbol "<", Number a, Number b]
 
+--
+-- env? should evaluate to true on any valid binding alist.
+--
 propEnv :: Expr -> [(String, Int32)] -> Bool
 propEnv env entries =
     eval (IEnv stop) env expr id == Boolean True
@@ -38,24 +47,28 @@ propEnv env entries =
         expr = List [Symbol "env?", List [Symbol "literal", alist]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
--- The following should be true for any symbol s and alist a:
+--
+-- The following should be true for any symbol s and binding alist a:
 -- (lookup s (delete s a))) == ()
--- FIXME: apparently QuickCheck feels free to generate "" as an identifier; can we stop that?
+--
 propDel :: Expr -> String -> [(String, Int32)] -> Bool
 propDel env sym entries =
     eval (IEnv stop) env expr id == Number 4
     where
-        expr = List [Symbol "lookup", Symbol sym, List [Symbol "delete", Symbol sym, List [Symbol "literal", alist]]]
+        litSym = List [Symbol "literal", Symbol sym]
+        expr = List [Symbol "lookup", litSym, List [Symbol "delete", litSym, List [Symbol "literal", alist]]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
--- The following should be true for any identifier i and alist x:
--- (lookup i (extend i 1 x))) == (1)
--- FIXME: apparently QuickCheck feels free to generate "" as an identifier; can we stop that?
-propExt :: Expr -> String -> Expr -> Bool
-propExt env i x =
+--
+-- The following should be true for any symbol s and binding alist a:
+-- (lookup s (extend s 1 x))) == (1)
+--
+propExt :: Expr -> String -> [(String, Int32)] -> Bool
+propExt env sym entries =
     eval (IEnv stop) env expr id == Number 1
     where
-        expr = List [Symbol "lookup", Symbol i, List [Symbol "extend", Symbol i, Number 1, x]]
+        expr = List [Symbol "lookup", Symbol sym, List [Symbol "extend", Symbol sym, Number 1, List [Symbol "literal", alist]]]
+        alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 
 testAll = do
