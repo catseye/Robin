@@ -19,12 +19,17 @@ import qualified Language.Robin.TopLevel as TopLevel
 
 insist (Right x) = x
 
+robinExpr str = insist $ parseExpr str
+
+stdEval env expr = eval (IEnv stop) env expr id
+
+
 --
 -- (> a b) should match Haskell's `a > b` in all cases.
 --
 propGt :: Expr -> Int32 -> Int32 -> Bool
 propGt env a b =
-    eval (IEnv stop) env expr id == Boolean (a > b)
+    stdEval env expr == Boolean (a > b)
     where
         expr = List [Symbol ">", Number a, Number b]
 
@@ -33,7 +38,7 @@ propGt env a b =
 --
 propLt :: Expr -> Int32 -> Int32 -> Bool
 propLt env a b =
-    eval (IEnv stop) env expr id == Boolean (a < b)
+    stdEval env expr == Boolean (a < b)
     where
         expr = List [Symbol "<", Number a, Number b]
 
@@ -42,43 +47,47 @@ propLt env a b =
 --
 propEnv :: Expr -> [(String, Int32)] -> Bool
 propEnv env entries =
-    eval (IEnv stop) env expr id == Boolean True
+    stdEval env expr == Boolean True
     where
         expr = List [Symbol "env?", List [Symbol "literal", alist]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
+
+delExpr sym alist =
+    let
+        litSym = List [Symbol "literal", Symbol sym]
+        expr = List [Symbol "lookup", litSym, List [Symbol "delete", litSym, List [Symbol "literal", alist]]]
+    in
+        expr
 
 --
 -- The following should be true for any symbol s and binding alist a:
 -- (lookup s (delete s a))) == ()
 --
-propDel :: Expr -> String -> [(String, Int32)] -> Bool
+propDel :: Expr -> String -> [(String, Int32)] -> Property
 propDel env sym entries =
-    eval (IEnv stop) env expr id == Number 4
+    sym /= "" ==> (stdEval env (delExpr sym alist) == Number 4)
     where
-        litSym = List [Symbol "literal", Symbol sym]
-        expr = List [Symbol "lookup", litSym, List [Symbol "delete", litSym, List [Symbol "literal", alist]]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 --
 -- The following should be true for any symbol s and binding alist a:
 -- (lookup s (extend s 1 x))) == (1)
 --
-propExt :: Expr -> String -> [(String, Int32)] -> Bool
+propExt :: Expr -> String -> [(String, Int32)] -> Property
 propExt env sym entries =
-    eval (IEnv stop) env expr id == Number 1
+    sym /= "" ==> (stdEval env expr == Number 1)
     where
         expr = List [Symbol "lookup", Symbol sym, List [Symbol "extend", Symbol sym, Number 1, List [Symbol "literal", alist]]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 
 testAll = do
-    env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
+    env <- loadStdEnv
     quickCheck (propGt env)
     quickCheck (propLt env)
     quickCheck (propEnv env)
     --quickCheck (propDel env)
     --quickCheck (propExt env)
-
 
 loadEnv filename env reactors results = do
     program <- readFile filename
@@ -90,5 +99,4 @@ loadEnv filename env reactors results = do
             hPutStr stderr (show problem)
             exitWith $ ExitFailure 1
 
-
-
+loadStdEnv = loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
