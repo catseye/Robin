@@ -52,12 +52,6 @@ propEnv env entries =
         expr = List [Symbol "env?", List [Symbol "literal", alist]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
-delExpr sym alist =
-    let
-        litSym = List [Symbol "literal", Symbol sym]
-        expr = List [Symbol "lookup", litSym, List [Symbol "delete", litSym, List [Symbol "literal", alist]]]
-    in
-        expr
 
 --
 -- The following should be true for any symbol s and binding alist a:
@@ -65,8 +59,10 @@ delExpr sym alist =
 --
 propDel :: Expr -> String -> [(String, Int32)] -> Property
 propDel env sym entries =
-    sym /= "" ==> (stdEval env (delExpr sym alist) == Number 4)
+    sym /= "" ==> (stdEval env expr == List [])
     where
+        litSym = List [Symbol "literal", Symbol sym]
+        expr = List [Symbol "lookup", litSym, List [Symbol "delete", litSym, List [Symbol "literal", alist]]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 --
@@ -75,9 +71,10 @@ propDel env sym entries =
 --
 propExt :: Expr -> String -> [(String, Int32)] -> Property
 propExt env sym entries =
-    sym /= "" ==> (stdEval env expr == Number 1)
+    sym /= "" ==> (stdEval env expr == List [Number 1])
     where
-        expr = List [Symbol "lookup", Symbol sym, List [Symbol "extend", Symbol sym, Number 1, List [Symbol "literal", alist]]]
+        litSym = List [Symbol "literal", Symbol sym]
+        expr = List [Symbol "lookup", litSym, List [Symbol "extend", litSym, Number 1, List [Symbol "literal", alist]]]
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 
@@ -86,8 +83,8 @@ testAll = do
     quickCheck (propGt env)
     quickCheck (propLt env)
     quickCheck (propEnv env)
-    --quickCheck (propDel env)
-    --quickCheck (propExt env)
+    quickCheck (propDel env)
+    quickCheck (propExt env)
 
 loadEnv filename env reactors results = do
     program <- readFile filename
