@@ -1,7 +1,7 @@
 History of Robin
 ================
 
-Robin 0.4 (autumn 2019)
+Robin 0.4 (Sep 2019)
 ---------
 
 *   Reworked entire specification document, making it properly modular.
@@ -15,6 +15,12 @@ Robin 0.4 (autumn 2019)
 *   Fixed shortcomings in `<` and `>` where operating on large numbers
     would give incorrect results (thanks wob_jonas!)
 *   Clarified what Robin borrows from PicoLisp (thanks arseniiv!)
+
+For the reference implementation,
+
+*   Added `eval` command-line option, to evaluate a Robin expression
+    given in a text file (mostly to support Robin Expression tests.)
+*   Added a small, crude QuickCheck test suite.
 
 Robin 0.3 (Aug 2019)
 ---------
@@ -68,3 +74,18 @@ Robin 0.1 (ca 2012)
 ---------
 
 Initial language.
+
+Pre-history (ca 2010)
+-----------
+
+Robin was originally a design for a [Pixley][]-based operating system (or something
+similar to an operating system) which was heavily resource-oriented; almost
+everything, including every concurrent process, was a virtual device
+which must be acquired from a central resource arbiter.  This arbiter could
+satisfy the constraints specified when requesting a device any way it saw
+fit; so the operating environment potentially had a lot of influence over
+exactly what any given program does.
+
+Not a lot of that idea remains, but it did influence the fact that Robin should
+be a purely functional language which nevertheless interacts with the rest of the
+world through some kind of framework.
