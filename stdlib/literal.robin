@@ -1,32 +1,26 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 One of the most basic identifiers available in `small` is `literal`,
 which evaluates to the literal content of its sole argument, which can be
 any S-expression.
 
-    | (display
-    |   (literal symbol))
+    | (literal symbol))
     = symbol
 
-    | (display
-    |   (literal (hello (there) world)))
+    | (literal (hello (there) world)))
     = (hello (there) world)
 
 `literal` requires at least one argument; otherwise, an exception will
 be raised.
 
-    | (display
-    |   (literal))
+    | (literal)
     ? uncaught exception
-
-TODO Unlike other things in `stdlib`, this does not use builtin wrappers
 
 Any arguments beyond the first argument are simply ignored and discarded.
 
-    | (display
-    |   (literal a b c))
+    | (literal a b c))
     = a
 
 `literal` is basically equivalent to Scheme's `quote`.

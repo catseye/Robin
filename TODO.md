@@ -34,12 +34,7 @@ Stdlib
 
 Rename "small" to "core" or "base" or something.
 
-`(bound? sym)` returns `#t` if the symbol is bound, `#f` if not.
-
 `(compose f1 f2)` composes two functions.
-
-`macro?` should return `#t` on intrinsics, because they are
-intrinsic macros.  Maybe a separate `intrinsic?` predicate.
 
 Other libs
 ----------
@@ -56,26 +51,12 @@ statically check the arity of every application, for instance.
 Note that this relies on the assumption that all standard symbols
 have their standard meanings.
 
-Toplevels
----------
-
-`(require foo)` is conceptually sugar for `(assert (bound? foo))`
-but doesn't need `bound?` to be defined, and is also declarative,
-so an implementation can read it and perhaps try to find `foo`
-and load it.
-
-The intrinsics defining files need not be entirely empty; they
-should `(requires thesym)` because, being an intrinsic, it should
-be implemented, and available, and if it's not, it should fail.
-
 Tests
 -----
 
-"Execute", not "Interpret", a Robin program (as these tests could also
-be used to test compilers.)
+Tests for Evaluate Robin Expression (with literal)
 
-A way to evaluate a Robin expression and display it, mainly
-to make the tests more concise - don't need to say `(display ...)` always.
+Grep for FIXME and TODO in stdlib.
 
 Reactors
 --------
@@ -102,6 +83,9 @@ Rename
 
 Rename `fun` to `function`.  This is because Robin prefers full words
 over abbreviations, which are jargon-y.
+
+Rename `>` to `greater-than?`, and so forth.  Figure out a place to
+put the aliases-which-are-punctuation-y.
 
 Rename `raise` to `throw`.  This is because `throw` is the opposite
 of `catch`.  Also "raise" suggests an error, but it might be merely a

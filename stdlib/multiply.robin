@@ -1,44 +1,36 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Arith)"
+    -> Tests for functionality "Evaluate Robin Expression (with Arith)"
 
 `multiply` evaluates both of its arguments to numbers and evaluates to the product
 of those two numbers.
 
-    | (display
-    |   (multiply 6 7))
+    |   (multiply 6 7)
     = 42
 
-    | (display
-    |   (multiply (subtract 0 6) 7))
+    |   (multiply (subtract 0 6) 7)
     = -42
 
-    | (display
-    |   (multiply 6 (subtract 0 7)))
+    |   (multiply 6 (subtract 0 7))
     = -42
 
-    | (display
-    |   (multiply (subtract 0 6) (subtract 0 7)))
+    |   (multiply (subtract 0 6) (subtract 0 7))
     = -42
 
 `multiply` expects exactly two arguments.
 
-    | (display
-    |   (multiply 14))
+    |   (multiply 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (display
-    |   (multiply 6 7 7))
+    |   (multiply 6 7 7)
     ? uncaught exception: (illegal-arguments (6 7 7))
 
 Both of the arguments to `multiply` must be numbers.
 
-    | (display
-    |   (multiply 14 #t))
+    |   (multiply 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (display
-    |   (multiply #t 51))
+    |   (multiply #t 51)
     ? uncaught exception: (expected-number #t)
 
 '<<SPEC'

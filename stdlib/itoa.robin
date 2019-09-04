@@ -1,32 +1,26 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Stdlib)"
+    -> Tests for functionality "Evaluate Robin Expression (with Stdlib)"
 
 `itoa` evaluates its sole argument to an integer, then evaluates to
 a string representing that integer in decimal.
 
-    | (display
-    |   (itoa 100))
+    | (itoa 100)
     = (49 48 48)
 
-    | (display
-    |   (itoa 99))
+    | (itoa 99)
     = (57 57)
 
-    | (display
-    |   (itoa 0))
+    | (itoa 0)
     = (48)
 
-    | (display
-    |   (itoa (subtract 0 1)))
+    | (itoa (subtract 0 1))
     = (45 49)
 
-    | (display
-    |   (itoa (subtract 0 765)))
+    | (itoa (subtract 0 765))
     = (45 55 54 53)
 
-    | (display
-    |   (itoa (literal m)))
+    | (itoa (literal m))
     ? uncaught exception: (expected-number m)
 
 '<<SPEC'

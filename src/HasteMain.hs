@@ -5,7 +5,7 @@ import Haste.DOM
 import Haste.Events
 
 import Language.Robin.Env (mergeEnvs)
-import Language.Robin.Parser (parseRobin)
+import Language.Robin.Parser (parseToplevel)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
@@ -18,7 +18,7 @@ driver [progElem, resultElem, runButtonElem] = do
     where
         execute = do
             Just program <- getValue progElem
-            case parseRobin program of
+            case parseToplevel program of
                 Right topExprs -> do
                     let env = (mergeEnvs robinIntrinsics robinBuiltins)
                     let (env', reactors, results) = TopLevel.collect topExprs env [] []

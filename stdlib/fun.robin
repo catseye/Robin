@@ -1,85 +1,74 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 You can define functions with `fun`.  They can be anonymous.
 
-    | (display
-    |   ((fun (a) a) (literal whee)))
+    |   ((fun (a) a) (literal whee))
     = whee
 
 Function have "closure" behavior; that is, bindings in force when a
 function is defined will still be in force when the function is applied,
 even if they are no longer lexically in scope.
 
-    | (display
     |   ((let
     |      ((a (literal (hi)))
     |       (f (fun (x) (list x a))))
-    |     f) (literal oh)))
+    |     f) (literal oh))
     = (oh (hi))
 
 Functions can take functions.
 
-    | (display
     |   (let
     |     ((apply (fun (x) (x (literal a)))))
-    |     (apply (fun (r) (list r)))))
+    |     (apply (fun (r) (list r))))
     = (a)
 
 Functions can return functions.
 
-    | (display
     |   (let
     |     ((mk (fun (x) (fun (y) (prepend y x))))
     |      (mk2 (mk (literal (vindaloo)))))
-    |     (mk2 (literal chicken))))
+    |     (mk2 (literal chicken)))
     = (chicken vindaloo)
 
 Arguments to functions shadow any other bindings in effect.
 
-    | (display
     |   (let
     |     ((a (literal a))
     |      (b (fun (a) (list a a))))
-    |     (b 7)))
+    |     (b 7))
     = (7 7)
 
 A function may have no arguments at all.
 
-    | (display
-    |   ((fun () 7)))
+    |   ((fun () 7))
     = 7
 
 But, a function must have exactly both a body and a list of formal arguments.
 Otherwise, an exception will be raised.
 
-    | (display
-    |   ((fun ())))
+    |   ((fun ()))
     ? uncaught exception
 
-    | (display
-    |   ((fun)))
+    |   ((fun))
     ? uncaught exception
 
-    | (display
-    |   ((fun (a) a a)))
+    |   ((fun (a) a a))
     ? uncaught exception
 
 An `illegal-arguments` exception will be raised if not enough arguments are
 supplied to a function call.
 
-    | (display
     |   ((fun (a b) (list b a))
-    |     (prepend 1 ())))
+    |     (prepend 1 ()))
     ? uncaught exception: (illegal-arguments
 
 An `illegal-arguments` exception will be raised if too many arguments are
 supplied to a function call.
 
-    | (display
     |   ((fun (a b) (list b a))
-    |     1 (prepend 2 ()) 3))
+    |     1 (prepend 2 ()) 3)
     ? uncaught exception: (illegal-arguments
 
 `fun` is basically equivalent to Scheme's `lambda`.

@@ -2,7 +2,10 @@
 
 ### `macro` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+FIXME: These tests should ideally be for expressions in the Robin Expression Language
+rather than programs in the Robin Toplevel Language.
+
+    -> Tests for functionality "Execute core Robin Toplevel Program"
 
 `macro` takes its first argument to be a list of three formal
 parameters, and its second argument to be an arbitrary expression,
@@ -205,3 +208,5 @@ symbols.
     ? uncaught exception: (illegal-arguments ((self args 99) prepend))
 
 '<<SPEC'
+
+(require macro)

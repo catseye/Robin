@@ -1,51 +1,42 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Boolean)"
+    -> Tests for functionality "Evaluate Robin Expression (with Boolean)"
 
 `xor` evaluates both of its arguments to boolean, then evaluates to
 the "exclusive-or" of those booleans.
 
-    | (display
-    |   (xor #t #t))
+    | (xor #t #t)
     = #f
 
-    | (display
-    |   (xor #t #f))
+    | (xor #t #f)
     = #t
 
-    | (display
-    |   (xor #f #t))
+    | (xor #f #t)
     = #t
 
-    | (display
-    |   (xor #f #f))
+    | (xor #f #f)
     = #f
 
 `xor` expects exactly two arguments.
 
-    | (display
-    |   (xor #f))
+    | (xor #f)
     ? uncaught exception: (illegal-arguments (#f))
 
-    | (display
-    |   (xor #t #f #f))
+    | (xor #t #f #f)
     ? uncaught exception: (illegal-arguments (#t #f #f))
 
 `xor` expects both of its arguments to be booleans.
 
-    | (display
-    |   (xor 100 #t))
+    | (xor 100 #t)
     ? uncaught exception: (expected-boolean 100)
 
-    | (display
-    |   (xor #t 99))
+    | (xor #t 99)
     ? uncaught exception: (expected-boolean 99)
 
 This test demonstrates that these functions really do evaluate their
 arguments.
 
-    | (display
-    |   (and (or (xor (and #t (not (not #t))) #f) #f) #t))
+    | (and (or (xor (and #t (not (not #t))) #f) #f) #t)
     = #t
 
 '<<SPEC'

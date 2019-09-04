@@ -2,31 +2,29 @@
 
 ### `tail` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `tail` evaluates its argument to a list, and evaluates to the tail of that
 list (the sublist obtained by removing the first element.)
 
-    | (display
-    |   (tail (prepend #t (prepend #f ()))))
+    | (tail (prepend #t (prepend #f ())))
     = (#f)
 
 `tail` expects its argument to be a list.
 
-    | (display
-    |   (tail #f))
+    | (tail #f)
     ? uncaught exception: (expected-list #f)
 
 `tail` expects exactly one argument.
 
-    | (display
-    |   (tail (@prepend #t ()) (@prepend #f ())))
-    ? uncaught exception: (illegal-arguments ((@prepend #t ()) (@prepend #f ())))
+    | (tail (prepend #t ()) (prepend #f ()))
+    ? uncaught exception: (illegal-arguments ((prepend #t ()) (prepend #f ())))
 
-    | (display
-    |   (tail))
+    | (tail)
     ? uncaught exception: (illegal-arguments ())
 
 `tail` is basically equivalent to Scheme's `cdr`.
 
 '<<SPEC'
+
+(require tail)

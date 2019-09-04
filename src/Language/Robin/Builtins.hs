@@ -17,13 +17,13 @@ import Language.Robin.Eval
 -- See the relevant files in `stdlib` for normative definitions.
 --
 
+--
+-- Helper functions
+--
+
 union (List []) env = env
 union (List (binding:rest)) env =
     append (List [binding]) (union (List rest) env)
-
-literal i env (List (expr:_)) cc =
-    cc expr
-literal i env other cc = raise i (errMsg "illegal-arguments" other)
 
 evalAll i env [] acc cc =
     cc $ List $ reverse acc
@@ -31,12 +31,34 @@ evalAll i env (head:tail) acc cc =
     eval i env head (\value ->
         evalAll i env tail (value:acc) cc)
 
+--       formals actuals origActuals env i cc
+evalArgs [] [] _ _ _ cc =
+    cc Env.empty
+evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env i cc =
+    eval i env actual (\value ->
+        evalArgs formals actuals origActuals env i (\rest ->
+            cc $ Env.insert formal value rest))
+evalArgs _ _ origActuals _ i cc =
+    raise i (errMsg "illegal-arguments" (List origActuals))
+
+--
+-- Builtins
+--
+
+literal :: Evaluable
+literal i env (List (expr:_)) cc =
+    cc expr
+literal i env other cc = raise i (errMsg "illegal-arguments" other)
+
+robinList :: Evaluable
 robinList i env (List exprs) cc =
     evalAll i env exprs [] cc
 
+robinEnv :: Evaluable
 robinEnv i env (List _) cc =
   cc env
 
+choose :: Evaluable
 choose i env (List [(List [(Symbol "else"), branch])]) cc =
     eval i env branch cc
 choose i env (List ((List [test, branch]):rest)) cc =
@@ -48,11 +70,13 @@ choose i env (List ((List [test, branch]):rest)) cc =
                 choose i env (List rest) cc)
 choose i env other cc = raise i (errMsg "illegal-arguments" other)
 
+bind :: Evaluable
 bind i env (List [name@(Symbol _), expr, body]) cc =
     eval i env expr (\value ->
         eval i (Env.insert name value env) body cc)
 bind i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinLet :: Evaluable
 robinLet i env (List ((List bindings):body:_)) cc =
     bindAll bindings env i (\env' ->
         eval i env' body cc)
@@ -66,16 +90,7 @@ robinLet i env (List ((List bindings):body:_)) cc =
         raise ienv (errMsg "illegal-binding" other)
 robinLet i env other cc = raise i (errMsg "illegal-arguments" other)
 
---       formals actuals origActuals env i cc
-evalArgs [] [] _ _ _ cc =
-    cc Env.empty
-evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env i cc =
-    eval i env actual (\value ->
-        evalArgs formals actuals origActuals env i (\rest ->
-            cc $ Env.insert formal value rest))
-evalArgs _ _ origActuals _ i cc =
-    raise i (errMsg "illegal-arguments" (List origActuals))
-
+robinBindArgs :: Evaluable
 robinBindArgs i env (List [(List formals), givenArgs, givenEnv, body]) cc =
     eval i env givenArgs (\(List actuals) ->
         eval i env givenEnv (\outerEnv ->
@@ -83,10 +98,7 @@ robinBindArgs i env (List [(List formals), givenArgs, givenEnv, body]) cc =
                 eval i (union argEnv env) body cc)))
 robinBindArgs i env other cc = raise i (errMsg "illegal-arguments" other)
 
---
--- Implementation of `fun`.
---
-
+robinFun :: Evaluable
 robinFun i closedEnv (List [(List formals), body]) cc =
     cc $ Intrinsic "<lambda>" fun
   where
@@ -107,6 +119,7 @@ robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
 -- Mapping of names to our functions, providing an evaluation environment.
 --
 
+robinBuiltins :: Expr
 robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("literal",   literal),

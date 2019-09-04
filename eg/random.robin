@@ -1,0 +1,20 @@
+;''Continually generate random numbers from 0 to 65535
+and output the last digit of each number so generated.''
+
+(require let) (require choose) (require itoa) (require abs) (require remainder)
+
+(reactor (line-terminal random-u16-source) 0
+  (macro (self args env)
+    (let ((event (head args))
+          (event-type (head event))
+          (event-payload (head (tail event))))
+      (choose
+        ((equal? event-type (literal init))
+          (list 0
+            (list (literal obtain-random-u16) 0)))
+        ((equal? event-type (literal random-u16))
+          (list 0
+            (list (literal writeln) (list (add (remainder (abs event-payload) 10) 48)))
+            (list (literal obtain-random-u16) 0)))
+        (else
+          (list 0))))))

@@ -3,6 +3,7 @@ module Language.Robin.Reactor where
 import qualified Data.Char as Char
 import Data.Int
 import System.IO
+import System.Random
 
 import Language.Robin.Expr
 import Language.Robin.Eval
@@ -68,9 +69,10 @@ eventLoop showEvents reactors (event@(List [Symbol "stop", Number reactorId]):ev
 
 eventLoop showEvents reactors (event@(List [eventType, eventPayload]):events) = do
     showEvent showEvents event
-    handleLineTerminalEvent event
-    let (reactors', newEvents) = updateMany reactors event
-    eventLoop showEvents reactors' (events ++ newEvents)
+    newEvents1 <- handleLineTerminalEvent event
+    newEvents2 <- handleRandomSourceEvent event
+    let (reactors', newEvents3) = updateMany reactors event
+    eventLoop showEvents reactors' (events ++ newEvents1 ++ newEvents2 ++ newEvents3)
 
 eventLoop showEvents reactors (event:events) = do
     showEvent showEvents event
@@ -95,8 +97,21 @@ waitForLineTerminalEvent = do
     let payload = List (map (\x -> Number (fromIntegral $ Char.ord x)) inpStr)
     return $ List [(Symbol "readln"), payload]
 
+handleLineTerminalEvent (List [Symbol "write", payload]) = do
+    let List l = payload
+    let s = map (\(Number x) -> Char.chr $ fromIntegral $ x) l
+    hPutStr stdout s
+    hFlush stdout
+    return []
 handleLineTerminalEvent (List [Symbol "writeln", payload]) = do
     let List l = payload
     let s = map (\(Number x) -> Char.chr $ fromIntegral $ x) l
     hPutStrLn stdout s
-handleLineTerminalEvent _ = return ()
+    hFlush stdout
+    return []
+handleLineTerminalEvent _ = return []
+
+handleRandomSourceEvent (List [Symbol "obtain-random-u16", payload]) = do
+    v <- randomRIO (0, 65535)
+    return $ [List [Symbol "random-u16", Number v]]
+handleRandomSourceEvent _ = return []

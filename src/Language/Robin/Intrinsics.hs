@@ -5,6 +5,7 @@ import Language.Robin.Expr
 import Language.Robin.Eval
 
 
+robinHead :: Evaluable
 robinHead i env (List [expr]) cc =
     eval i env expr (\x ->
         assertList i x (\val ->
@@ -13,6 +14,7 @@ robinHead i env (List [expr]) cc =
                 other -> raise i (errMsg "expected-list" other)))
 robinHead i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinTail :: Evaluable
 robinTail i env (List [expr]) cc =
     eval i env expr (\x ->
         assertList i x (\val ->
@@ -21,6 +23,7 @@ robinTail i env (List [expr]) cc =
                 other -> raise i (errMsg "expected-list" other)))
 robinTail i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinPrepend :: Evaluable
 robinPrepend i env (List [e1, e2]) cc =
     eval i env e1 (\x1 -> eval i env e2 (\val ->
             case val of
@@ -28,6 +31,7 @@ robinPrepend i env (List [e1, e2]) cc =
                 other -> raise i (errMsg "expected-list" other)))
 robinPrepend i env other cc = raise i (errMsg "illegal-arguments" other)
 
+equalP :: Evaluable
 equalP i env (List [e1, e2]) cc =
     eval i env e1 (\x1 -> eval i env e2 (\x2 -> cc $ Boolean (x1 == x2)))
 equalP i env other cc = raise i (errMsg "illegal-arguments" other)
@@ -41,6 +45,7 @@ listP = predP isList
 macroP = predP isMacro
 numberP = predP isNumber
 
+robinSubtract :: Evaluable
 robinSubtract i env (List [xexpr, yexpr]) cc =
     eval i env xexpr (\x ->
         assertNumber i x (\(Number xv) ->
@@ -49,6 +54,7 @@ robinSubtract i env (List [xexpr, yexpr]) cc =
                     cc (Number (xv - yv))))))
 robinSubtract i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinSign :: Evaluable
 robinSign i env (List [expr]) cc =
     eval i env expr (\x ->
         assertNumber i x (\(Number xv) ->
@@ -57,6 +63,7 @@ robinSign i env (List [expr]) cc =
         sign x = if x == 0 then 0 else if x < 0 then -1 else 1
 robinSign i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinIf :: Evaluable
 robinIf i env (List [test, texpr, fexpr]) cc =
     eval i env test (\x ->
         assertBoolean i x (\(Boolean b) ->
@@ -65,20 +72,24 @@ robinIf i env (List [test, texpr, fexpr]) cc =
                 False -> eval i env fexpr cc))
 robinIf i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinEval :: Evaluable
 robinEval i env (List [envlist, form]) cc =
     eval i env envlist (\newEnv ->
         eval i env form (\body ->
             eval i newEnv body cc))
 robinEval i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinMacro :: Evaluable
 robinMacro i env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc = do
     cc $ Macro env args body
 robinMacro i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinRaise :: Evaluable
 robinRaise i env (List [expr]) cc =
     eval i env expr (\v -> raise i v)
 robinRaise i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinCatch :: Evaluable
 robinCatch i env (List [id@(Symbol _), handler, body]) cc =
     let
         handlerContinuation = (\errvalue ->
@@ -88,6 +99,7 @@ robinCatch i env (List [id@(Symbol _), handler, body]) cc =
         eval i' env body cc
 robinCatch i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinIntrinsics :: Expr
 robinIntrinsics = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("head",     robinHead),

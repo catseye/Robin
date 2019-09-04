@@ -2,37 +2,33 @@
 
 ### `symbol?` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `symbol?` evaluates its argument, then evaluates to `#t` if it is a symbol,
 `#f` otherwise.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (symbol? (literal this-symbol)))
+    | (symbol? ((macro (s a e) (head a)) this-symbol))
     = #t
 
 Numbers are not symbols.
 
-    | (display
-    |   (symbol? 9))
+    | (symbol? 9)
     = #f
 
 Lists are not symbols.
 
-    | (display
-    |   (symbol? (prepend 1 ())))
+    | (symbol? (prepend 1 ()))
     = #f
 
 The argument to `symbol?` may (naturally) be any type, but there must be
 exactly one argument.
 
-    | (display
-    |   (symbol? 77 88))
+    | (symbol? 77 88)
     ? uncaught exception: (illegal-arguments (77 88))
 
-    | (display
-    |   (symbol?))
+    | (symbol?)
     ? uncaught exception: (illegal-arguments ())
 
 '<<SPEC'
+
+(require symbol?)

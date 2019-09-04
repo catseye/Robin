@@ -1,29 +1,23 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
-    | (display
-    |   (lookup (literal b) (literal ((a 1) (b 2) (c 3)))))
+    | (lookup (literal b) (literal ((a 1) (b 2) (c 3))))
     = (2)
 
-    | (display
-    |   (lookup (literal a) (literal ((a 1) (a 2) (a 3)))))
+    | (lookup (literal a) (literal ((a 1) (a 2) (a 3))))
     = (1)
 
-    | (display
-    |   (lookup (literal r) (literal ((a 1) (b 2) (c 3)))))
+    | (lookup (literal r) (literal ((a 1) (b 2) (c 3))))
     = ()
 
-    | (display
-    |   (lookup (literal q) ()))
+    | (lookup (literal q) ())
     = ()
 
-    | (display
-    |   (lookup (literal q) 55))
+    | (lookup (literal q) 55)
     ? uncaught exception: (expected-list 55)
 
-    | (display
-    |   (lookup (literal q) (literal ((a 7) 99 (q 4)))))
+    | (lookup (literal q) (literal ((a 7) 99 (q 4))))
     ? uncaught exception: (expected-list 99)
 
 '<<SPEC'

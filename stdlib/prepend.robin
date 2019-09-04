@@ -2,38 +2,35 @@
 
 ### `prepend` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `prepend` evaluates both of its arguments, then evaluates to a list cell
 which contains the first value as its data and the second value as the
 continuation of the list.
 
-    | (display
-    |   (prepend () ()))
+    | (prepend () ())
     = (())
 
-    | (display
-    |   (prepend #t (prepend #f ())))
+    | (prepend #t (prepend #f ()))
     = (#t #f)
 
 The second argument to `prepend` must be a list.
 
-    | (display
-    |   (prepend #t #f))
+    | (prepend #t #f)
     ? uncaught exception: (expected-list #f)
 
 The first argument to `prepend` can be any type, but fewer than or more than
 two arguments will raise an exception.
 
-    | (display
-    |   (prepend #t))
+    | (prepend #t)
     ? uncaught exception: (illegal-arguments (#t))
 
-    | (display
-    |   (prepend #f #t #f))
+    | (prepend #f #t #f)
     ? uncaught exception: (illegal-arguments (#f #t #f))
 
 `prepend` is basically equivalent to Scheme's `cons`, except for the
 requirement that the second argument be a list.
 
 '<<SPEC'
+
+(require prepend)

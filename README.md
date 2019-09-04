@@ -1,7 +1,7 @@
 Robin
 =====
 
-_Version 0.3.  Work-in-progress, subject to change._
+_Version 0.4.  Work-in-progress, subject to change._
 
 Overview
 --------
@@ -57,6 +57,10 @@ slow, so you may want to skip them.  You can skip them by running
 
     APPLIANCES="appliances/robin.md" ./test.sh
 
+There are also some QuickCheck tests which you can run with
+
+    ghc -isrc src/QuickCheckTests.hs -e testAll
+
 Extended Description
 --------------------
 
@@ -66,6 +70,7 @@ the languages that have had the strongest influences on it:
 ### Scheme ###
 
 Like [Scheme][], Robin is eagerly evaluated, latently typed, and homoiconic,
+as well as properly tail-recursive and lexically scoped (at least by default),
 and tries hard to be well-defined and system-agnostic, but (as you can read
 below) diverges significantly from Scheme in other ways.
 
@@ -79,9 +84,9 @@ of these intrinsics, while an implementation is free to provide its own
 
 ### PicoLisp ###
 
-[PicoLisp][] has both macros and functions, but in Robin, the macro, rather
-than the function, is the fundamental abstraction.  There is a `function`
-form, but it's defined as a macro!
+[PicoLisp][] allows functions that do not evaluate their arguments.  Robin
+takes this concept and calls it a `macro`, and builds everything else on
+top of it.  There is a `function` form in Robin, but it's defined as a macro!
 
 ### Haskell ###
 

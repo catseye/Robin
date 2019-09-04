@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `filter` evaluates its first argument to obtain a macro, generally assumed
 to be a predicate (a one-argument function which evaluates to a boolean).
@@ -8,12 +8,10 @@ It then evaluates its second argument to obtain a list.  It then evaluates
 to a list which contains all the elements of the given list, in the same
 order, which satisfy the predicate.
 
-    | (display
-    |   (filter (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six))))
+    |   (filter (fun (x) (symbol? x)) (literal (1 two #f 3 () four 5 six)))
     = (two four six)
 
-    | (display
-    |   (filter (fun (x) x) (literal (#t #t #f banana #t #f))))
+    |   (filter (fun (x) x) (literal (#t #t #f banana #t #f)))
     ? uncaught exception: (expected-boolean banana)
 
 '<<SPEC'

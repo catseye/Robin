@@ -1,58 +1,50 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 `bind` binds a single identifier to the result of evaluating a single
 expression, and makes that binding available in another expression which
 it evaluates.
 
-    | (display
     |   (bind x (literal hello)
-    |     (list x x)))
+    |     (list x x))
     = (hello hello)
 
-    | (display
     |   (bind dup (macro (self args env)
     |               (list (head args) (head args)))
-    |     (dup g)))
+    |     (dup g))
     = (g g)
 
-    | (display
     |   (bind dup (macro (self args env)
     |               (bind x (eval env (head args))
     |                 (list x x)))
-    |     (dup (literal g))))
+    |     (dup (literal g)))
     = (g g)
 
-    | (display
     |   (bind dup (macro (self args env)
     |               (bind x (eval env (head args))
     |                 (list x x)))
-    |     (dup (dup (literal g)))))
+    |     (dup (dup (literal g))))
     = ((g g) (g g))
 
-    | (display
     |   (bind find (macro (self args env)
     |                (bind-args (alist key) args env
     |                  (if (equal? alist (literal ())) (literal ())
     |                    (if (equal? key (head (head alist)))
     |                       (head alist)
     |                       (self (tail alist) key)))))
-    |     (find (literal ((c d) (e f) (a b))) (literal a))))
+    |     (find (literal ((c d) (e f) (a b))) (literal a)))
     = (a b)
 
 `bind` expects exactly three arguments, or else an exception will be raised.
 
-    | (display
-    |   (bind smoosh (fun (x y) (list y x))))
+    |   (bind smoosh (fun (x y) (list y x)))
     ? uncaught exception
 
-    | (display
-    |   (bind smoosh))
+    |   (bind smoosh)
     ? uncaught exception
 
-    | (display
-    |   (bind))
+    |   (bind)
     ? uncaught exception
 
 `bind` is basically equivalent to Scheme's `let`, but only one

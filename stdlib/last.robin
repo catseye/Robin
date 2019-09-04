@@ -1,36 +1,30 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `last` evaluates its first argument to obtain a non-negative integer,
 considered to be a desired length, and its second argument to obtain a
 list.  It then evaluates to the suffix of the given list of the desired
 length.
 
-    | (display
-    |   (last 0 (list 1 2 3 4 5)))
+    |   (last 0 (list 1 2 3 4 5))
     = ()
 
-    | (display
-    |   (head (last 1 (list 1 2 3 4 5))))
+    |   (head (last 1 (list 1 2 3 4 5)))
     = 5
 
-    | (display
-    |   (last 3 (list 1 2 3 4 5)))
+    |   (last 3 (list 1 2 3 4 5))
     = (3 4 5)
 
-    | (display
-    |   (last 6 (list 1 2 3 4 5)))
+    |   (last 6 (list 1 2 3 4 5))
     ? uncaught exception: (expected-list ())
 
-    | (display
-    |   (last 1 (literal foo)))
+    |   (last 1 (literal foo))
     ? uncaught exception: (expected-list foo)
 
 Unlike `first`, `last` does care if it's not a list, even when the count
 is zero.
 
-    | (display
     |   (last 0 (literal foo)))
     ? uncaught exception: (expected-list foo)
 

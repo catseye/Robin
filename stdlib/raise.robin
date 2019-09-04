@@ -2,7 +2,7 @@
 
 ### `raise` ###
 
-    -> Tests for functionality "Interpret core Robin Program"
+    -> Tests for functionality "Evaluate core Robin Expression"
 
 `raise` evaluates its argument to obtain a value, then raises an
 exception with that value.
@@ -14,19 +14,16 @@ system.  For the sake of usability, the error should include a message which
 refers to the exception that triggered it, but this is not a strict
 requirement.
 
-    | (display
-    |   (raise 999999))
+    | (raise 999999)
     ? uncaught exception: 999999
 
 `raise`'s single argument may be any kind of value, but `raise` expects
 exactly one argument.
 
-    | (display
-    |   (raise))
+    | (raise)
     ? uncaught exception: (illegal-arguments ())
 
-    | (display
-    |   (raise 2 3 4))
+    | (raise 2 3 4)
     ? uncaught exception: (illegal-arguments (2 3 4))
 
 A Robin environment may install exception handlers which are not defined
@@ -34,3 +31,5 @@ in Robin code itself.  (i.e. exiting to the operating system is not a
 strict requirement.)
 
 '<<SPEC'
+
+(require raise)

@@ -29,7 +29,7 @@ cat stdlib/boolean-p.robin \
     stdlib/not.robin stdlib/and.robin stdlib/or.robin \
     stdlib/xor.robin > pkg/boolean.robin
 
-cat stdlib/env-p.robin stdlib/export.robin stdlib/sandbox.robin \
+cat stdlib/env-p.robin stdlib/bound-p.robin stdlib/export.robin stdlib/sandbox.robin \
     stdlib/unbind.robin stdlib/unshadow.robin > pkg/env.robin
 
 cat stdlib/itoa.robin > pkg/misc.robin

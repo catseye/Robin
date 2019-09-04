@@ -1,29 +1,24 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `take-while` evaluates its first argument to obtain a predicate and its
 second argument to obtain a list.  It then evaluates to the longest prefix
 of the list whose elements all satisfy the predicate.
 
-    | (display
-    |   (take-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven))))
+    |   (take-while (fun (x) (symbol? x)) (literal (one two 3 4 five 6 seven)))
     = (one two)
 
-    | (display
-    |   (take-while (fun (x) (symbol? x)) (literal (1 2 3 4 five six))))
+    |   (take-while (fun (x) (symbol? x)) (literal (1 2 3 4 five six)))
     = ()
 
-    | (display
-    |   (take-while (fun (x) (number? x)) (literal (1 2 3 4 5 6))))
+    |   (take-while (fun (x) (number? x)) (literal (1 2 3 4 5 6)))
     = (1 2 3 4 5 6)
 
-    | (display
-    |   (take-while (fun (x) (symbol? x)) ()))
+    |   (take-while (fun (x) (symbol? x)) ())
     = ()
 
-    | (display
-    |   (take-while (fun (x) (symbol? x)) #f))
+    |   (take-while (fun (x) (symbol? x)) #f)
     ? uncaught exception: (expected-list #f)
 
 '<<SPEC'

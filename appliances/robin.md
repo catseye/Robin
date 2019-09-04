@@ -1,26 +1,30 @@
-    -> Functionality "Interpret core Robin Program" is implemented by shell command
+The following functionalities are used to test Robin Expressions.
+
+    -> Functionality "Evaluate core Robin Expression" is implemented by shell command
+    -> "bin/robin --no-builtins eval %(test-body-file)"
+
+    -> Functionality "Evaluate Robin Expression (with Small)" is implemented by shell command
+    -> "bin/robin eval %(test-body-file)"
+
+    -> Functionality "Evaluate Robin Expression (with List)" is implemented by shell command
+    -> "bin/robin pkg/list.robin eval %(test-body-file)"
+
+    -> Functionality "Evaluate Robin Expression (with Env)" is implemented by shell command
+    -> "bin/robin pkg/list.robin pkg/env.robin eval %(test-body-file)"
+
+    -> Functionality "Evaluate Robin Expression (with Boolean)" is implemented by shell command
+    -> "bin/robin pkg/boolean.robin eval %(test-body-file)"
+
+    -> Functionality "Evaluate Robin Expression (with Arith)" is implemented by shell command
+    -> "bin/robin pkg/arith.robin eval %(test-body-file)"
+
+    -> Functionality "Evaluate Robin Expression (with Stdlib)" is implemented by shell command
+    -> "bin/robin pkg/stdlib.robin eval %(test-body-file)"
+
+The following functionalities are used to test Robin Toplevel programs.
+
+    -> Functionality "Execute core Robin Toplevel Program" is implemented by shell command
     -> "bin/robin --no-builtins %(test-body-file)"
 
-    -> Functionality "Interpret Robin Program" is implemented by shell command
+    -> Functionality "Execute Robin Toplevel Program (with Small)" is implemented by shell command
     -> "bin/robin %(test-body-file)"
-
-    -> Functionality "Interpret Robin Program (with Small)" is implemented by shell command
-    -> "bin/robin %(test-body-file)"
-
-    -> Functionality "Interpret Robin Program (with List)" is implemented by shell command
-    -> "bin/robin pkg/list.robin %(test-body-file)"
-
-    -> Functionality "Interpret Robin Program (with Boolean)" is implemented by shell command
-    -> "bin/robin pkg/boolean.robin %(test-body-file)"
-
-    -> Functionality "Interpret Robin Program (with Env)" is implemented by shell command
-    -> "bin/robin pkg/list.robin pkg/env.robin %(test-body-file)"
-
-    -> Functionality "Interpret Robin Program (with Arith)" is implemented by shell command
-    -> "bin/robin pkg/arith.robin %(test-body-file)"
-
-    -> Functionality "Interpret Robin Program (with List-Arith)" is implemented by shell command
-    -> "bin/robin pkg/list.robin pkg/arith.robin pkg/list-arith.robin %(test-body-file)"
-
-    -> Functionality "Interpret Robin Program (with Stdlib)" is implemented by shell command
-    -> "bin/robin pkg/stdlib.robin %(test-body-file)"

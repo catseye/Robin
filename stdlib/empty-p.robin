@@ -1,20 +1,17 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with List)"
 
 `empty?` evaluates its single argument, and evaluates to `#t` if that value
 is the empty list, `#f` otherwise.
 
-    | (display
-    |   (empty? (literal symbol)))
+    |   (empty? (literal symbol))
     = #f
 
-    | (display
-    |   (empty? ()))
+    |   (empty? ())
     = #t
 
-    | (display
-    |   (empty? (list 1 2 3)))
+    |   (empty? (list 1 2 3))
     = #f
 
 '<<SPEC'

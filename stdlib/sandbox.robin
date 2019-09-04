@@ -1,19 +1,17 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Interpret Robin Program (with Env)"
+    -> Tests for functionality "Evaluate Robin Expression (with Env)"
 
 `sandbox` takes a list of identifiers as its first argument, and evaluates
 its second argument in an environment where all bindings *except* those
 for the listed identifiers have been unbound.
 
-    | (display
-    |   (sandbox (prepend tail)
-    |     (tail (prepend 8 (prepend 9 ())))))
+    | (sandbox (prepend tail)
+    |   (tail (prepend 8 (prepend 9 ()))))
     = (9)
 
-    | (display
-    |   (sandbox (prepend tail)
-    |     (head (prepend 8 (prepend 9 ())))))
+    | (sandbox (prepend tail)
+    |   (head (prepend 8 (prepend 9 ()))))
     ? uncaught exception: (unbound-identifier head)
 
 '<<SPEC'

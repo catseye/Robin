@@ -1,6 +1,9 @@
 ;''
-    Deadfish in Robin 0.3 -- requires stdlib
+    Deadfish in Robin 0.3
 ''
+
+(require itoa)
+
 (reactor (line-terminal) 0
   (macro (self args env)
     (bind event (head args)
@@ -19,9 +22,9 @@
                       (if show
                         (list state
                               (list (literal writeln) (itoa state))
-                              (list (literal writeln) (literal ''>> '')))
+                              (list (literal write) (literal ''>> '')))
                         (list state
-                              (list (literal writeln) (literal ''>> '')))))))
+                              (list (literal write) (literal ''>> '')))))))
                 (choose
                   ((equal? event-type (literal init))
                     (prompt #f state))
