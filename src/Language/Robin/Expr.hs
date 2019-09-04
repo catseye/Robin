@@ -4,18 +4,19 @@ import Data.Char
 import Data.Int
 
 --
--- An _intrinsic_ is an object which behaves much like a macro, but is implemented
--- intrinsically (it cannot be (non-meta-circularly) defined in Robin itself.)
+-- An _evaluable_ is a Haskell object which behaves like a Robin macro.
+-- It describes builtins (which includes intrinsics), and also happens
+-- (perhaps unsurprisingly?) to be the type of the evaluator function.
 --
 
-type Intrinsic = IEnv Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
+type Evaluable = IEnv Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
 --            internal-env    env     args    continuation      result
 
 data Expr = Symbol String
           | Boolean Bool
           | Number Int32
           | Macro Expr Expr Expr
-          | Intrinsic String Intrinsic
+          | Intrinsic String Evaluable
           | List [Expr]
 
 instance Eq Expr where

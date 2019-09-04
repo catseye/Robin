@@ -6,6 +6,8 @@ import Language.Robin.Eval
 import Language.Robin.Reactor
 
 
+collect :: [Expr] -> Expr -> [Reactor] -> [Either Expr Expr] -> (Expr, [Reactor], [Either Expr Expr])
+
 collect [] env reactors results = (env, reactors, results)
 
 collect ((List [Symbol "display", expr]):rest) env reactors results =

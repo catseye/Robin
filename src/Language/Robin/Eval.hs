@@ -11,7 +11,7 @@ import Language.Robin.Expr
 --
 --     Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
 --
--- (This is actually the `Intrinsic` type from `Robin.Expr`.)
+-- (This is actually the `Evaluable` type from `Robin.Expr`.)
 --
 -- The first argument is the internal context, which contains things like the
 -- exception handler, etc.
@@ -23,7 +23,7 @@ import Language.Robin.Expr
 -- value.  Then continue the current continuation with that value.
 --
 
-eval :: Intrinsic
+eval :: Evaluable
 
 eval i (List []) s@(Symbol _) cc =
     raise i (errMsg "unbound-identifier" s)
