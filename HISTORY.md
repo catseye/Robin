@@ -1,7 +1,16 @@
 History of Robin
 ================
 
-Robin 0.4 (Sep 2019)
+Robin 0.5 (Sep 2019)
+---------
+
+For the reference implementation,
+
+*   Refactored the reactors module into Reactors, EventLoop, and
+    Facilities.  The EventLoop does not rely on any particular
+    facilities; they are (dependency-)injected by the Main module.
+
+Robin 0.4 (Early Sep 2019)
 ---------
 
 *   Reworked entire specification document, making it properly modular.

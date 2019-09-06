@@ -1,7 +1,7 @@
 Robin
 =====
 
-_Version 0.4.  Work-in-progress, subject to change._
+_Version 0.5.  Work-in-progress, subject to change._
 
 Overview
 --------
