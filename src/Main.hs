@@ -11,7 +11,7 @@ import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
-import Language.Robin.Reactor (eventLoop, initReactors)
+import Language.Robin.EventLoop (startEventLoop)
 
 
 main = do
@@ -68,7 +68,5 @@ writeResults ((Left expr):results) =
     error $ "uncaught exception: " ++ show expr
 
 
-runReactors [] showEvents = return ()
 runReactors reactors showEvents = do
-    let (reactors', events') = initReactors reactors
-    eventLoop showEvents reactors' events'
+    startEventLoop showEvents reactors
