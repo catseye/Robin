@@ -12,7 +12,7 @@ import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
 import Language.Robin.EventLoop (startEventLoop)
-import Language.Robin.Facilities.LineTerminal (handleLineTerminalEvent)
+import Language.Robin.Facilities.LineTerminal
 import Language.Robin.Facilities.RandomSource (handleRandomSourceEvent)
 
 
@@ -25,7 +25,7 @@ main = do
             let (args', env', showEvents) = processFlags args (mergeEnvs robinIntrinsics robinBuiltins) False
             (_, reactors, results) <- processArgs args' env'
             writeResults $ reverse results
-            runReactors reactors showEvents
+            startEventLoop showEvents reactors [handleLineTerminalEvent, handleRandomSourceEvent] waitForLineTerminalEvent
             exitWith ExitSuccess
 
 
@@ -68,7 +68,3 @@ writeResults ((Right result):results) = do
     writeResults results
 writeResults ((Left expr):results) =
     error $ "uncaught exception: " ++ show expr
-
-
-runReactors reactors showEvents = do
-    startEventLoop showEvents reactors [handleLineTerminalEvent, handleRandomSourceEvent]

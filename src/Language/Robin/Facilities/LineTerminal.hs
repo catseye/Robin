@@ -5,11 +5,21 @@ import System.IO
 
 import Language.Robin.Expr
 
+type WaitForEvents = IO (Either String [Expr])
 
+waitForLineTerminalEvent :: WaitForEvents
 waitForLineTerminalEvent = do
-    inpStr <- getLine
-    let payload = List (map (\x -> Number (fromIntegral $ Char.ord x)) inpStr)
-    return $ List [(Symbol "readln"), payload]
+    stillOpen <- hIsOpen stdin
+    case stillOpen of
+        True -> do
+            eof <- hIsEOF stdin
+            case eof of
+                False -> do
+                    inpStr <- getLine
+                    let payload = List (map (\x -> Number (fromIntegral $ Char.ord x)) inpStr)
+                    return $ Right [List [(Symbol "readln"), payload]]
+                True  -> return $ Left "stop"
+        False -> return $ Left "stop"
 
 handleLineTerminalEvent :: Expr -> IO [Expr]
 handleLineTerminalEvent (List [Symbol "write", payload]) = do
