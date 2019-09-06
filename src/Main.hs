@@ -12,6 +12,8 @@ import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
 import Language.Robin.EventLoop (startEventLoop)
+import Language.Robin.Facilities.LineTerminal (handleLineTerminalEvent)
+import Language.Robin.Facilities.RandomSource (handleRandomSourceEvent)
 
 
 main = do
@@ -69,4 +71,4 @@ writeResults ((Left expr):results) =
 
 
 runReactors reactors showEvents = do
-    startEventLoop showEvents reactors
+    startEventLoop showEvents reactors [handleLineTerminalEvent, handleRandomSourceEvent]

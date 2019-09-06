@@ -11,6 +11,7 @@ waitForLineTerminalEvent = do
     let payload = List (map (\x -> Number (fromIntegral $ Char.ord x)) inpStr)
     return $ List [(Symbol "readln"), payload]
 
+handleLineTerminalEvent :: Expr -> IO [Expr]
 handleLineTerminalEvent (List [Symbol "write", payload]) = do
     let List l = payload
     let s = map (\(Number x) -> Char.chr $ fromIntegral $ x) l
