@@ -3,6 +3,14 @@ TODO
 
 (Note, some of these are possibly long-term plans.)
 
+Toplevels
+---------
+
+`define-if-absent` which defines, but only if
+the symbol is not yet bound.  Use this for stdlib.
+This makes it unnecessary to have a special package
+for no-builtins, etc.
+
 Disjointness of types
 ---------------------
 
