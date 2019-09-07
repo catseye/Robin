@@ -13,45 +13,45 @@ type Facility = Expr -> IO [Expr]
 type WaitForEvents = IO (Either String [Expr])
 
 
-startEventLoop :: Bool -> [Reactor] -> [Facility] -> WaitForEvents -> IO ()
-startEventLoop showEvents reactors facilities waitForEvents = do
+eventLoop :: Bool -> [Facility] -> WaitForEvents -> [Reactor] -> IO ()
+eventLoop showEvents facilities waitForEvents reactors = do
     let (reactors', events') = updateMany reactors (List [(Symbol "init"), (Number 0)])
-    eventLoop showEvents reactors' facilities waitForEvents events'
-
-
-eventLoop :: Bool -> [Reactor] -> [Facility] -> WaitForEvents -> [Expr] -> IO ()
-eventLoop showEvents [] facilities waitForEvents events =
-    -- No more reactors to react to things, so we can just stop.
-    return ()
-
-eventLoop showEvents reactors facilities waitForEvents (event@(List [Symbol "stop", Number reactorId]):events) = do
-    showEvent showEvents event
-    let reactors' = filter (\r -> rid r /= reactorId) reactors
-    eventLoop showEvents reactors' facilities waitForEvents events
-
-eventLoop showEvents reactors facilities waitForEvents (event@(List [eventType, eventPayload]):events) = do
-    showEvent showEvents event
-    newFacilityEvents <- runFacilityHandlers facilities event []
-    let (reactors', newReactorEvents) = updateMany reactors event
-    eventLoop showEvents reactors' facilities waitForEvents (events ++ newFacilityEvents ++ newReactorEvents)
+    e reactors' events'
     where
+        e [] events =
+            -- No more reactors to react to things.  We can just stop.
+            return ()
+
+        e reactors (event@(List [Symbol "stop", Number reactorId]):events) = do
+            -- A reactor requested to stop.  We remove it from our set.
+            showEvent event
+            let reactors' = filter (\r -> rid r /= reactorId) reactors
+            e reactors' events
+
+        e reactors (event@(List [eventType, eventPayload]):events) = do
+            -- An event on the queue.  Allow all facilities and reactors to handle it.
+            showEvent event
+            newFacilityEvents <- runFacilityHandlers facilities event []
+            let (reactors', newReactorEvents) = updateMany reactors event
+            e reactors' (events ++ newFacilityEvents ++ newReactorEvents)
+
+        e reactors (event:events) = do
+            -- Ill-formed event in queue.  Just discard it.
+            showEvent event
+            e reactors events
+
+        e reactors [] = do
+            -- Event queue is empty.  Wait for new events to arrive.
+            result <- waitForEvents
+            case result of
+                Left err -> return ()
+                Right events -> e reactors events
+
         runFacilityHandlers [] event acc = return acc
         runFacilityHandlers (handler:handlers) event acc = do
             newEvents <- handler event
             runFacilityHandlers handlers event (acc ++ newEvents)
 
-
-eventLoop showEvents reactors facilities waitForEvents (event:events) = do
-    showEvent showEvents event
-    eventLoop showEvents reactors facilities waitForEvents events
-
-eventLoop showEvents reactors facilities waitForEvents [] = do
-    -- event queue is empty.  wait for new events to arrive.
-    result <- waitForEvents
-    case result of
-        Left err -> return ()
-        Right newEvents -> eventLoop showEvents reactors facilities waitForEvents newEvents
-
-
-showEvent True event = hPutStrLn stderr ("*** " ++ show event)
-showEvent False _ = return ()
+        showEvent event = case showEvents of
+            True -> hPutStrLn stderr ("*** " ++ show event)
+            False -> return ()

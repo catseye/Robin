@@ -11,7 +11,7 @@ import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
-import Language.Robin.EventLoop (startEventLoop)
+import Language.Robin.EventLoop (eventLoop)
 import Language.Robin.Facilities.LineTerminal
 import Language.Robin.Facilities.RandomSource (handleRandomSourceEvent)
 
@@ -25,7 +25,7 @@ main = do
             let (args', env', showEvents) = processFlags args (mergeEnvs robinIntrinsics robinBuiltins) False
             (_, reactors, results) <- processArgs args' env'
             writeResults $ reverse results
-            startEventLoop showEvents reactors [handleLineTerminalEvent, handleRandomSourceEvent] waitForLineTerminalEvent
+            eventLoop showEvents [handleLineTerminalEvent, handleRandomSourceEvent] waitForLineTerminalEvent reactors
             exitWith ExitSuccess
 
 
