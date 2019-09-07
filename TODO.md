@@ -75,6 +75,13 @@ A more involved environment, with more facilities than just
 `line-terminal`.  Multiplexed I/O would be a start, could write an
 IRC client.  Could also define an environment for web pages.
 
+A dedicated `HugsMain.hs` which injects only the facilities
+that Hugs can handle, i.e. does not use Control.Chan or whatnot
+to wait for the next event.
+
+For that matter, `HasteMain.hs` should inject facilities that
+only make sense in the HTML5 DOM.
+
 Subscription and unsubscription from facilities using standard commands.
 
 Example programs
