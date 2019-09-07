@@ -7,13 +7,10 @@ import System.IO
 import Language.Robin.Expr
 import Language.Robin.Eval
 import Language.Robin.Reactor
+import Language.Robin.Facilities
 
 
-type Facility = Expr -> IO [Expr]
-type WaitForEvents = IO (Either String [Expr])
-
-
-eventLoop :: Bool -> [Facility] -> WaitForEvents -> [Reactor] -> IO ()
+eventLoop :: Bool -> [FacilityHandler] -> WaitForEvents -> [Reactor] -> IO ()
 eventLoop showEvents facilities waitForEvents reactors = do
     let (reactors', events') = updateMany reactors (List [(Symbol "init"), (Number 0)])
     e reactors' events'
@@ -31,7 +28,7 @@ eventLoop showEvents facilities waitForEvents reactors = do
         e reactors (event@(List [eventType, eventPayload]):events) = do
             -- An event on the queue.  Allow all facilities and reactors to handle it.
             showEvent event
-            newFacilityEvents <- runFacilityHandlers facilities event []
+            newFacilityEvents <- runFacilityHandlers facilities event
             let (reactors', newReactorEvents) = updateMany reactors event
             e reactors' (events ++ newFacilityEvents ++ newReactorEvents)
 
@@ -47,10 +44,11 @@ eventLoop showEvents facilities waitForEvents reactors = do
                 Left err -> return ()
                 Right events -> e reactors events
 
-        runFacilityHandlers [] event acc = return acc
-        runFacilityHandlers (handler:handlers) event acc = do
+        runFacilityHandlers [] event = return []
+        runFacilityHandlers (handler:handlers) event = do
             newEvents <- handler event
-            runFacilityHandlers handlers event (acc ++ newEvents)
+            rest <- runFacilityHandlers handlers event
+            return $ newEvents ++ rest
 
         showEvent event = case showEvents of
             True -> hPutStrLn stderr ("*** " ++ show event)

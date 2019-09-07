@@ -4,8 +4,8 @@ import qualified Data.Char as Char
 import System.IO
 
 import Language.Robin.Expr
+import Language.Robin.Facilities
 
-type WaitForEvents = IO (Either String [Expr])
 
 waitForLineTerminalEvent :: WaitForEvents
 waitForLineTerminalEvent = do
@@ -21,7 +21,8 @@ waitForLineTerminalEvent = do
                 True  -> return $ Left "stop"
         False -> return $ Left "stop"
 
-handleLineTerminalEvent :: Expr -> IO [Expr]
+
+handleLineTerminalEvent :: FacilityHandler
 handleLineTerminalEvent (List [Symbol "write", payload]) = do
     let List l = payload
     let s = map (\(Number x) -> Char.chr $ fromIntegral $ x) l
