@@ -1,5 +1,7 @@
 module Language.Robin.Facilities.LineTerminal where
 
+import Control.Concurrent (forkIO, myThreadId)
+import Control.Concurrent.Chan
 import qualified Data.Char as Char
 import System.IO
 
@@ -7,19 +9,14 @@ import Language.Robin.Expr
 import Language.Robin.Facilities
 
 
-import Control.Concurrent (forkIO, myThreadId)
-import Control.Concurrent.Chan
-
-
--- sketch
-init :: IO FacilityHandler
+init :: IO Facility
 init = do
-    chan <- newChan
-    threadId <- forkIO $ produceEvents chan
-    return handleEvent
+    --FIXME causes tests to fail!
+    --chan <- newChan
+    --threadId <- forkIO $ produceEvents chan
+    return Facility{ threadId=Nothing {-Just threadId-}, handler=handleEvent, waiter=waitForEvent }
 
 
--- sketch
 produceEvents :: Chan Event -> IO ()
 produceEvents chan = do
     event <- waitForEvent
