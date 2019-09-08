@@ -9,12 +9,10 @@ import Language.Robin.Expr
 import Language.Robin.Facilities
 
 
-init :: IO Facility
-init = do
-    --FIXME causes tests to fail!
-    --chan <- newChan
-    --threadId <- forkIO $ produceEvents chan
-    return Facility{ threadId=Nothing {-Just threadId-}, handler=handleEvent, waiter=waitForEvent }
+init :: Chan Event -> IO Facility
+init chan = do
+    threadId <- forkIO $ produceEvents chan
+    return Facility{ threadId=Just threadId, handler=handleEvent, waiter=waitForEvent }
 
 
 produceEvents :: Chan Event -> IO ()
