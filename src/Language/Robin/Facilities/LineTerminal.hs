@@ -7,8 +7,8 @@ import Language.Robin.Expr
 import Language.Robin.Facilities
 
 
-waitForLineTerminalEvent :: WaitForEvents
-waitForLineTerminalEvent = do
+waitForEvent :: WaitForEvents
+waitForEvent = do
     stillOpen <- hIsOpen stdin
     case stillOpen of
         True -> do
@@ -22,17 +22,17 @@ waitForLineTerminalEvent = do
         False -> return $ Left "stop"
 
 
-handleLineTerminalEvent :: FacilityHandler
-handleLineTerminalEvent (List [Symbol "write", payload]) = do
+handleEvent :: FacilityHandler
+handleEvent (List [Symbol "write", payload]) = do
     let List l = payload
     let s = map (\(Number x) -> Char.chr $ fromIntegral $ x) l
     hPutStr stdout s
     hFlush stdout
     return []
-handleLineTerminalEvent (List [Symbol "writeln", payload]) = do
+handleEvent (List [Symbol "writeln", payload]) = do
     let List l = payload
     let s = map (\(Number x) -> Char.chr $ fromIntegral $ x) l
     hPutStrLn stdout s
     hFlush stdout
     return []
-handleLineTerminalEvent _ = return []
+handleEvent _ = return []
