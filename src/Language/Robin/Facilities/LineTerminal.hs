@@ -7,6 +7,26 @@ import Language.Robin.Expr
 import Language.Robin.Facilities
 
 
+import Control.Concurrent (forkIO, myThreadId)
+import Control.Concurrent.Chan
+
+
+-- sketch
+init :: IO FacilityHandler
+init = do
+    chan <- newChan
+    threadId <- forkIO $ produceEvents chan
+    return handleEvent
+
+
+-- sketch
+produceEvents :: Chan Event -> IO ()
+produceEvents chan = do
+    event <- waitForEvent
+    writeChan chan event
+    produceEvents chan
+
+
 waitForEvent :: WaitForEvents
 waitForEvent = do
     stillOpen <- hIsOpen stdin
