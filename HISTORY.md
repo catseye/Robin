@@ -9,6 +9,9 @@ For the reference implementation,
 *   Refactored the reactors module into Reactors, EventLoop, and
     Facilities.  The EventLoop does not rely on any particular
     facilities; they are (dependency-)injected by the Main module.
+*   Allowed the reference implementation to run under Hugs,
+    in part by providing a `HugsMain.hs` which only includes the
+    facilities that are supported by Hugs.
 
 Robin 0.4 (Early Sep 2019)
 ---------

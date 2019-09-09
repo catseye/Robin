@@ -44,12 +44,12 @@ eval i env s@(Symbol _) cc =
 -- passing it the tail of the list.
 --
 
-eval i env (List (applierExpr:actuals)) cc = do
+eval i env (List (applierExpr:actuals)) cc =
     eval i env applierExpr (\applier ->
         case applier of
-            m@(Macro _ _ body) -> do
+            m@(Macro _ _ body) ->
                 eval i (makeMacroEnv env (List actuals) m) body cc
-            b@(Intrinsic _ fun) -> do
+            b@(Intrinsic _ fun) ->
                 fun i env (List actuals) cc
             other ->
                 raise i (errMsg "inapplicable-object" other))
@@ -59,7 +59,7 @@ eval i env (List (applierExpr:actuals)) cc = do
 -- continuation with that value.
 --
 
-eval i env e cc = do
+eval i env e cc =
     cc e
 
 --

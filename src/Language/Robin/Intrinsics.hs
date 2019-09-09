@@ -80,7 +80,7 @@ robinEval i env (List [envlist, form]) cc =
 robinEval i env other cc = raise i (errMsg "illegal-arguments" other)
 
 robinMacro :: Evaluable
-robinMacro i env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc = do
+robinMacro i env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc =
     cc $ Macro env args body
 robinMacro i env other cc = raise i (errMsg "illegal-arguments" other)
 
