@@ -1,7 +1,5 @@
 module Language.Robin.Facilities.LineTerminal where
 
-import Control.Concurrent (forkIO, myThreadId)
-import Control.Concurrent.Chan
 import qualified Data.Char as Char
 import System.IO
 
@@ -9,17 +7,8 @@ import Language.Robin.Expr
 import Language.Robin.Facilities
 
 
-init :: Chan Event -> IO Facility
-init chan = do
-    threadId <- forkIO $ produceEvents chan
-    return Facility{ threadId=Just threadId, handler=handleEvent, waiter=waitForEvent }
-
-
-produceEvents :: Chan Event -> IO ()
-produceEvents chan = do
-    event <- waitForEvent
-    writeChan chan event
-    produceEvents chan
+init :: IO Facility
+init = return Facility{ handler=handleEvent, waiter=waitForEvent }
 
 
 waitForEvent :: WaitForEvents

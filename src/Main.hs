@@ -11,8 +11,10 @@ import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
+
 import Language.Robin.EventLoop (eventLoop)
-import Language.Robin.Facilities (handler, orchestrate)
+import Language.Robin.Facilities (handler)
+import Language.Robin.Facilities.Concurrent (orchestrate)
 import qualified Language.Robin.Facilities.LineTerminal as LineTerminal
 import qualified Language.Robin.Facilities.RandomSource as RandomSource
 
