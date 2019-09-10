@@ -2,7 +2,7 @@
 
 ### `sign` ###
 
-    -> Tests for functionality "Evaluate core Robin Expression"
+    -> Tests for functionality "Evaluate Robin Expression (with literal)"
 
 `sign` evaluates its sole argument to a number, then
 evaluates to 0 if that number is 0, 1 if that number is positive, or
@@ -22,7 +22,7 @@ evaluates to 0 if that number is 0, 1 if that number is positive, or
     | (sign #f)
     ? uncaught exception: (expected-number #f)
 
-    | (sign ((macro (s a e) (head a)) k))
+    | (sign (literal k))
     ? uncaught exception: (expected-number k)
 
 `sign` expects exactly one argument.

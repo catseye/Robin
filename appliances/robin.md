@@ -3,6 +3,9 @@ The following functionalities are used to test Robin Expressions.
     -> Functionality "Evaluate core Robin Expression" is implemented by shell command
     -> "bin/robin --no-builtins eval %(test-body-file)"
 
+    -> Functionality "Evaluate Robin Expression (with literal)" is implemented by shell command
+    -> "bin/robin stdlib/literal.robin eval %(test-body-file)"
+
     -> Functionality "Evaluate Robin Expression (with Small)" is implemented by shell command
     -> "bin/robin eval %(test-body-file)"
 

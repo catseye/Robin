@@ -54,9 +54,7 @@ have their standard meanings.
 Tests
 -----
 
-Tests for Evaluate Robin Expression (with literal)
-
-Grep for FIXME and TODO in stdlib.
+Grep for FIXME in stdlib.
 
 Reactors
 --------

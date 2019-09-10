@@ -2,7 +2,7 @@
 
 ### `equal?` ###
 
-    -> Tests for functionality "Evaluate core Robin Expression"
+    -> Tests for functionality "Evaluate Robin Expression (with literal)"
 
 `equal?` evaluates both of its arguments to arbitrary S-expressions
 and compares them for deep equality.
@@ -10,13 +10,13 @@ and compares them for deep equality.
 `equal?` works on symbols.
 
     | (equal?
-    |   ((macro (s a e) (head a)) this-symbol)
-    |   ((macro (s a e) (head a)) this-symbol))
+    |   (literal this-symbol)
+    |   (literal this-symbol))
     = #t
 
     | (equal?
-    |   ((macro (s a e) (head a)) this-symbol)
-    |   ((macro (s a e) (head a)) that-symbol))
+    |   (literal this-symbol)
+    |   (literal that-symbol))
     = #f
 
 `equal?` works on lists.
@@ -33,7 +33,7 @@ and compares them for deep equality.
 
 Two values of different types are never equal.
 
-    | (equal? #t (prepend ((macro (s a e) (head a)) a) ()))
+    | (equal? #t (prepend (literal a) ()))
     = #f
 
     | (equal? #f ())
