@@ -45,6 +45,16 @@ collect ((List [Symbol "define", name@(Symbol _), expr]):rest) env reactors resu
             in
                 collect rest (Env.insert name result env) reactors results
 
+collect ((List [Symbol "define-if-absent", name@(Symbol _), expr]):rest) env reactors results =
+    case Env.find name env of
+        Just _ ->
+            collect rest env reactors results
+        Nothing ->
+            let
+                result = eval (IEnv stop) env expr id
+            in
+                collect rest (Env.insert name result env) reactors results
+
 collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) env reactors results =
     let
         state = eval (IEnv stop) env stateExpr id

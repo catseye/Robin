@@ -1,7 +1,7 @@
 Robin
 =====
 
-This document defines version 0.4 of the Robin programming language.
+This document defines version 0.5 of the Robin programming language.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
@@ -614,6 +614,28 @@ they are defined later on in the file.
     | (define true #t)
     | (display also-true)
     ? unbound-identifier
+
+### `define-if-absent` ###
+
+`(define-if-absent SYMBOL EXPR)` defines a global name, if it not
+already defined.
+
+    | (define-if-absent true #t)
+    | (display true)
+    = #t
+
+`define-if-absent` does nothing if the name is already defined.
+
+    | (define true #t)
+    | (define-if-absent true #f)
+    | (display true)
+    = #t
+
+You may not try to `define-if-absent` anything that's not a symbol.
+
+    | (define-if-absent #f #t)
+    | (display #f)
+    ? illegal top-level form: (define-if-absent #f #t)
 
 ### `reactor` ###
 

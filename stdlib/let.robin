@@ -97,7 +97,7 @@ The identifier in a binding must be a symbol.
 
 '<<SPEC'
 
-(define let (macro (self args env)
+(define-if-absent let (macro (self args env)
   (bind bindings (head args)
     (if (equal? bindings ())
       (eval env (head (tail args)))

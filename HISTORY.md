@@ -4,6 +4,8 @@ History of Robin
 Robin 0.5 (Sep 2019)
 ---------
 
+*   The `define-if-absent` top-level form was added.
+
 For the reference implementation,
 
 *   Refactored the reactors module into Reactors, EventLoop, and

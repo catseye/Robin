@@ -38,7 +38,7 @@ exception will be raised.
 
 '<<SPEC'
 
-(define choose (macro (self args env)
+(define-if-absent choose (macro (self args env)
   (bind branch (head args)
     (bind test (head branch)
       (bind then (head (tail branch))

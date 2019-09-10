@@ -19,7 +19,7 @@ The following functionalities are used to test Robin Expressions.
     -> "bin/robin --no-builtins pkg/small.robin pkg/arith.robin eval %(test-body-file)"
 
     -> Functionality "Evaluate Robin Expression (with Stdlib)" is implemented by shell command
-    -> "bin/robin --no-builtins pkg/stdlib-no-builtins.robin eval %(test-body-file)"
+    -> "bin/robin --no-builtins pkg/stdlib.robin eval %(test-body-file)"
 
 The following functionalities are used to test Robin Toplevel programs.
 
