@@ -20,26 +20,25 @@ processFlags args env showEvents = (args, env, showEvents)
 
 
 processArgs args env = processArgs' args env [] [] where
-    processArgs' [] env reactors results = return (env, reactors, results)
+    processArgs' [] env reactors results =
+        return (env, reactors, results)
     processArgs' ("eval":filename:rest) env reactors results = do
         exprText <- readFile filename
-        case parseExpr exprText of
-            Right expr -> do
-                let topExprs = [List [Symbol "display", expr]]
-                (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
-                processArgs' rest env' reactors' results'
-            Left problem -> do
-                hPutStr stderr (show problem)
-                exitWith $ ExitFailure 1
+        (env', reactors', results') <- processRobin (parseExpr exprText) (\expr -> [List [Symbol "display", expr]]) env reactors results
+        processArgs' rest env' reactors' results'
     processArgs' (filename:rest) env reactors results = do
-        program <- readFile filename
-        case parseToplevel program of
-            Right topExprs -> do
-                (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
-                processArgs' rest env' reactors' results'
-            Left problem -> do
-                hPutStr stderr (show problem)
-                exitWith $ ExitFailure 1
+        toplevelText <- readFile filename
+        (env', reactors', results') <- processRobin (parseToplevel toplevelText) id env reactors results
+        processArgs' rest env' reactors' results'
+
+
+processRobin parsed convertToToplevel env reactors results =
+    case parsed of
+        Right expr -> do
+            return $ TopLevel.collect (convertToToplevel expr) env reactors results
+        Left problem -> do
+            hPutStr stderr (show problem)
+            exitWith $ ExitFailure 1
 
 
 writeResults [] = return ()
