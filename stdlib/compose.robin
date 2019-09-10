@@ -1,0 +1,14 @@
+;'<<SPEC'
+
+    -> Tests for functionality "Evaluate Robin Expression (with Stdlib)"
+
+`compose` evaluates its argument to a list of macros, then evaluates to a
+macro obtained by sequentially composing all the macros in the list.
+
+    | ((compose (fun (a) (add a 1)) (fun (a) (add a a))) 10)
+    = 22
+
+'<<SPEC'
+(define compose (fun (f g)
+  (fun (x)
+    (g (f x)))))

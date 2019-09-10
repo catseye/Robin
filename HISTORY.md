@@ -5,6 +5,8 @@ Robin 0.5 (Sep 2019)
 ---------
 
 *   The `define-if-absent` top-level form was added.
+*   `(compose f g)`, which composes two functions, was added
+    to the stdlib.
 
 For the reference implementation,
 

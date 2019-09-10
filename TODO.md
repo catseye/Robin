@@ -34,8 +34,6 @@ Stdlib
 
 Rename "small" to "core" or "base" or something.
 
-`(compose f1 f2)` composes two functions.
-
 Other libs
 ----------
 
