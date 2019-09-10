@@ -14,9 +14,8 @@ import qualified Language.Robin.TopLevel as TopLevel
 
 import Language.Robin.EventLoop (eventLoop)
 import Language.Robin.Facilities (handler, waiter)
---import Language.Robin.Facilities.Concurrent (orchestrate)
 import qualified Language.Robin.Facilities.LineTerminal as LineTerminal
---import qualified Language.Robin.Facilities.RandomSource as RandomSource
+import qualified Language.Robin.Facilities.RandomSource as RandomSource
 
 
 main = do
@@ -28,10 +27,10 @@ main = do
             let (args', env', showEvents) = processFlags args (mergeEnvs robinIntrinsics robinBuiltins) False
             (_, reactors, results) <- processArgs args' env'
             writeResults $ reverse results
-            --(handlers, waitForEvents) <- orchestrate [(LineTerminal.init)]
-            facility <- LineTerminal.init
-            let handlers = [handler facility]
-            let waitForEvents = waiter facility
+            lineTerminal <- LineTerminal.init
+            randomSource <- RandomSource.init
+            let handlers = [handler lineTerminal, handler randomSource]
+            let waitForEvents = waiter lineTerminal
             eventLoop showEvents handlers waitForEvents reactors
             exitWith ExitSuccess
 
