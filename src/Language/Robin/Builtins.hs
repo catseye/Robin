@@ -11,10 +11,6 @@ import Language.Robin.Eval
 -- Note, these are functions which are built-in to the Robin reference
 -- intepreter, for performance, but they are *not* intrinsic to the
 -- Robin language.  (See Intrinsics.lhs for those.)
--- 
--- These builtins represent the `small` package.
--- This implementation of the `small` package is non-normative.
--- See the relevant files in `stdlib` for normative definitions.
 --
 
 --
@@ -42,7 +38,11 @@ evalArgs _ _ origActuals _ i cc =
     raise i (errMsg "illegal-arguments" (List origActuals))
 
 --
--- Builtins
+-- `Small`
+--
+-- These builtins represent the `small` package.
+-- This implementation of the `small` package is non-normative.
+-- See the relevant files in `stdlib` for normative definitions.
 --
 
 literal :: Evaluable
@@ -116,6 +116,31 @@ robinFun i closedEnv (List [(List formals), body]) cc =
 robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
 
 --
+-- `Arith`
+--
+-- These builtins represent the `arith` package.
+-- This implementation of the `arith` package is non-normative.
+-- See the relevant files in `stdlib` for normative definitions.
+--
+
+robinAbs :: Evaluable
+robinAbs i env (List [expr]) cc =
+    eval i env expr (\n -> cc $ abs n)
+    where
+        abs (Number n) = Number (if n > 0 then n else 0-n)
+        abs other      = raise i (errMsg "expected-number" other)
+robinAbs i env other cc = raise i (errMsg "illegal-arguments" other)
+
+robinAdd :: Evaluable
+robinAdd i env (List [xexpr, yexpr]) cc =
+    eval i env xexpr (\x ->
+        assertNumber i x (\(Number xv) ->
+            eval i env yexpr (\y ->
+                assertNumber i y (\(Number yv) ->
+                    cc (Number (xv + yv))))))
+robinAdd i env other cc = raise i (errMsg "illegal-arguments" other)
+
+--
 -- Mapping of names to our functions, providing an evaluation environment.
 --
 
@@ -129,5 +154,8 @@ robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("let",       robinLet),
         ("choose",    choose),
         ("bind-args", robinBindArgs),
-        ("fun",       robinFun)
+        ("fun",       robinFun),
+
+        ("abs",       robinAbs),
+        ("add",       robinAdd)
       ]
