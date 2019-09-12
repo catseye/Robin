@@ -140,6 +140,26 @@ robinAdd i env (List [xexpr, yexpr]) cc =
                     cc (Number (xv + yv))))))
 robinAdd i env other cc = raise i (errMsg "illegal-arguments" other)
 
+robinMultiply :: Evaluable
+robinMultiply i env (List [xexpr, yexpr]) cc =
+    eval i env xexpr (\x ->
+        assertNumber i x (\(Number xv) ->
+            eval i env yexpr (\y ->
+                assertNumber i y (\(Number yv) ->
+                    cc (Number (xv * yv))))))
+robinMultiply i env other cc = raise i (errMsg "illegal-arguments" other)
+
+robinDivide :: Evaluable
+robinDivide i env (List [xexpr, yexpr]) cc =
+    eval i env xexpr (\x ->
+        assertNumber i x (\(Number xv) ->
+            eval i env yexpr (\y ->
+                assertNumber i y (\(Number yv) ->
+                    case yv of
+                        0 -> raise i (errMsg "division-by-zero" (Number xv))
+                        _ -> cc (Number (xv `div` yv))))))
+robinDivide i env other cc = raise i (errMsg "illegal-arguments" other)
+
 --
 -- Mapping of names to our functions, providing an evaluation environment.
 --
@@ -157,5 +177,7 @@ robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("fun",       robinFun),
 
         ("abs",       robinAbs),
-        ("add",       robinAdd)
+        ("add",       robinAdd),
+        ("multiply",  robinMultiply),
+        ("divide",    robinDivide)
       ]
