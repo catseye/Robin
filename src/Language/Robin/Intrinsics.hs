@@ -74,9 +74,9 @@ robinIf i env other cc = raise i (errMsg "illegal-arguments" other)
 
 robinEval :: Evaluable
 robinEval i env (List [envlist, form]) cc =
-    eval i env envlist (\newEnv ->
+    eval i env envlist (\newEnvVal ->
         eval i env form (\body ->
-            eval i newEnv body cc))
+            eval i (exprToEnv newEnvVal) body cc)) 
 robinEval i env other cc = raise i (errMsg "illegal-arguments" other)
 
 robinMacro :: Evaluable
@@ -90,16 +90,16 @@ robinRaise i env (List [expr]) cc =
 robinRaise i env other cc = raise i (errMsg "illegal-arguments" other)
 
 robinCatch :: Evaluable
-robinCatch i env (List [id@(Symbol _), handler, body]) cc =
+robinCatch i env (List [(Symbol s), handler, body]) cc =
     let
         handlerContinuation = (\errvalue ->
-            eval i (Env.insert id errvalue env) handler cc)
+            eval i (Env.insert s errvalue env) handler cc)
         i' = setExceptionHandler handlerContinuation i
     in
         eval i' env body cc
 robinCatch i env other cc = raise i (errMsg "illegal-arguments" other)
 
-robinIntrinsics :: Expr
+robinIntrinsics :: Env.Env Expr
 robinIntrinsics = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("head",     robinHead),

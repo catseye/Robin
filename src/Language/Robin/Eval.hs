@@ -9,7 +9,7 @@ import Language.Robin.Expr
 -- Every evaluation function takes a continuation, and is implemented
 -- as a function with this signature:
 --
---     Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
+--     IEnv Expr -> Env Expr -> Expr -> (Expr -> Expr) -> Expr
 --
 -- (This is actually the `Evaluable` type from `Robin.Expr`.)
 --
@@ -25,17 +25,12 @@ import Language.Robin.Expr
 
 eval :: Evaluable
 
-eval i (List []) s@(Symbol _) cc =
-    raise i (errMsg "unbound-identifier" s)
-eval i (List (b@(List [id@(Symbol _), value]):env)) s@(Symbol _) cc
-    | id == s   = cc value
-    | otherwise = eval i (List env) s cc
-eval i (List ((List (other:_)):env)) s@(Symbol _) cc =
-    raise i (errMsg "expected-symbol" other)
-eval i (List (head:tail)) s@(Symbol _) cc =
-    raise i (errMsg "expected-env-entry" head)
-eval i env s@(Symbol _) cc =
-    raise i (errMsg "expected-env-alist" env)
+eval i env sym@(Symbol s) cc =
+    case Env.find s env of
+        Just value ->
+            cc value
+        Nothing ->
+            raise i (errMsg "unbound-identifier" sym)
 
 --
 -- Evaluating a list means we must make several evaluations.  We
@@ -69,13 +64,14 @@ eval i env e cc =
 errMsg msg term =
     List [(Symbol msg), term]
 
+makeMacroEnv :: Env.Env Expr -> Expr -> Expr -> Env.Env Expr
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
     let
-        (List [argSelf@(Symbol _), argFormal@(Symbol _),
-               envFormal@(Symbol _)]) = argList
+        (List [(Symbol argSelf), (Symbol argFormal),
+               (Symbol envFormal)]) = argList
         newEnv = Env.insert argSelf m closedEnv
         newEnv' = Env.insert argFormal actuals newEnv
-        newEnv'' = Env.insert envFormal env newEnv'
+        newEnv'' = Env.insert envFormal (Environment env) newEnv'
     in
         newEnv''
 

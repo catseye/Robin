@@ -3,21 +3,24 @@ module Language.Robin.Expr where
 import Data.Char
 import Data.Int
 
+import qualified Language.Robin.Env as Env
+
 --
 -- An _evaluable_ is a Haskell object which behaves like a Robin macro.
 -- It describes builtins (which includes intrinsics), and also happens
 -- (perhaps unsurprisingly?) to be the type of the evaluator function.
 --
 
-type Evaluable = IEnv Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
---            internal-env    env     args    continuation      result
+type Evaluable = IEnv Expr -> Env.Env Expr -> Expr -> (Expr -> Expr) -> Expr
+--            internal-env    env             args    continuation      result
 
 data Expr = Symbol String
           | Boolean Bool
           | Number Int32
-          | Macro Expr Expr Expr
+          | Macro (Env.Env Expr) Expr Expr
           | Intrinsic String Evaluable
           | List [Expr]
+          | Environment (Env.Env Expr)
 
 instance Eq Expr where
     (Symbol x) == (Symbol y)           = x == y
@@ -26,6 +29,7 @@ instance Eq Expr where
     (Macro _ _ _) == (Macro _ _ _)     = False
     (Intrinsic x _) == (Intrinsic y _) = x == y
     (List x) == (List y)               = x == y
+    (Environment x) == (Environment y) = x == y
     _ == _                             = False
 
 instance Show Expr where
@@ -40,6 +44,7 @@ instance Show Expr where
                                      showl [] = ""
                                      showl [expr] = show expr
                                      showl (expr:exprs) = (show expr) ++ " " ++ (showl exprs)
+    show (Environment env)     = ":" ++ show env
 
 --
 -- Helpers
@@ -47,6 +52,11 @@ instance Show Expr where
 
 append (List x) (List y) =
     List (x ++ y)
+
+exprToEnv :: Expr -> Env.Env Expr
+exprToEnv (List []) = Env.empty
+exprToEnv (List ((List [(Symbol s), value]):rest)) =
+    Env.insert s value (exprToEnv (List rest))
 
 --
 -- Predicates

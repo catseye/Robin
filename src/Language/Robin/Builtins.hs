@@ -13,6 +13,7 @@ import Language.Robin.Eval
 -- Robin language.  (See Intrinsics.lhs for those.)
 --
 
+{-
 --
 -- Helper functions
 --
@@ -167,14 +168,16 @@ robinRemainder i env (List [xexpr, yexpr]) cc =
                         0 -> raise i (errMsg "division-by-zero" (Number xv))
                         _ -> cc (Number (abs (xv `mod` yv)))))))
 robinRemainder i env other cc = raise i (errMsg "illegal-arguments" other)
+-}
 
 --
 -- Mapping of names to our functions, providing an evaluation environment.
 --
 
-robinBuiltins :: Expr
+robinBuiltins :: Env.Env Expr
 robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
+        {-
         ("literal",   literal),
         ("list",      robinList),
         ("bind",      bind),
@@ -189,4 +192,5 @@ robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("multiply",  robinMultiply),
         ("divide",    robinDivide),
         ("remainder", robinRemainder)
+        -}
       ]
