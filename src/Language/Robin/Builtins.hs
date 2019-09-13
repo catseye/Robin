@@ -125,10 +125,7 @@ robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
 
 robinAbs :: Evaluable
 robinAbs i env (List [expr]) cc =
-    eval i env expr (\n -> cc $ abs n)
-    where
-        abs (Number n) = Number (if n > 0 then n else 0-n)
-        abs other      = raise i (errMsg "expected-number" other)
+    eval i env expr (\x -> assertNumber i x (\(Number xv) -> cc (Number $ abs xv)))
 robinAbs i env other cc = raise i (errMsg "illegal-arguments" other)
 
 robinAdd :: Evaluable
@@ -168,7 +165,7 @@ robinRemainder i env (List [xexpr, yexpr]) cc =
                 assertNumber i y (\(Number yv) ->
                     case yv of
                         0 -> raise i (errMsg "division-by-zero" (Number xv))
-                        _ -> cc (Number (xv `mod` yv))))))
+                        _ -> cc (Number (abs (xv `mod` yv)))))))
 robinRemainder i env other cc = raise i (errMsg "illegal-arguments" other)
 
 --
