@@ -188,5 +188,5 @@ robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("add",       robinAdd),
         ("multiply",  robinMultiply),
         ("divide",    robinDivide),
-        ("remainder",    robinRemainder)
+        ("remainder", robinRemainder)
       ]

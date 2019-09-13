@@ -6,9 +6,12 @@ Robin 0.5 (Sep 2019)
 
 *   The `define-if-absent` top-level form was added.
 *   Fixed a bug in definition of `multiply`.
+*   Several definitions fixed to not expose extra symbols
+    that they don't define.
 
 For the reference implementation,
 
+*   Implemented built-in versions of symbols in `arith` package.
 *   Refactored the reactors module into Reactors, EventLoop, and
     Facilities.  The EventLoop does not rely on any particular
     facilities; they are (dependency-)injected by the Main module.

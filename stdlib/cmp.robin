@@ -170,25 +170,27 @@ if the first number is less than or equal to the second.
 
 '<<SPEC'
 
-(define cmp-same-sign? (macro (self args env)
-  (bind-args (a b c) args env
-    (equal? (sign (subtract a b)) c))))
-
 (define > (macro (self args env)
-  (bind-args (a b) args env
-    (if (equal? (sign a) (sign b))
-      (cmp-same-sign? a b 1)
-      (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) 1)))))
+  (bind cmp-same-sign? (macro (self args env)
+    (bind-args (a b c) args env
+      (equal? (sign (subtract a b)) c)))
+    (bind-args (a b) args env
+      (if (equal? (sign a) (sign b))
+        (cmp-same-sign? a b 1)
+        (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) 1))))))
 
 (define >= (macro (self args env)
   (bind-args (a b) args env
     (if (equal? a b) #t (> a b)))))
 
 (define < (macro (self args env)
-  (bind-args (a b) args env
-    (if (equal? (sign a) (sign b))
-      (cmp-same-sign? a b (subtract 0 1))
-      (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) (subtract 0 1))))))
+  (bind cmp-same-sign? (macro (self args env)
+    (bind-args (a b c) args env
+      (equal? (sign (subtract a b)) c)))
+    (bind-args (a b) args env
+      (if (equal? (sign a) (sign b))
+        (cmp-same-sign? a b (subtract 0 1))
+        (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) (subtract 0 1)))))))
 
 (define <= (macro (self args env)
   (bind-args (a b) args env
