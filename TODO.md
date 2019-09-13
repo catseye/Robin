@@ -3,37 +3,6 @@ TODO
 
 (Note, some of these are possibly long-term plans.)
 
-Checking number of parameters
------------------------------
-
-This is a tricky subject.
-
-The list of parameters is naturally a list.  Robin in some
-ways tries to deny that, rather than embracing it as Lisp
-and Scheme do.
-
-It does so in the name of "correctness".  It is incorrect
-to pass more arguments to a function, than it expects,
-so you should be informed of this by means of an exception.
-
-But it goes further, and thinks: no function should have
-a variable number of arguments.  Instead, you should pass
-it a list.
-
-I guess the reason is, to make analysis of that easier.
-Possibly also, if there was a sugared syntax, to make that
-syntax easier (each function has constant number of parameters
-means the parameters can be parsed deterministically, without
-needing extra syntax such as parens.)
-
-But if we give this up we get a different kind of simplicity.
-Functions like `add` and `multiply` naturally take any number of
-parameters.  `compose` would too.
-
-But, we have different words for those, too: `sum` and `product`
-(and for functions it could be... `pipe`?)  So there is a reason
-for there to be distinct functions that take lists.
-
 Disjointness of types
 ---------------------
 

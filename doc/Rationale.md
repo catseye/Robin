@@ -2,11 +2,11 @@ Robin: Design Goals and Rationale
 =================================
 
 This document documents some of the design goals and rationale
-for the design of Robin 0.3.  The contents are not well organized,
+for the design of Robin 0.5.  The contents are not well organized,
 and the document is not very comprehensive.
 
 In this document, "Robin" refers to the Robin programming language
-version 0.3.
+version 0.5.
 
 Macro as fundamental abstraction
 --------------------------------
@@ -36,6 +36,53 @@ library has been loaded, and that function calls will use `fun`
 as defined there, and thus can base their analysis on the semantics
 of that macro without caring about its definition, or that its
 definition contains `eval`.
+
+No variable numbers of parameters
+---------------------------------
+
+In a Scheme-like language, the list of parameters passed to a
+function is itself naturally a list.  Robin in some
+ways tries to deny this, rather than embracing it as Lisp
+and Scheme do.
+
+It does so in the name of correctness: it is incorrect
+to pass more arguments to a function, than it expects,
+so you should be informed of this by means of an exception.
+
+But it goes further, with the doctrine that no function should
+have a variable number of arguments.  If you want a function
+to work on a variable number of values, you should pass that
+function a list.
+
+The reason for this is generally to make analysis easier.
+This analsysi includes syntax (should it ever become relevant):
+each function has constant number of parameters means the
+parameters can be parsed deterministically, without
+needing extra syntax such as parens to tell when they stop.
+
+There is also the matter of generality.  Say a function
+works on, not a single set of variable nuber of values,
+but two sets of different kinds of data.  The natural
+solution would be to pass it two lists.  Parsing the
+arguments as a single list would allow or perhaps even
+encourage passing both kinds of data in the argument
+liker, perhaps with some kind of delimiter, but this is
+a clumsy and stipulative solution which should be avoided.
+
+By going this route, Robin does give up a certain kind of
+simplicity.  Functions like `add` and `multiply` *can*
+naturally be thought of as taking any number of parameters.
+`compose`, a function to compose functions, would too.
+
+But this is because these functions work on monoids.
+And not all functions work on monoids (`divide`, for
+example, is not associative.)  And when we do have
+functions that work this way, we usually name them
+differently: `sum` and `product` (and for functions it
+could be `seq` or `pipe`.)  We can use these names for
+the distinct versions of these functions that take lists,
+and implement them with general monoidal processing
+machinery a la `mconcat`.
 
 Module System
 -------------
