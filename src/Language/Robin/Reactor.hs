@@ -6,12 +6,13 @@ import System.IO
 import System.Random
 
 import qualified Language.Robin.Env as Env
+import Language.Robin.Env (Env)
 import Language.Robin.Expr
 import Language.Robin.Eval
 
 data Reactor = Reactor {
          rid :: Int32,
-         env :: Env.Env Expr,
+         env :: Env Expr,
          state :: Expr,
          body :: Expr   -- body takes three arguments: event state
      } deriving (Show, Eq)

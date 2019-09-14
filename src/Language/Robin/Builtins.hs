@@ -1,6 +1,7 @@
 module Language.Robin.Builtins where
 
 import qualified Language.Robin.Env as Env
+import Language.Robin.Env (Env)
 import Language.Robin.Expr
 import Language.Robin.Eval
 
@@ -27,8 +28,8 @@ evalAll i env (head:tail) acc cc =
     eval i env head (\value ->
         evalAll i env tail (value:acc) cc)
 
---          formals   actuals   origActuals env             i            wierd-cc
-evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env.Env Expr -> IEnv Expr -> (Env.Env Expr -> Expr) -> Expr
+--          formals   actuals   origActuals env         i            wierd-cc
+evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
 evalArgs formals actuals origActuals env i cc =
     evalArgs' formals actuals origActuals env i cc
     where
@@ -42,7 +43,7 @@ evalArgs formals actuals origActuals env i cc =
             raise i (errMsg "illegal-arguments" (List origActuals))
 
 --              formals   actuals   origActuals envExpr i            wierd-cc
-evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env.Env Expr -> Expr) -> Expr
+evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
 evalArgsExpr formals actuals origActuals envExpr i cc =
     case exprToEnv envExpr of
         Right env ->
@@ -177,7 +178,7 @@ robinRemainder i env other cc = raise i (errMsg "illegal-arguments" other)
 -- Mapping of names to our functions, providing an evaluation environment.
 --
 
-robinBuiltins :: Env.Env Expr
+robinBuiltins :: Env Expr
 robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("literal",   literal),

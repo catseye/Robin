@@ -1,12 +1,13 @@
 module Language.Robin.TopLevel (collect) where
 
 import qualified Language.Robin.Env as Env
+import Language.Robin.Env (Env)
 import Language.Robin.Expr
 import Language.Robin.Eval
 import Language.Robin.Reactor
 
 
-collect :: [Expr] -> Env.Env Expr -> [Reactor] -> [Either Expr Expr] -> (Env.Env Expr, [Reactor], [Either Expr Expr])
+collect :: [Expr] -> Env Expr -> [Reactor] -> [Either Expr Expr] -> (Env Expr, [Reactor], [Either Expr Expr])
 
 collect [] env reactors results = (env, reactors, results)
 

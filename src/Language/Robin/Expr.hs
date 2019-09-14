@@ -4,6 +4,7 @@ import Data.Char
 import Data.Int
 
 import qualified Language.Robin.Env as Env
+import Language.Robin.Env (Env)
 
 --
 -- An _evaluable_ is a Haskell object which behaves like a Robin macro.
@@ -11,13 +12,13 @@ import qualified Language.Robin.Env as Env
 -- (perhaps unsurprisingly?) to be the type of the evaluator function.
 --
 
-type Evaluable = IEnv Expr -> Env.Env Expr -> Expr -> (Expr -> Expr) -> Expr
+type Evaluable = IEnv Expr -> Env Expr -> Expr -> (Expr -> Expr) -> Expr
 --            internal-env    env             args    continuation      result
 
 data Expr = Symbol String
           | Boolean Bool
           | Number Int32
-          | Macro (Env.Env Expr) Expr Expr
+          | Macro (Env Expr) Expr Expr
           | Intrinsic String Evaluable
           | List [Expr]
 
@@ -50,7 +51,7 @@ instance Show Expr where
 append (List x) (List y) =
     List (x ++ y)
 
-exprToEnv :: Expr -> Either (String, Expr) (Env.Env Expr)
+exprToEnv :: Expr -> Either (String, Expr) (Env Expr)
 exprToEnv (List []) = Right Env.empty
 exprToEnv (List (first:rest)) =
     case first of
@@ -64,7 +65,7 @@ exprToEnv (List (first:rest)) =
             Left ("expected-env-entry", other)
 exprToEnv other = Left ("expected-env-alist", other)
 
-envToExpr :: Env.Env Expr -> Expr
+envToExpr :: Env Expr -> Expr
 envToExpr (Env.Env []) = List []
 envToExpr (Env.Env ((s, value):rest)) =
     append (List [List [Symbol s, value]]) (envToExpr (Env.Env rest))

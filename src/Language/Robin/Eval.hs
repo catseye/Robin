@@ -1,6 +1,7 @@
 module Language.Robin.Eval where
 
 import qualified Language.Robin.Env as Env
+import Language.Robin.Env (Env)
 import Language.Robin.Expr
 
 --
@@ -64,7 +65,7 @@ eval i env e cc =
 errMsg msg term =
     List [(Symbol msg), term]
 
-makeMacroEnv :: Env.Env Expr -> Expr -> Expr -> Env.Env Expr
+makeMacroEnv :: Env Expr -> Expr -> Expr -> Env Expr
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
     let
         (List [(Symbol argSelf), (Symbol argFormal),
