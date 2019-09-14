@@ -50,13 +50,19 @@ instance Show Expr where
 append (List x) (List y) =
     List (x ++ y)
 
-exprToEnv :: Expr -> Maybe (Env.Env Expr)
-exprToEnv (List []) = Just Env.empty
-exprToEnv (List (List [Symbol s, value]:rest)) =
-    case exprToEnv (List rest) of
-        Just remainder -> Just (Env.insert s value remainder)
-        Nothing -> Nothing
-exprToEnv _ =  Nothing
+exprToEnv :: Expr -> Either (String, Expr) (Env.Env Expr)
+exprToEnv (List []) = Right Env.empty
+exprToEnv (List (first:rest)) =
+    case first of
+        List [Symbol s, value] ->
+            case exprToEnv (List rest) of
+                Right remainder -> Right (Env.insert s value remainder)
+                other -> other
+        List [other, _] ->
+            Left ("expected-symbol", other)
+        other ->
+            Left ("expected-env-entry", other)
+exprToEnv other = Left ("expected-env-alist", other)
 
 envToExpr :: Env.Env Expr -> Expr
 envToExpr (Env.Env []) = List []
