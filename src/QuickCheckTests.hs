@@ -26,7 +26,7 @@ stdEval env expr = eval (IEnv stop) env expr id
 
 propEnvExpr :: [(String, Int32)] -> Bool
 propEnvExpr entries =
-    exprToEnv (envToExpr env) == Just env
+    exprToEnv (envToExpr env) == Right env
     where
         env = fromList $ map (\(k,v) -> (k, Number v)) entries
 
