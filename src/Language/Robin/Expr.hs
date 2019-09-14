@@ -52,7 +52,7 @@ append (List x) (List y) =
 
 exprToEnv :: Expr -> Maybe (Env.Env Expr)
 exprToEnv (List []) = Just Env.empty
-exprToEnv (List ((List [(Symbol s), value]):rest)) =
+exprToEnv (List (List [Symbol s, value]:rest)) =
     case exprToEnv (List rest) of
         Just remainder -> Just (Env.insert s value remainder)
         Nothing -> Nothing
@@ -61,7 +61,7 @@ exprToEnv _ =  Nothing
 envToExpr :: Env.Env Expr -> Expr
 envToExpr (Env.Env []) = List []
 envToExpr (Env.Env ((s, value):rest)) =
-    List [List [Symbol s, value], envToExpr (Env.Env rest)]
+    append (List [List [Symbol s, value]]) (envToExpr (Env.Env rest))
 
 --
 -- Predicates
