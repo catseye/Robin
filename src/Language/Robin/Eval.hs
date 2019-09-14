@@ -71,7 +71,7 @@ makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
                (Symbol envFormal)]) = argList
         newEnv = Env.insert argSelf m closedEnv
         newEnv' = Env.insert argFormal actuals newEnv
-        newEnv'' = Env.insert envFormal (Environment env) newEnv'
+        newEnv'' = Env.insert envFormal (envToExpr env) newEnv'
     in
         newEnv''
 

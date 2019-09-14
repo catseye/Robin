@@ -76,7 +76,11 @@ robinEval :: Evaluable
 robinEval i env (List [envlist, form]) cc =
     eval i env envlist (\newEnvVal ->
         eval i env form (\body ->
-            eval i (exprToEnv newEnvVal) body cc)) 
+            case exprToEnv newEnvVal of
+                Just newEnv ->
+                    eval i newEnv body cc
+                Nothing ->
+                    raise i (errMsg "illegal-environment" newEnvVal)))
 robinEval i env other cc = raise i (errMsg "illegal-arguments" other)
 
 robinMacro :: Evaluable

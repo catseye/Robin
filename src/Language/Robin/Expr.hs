@@ -20,7 +20,6 @@ data Expr = Symbol String
           | Macro (Env.Env Expr) Expr Expr
           | Intrinsic String Evaluable
           | List [Expr]
-          | Environment (Env.Env Expr)
 
 instance Eq Expr where
     (Symbol x) == (Symbol y)           = x == y
@@ -29,7 +28,6 @@ instance Eq Expr where
     (Macro _ _ _) == (Macro _ _ _)     = False
     (Intrinsic x _) == (Intrinsic y _) = x == y
     (List x) == (List y)               = x == y
-    (Environment x) == (Environment y) = x == y
     _ == _                             = False
 
 instance Show Expr where
@@ -44,7 +42,6 @@ instance Show Expr where
                                      showl [] = ""
                                      showl [expr] = show expr
                                      showl (expr:exprs) = (show expr) ++ " " ++ (showl exprs)
-    show (Environment env)     = ":" ++ show env
 
 --
 -- Helpers
@@ -53,10 +50,18 @@ instance Show Expr where
 append (List x) (List y) =
     List (x ++ y)
 
-exprToEnv :: Expr -> Env.Env Expr
-exprToEnv (List []) = Env.empty
+exprToEnv :: Expr -> Maybe (Env.Env Expr)
+exprToEnv (List []) = Just Env.empty
 exprToEnv (List ((List [(Symbol s), value]):rest)) =
-    Env.insert s value (exprToEnv (List rest))
+    case exprToEnv (List rest) of
+        Just remainder -> Just (Env.insert s value remainder)
+        Nothing -> Nothing
+exprToEnv _ =  Nothing
+
+envToExpr :: Env.Env Expr -> Expr
+envToExpr (Env.Env []) = List []
+envToExpr (Env.Env ((s, value):rest)) =
+    List [List [Symbol s, value], envToExpr (Env.Env rest)]
 
 --
 -- Predicates
