@@ -18,10 +18,6 @@ import Language.Robin.Eval
 -- Helper functions
 --
 
-union (List []) env = env
-union (List (binding:rest)) env =
-    append (List [binding]) (union (List rest) env)
-
 evalAll i env [] acc cc =
     cc $ List $ reverse acc
 evalAll i env (head:tail) acc cc =
