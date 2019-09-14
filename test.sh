@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./build.sh || exit 1
+#./build.sh || exit 1
 
 if [ "${APPLIANCES}x" = "x" ]; then
   APPLIANCES="appliances/robin.md appliances/robin-no-builtins.md"

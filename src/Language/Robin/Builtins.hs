@@ -27,15 +27,10 @@ evalAll i env (head:tail) acc cc =
     eval i env head (\value ->
         evalAll i env tail (value:acc) cc)
 
---          formals   actuals   origActuals envExpr i            wierd-cc
-evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env.Env Expr -> Expr) -> Expr
-
-evalArgs formals actuals origActuals envExpr i cc =
-    case exprToEnv envExpr of
-        Right env ->
-            evalArgs' formals actuals origActuals env i cc
-        Left (msg, value) ->
-            raise i (errMsg msg value)
+--          formals   actuals   origActuals env             i            wierd-cc
+evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env.Env Expr -> IEnv Expr -> (Env.Env Expr -> Expr) -> Expr
+evalArgs formals actuals origActuals env i cc =
+    evalArgs' formals actuals origActuals env i cc
     where
         evalArgs' [] [] _ _ _ cc =
             cc Env.empty
@@ -45,6 +40,15 @@ evalArgs formals actuals origActuals envExpr i cc =
                     cc $ Env.insert formal value nenv))
         evalArgs' _ _ origActuals _ i cc =
             raise i (errMsg "illegal-arguments" (List origActuals))
+
+--              formals   actuals   origActuals envExpr i            wierd-cc
+evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env.Env Expr -> Expr) -> Expr
+evalArgsExpr formals actuals origActuals envExpr i cc =
+    case exprToEnv envExpr of
+        Right env ->
+            evalArgs formals actuals origActuals env i cc
+        Left (msg, value) ->
+            raise i (errMsg msg value)
 
 --
 -- `Small`
@@ -103,11 +107,9 @@ robinBindArgs :: Evaluable
 robinBindArgs i env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
     eval i env givenArgs (\(List actuals) ->
         eval i env givenEnvExpr (\outerEnvExpr ->
-            evalArgs formals actuals actuals outerEnvExpr i (\argEnv ->
+            evalArgsExpr formals actuals actuals outerEnvExpr i (\argEnv ->
                 eval i (Env.mergeEnvs argEnv env) body cc)))
 robinBindArgs i env other cc = raise i (errMsg "illegal-arguments" other)
-
-{-
 
 robinFun :: Evaluable
 robinFun i closedEnv (List [(List formals), body]) cc =
@@ -115,18 +117,8 @@ robinFun i closedEnv (List [(List formals), body]) cc =
   where
     fun i env (List actuals) cc =
         evalArgs formals actuals actuals env i (\argEnv ->
-            eval i (union argEnv closedEnv) body cc)
-    evalArgs [] [] _ _ _ cc =
-        cc Env.empty
-    evalArgs (formal@(Symbol _):formals) (actual:actuals) origActuals env i cc =
-        eval i env actual (\value ->
-            evalArgs formals actuals origActuals env i (\rest ->
-                cc $ Env.insert formal value rest))
-    evalArgs _ _ origActuals _ i cc =
-        raise i (errMsg "illegal-arguments" (List origActuals))
+            eval i (Env.mergeEnvs argEnv closedEnv) body cc)
 robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
-
--}
 
 --
 -- `Arith`
@@ -195,7 +187,7 @@ robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("bind",      bind),
         ("let",       robinLet),
         ("bind-args", robinBindArgs),
-        --("fun",       robinFun),
+        ("fun",       robinFun),
 
         ("abs",       robinAbs),
         ("add",       robinAdd),
