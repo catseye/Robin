@@ -66,9 +66,9 @@ exprToEnv (List (first:rest)) =
 exprToEnv other = Left ("expected-env-alist", other)
 
 envToExpr :: Env Expr -> Expr
-envToExpr (Env.Env []) = List []
-envToExpr (Env.Env ((s, value):rest)) =
-    append (List [List [Symbol s, value]]) (envToExpr (Env.Env rest))
+envToExpr env = List $ map (f) (Env.toList env)
+    where
+        f (sym, value) = List [Symbol sym, value]
 
 --
 -- Predicates
