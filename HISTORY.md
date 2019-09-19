@@ -1,7 +1,7 @@
 History of Robin
 ================
 
-Robin 0.5 (Sep 2019)
+Robin 0.5 (Late Sep 2019)
 ---------
 
 *   The `define-if-absent` top-level form was added.
@@ -18,6 +18,10 @@ For the reference implementation,
 *   Allowed the reference implementation to run under Hugs,
     in part by providing a `HugsMain.hs` which only includes the
     facilities that are supported by Hugs.
+*   Modelled environments with their own algebraic data type
+    (`Env`).  Experimented with implementing them with
+    `Data.Map.Strict`, with limited success (Robin's semantics
+    define an environment to be able to shadow old bindings.)
 
 Robin 0.4 (Early Sep 2019)
 ---------
