@@ -8,6 +8,26 @@ and the document is not very comprehensive.
 In this document, "Robin" refers to the Robin programming language
 version 0.5.
 
+Robin is excessively principled
+-------------------------------
+
+Many times I have encountered some badly designed corner of a
+programming language or system and have said to myself, "No!
+This is categorically wrong.  Programming languages should never
+do this.  A correct design would..." et cetera, et cetera.
+
+Robin is, in some sense, the result of recording various
+instances of this and putting them together in a single
+language.  (Plus some random stuff that I'm not sure how it
+ended up in here.)
+
+How well does the result cohere?  Not really.
+
+It started off as an idea for how I would like to design an
+operating system based on [Pixley][].  It is no longer an
+operating system design, but the reactive portion of it is
+still reminiscent of that.
+
 Macro as fundamental abstraction
 --------------------------------
 
@@ -271,3 +291,5 @@ Markdown.)
 
   </td></tr>
 </table>
+
+[Pixley]: https://catseye.tc/node/Pixley

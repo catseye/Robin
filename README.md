@@ -6,7 +6,8 @@ _Version 0.5.  Work-in-progress, subject to change._
 Overview
 --------
 
-**Robin** is a functional programming language with
+**Robin** is an [excessively principled](doc/Rationale.md)
+functional programming language with
 [eager evaluation, latent typing, and a homoiconic syntax](#scheme),
 based on a [radically simple core semantics](#forth) in which
 [the macro, rather than the function, is the fundamental abstraction](#picolisp).
