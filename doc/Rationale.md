@@ -28,6 +28,64 @@ operating system based on [Pixley][].  It is no longer an
 operating system design, but the reactive portion of it is
 still reminiscent of that.
 
+The case for homoiconicity
+--------------------------
+
+Either a language is homoiconic or it isn't.
+
+I often find homoiconic languages hard to read.  But having
+thought about it at some point, I concluded that, if I had
+to pick one of homoiconic or not-homoiconic as being
+"better" in some absolute sense, I would have to pick
+homoiconic.
+
+Because suppose the language isn't homoiconic.  In this case,
+it still has a syntax, and this syntax is canonical.
+And the essence of the syntax can be described with an AST,
+and it's likely the AST can be expressed in the language
+itself.  Possibly even in the standard libraries of the language
+there is a parser for the language that produces this AST.
+
+Still, that AST is not canonical in the way that the
+syntax is.  You can pick other ASTs that capture the syntax
+equally well.
+
+But if the language is homoiconic, then the language
+defines both the syntax and the AST structure canonically.
+
+Maybe you define a syntactic sugar on top of this AST.
+This sugar is not canonical, but that is more appropriate
+(somehow) than the AST being not canonical.
+
+There may have been more to this argument than this, but
+if so I've forgotten it at the moment.
+
+The case for referential transparency
+-------------------------------------
+
+Very few languages actually forbid mutable data.  What they
+do instead is provide something like `set!` but discourage
+it.
+
+But unless you actually forbid it, you leave the door
+open for breaking referential transparency.  Even if you
+write purely functional programs, there is always a doubt
+when mixing them with other code: what if the function
+that's being passed to my higher-order function is
+destructively updating something somewhere?  This interferes
+with reasoning about the code.  The statements you make
+have to be under the assumption that no one is doing that.
+
+Haskell is one of the few languages that gets this right.
+Unfortunately Haskell is not homoiconic, and its type system
+and lazy evaluation are oftentimes not things I'm looking
+for, and provide a distraction to what I'm trying to say
+with a piece of code.
+
+(Also, Haskell is, as Simon Peyton Jones has remarked,
+"the world's finest imperative language".  I'm looking
+for the world's finest functional language though, right?)
+
 Macro as fundamental abstraction
 --------------------------------
 
