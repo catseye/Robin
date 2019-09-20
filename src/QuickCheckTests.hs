@@ -32,22 +32,22 @@ propEnvExpr entries =
 
 
 --
--- (> a b) should match Haskell's `a > b` in all cases.
+-- (gt? a b) should match Haskell's `a > b` in all cases.
 --
 propGt :: Env Expr -> Int32 -> Int32 -> Bool
 propGt env a b =
     stdEval env expr == Boolean (a > b)
     where
-        expr = List [Symbol ">", Number a, Number b]
+        expr = List [Symbol "gt?", Number a, Number b]
 
 --
--- (< a b) should match Haskell's `a < b` in all cases.
+-- (lt? a b) should match Haskell's `a < b` in all cases.
 --
 propLt :: Env Expr -> Int32 -> Int32 -> Bool
 propLt env a b =
     stdEval env expr == Boolean (a < b)
     where
-        expr = List [Symbol "<", Number a, Number b]
+        expr = List [Symbol "lt?", Number a, Number b]
 
 --
 -- env? should evaluate to true on any valid binding alist.
@@ -86,7 +86,8 @@ propExt env sym entries =
 
 
 testAll = do
-    env <- loadStdEnv
+    env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
+    noBuiltinsEnv <- loadEnv "pkg/stdlib.robin" robinIntrinsics [] []
     quickCheck (propEnvExpr)
     quickCheck (propGt env)
     quickCheck (propLt env)
@@ -103,5 +104,3 @@ loadEnv filename env reactors results = do
         Left problem -> do
             hPutStr stderr (show problem)
             exitWith $ ExitFailure 1
-
-loadStdEnv = loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
