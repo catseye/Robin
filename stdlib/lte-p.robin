@@ -1,0 +1,43 @@
+;'<<SPEC'
+
+    -> Tests for functionality "Evaluate Robin Expression (with Arith)"
+
+### `lte?` ###
+
+`lte?` evaluates both of its arguments to numbers, then evaluates to `#t`
+if the first number is less than or equal to the second.
+
+    | (lte? 6 4)
+    = #f
+
+    | (lte? 6 8)
+    = #t
+
+    | (lte? 6 6)
+    = #t
+
+    | (lte? 1610612736 (subtract 0 1610612736)))
+    = #f
+
+    | (lte? (subtract 0 1610612736) 1610612736)
+    = #t
+
+`lte?` expects exactly two arguments, both numbers.
+
+    | (lte? 14)
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (lte? 14 23 57)
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (lte? 14 #t)
+    ? uncaught exception: (expected-number #t)
+
+    | (lte? #t 51)
+    ? uncaught exception: (expected-number #t)
+
+'<<SPEC'
+
+(define lte? (macro (self args env)
+  (bind-args (a b) args env
+    (if (equal? a b) #t (lt? a b)))))

@@ -21,7 +21,8 @@ cat stdlib/empty-p.robin stdlib/map.robin stdlib/fold.robin stdlib/reverse.robin
     stdlib/first.robin stdlib/rest.robin stdlib/last.robin stdlib/prefix-p.robin \
     stdlib/flatten.robin stdlib/lookup.robin stdlib/extend.robin stdlib/delete.robin > pkg/list.robin
 
-cat stdlib/abs.robin stdlib/add.robin stdlib/cmp.robin \
+cat stdlib/abs.robin stdlib/add.robin \
+    stdlib/lt-p.robin stdlib/lte-p.robin stdlib/gt-p.robin stdlib/gte-p.robin \
     stdlib/multiply.robin stdlib/divide.robin \
     stdlib/remainder.robin > pkg/arith.robin
 
