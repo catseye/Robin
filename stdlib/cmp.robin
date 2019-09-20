@@ -2,175 +2,175 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with Arith)"
 
-### `>` ###
+### `gt?` ###
 
-`>` evaluates both of its arguments to numbers, then evaluates to `#t`
+`gt?` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is strictly greater than the second.
 
-    | (> 6 4)
+    | (gt? 6 4)
     = #t
 
-    | (> 6 8)
+    | (gt? 6 8)
     = #f
 
-    | (> 6 6)
+    | (gt? 6 6)
     = #f
 
-    | (> 1610612736 (subtract 0 1610612736)))
+    | (gt? 1610612736 (subtract 0 1610612736)))
     = #t
 
-    | (> (subtract 0 1610612736) 1610612736)
+    | (gt? (subtract 0 1610612736) 1610612736)
     = #f
 
-    | (> 2147483646 2147483647)
+    | (gt? 2147483646 2147483647)
     = #f
 
-    | (> 1 2147483647)
+    | (gt? 1 2147483647)
     = #f
 
-    | (> (subtract 0 2147483647) (subtract 0 2147483646))
+    | (gt? (subtract 0 2147483647) (subtract 0 2147483646))
     = #f
 
-    | (> (subtract 0 2147483647) (subtract 0 1))
+    | (gt? (subtract 0 2147483647) (subtract 0 1))
     = #f
 
-    | (> 0 (subtract (subtract 0 1073741824) 1073741824)))
+    | (gt? 0 (subtract (subtract 0 1073741824) 1073741824)))
     = #t
 
-`>` expects exactly two arguments, both numbers.
+`gt?` expects exactly two arguments, both numbers.
 
-    | (> 14)
+    | (gt? 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (> 14 23 57)
+    | (gt? 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (> 14 #t)
+    | (gt? 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (> #t 51)
+    | (gt? #t 51)
     ? uncaught exception: (expected-number #t)
 
-### `<` ###
+### `lt?` ###
 
-`<` evaluates both of its arguments to numbers, then evaluates to `#t`
+`lt?` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is strictly less than the second.
 
-    | (< 6 4)
+    | (lt? 6 4)
     = #f
 
-    | (< 6 8)
+    | (lt? 6 8)
     = #t
 
-    | (< 6 6)
+    | (lt? 6 6)
     = #f
 
-    | (< 1610612736 (subtract 0 1610612736)))
+    | (lt? 1610612736 (subtract 0 1610612736)))
     = #f
 
-    | (< (subtract 0 1610612736) 1610612736)
+    | (lt? (subtract 0 1610612736) 1610612736)
     = #t
 
-    | (< 2147483646 2147483647)
+    | (lt? 2147483646 2147483647)
     = #t
 
-    | (< 1 2147483647)
+    | (lt? 1 2147483647)
     = #t
 
-    | (< (subtract 0 2147483647) (subtract 0 2147483646))
+    | (lt? (subtract 0 2147483647) (subtract 0 2147483646))
     = #t
 
-    | (< (subtract 0 2147483647) (subtract 0 1))
+    | (lt? (subtract 0 2147483647) (subtract 0 1))
     = #t
 
-    | (< (subtract (subtract 0 1073741824) 1073741824) 0)
+    | (lt? (subtract (subtract 0 1073741824) 1073741824) 0)
     = #t
 
-`<` expects exactly two arguments, both numbers.
+`lt?` expects exactly two arguments, both numbers.
 
-    | (< 14)
+    | (lt? 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (< 14 23 57)
+    | (lt? 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (< 14 #t)
+    | (lt? 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (< #t 51)
+    | (lt? #t 51)
     ? uncaught exception: (expected-number #t)
 
-### `>=` ###
+### `gte?` ###
 
-`>=` evaluates both of its arguments to numbers, then evaluates to `#t`
+`gte?` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is greater than or equal to the second.
 
-    | (>= 6 4)
+    | (gte? 6 4)
     = #t
 
-    | (>= 6 8)
+    | (gte? 6 8)
     = #f
 
-    | (>= 6 6)
+    | (gte? 6 6)
     = #t
 
-    | (>= 1610612736 (subtract 0 1610612736)))
+    | (gte? 1610612736 (subtract 0 1610612736)))
     = #t
 
-    | (>= (subtract 0 1610612736) 1610612736)
+    | (gte? (subtract 0 1610612736) 1610612736)
     = #f
 
-`>=` expects exactly two arguments, both numbers.
+`gte?` expects exactly two arguments, both numbers.
 
-    | (>= 14)
+    | (gte? 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (>= 14 23 57)
+    | (gte? 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (>= 14 #t)
+    | (gte? 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    | (>= #t 51)
+    | (gte? #t 51)
     ? uncaught exception: (expected-number #t)
 
-### `<=` ###
+### `lte?` ###
 
-`<=` evaluates both of its arguments to numbers, then evaluates to `#t`
+`lte?` evaluates both of its arguments to numbers, then evaluates to `#t`
 if the first number is less than or equal to the second.
 
-    | (<= 6 4)
+    | (lte? 6 4)
     = #f
 
-    | (<= 6 8)
+    | (lte? 6 8)
     = #t
 
-    | (<= 6 6)
+    | (lte? 6 6)
     = #t
 
-    | (<= 1610612736 (subtract 0 1610612736)))
+    | (lte? 1610612736 (subtract 0 1610612736)))
     = #f
 
-    | (<= (subtract 0 1610612736) 1610612736)
+    | (lte? (subtract 0 1610612736) 1610612736)
     = #t
 
-`<=` expects exactly two arguments, both numbers.
+`lte?` expects exactly two arguments, both numbers.
 
-    | (<= 14)
+    | (lte? 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    | (<= 14 23 57)
+    | (lte? 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    | (<= 14 #t)
+    | (lte? 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    |   (<= #t 51)
+    | (lte? #t 51)
     ? uncaught exception: (expected-number #t)
 
 '<<SPEC'
 
-(define > (macro (self args env)
+(define gt? (macro (self args env)
   (bind cmp-same-sign? (macro (self args env)
     (bind-args (a b c) args env
       (equal? (sign (subtract a b)) c)))
@@ -179,11 +179,11 @@ if the first number is less than or equal to the second.
         (cmp-same-sign? a b 1)
         (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) 1))))))
 
-(define >= (macro (self args env)
+(define gte? (macro (self args env)
   (bind-args (a b) args env
-    (if (equal? a b) #t (> a b)))))
+    (if (equal? a b) #t (gt? a b)))))
 
-(define < (macro (self args env)
+(define lt? (macro (self args env)
   (bind cmp-same-sign? (macro (self args env)
     (bind-args (a b c) args env
       (equal? (sign (subtract a b)) c)))
@@ -192,6 +192,6 @@ if the first number is less than or equal to the second.
         (cmp-same-sign? a b (subtract 0 1))
         (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) (subtract 0 1)))))))
 
-(define <= (macro (self args env)
+(define lte? (macro (self args env)
   (bind-args (a b) args env
-    (if (equal? a b) #t (< a b)))))
+    (if (equal? a b) #t (lt? a b)))))

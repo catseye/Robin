@@ -42,6 +42,6 @@ Both of the arguments to `multiply` must be numbers.
       (add a (self self a (subtract b 1)))))
     (bind-args (a b) args env
       (if (equal? b 0) 0
-        (if (< b 0)
+        (if (lt? b 0)
           (subtract 0 (multiply-r multiply-r a (subtract 0 b)))
           (multiply-r multiply-r a b)))))))

@@ -49,18 +49,18 @@ exception will be raised.
 
 (define-if-absent remainder (macro (self args env)
   (bind remainder-r-pos (fun (self n d acc) ;(d is positive)
-    (if (> d n)
+    (if (gt? d n)
       n
       (self self (subtract n d) d (add 1 acc))))
     (bind remainder-r-neg (fun (self n d acc) ;(d is negative)
-      (if (> (abs d) n)
+      (if (gt? (abs d) n)
         (add 1 n)
         (self self (add n d) d (add 1 acc))))
       (bind-args (n d) args env
         (if (equal? d 0)
           (raise (list (literal division-by-zero) n))
-          (if (< n 0)
+          (if (lt? n 0)
             (self (subtract 0 n) (subtract 0 d))
-            (if (> d 0)
+            (if (gt? d 0)
               (remainder-r-pos remainder-r-pos n d 0)
               (remainder-r-neg remainder-r-neg n d 0)))))))))

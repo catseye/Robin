@@ -36,6 +36,6 @@ a string representing that integer in decimal.
     (bind-args (val) args env
       (if (equal? val 0)
         (list 48)
-        (if (< val 0)
+        (if (lt? val 0)
           (prepend 45 (reverse (itoa-r (subtract 0 val))))
           (reverse (itoa-r val))))))))
