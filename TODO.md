@@ -32,8 +32,6 @@ to runtime system that an error occurred.
 Stdlib
 ------
 
-Built-in implementation of `gte?` et al.
-
 Rename "small" to "core" or "base" or something.
 
 `(compose f1 f2)` composes two functions.

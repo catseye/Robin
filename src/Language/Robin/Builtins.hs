@@ -125,6 +125,42 @@ robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
 -- See the relevant files in `stdlib` for normative definitions.
 --
 
+robinGt :: Evaluable
+robinGt i env (List [xexpr, yexpr]) cc =
+    eval i env xexpr (\x ->
+        assertNumber i x (\(Number xv) ->
+            eval i env yexpr (\y ->
+                assertNumber i y (\(Number yv) ->
+                    cc (Boolean (xv > yv))))))
+robinGt i env other cc = raise i (errMsg "illegal-arguments" other)
+
+robinGte :: Evaluable
+robinGte i env (List [xexpr, yexpr]) cc =
+    eval i env xexpr (\x ->
+        assertNumber i x (\(Number xv) ->
+            eval i env yexpr (\y ->
+                assertNumber i y (\(Number yv) ->
+                    cc (Boolean (xv >= yv))))))
+robinGte i env other cc = raise i (errMsg "illegal-arguments" other)
+
+robinLt :: Evaluable
+robinLt i env (List [xexpr, yexpr]) cc =
+    eval i env xexpr (\x ->
+        assertNumber i x (\(Number xv) ->
+            eval i env yexpr (\y ->
+                assertNumber i y (\(Number yv) ->
+                    cc (Boolean (xv < yv))))))
+robinLt i env other cc = raise i (errMsg "illegal-arguments" other)
+
+robinLte :: Evaluable
+robinLte i env (List [xexpr, yexpr]) cc =
+    eval i env xexpr (\x ->
+        assertNumber i x (\(Number xv) ->
+            eval i env yexpr (\y ->
+                assertNumber i y (\(Number yv) ->
+                    cc (Boolean (xv <= yv))))))
+robinLte i env other cc = raise i (errMsg "illegal-arguments" other)
+
 robinAbs :: Evaluable
 robinAbs i env (List [expr]) cc =
     eval i env expr (\x -> assertNumber i x (\(Number xv) -> cc (Number $ abs xv)))
@@ -185,6 +221,11 @@ robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("let",       robinLet),
         ("bind-args", robinBindArgs),
         ("fun",       robinFun),
+
+        ("gt?",       robinGt),
+        ("gte?",      robinGte),
+        ("lt?",       robinLt),
+        ("lte?",      robinLte),
 
         ("abs",       robinAbs),
         ("add",       robinAdd),
