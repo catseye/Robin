@@ -32,9 +32,11 @@ to runtime system that an error occurred.
 Stdlib
 ------
 
-Rename "small" to "core" or "base" or something.
-
 `(compose f1 f2)` composes two functions.
+
+`(many macro a b c ...)` applies `macro` stepwise on
+all the arguments.  Candidates for `macro` include `add`,
+`multiply`, `compose`, and other monoids.
 
 `(sgn x)`
 
@@ -87,11 +89,10 @@ obtain a function, and applying that function.
 Rename
 ------
 
+Rename "small" to "base".
+
 Rename `fun` to `function`.  This is because Robin prefers full words
 over abbreviations, which are jargon-y.
-
-Rename `>` to `greater-than?`, and so forth.  Figure out a place to
-put the aliases-which-are-punctuation-y.
 
 Rename `raise` to `throw`.  This is because `throw` is the opposite
 of `catch`.  Also "raise" suggests an error, but it might be merely a
