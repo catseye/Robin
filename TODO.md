@@ -34,10 +34,6 @@ Stdlib
 
 `(compose f1 f2)` composes two functions.
 
-`(many macro a b c ...)` applies `macro` stepwise on
-all the arguments.  Candidates for `macro` include `add`,
-`multiply`, `compose`, and other monoids.
-
 `(sgn x)`
 
 `(modulo x y)` which is always positive, change `remainder` to
