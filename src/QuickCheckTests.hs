@@ -86,11 +86,11 @@ propExt env sym entries =
 
 
 testAll = do
+    quickCheck (propEnvExpr)
     env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
     noBuiltinsEnv <- loadEnv "pkg/stdlib.robin" robinIntrinsics [] []
-    quickCheck (propEnvExpr)
-    quickCheck (propGt env)
-    quickCheck (propLt env)
+    quickCheck (propGt noBuiltinsEnv)
+    quickCheck (propLt noBuiltinsEnv)
     quickCheck (propEnv env)
     quickCheck (propDel env)
     quickCheck (propExt env)
