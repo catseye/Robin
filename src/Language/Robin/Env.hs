@@ -1,30 +1,27 @@
 module Language.Robin.Env where
 
-import Language.Robin.Expr
-
 --
 -- An environment is an alist which associates symbols with
 -- values (arbitrary S-expressions).
 --
 
-empty :: Expr
-empty = List []
+data Env a = Env [(String, a)] deriving (Show, Ord, Eq)
 
-insert :: Expr -> Expr -> Expr -> Expr
-insert s@(Symbol _) value env =
-    append (List [List [s, value]]) env
+empty :: Env a
+empty = Env []
 
-find :: Expr -> Expr -> Maybe Expr
-find s@(Symbol _) (List []) = Nothing
-find s@(Symbol _) (List (List [first, value]:rest))
-    | s == first   = Just value
-    | otherwise    = find s (List rest)
+insert :: String -> a -> Env a -> Env a
+insert s value (Env bindings) = Env ((s, value):bindings)
 
-fromList :: [(String,Expr)] -> Expr
-fromList [] =
-    List []
-fromList ((id, val):xs) =
-    append (List [List [(Symbol id), val]]) (fromList xs)
+find :: String -> Env a -> Maybe a
+find _ (Env []) = Nothing
+find s (Env ((t, value):rest))
+    | s == t    = Just value
+    | otherwise = find s (Env rest)
 
-mergeEnvs :: Expr -> Expr -> Expr
-mergeEnvs (List a) (List b) = List (a ++ b)
+fromList :: [(String,a)] -> Env a
+fromList [] = empty
+fromList ((s, val):rest) = insert s val $ fromList rest
+
+mergeEnvs :: Env a -> Env a -> Env a
+mergeEnvs (Env a) (Env b) = Env (a ++ b)

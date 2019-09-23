@@ -52,7 +52,7 @@ binding may be given.
 
 '<<SPEC'
 
-(define bind (macro (self args env)
+(define-if-absent bind (macro (self args env)
   (eval
     (prepend
       (prepend (head args) (prepend (eval env (head (tail args)))

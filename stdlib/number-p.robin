@@ -2,7 +2,7 @@
 
 ### `number?` ###
 
-    -> Tests for functionality "Evaluate core Robin Expression"
+    -> Tests for functionality "Evaluate Robin Expression (with literal)"
 
 `number?` evaluates its argument, then evaluates to `#t` if it is a
 number, `#f` otherwise.
@@ -19,12 +19,12 @@ number, `#f` otherwise.
     | (number? #t)
     = #f
 
-    | (number? ((macro (s a e) (head a)) seven))
+    | (number? (literal seven))
     = #f
 
 That's a good question...
 
-    | (number? ((macro (s a e) (head a)) 7))
+    | (number? (literal 7))
     = #t
 
 The argument to `number?` may (naturally) be any type, but there must be

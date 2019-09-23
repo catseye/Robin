@@ -23,7 +23,7 @@ Unlike `literal`, `list` does evaluate its arguments, all of them.
 
 '<<SPEC'
 
-(define list (macro (self args env)
+(define-if-absent list (macro (self args env)
   (if (equal? args ())
     ()
     (prepend (eval env (head args))

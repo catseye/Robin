@@ -46,24 +46,20 @@ Division by zero is undefined, and an exception will be raised.
 
 '<<SPEC'
 
-;(d is positive)
-(define divide-r-pos (fun (self n d acc)
-  (if (> d n)
-    acc
-    (self self (subtract n d) d (add 1 acc)))))
-
-;(d is negative)
-(define divide-r-neg (fun (self n d acc)
-  (if (> (abs d) n)
-    (subtract 0 (add 1 acc))
-    (self self (add n d) d (add 1 acc)))))
-
-(define divide (macro (self args env)
-  (bind-args (n d) args env
-    (if (equal? d 0)
-      (raise (list (literal division-by-zero) n))
-      (if (< n 0)
-        (self (subtract 0 n) (subtract 0 d))
-        (if (> d 0)
-          (divide-r-pos divide-r-pos n d 0)
-          (divide-r-neg divide-r-neg n d 0)))))))
+(define-if-absent divide (macro (self args env)
+  (bind divide-r-pos (fun (self n d acc) ;(d is positive)
+    (if (gt? d n)
+      acc
+      (self self (subtract n d) d (add 1 acc))))
+    (bind divide-r-neg (fun (self n d acc) ;(d is negative)
+      (if (gt? (abs d) n)
+        (subtract 0 (add 1 acc))
+        (self self (add n d) d (add 1 acc))))
+      (bind-args (n d) args env
+        (if (equal? d 0)
+          (raise (list (literal division-by-zero) n))
+          (if (lt? n 0)
+            (self (subtract 0 n) (subtract 0 d))
+            (if (gt? d 0)
+              (divide-r-pos divide-r-pos n d 0)
+              (divide-r-neg divide-r-neg n d 0)))))))))

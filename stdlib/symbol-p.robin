@@ -2,12 +2,12 @@
 
 ### `symbol?` ###
 
-    -> Tests for functionality "Evaluate core Robin Expression"
+    -> Tests for functionality "Evaluate Robin Expression (with literal)"
 
 `symbol?` evaluates its argument, then evaluates to `#t` if it is a symbol,
 `#f` otherwise.
 
-    | (symbol? ((macro (s a e) (head a)) this-symbol))
+    | (symbol? (literal this-symbol))
     = #t
 
 Numbers are not symbols.

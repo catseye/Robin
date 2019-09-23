@@ -1,6 +1,7 @@
 module Language.Robin.Eval where
 
 import qualified Language.Robin.Env as Env
+import Language.Robin.Env (Env)
 import Language.Robin.Expr
 
 --
@@ -9,7 +10,7 @@ import Language.Robin.Expr
 -- Every evaluation function takes a continuation, and is implemented
 -- as a function with this signature:
 --
---     Expr -> Expr -> Expr -> (Expr -> Expr) -> Expr
+--     IEnv Expr -> Env Expr -> Expr -> (Expr -> Expr) -> Expr
 --
 -- (This is actually the `Evaluable` type from `Robin.Expr`.)
 --
@@ -25,17 +26,12 @@ import Language.Robin.Expr
 
 eval :: Evaluable
 
-eval i (List []) s@(Symbol _) cc =
-    raise i (errMsg "unbound-identifier" s)
-eval i (List (b@(List [id@(Symbol _), value]):env)) s@(Symbol _) cc
-    | id == s   = cc value
-    | otherwise = eval i (List env) s cc
-eval i (List ((List (other:_)):env)) s@(Symbol _) cc =
-    raise i (errMsg "expected-symbol" other)
-eval i (List (head:tail)) s@(Symbol _) cc =
-    raise i (errMsg "expected-env-entry" head)
-eval i env s@(Symbol _) cc =
-    raise i (errMsg "expected-env-alist" env)
+eval i env sym@(Symbol s) cc =
+    case Env.find s env of
+        Just value ->
+            cc value
+        Nothing ->
+            raise i (errMsg "unbound-identifier" sym)
 
 --
 -- Evaluating a list means we must make several evaluations.  We
@@ -44,12 +40,12 @@ eval i env s@(Symbol _) cc =
 -- passing it the tail of the list.
 --
 
-eval i env (List (applierExpr:actuals)) cc = do
+eval i env (List (applierExpr:actuals)) cc =
     eval i env applierExpr (\applier ->
         case applier of
-            m@(Macro _ _ body) -> do
+            m@(Macro _ _ body) ->
                 eval i (makeMacroEnv env (List actuals) m) body cc
-            b@(Intrinsic _ fun) -> do
+            b@(Intrinsic _ fun) ->
                 fun i env (List actuals) cc
             other ->
                 raise i (errMsg "inapplicable-object" other))
@@ -59,7 +55,7 @@ eval i env (List (applierExpr:actuals)) cc = do
 -- continuation with that value.
 --
 
-eval i env e cc = do
+eval i env e cc =
     cc e
 
 --
@@ -69,13 +65,14 @@ eval i env e cc = do
 errMsg msg term =
     List [(Symbol msg), term]
 
+makeMacroEnv :: Env Expr -> Expr -> Expr -> Env Expr
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
     let
-        (List [argSelf@(Symbol _), argFormal@(Symbol _),
-               envFormal@(Symbol _)]) = argList
+        (List [(Symbol argSelf), (Symbol argFormal),
+               (Symbol envFormal)]) = argList
         newEnv = Env.insert argSelf m closedEnv
         newEnv' = Env.insert argFormal actuals newEnv
-        newEnv'' = Env.insert envFormal env newEnv'
+        newEnv'' = Env.insert envFormal (envToExpr env) newEnv'
     in
         newEnv''
 

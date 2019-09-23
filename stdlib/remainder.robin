@@ -5,66 +5,62 @@
 `remainder` evaluates both of its arguments to numbers and evaluates to the
 remainder of the division of the first number by the second.
 
-    |   (remainder 12 3)
+    | (remainder 12 3)
     = 0
 
-    |   (remainder 11 3)
+    | (remainder 11 3)
     = 2
 
-    |   (remainder 10 3)
+    | (remainder 10 3)
     = 1
 
-    |   (remainder 9 3)
+    | (remainder 9 3)
     = 0
 
 The remainder is *always non-negative*.
 
-    |   (remainder (subtract 0 10) 3)
+    | (remainder (subtract 0 10) 3)
     = 2
 
-    |   (remainder 10 (subtract 0 3))
+    | (remainder 10 (subtract 0 3))
     = 2
 
 Trying to find the remainder of a division by zero is undefined, and an
 exception will be raised.
 
-    |   (remainder 10 0)
+    | (remainder 10 0)
     ? uncaught exception: (division-by-zero 10)
 
 `remainder` expects exactly two arguments, both numbers.
 
-    |   (remainder 14)
+    | (remainder 14)
     ? uncaught exception: (illegal-arguments (14))
 
-    |   (remainder 14 23 57)
+    | (remainder 14 23 57)
     ? uncaught exception: (illegal-arguments (14 23 57))
 
-    |   (remainder 14 #t)
+    | (remainder 14 #t)
     ? uncaught exception: (expected-number #t)
 
-    |   (remainder #t 51)
+    | (remainder #t 51)
     ? uncaught exception: (expected-number #t)
 
 '<<SPEC'
 
-;(d is positive)
-(define remainder-r-pos (fun (self n d acc)
-  (if (> d n)
-    n
-    (self self (subtract n d) d (add 1 acc)))))
-
-;(d is negative)
-(define remainder-r-neg (fun (self n d acc)
-  (if (> (abs d) n)
-    (add 1 n)
-    (self self (add n d) d (add 1 acc)))))
-
-(define remainder (macro (self args env)
-  (bind-args (n d) args env
-    (if (equal? d 0)
-      (raise (list (literal division-by-zero) n))
-      (if (< n 0)
-        (self (subtract 0 n) (subtract 0 d))
-        (if (> d 0)
-          (remainder-r-pos remainder-r-pos n d 0)
-          (remainder-r-neg remainder-r-neg n d 0)))))))
+(define-if-absent remainder (macro (self args env)
+  (bind remainder-r-pos (fun (self n d acc) ;(d is positive)
+    (if (gt? d n)
+      n
+      (self self (subtract n d) d (add 1 acc))))
+    (bind remainder-r-neg (fun (self n d acc) ;(d is negative)
+      (if (gt? (abs d) n)
+        (add 1 n)
+        (self self (add n d) d (add 1 acc))))
+      (bind-args (n d) args env
+        (if (equal? d 0)
+          (raise (list (literal division-by-zero) n))
+          (if (lt? n 0)
+            (self (subtract 0 n) (subtract 0 d))
+            (if (gt? d 0)
+              (remainder-r-pos remainder-r-pos n d 0)
+              (remainder-r-neg remainder-r-neg n d 0)))))))))

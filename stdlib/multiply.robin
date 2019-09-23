@@ -15,7 +15,7 @@ of those two numbers.
     = -42
 
     |   (multiply (subtract 0 6) (subtract 0 7))
-    = -42
+    = 42
 
 `multiply` expects exactly two arguments.
 
@@ -35,15 +35,13 @@ Both of the arguments to `multiply` must be numbers.
 
 '<<SPEC'
 
-(define multiply (macro (self args env)
+(define-if-absent multiply (macro (self args env)
   (bind multiply-r (fun (self a b) ;(b must be positive)
     (if (equal? b 1)
       a
       (add a (self self a (subtract b 1)))))
     (bind-args (a b) args env
       (if (equal? b 0) 0
-        (if (< b 0)
-          (if (< a 0)
-            (multiply-r multiply-r a (subtract 0 b))
-            (subtract 0 (multiply-r multiply-r a (subtract 0 b))))
+        (if (lt? b 0)
+          (subtract 0 (multiply-r multiply-r a (subtract 0 b)))
           (multiply-r multiply-r a b)))))))

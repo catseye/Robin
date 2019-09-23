@@ -1,12 +1,13 @@
 module Language.Robin.TopLevel (collect) where
 
-import Language.Robin.Expr
 import qualified Language.Robin.Env as Env
+import Language.Robin.Env (Env)
+import Language.Robin.Expr
 import Language.Robin.Eval
 import Language.Robin.Reactor
 
 
-collect :: [Expr] -> Expr -> [Reactor] -> [Either Expr Expr] -> (Expr, [Reactor], [Either Expr Expr])
+collect :: [Expr] -> Env Expr -> [Reactor] -> [Either Expr Expr] -> (Env Expr, [Reactor], [Either Expr Expr])
 
 collect [] env reactors results = (env, reactors, results)
 
@@ -28,22 +29,32 @@ collect ((List [Symbol "assert", expr]):rest) env reactors results =
         _ ->
             collect rest env reactors results
 
-collect ((List [Symbol "require", expr]):rest) env reactors results =
-    case Env.find expr env of
+collect ((List [Symbol "require", sym@(Symbol s)]):rest) env reactors results =
+    case Env.find s env of
         Nothing ->
-            error ("assertion failed: (bound? " ++ show expr ++ ")")
+            error ("assertion failed: (bound? " ++ show sym ++ ")")
         _ ->
             collect rest env reactors results
 
-collect ((List [Symbol "define", name@(Symbol _), expr]):rest) env reactors results =
-    case Env.find name env of
+collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) env reactors results =
+    case Env.find s env of
         Just _ ->
-            error ("symbol already defined: " ++ show name)
+            error ("symbol already defined: " ++ show sym)
         Nothing ->
             let
                 result = eval (IEnv stop) env expr id
             in
-                collect rest (Env.insert name result env) reactors results
+                collect rest (Env.insert s result env) reactors results
+
+collect ((List [Symbol "define-if-absent", sym@(Symbol s), expr]):rest) env reactors results =
+    case Env.find s env of
+        Just _ ->
+            collect rest env reactors results
+        Nothing ->
+            let
+                result = eval (IEnv stop) env expr id
+            in
+                collect rest (Env.insert s result env) reactors results
 
 collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) env reactors results =
     let

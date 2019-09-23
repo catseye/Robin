@@ -1,0 +1,63 @@
+;'<<SPEC'
+
+    -> Tests for functionality "Evaluate Robin Expression (with Arith)"
+
+### `gt?` ###
+
+`gt?` evaluates both of its arguments to numbers, then evaluates to `#t`
+if the first number is strictly greater than the second.
+
+    | (gt? 6 4)
+    = #t
+
+    | (gt? 6 8)
+    = #f
+
+    | (gt? 6 6)
+    = #f
+
+    | (gt? 1610612736 (subtract 0 1610612736)))
+    = #t
+
+    | (gt? (subtract 0 1610612736) 1610612736)
+    = #f
+
+    | (gt? 2147483646 2147483647)
+    = #f
+
+    | (gt? 1 2147483647)
+    = #f
+
+    | (gt? (subtract 0 2147483647) (subtract 0 2147483646))
+    = #f
+
+    | (gt? (subtract 0 2147483647) (subtract 0 1))
+    = #f
+
+    | (gt? 0 (subtract (subtract 0 1073741824) 1073741824)))
+    = #t
+
+`gt?` expects exactly two arguments, both numbers.
+
+    | (gt? 14)
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (gt? 14 23 57)
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (gt? 14 #t)
+    ? uncaught exception: (expected-number #t)
+
+    | (gt? #t 51)
+    ? uncaught exception: (expected-number #t)
+
+'<<SPEC'
+
+(define-if-absent gt? (macro (self args env)
+  (bind cmp-same-sign? (macro (self args env)
+    (bind-args (a b c) args env
+      (equal? (sign (subtract a b)) c)))
+    (bind-args (a b) args env
+      (if (equal? (sign a) (sign b))
+        (cmp-same-sign? a b 1)
+        (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) 1))))))

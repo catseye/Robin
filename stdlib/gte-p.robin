@@ -1,0 +1,43 @@
+;'<<SPEC'
+
+    -> Tests for functionality "Evaluate Robin Expression (with Arith)"
+
+### `gte?` ###
+
+`gte?` evaluates both of its arguments to numbers, then evaluates to `#t`
+if the first number is greater than or equal to the second.
+
+    | (gte? 6 4)
+    = #t
+
+    | (gte? 6 8)
+    = #f
+
+    | (gte? 6 6)
+    = #t
+
+    | (gte? 1610612736 (subtract 0 1610612736)))
+    = #t
+
+    | (gte? (subtract 0 1610612736) 1610612736)
+    = #f
+
+`gte?` expects exactly two arguments, both numbers.
+
+    | (gte? 14)
+    ? uncaught exception: (illegal-arguments (14))
+
+    | (gte? 14 23 57)
+    ? uncaught exception: (illegal-arguments (14 23 57))
+
+    | (gte? 14 #t)
+    ? uncaught exception: (expected-number #t)
+
+    | (gte? #t 51)
+    ? uncaught exception: (expected-number #t)
+
+'<<SPEC'
+
+(define-if-absent gte? (macro (self args env)
+  (bind-args (a b) args env
+    (if (equal? a b) #t (gt? a b)))))

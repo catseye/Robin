@@ -2,15 +2,15 @@
 
 ### `list?` ###
 
-    -> Tests for functionality "Evaluate core Robin Expression"
+    -> Tests for functionality "Evaluate Robin Expression (with literal)"
 
 `list?` evaluates its argument, then evaluates to `#t` if it is a list,
 `#f` otherwise.
 
-    |   (list? ((macro (s a e) (head a)) (a b)))
+    |   (list? (literal (a b)))
     = #t
 
-    |   (list? ((macro (s a e) (head a)) (a b c d e f)))
+    |   (list? (literal (a b c d e f)))
     = #t
 
     |   (list? (prepend 4 (prepend 5 ())))
@@ -23,7 +23,7 @@ The empty list is a list.
 
 Symbols are not lists.
 
-    |   (list? ((macro (s a e) (head a)) a))
+    |   (list? (literal a))
     = #f
 
 The argument to `list?` may (naturally) be any type, but there must be

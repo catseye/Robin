@@ -2,11 +2,89 @@ Robin: Design Goals and Rationale
 =================================
 
 This document documents some of the design goals and rationale
-for the design of Robin 0.3.  The contents are not well organized,
+for the design of Robin 0.5.  The contents are not well organized,
 and the document is not very comprehensive.
 
 In this document, "Robin" refers to the Robin programming language
-version 0.3.
+version 0.5.
+
+Robin is excessively principled
+-------------------------------
+
+Many times I have encountered some badly designed corner of a
+programming language or system and have said to myself, "No!
+This is categorically wrong.  Programming languages should never
+do this.  A correct design would..." et cetera, et cetera.
+
+Robin is, in some sense, the result of recording various
+instances of this and putting them together in a single
+language.  (Plus some random stuff that I'm not sure how it
+ended up in here.)
+
+How well does the result cohere?  Not really.
+
+It started off as an idea for how I would like to design an
+operating system based on [Pixley][].  It is no longer an
+operating system design, but the reactive portion of it is
+still reminiscent of that.
+
+The case for homoiconicity
+--------------------------
+
+Either a language is homoiconic or it isn't.
+
+I often find homoiconic languages hard to read.  But having
+thought about it at some point, I concluded that, if I had
+to pick one of homoiconic or not-homoiconic as being
+"better" in some absolute sense, I would have to pick
+homoiconic.
+
+Because suppose the language isn't homoiconic.  In this case,
+it still has a syntax, and this syntax is canonical.
+And the essence of the syntax can be described with an AST,
+and it's likely the AST can be expressed in the language
+itself.  Possibly even in the standard libraries of the language
+there is a parser for the language that produces this AST.
+
+Still, that AST is not canonical in the way that the
+syntax is.  You can pick other ASTs that capture the syntax
+equally well.
+
+But if the language is homoiconic, then the language
+defines both the syntax and the AST structure canonically.
+
+Maybe you define a syntactic sugar on top of this AST.
+This sugar is not canonical, but that is more appropriate
+(somehow) than the AST being not canonical.
+
+There may have been more to this argument than this, but
+if so I've forgotten it at the moment.
+
+The case for referential transparency
+-------------------------------------
+
+Very few languages actually forbid mutable data.  What they
+do instead is provide something like `set!` but discourage
+it.
+
+But unless you actually forbid it, you leave the door
+open for breaking referential transparency.  Even if you
+write purely functional programs, there is always a doubt
+when mixing them with other code: what if the function
+that's being passed to my higher-order function is
+destructively updating something somewhere?  This interferes
+with reasoning about the code.  The statements you make
+have to be under the assumption that no one is doing that.
+
+Haskell is one of the few languages that gets this right.
+Unfortunately Haskell is not homoiconic, and its type system
+and lazy evaluation are oftentimes not things I'm looking
+for, and provide a distraction to what I'm trying to say
+with a piece of code.
+
+(Also, Haskell is, as Simon Peyton Jones has remarked,
+"the world's finest imperative language".  I'm looking
+for the world's finest functional language though, right?)
 
 Macro as fundamental abstraction
 --------------------------------
@@ -36,6 +114,53 @@ library has been loaded, and that function calls will use `fun`
 as defined there, and thus can base their analysis on the semantics
 of that macro without caring about its definition, or that its
 definition contains `eval`.
+
+No variable numbers of parameters
+---------------------------------
+
+In a Scheme-like language, the list of parameters passed to a
+function is itself naturally a list.  Robin in some
+ways tries to deny this, rather than embracing it as Lisp
+and Scheme do.
+
+It does so in the name of correctness: it is incorrect
+to pass more arguments to a function, than it expects,
+so you should be informed of this by means of an exception.
+
+But it goes further, with the doctrine that no function should
+have a variable number of arguments.  If you want a function
+to work on a variable number of values, you should pass that
+function a list.
+
+The reason for this is generally to make analysis easier.
+This analsysi includes syntax (should it ever become relevant):
+each function has constant number of parameters means the
+parameters can be parsed deterministically, without
+needing extra syntax such as parens to tell when they stop.
+
+There is also the matter of generality.  Say a function
+works on, not a single set of variable nuber of values,
+but two sets of different kinds of data.  The natural
+solution would be to pass it two lists.  Parsing the
+arguments as a single list would allow or perhaps even
+encourage passing both kinds of data in the argument
+liker, perhaps with some kind of delimiter, but this is
+a clumsy and stipulative solution which should be avoided.
+
+By going this route, Robin does give up a certain kind of
+simplicity.  Functions like `add` and `multiply` *can*
+naturally be thought of as taking any number of parameters.
+`compose`, a function to compose functions, would too.
+
+But this is because these functions work on monoids.
+And not all functions work on monoids (`divide`, for
+example, is not associative.)  And when we do have
+functions that work this way, we usually name them
+differently: `sum` and `product` (and for functions it
+could be `seq` or `pipe`.)  We can use these names for
+the distinct versions of these functions that take lists,
+and implement them with general monoidal processing
+machinery a la `mconcat`.
 
 Module System
 -------------
@@ -224,3 +349,5 @@ Markdown.)
 
   </td></tr>
 </table>
+
+[Pixley]: https://catseye.tc/node/Pixley

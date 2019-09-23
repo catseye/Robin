@@ -75,7 +75,7 @@ supplied to a function call.
 
 '<<SPEC'
 
-(define fun (macro (self args env)
+(define-if-absent fun (macro (self args env)
   (bind extend-with-args (macro (self args env)
     (bind-args (env-to-extend formals actuals env-for-actuals) args env
       (if (equal? formals ())

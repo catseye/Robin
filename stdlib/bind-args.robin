@@ -77,7 +77,7 @@ become clear here: typically you would just pass the macro's `args` and
 
 '<<SPEC'
 
-(define bind-args
+(define-if-absent bind-args
   (macro (self args env)
     (let (
       (id-list       (head args))

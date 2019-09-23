@@ -32,9 +32,12 @@ to runtime system that an error occurred.
 Stdlib
 ------
 
-Rename "small" to "core" or "base" or something.
-
 `(compose f1 f2)` composes two functions.
+
+`(sgn x)`
+
+`(modulo x y)` which is always positive, change `remainder` to
+be sign of divisor (like R6RS.)
 
 Other libs
 ----------
@@ -54,9 +57,7 @@ have their standard meanings.
 Tests
 -----
 
-Tests for Evaluate Robin Expression (with literal)
-
-Grep for FIXME and TODO in stdlib.
+Grep for FIXME in stdlib.
 
 Reactors
 --------
@@ -66,6 +67,9 @@ Perhaps namespace each event name.
 A more involved environment, with more facilities than just
 `line-terminal`.  Multiplexed I/O would be a start, could write an
 IRC client.  Could also define an environment for web pages.
+
+For that matter, `HasteMain.hs` should inject facilities that
+only make sense in the HTML5 DOM.
 
 Subscription and unsubscription from facilities using standard commands.
 
@@ -81,11 +85,10 @@ obtain a function, and applying that function.
 Rename
 ------
 
+Rename "small" to "base".
+
 Rename `fun` to `function`.  This is because Robin prefers full words
 over abbreviations, which are jargon-y.
-
-Rename `>` to `greater-than?`, and so forth.  Figure out a place to
-put the aliases-which-are-punctuation-y.
 
 Rename `raise` to `throw`.  This is because `throw` is the opposite
 of `catch`.  Also "raise" suggests an error, but it might be merely a
