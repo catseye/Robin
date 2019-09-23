@@ -6,6 +6,8 @@ Robin 0.5 (Late Sep 2019)
 
 *   The `define-if-absent` top-level form was added.
 *   Fixed a bug in definition of `multiply`.
+*   Renamed `>`, `>=`, `<`, and `<=` to `gt?`, `gte?`,
+    `lt?`, and `lte?` respectively.
 *   Several definitions fixed to not expose extra symbols
     that they don't define.
 
