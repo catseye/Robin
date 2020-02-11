@@ -13,7 +13,7 @@ import Language.Robin.Eval
 -- 
 -- Note, these are functions which are built-in to the Robin reference
 -- intepreter, for performance, but they are *not* intrinsic to the
--- Robin language.  (See Intrinsics.lhs for those.)
+-- Robin language.  (See Intrinsics.hs for those.)
 --
 
 --
@@ -38,7 +38,7 @@ evalArgs formals actuals origActuals env i cc =
                 evalArgs' formals actuals origActuals env i (\nenv ->
                     cc $ Env.insert formal value nenv))
         evalArgs' _ _ origActuals _ i cc =
-            raise i (errMsg "illegal-arguments" (List origActuals))
+            raise i $ errMsg "illegal-arguments" $ List origActuals
 
 --              formals   actuals   origActuals envExpr i            wierd-cc
 evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
@@ -56,7 +56,7 @@ evalTwoNumbers fn i env (List [xexpr, yexpr]) cc =
             eval i env yexpr (\y ->
                 assertNumber i y (\(Number yv) ->
                     cc (fn xv  yv)))))
-evalTwoNumbers fn i env other cc = raise i (errMsg "illegal-arguments" other)
+evalTwoNumbers fn i env other cc = raise i $ errMsg "illegal-arguments" other
 
 --
 -- `Small`
@@ -69,7 +69,7 @@ evalTwoNumbers fn i env other cc = raise i (errMsg "illegal-arguments" other)
 literal :: Evaluable
 literal i env (List (expr:_)) cc =
     cc expr
-literal i env other cc = raise i (errMsg "illegal-arguments" other)
+literal i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinList :: Evaluable
 robinList i env (List exprs) cc =
@@ -89,13 +89,13 @@ choose i env (List ((List [test, branch]):rest)) cc =
                 eval i env branch cc
             Boolean False ->
                 choose i env (List rest) cc)
-choose i env other cc = raise i (errMsg "illegal-arguments" other)
+choose i env other cc = raise i $ errMsg "illegal-arguments" other
 
 bind :: Evaluable
 bind i env (List [(Symbol name), expr, body]) cc =
     eval i env expr (\value ->
         eval i (Env.insert name value env) body cc)
-bind i env other cc = raise i (errMsg "illegal-arguments" other)
+bind i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinLet :: Evaluable
 robinLet i env (List ((List bindings):body:_)) cc =
@@ -109,7 +109,7 @@ robinLet i env (List ((List bindings):body:_)) cc =
             bindAll rest (Env.insert name value env) ienv cc)
     bindAll (other:rest) env ienv cc =
         raise ienv (errMsg "illegal-binding" other)
-robinLet i env other cc = raise i (errMsg "illegal-arguments" other)
+robinLet i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinBindArgs :: Evaluable
 robinBindArgs i env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
@@ -117,7 +117,7 @@ robinBindArgs i env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
         eval i env givenEnvExpr (\outerEnvExpr ->
             evalArgsExpr formals actuals actuals outerEnvExpr i (\argEnv ->
                 eval i (Env.mergeEnvs argEnv env) body cc)))
-robinBindArgs i env other cc = raise i (errMsg "illegal-arguments" other)
+robinBindArgs i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinFun :: Evaluable
 robinFun i closedEnv (List [(List formals), body]) cc =
@@ -126,7 +126,7 @@ robinFun i closedEnv (List [(List formals), body]) cc =
     fun i env (List actuals) cc =
         evalArgs formals actuals actuals env i (\argEnv ->
             eval i (Env.mergeEnvs argEnv closedEnv) body cc)
-robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
+robinFun i env other cc = raise i $ errMsg "illegal-arguments" other
 
 --
 -- `Arith`
@@ -166,9 +166,9 @@ robinDivide i env (List [xexpr, yexpr]) cc =
             eval i env yexpr (\y ->
                 assertNumber i y (\(Number yv) ->
                     case yv of
-                        0 -> raise i (errMsg "division-by-zero" (Number xv))
-                        _ -> cc (Number (xv `div` yv))))))
-robinDivide i env other cc = raise i (errMsg "illegal-arguments" other)
+                        0 -> raise i $ errMsg "division-by-zero" $ Number xv
+                        _ -> cc $ Number (xv `div` yv)))))
+robinDivide i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinRemainder :: Evaluable
 robinRemainder i env (List [xexpr, yexpr]) cc =
@@ -177,9 +177,9 @@ robinRemainder i env (List [xexpr, yexpr]) cc =
             eval i env yexpr (\y ->
                 assertNumber i y (\(Number yv) ->
                     case yv of
-                        0 -> raise i (errMsg "division-by-zero" (Number xv))
-                        _ -> cc (Number (abs (xv `mod` yv)))))))
-robinRemainder i env other cc = raise i (errMsg "illegal-arguments" other)
+                        0 -> raise i $ errMsg "division-by-zero" $ Number xv
+                        _ -> cc $ Number (abs (xv `mod` yv))))))
+robinRemainder i env other cc = raise i $ errMsg "illegal-arguments" other
 
 --
 -- Mapping of names to our functions, providing an evaluation environment.
