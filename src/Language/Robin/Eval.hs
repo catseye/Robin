@@ -72,7 +72,7 @@ makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
                (Symbol envFormal)]) = argList
         newEnv = insert argSelf m closedEnv
         newEnv' = insert argFormal actuals newEnv
-        newEnv'' = insert envFormal (envToExpr env) newEnv'
+        newEnv'' = insert envFormal env newEnv'
     in
         newEnv''
 
@@ -98,10 +98,3 @@ assertBoolean i = assert i (isBoolean) "expected-boolean"
 assertList i = assert i (isList) "expected-list"
 assertNumber i = assert i (isNumber) "expected-number"
 assertMacro i = assert i (isMacro) "expected-macro"
-
-assertExprToEnv i envExpr k =
-    case exprToEnv envExpr of
-        Right env ->
-            k env
-        Left (msg, value) ->
-            raise i $ errMsg msg value

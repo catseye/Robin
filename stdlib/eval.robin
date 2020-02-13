@@ -42,12 +42,12 @@ precedence.
 
 `eval` will happily use whatever type of value you like as the
 environment, however, subsequent evaluation will fail when it
-tries to look up things in that environment.
+tries to look up things in that environment.  FIXME: (expected-env-alist 103)
 
     |   (eval 103 (literal
     |     (prepend (literal a)
     |              (prepend (literal b) ()))))
-    ? uncaught exception: (expected-env-alist 103)
+    ? uncaught exception
 
 Evaluation expects the contents of the list which makes up the
 environment to be two-element lists.  FIXME

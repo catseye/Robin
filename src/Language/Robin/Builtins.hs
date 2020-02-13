@@ -66,7 +66,7 @@ robinList i env (List exprs) cc =
 
 robinEnv :: Evaluable
 robinEnv i env (List _) cc =
-    cc $ envToExpr env
+    cc $ env
 
 choose :: Evaluable
 choose i env (List [(List [(Symbol "else"), branch])]) cc =
@@ -104,9 +104,8 @@ robinBindArgs :: Evaluable
 robinBindArgs i env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
     eval i env givenArgs (\(List actuals) ->
         eval i env givenEnvExpr (\outerEnvExpr ->
-            assertExprToEnv i outerEnvExpr (\outerEnv ->
-                evalArgs formals actuals actuals outerEnv i (\argEnv ->
-                    eval i (mergeEnvs argEnv env) body cc))))
+            evalArgs formals actuals actuals outerEnvExpr i (\argEnv ->
+                eval i (mergeEnvs argEnv env) body cc)))
 robinBindArgs i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinFun :: Evaluable

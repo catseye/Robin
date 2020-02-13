@@ -69,6 +69,7 @@ find s (List (List [Symbol t, value]:rest))
     | s == t    = Just value
     | otherwise = find s (List rest)
 find s (List (_:rest)) = find s (List rest)
+find _ (_) = Nothing
 
 fromList :: [(String, Expr)] -> Env
 fromList [] = empty
@@ -83,34 +84,6 @@ mergeEnvs (List a) (List b) = (List (a ++ b))
 
 append (List x) (List y) =
     List (x ++ y)
-
---
--- Given a list of pairs (two-elements lists) of symbols and values,
--- return either an Env where each symbol is associated with its value,
--- or an error message describing why the Env could not be created.
---
-
--- exprToEnv :: Expr -> Either (String, Expr) Env
--- exprToEnv (List []) = Right empty
--- exprToEnv (List (first:rest)) =
---     case first of
---         List [Symbol s, value] ->
---             case exprToEnv (List rest) of
---                 Right remainder -> Right (insert s value remainder)
---                 other -> other
---         List [other, _] ->
---             Left ("expected-symbol", other)
---         other ->
---             Left ("expected-env-entry", other)
--- exprToEnv other = Left ("expected-env-alist", other)
-
-
-exprToEnv :: Expr -> Either (String, Expr) Env
-exprToEnv env@(List _) = Right env
-exprToEnv other = Left ("expected-env-alist", other)
-
-envToExpr :: Env -> Expr
-envToExpr env = env
 
 --
 -- Predicates

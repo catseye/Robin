@@ -24,13 +24,6 @@ robinExpr str = insist $ parseExpr str
 stdEval env expr = eval (IEnv stop) env expr id
 
 
-propEnvExpr :: [(String, Int32)] -> Bool
-propEnvExpr entries =
-    exprToEnv (envToExpr env) == Right env
-    where
-        env = fromList $ map (\(k,v) -> (k, Number v)) entries
-
-
 --
 -- (gt? a b) should match Haskell's `a > b` in all cases.
 --
@@ -57,7 +50,7 @@ propEnv env entries =
     stdEval env expr == Boolean True
     where
         expr = List [Symbol "env?", List [Symbol "literal", alist]]
-        alist = envToExpr $ fromList $ map (\(k,v) -> (k, Number v)) entries
+        alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 
 --
@@ -70,7 +63,7 @@ propDel env sym entries =
     where
         litSym = List [Symbol "literal", Symbol sym]
         expr = List [Symbol "lookup", litSym, List [Symbol "delete", litSym, List [Symbol "literal", alist]]]
-        alist = envToExpr $ fromList $ map (\(k,v) -> (k, Number v)) entries
+        alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 --
 -- The following should be true for any symbol s and binding alist a:
@@ -82,7 +75,7 @@ propExt env sym entries =
     where
         litSym = List [Symbol "literal", Symbol sym]
         expr = List [Symbol "lookup", litSym, List [Symbol "extend", litSym, Number 1, List [Symbol "literal", alist]]]
-        alist = envToExpr $ fromList $ map (\(k,v) -> (k, Number v)) entries
+        alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 
 testAll = do
