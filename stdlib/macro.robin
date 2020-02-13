@@ -2,10 +2,7 @@
 
 ### `macro` ###
 
-FIXME: These tests should ideally be for expressions in the Robin Expression Language
-rather than programs in the Robin Toplevel Language.
-
-    -> Tests for functionality "Execute core Robin Toplevel Program"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 `macro` takes its first argument to be a list of three formal
 parameters, and its second argument to be an arbitrary expression,
@@ -25,186 +22,101 @@ instance to avoid shadowing.
 `literal`, in fact, can be defined as a macro, and it is one of the
 simplest possible macros that can be written:
 
-    | (display
-    |   ((macro (self args env) (head args)) (why hello there)))
+    | ((macro (self args env) (head args)) (why hello there))
     = (why hello there)
 
-And when we want to use it in the tests, we'll define it first, like
-this:
-
-    (define literal (macro (s a e) (head a)))
-
-Another facility that can be defined simply by a macro is `env`,
-and we'll define it like this:
+Another facility that can be defined simply by a macro is `env`:
 
     (define env (macro (s a e) e))
+
+These tests are written against the "small" library, which defines
+both of these symbols (and a few others such as `bind` and `let`).
 
 Macros have "closure" behavior; that is, bindings in force when a
 macro is defined will still be in force when the macro is applied,
 even if they are no longer lexically in scope.  (Please try to ignore
 the heavy `define`s that are used in this test...)
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (define let (macro (self args env)
-    |   (bind bindings (head args)
-    |     (if (equal? bindings ())
-    |       (eval env (head (tail args)))
-    |       (bind binding (head bindings)
-    |         (bind name (head binding)
-    |           (if (symbol? name)
-    |             (bind value (eval env (head (tail binding)))
-    |               (bind newenv (prepend (prepend name (prepend value ())) env)
-    |                 (bind newbindings (tail bindings)
-    |                   (bind newargs (prepend newbindings (tail args))
-    |                     (eval newenv (prepend self newargs))))))
-    |             (raise (prepend (literal illegal-binding) (prepend binding ()))))))))))
-    | (display
-    |   ((let
-    |      ((a (literal these-are))
-    |       (m (macro (self args env) (prepend a args))))
-    |     m) my args))
+    | ((let
+    |    ((a (literal these-are))
+    |     (m (macro (self args env) (prepend a args))))
+    |   m) my args)
     = (these-are my args)
 
 Macros can return macros.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (define let (macro (self args env)
-    |   (bind bindings (head args)
-    |     (if (equal? bindings ())
-    |       (eval env (head (tail args)))
-    |       (bind binding (head bindings)
-    |         (bind name (head binding)
-    |           (if (symbol? name)
-    |             (bind value (eval env (head (tail binding)))
-    |               (bind newenv (prepend (prepend name (prepend value ())) env)
-    |                 (bind newbindings (tail bindings)
-    |                   (bind newargs (prepend newbindings (tail args))
-    |                     (eval newenv (prepend self newargs))))))
-    |             (raise (prepend (literal illegal-binding) (prepend binding ()))))))))))
-    | (display
-    |   (let
-    |     ((mk (macro (self argsa env)
-    |         (macro (self argsb env)
-    |           (prepend (head argsb) argsa))))
-    |      (mk2 (mk vindaloo)))
-    |     (mk2 chicken)))
+    | (let
+    |   ((mk (macro (self argsa env)
+    |       (macro (self argsb env)
+    |         (prepend (head argsb) argsa))))
+    |    (mk2 (mk vindaloo)))
+    |   (mk2 chicken))
     = (chicken vindaloo)
 
 Arguments to macros shadow any other bindings in effect.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (define let (macro (self args env)
-    |   (bind bindings (head args)
-    |     (if (equal? bindings ())
-    |       (eval env (head (tail args)))
-    |       (bind binding (head bindings)
-    |         (bind name (head binding)
-    |           (if (symbol? name)
-    |             (bind value (eval env (head (tail binding)))
-    |               (bind newenv (prepend (prepend name (prepend value ())) env)
-    |                 (bind newbindings (tail bindings)
-    |                   (bind newargs (prepend newbindings (tail args))
-    |                     (eval newenv (prepend self newargs))))))
-    |             (raise (prepend (literal illegal-binding) (prepend binding ()))))))))))
-    | (display
-    |   (let
-    |     ((args (literal a))
-    |      (b (macro (self args env) (prepend args args))))
-    |     (b 7)))
+    | (let
+    |   ((args (literal a))
+    |    (b (macro (self args env) (prepend args args))))
+    |   (b 7))
     = ((7) 7)
 
 `self` is there to let you write recursive macros.  The following
 example demonstrates this; it evaluates `(prepend b d)` in an environment
 where all the identifiers you list after `qqq` have been bound to 0.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (display
-    |   (bind qqq
-    |     (macro (self args env)
-    |       (if (equal? args ())
-    |         (eval env (literal (prepend b (prepend d ()))))
-    |         (eval (prepend (prepend (head args) (prepend 0 ())) env)
-    |           (prepend self (tail args)))))
-    |     (bind b 1 (bind d 4 (qqq b c d)))))
+    | (bind qqq
+    |   (macro (self args env)
+    |     (if (equal? args ())
+    |       (eval env (literal (prepend b (prepend d ()))))
+    |       (eval (prepend (prepend (head args) (prepend 0 ())) env)
+    |         (prepend self (tail args)))))
+    |   (bind b 1 (bind d 4 (qqq b c d))))
     = (0 0)
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (display
-    |   (bind qqq
-    |     (macro (self args env)
-    |       (if (equal? args ())
-    |         (eval env (literal (prepend b (prepend d ()))))
-    |         (eval (prepend (prepend (head args) (prepend 0 ())) env)
-    |           (prepend self (tail args)))))
-    |     (bind b 1 (bind d 4 (qqq x y z)))))
+    | (bind qqq
+    |   (macro (self args env)
+    |     (if (equal? args ())
+    |       (eval env (literal (prepend b (prepend d ()))))
+    |       (eval (prepend (prepend (head args) (prepend 0 ())) env)
+    |         (prepend self (tail args)))))
+    |   (bind b 1 (bind d 4 (qqq x y z))))
     = (1 4)
 
-Your recursive `macro` application doesn't have to be tail-recursive.
+A recursive `macro` application doesn't have to be tail-recursive.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (display
-    |   (bind make-env
-    |     (macro (self args env)
-    |       (if (equal? args ())
-    |         ()
-    |         (prepend (prepend (head args)
-    |                     (prepend (eval env (head args)) ()))
-    |           (eval env
-    |             (prepend self (tail args))))))
-    |     (bind b 1 (bind d 4 (make-env b d macro)))))
+    | (bind make-env
+    |   (macro (self args env)
+    |     (if (equal? args ())
+    |       ()
+    |       (prepend (prepend (head args)
+    |                   (prepend (eval env (head args)) ()))
+    |         (eval env
+    |           (prepend self (tail args))))))
+    |   (bind b 1 (bind d 4 (make-env b d macro))))
     = ((b 1) (d 4) (macro macro))
 
 `macro` expects exactly two arguments.
 
-    | (display
-    |   ((macro (self args env)) (why hello there)))
+    |   ((macro (self args env)) (why hello there))
     ? uncaught exception: (illegal-arguments ((self args env)))
 
-    | (display
-    |   ((macro (self args env) prepend prepend) (why hello there)))
+    |   ((macro (self args env) prepend prepend) (why hello there))
     ? uncaught exception: (illegal-arguments ((self args env) prepend prepend))
 
 `macro` expects its first argument to be a list of exactly three
 symbols.
 
-    | (display
-    |   ((macro 100 prepend) (why hello there)))
+    |   ((macro 100 prepend) (why hello there))
     ? uncaught exception: (illegal-arguments (100 prepend))
 
-    | (display
-    |   ((macro (self args) prepend) (why hello there)))
+    |   ((macro (self args) prepend) (why hello there))
     ? uncaught exception: (illegal-arguments ((self args) prepend))
 
-    | (display
-    |   ((macro (self args env foo) prepend) (why hello there)))
+    |   ((macro (self args env foo) prepend) (why hello there))
     ? uncaught exception: (illegal-arguments ((self args env foo) prepend))
 
-    | (display
-    |   ((macro (self args 99) prepend) (why hello there)))
+    |   ((macro (self args 99) prepend) (why hello there))
     ? uncaught exception: (illegal-arguments ((self args 99) prepend))
 
 '<<SPEC'

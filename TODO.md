@@ -54,11 +54,6 @@ statically check the arity of every application, for instance.
 Note that this relies on the assumption that all standard symbols
 have their standard meanings.
 
-Tests
------
-
-Grep for FIXME in stdlib.
-
 Reactors
 --------
 

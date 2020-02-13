@@ -2,10 +2,7 @@
 
 ### `catch` ###
 
-FIXME: We don't really need all of List for these tests, just `list`
-and `literal`.
-
-    -> Tests for functionality "Evaluate Robin Expression (with List)"
+    -> Tests for functionality "Evaluate Robin Expression (with literal and list)"
 
 `catch` installs an exception handler.
 
@@ -21,9 +18,8 @@ evaluated in that new environment.
 If an exception is raised in the body of a macro that is applied
 in the context of a `catch`, it will still be catched.
 
-    | (bind errorful (macro (self args env) (raise (literal (nasty-value 1111))))
-    |   (catch error (list error #f)
-    |     (errorful joe)))
+    | (catch error (list error #f)
+    |   ((macro (self args env) (raise (literal (nasty-value 1111)))) joe))
     = ((nasty-value 1111) #f)
 
 If nothing is raised, `catch` will evaluate to whatever its body

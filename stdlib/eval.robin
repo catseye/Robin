@@ -2,103 +2,75 @@
 
 ### `eval` ###
 
-FIXME: These tests should ideally be for expressions in the Robin Expression Language
-rather than programs in the Robin Toplevel Language.
-
-    -> Tests for functionality "Execute core Robin Toplevel Program"
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 `eval` evaluates its first argument to obtain an environment, then
 evaluates its second argument to obtain an S-expression; it then
 evaluates that S-expression in the given environment.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define env (macro (s a e) e))
-    | (display
-    |   (eval (env) (literal
-    |     (prepend (literal a)
-    |               (prepend (literal b) ())))))
+    | (eval (env) (literal
+    |   (prepend (literal a)
+    |             (prepend (literal b) ()))))
     = (a b)
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
-    |   (eval () (literal
-    |     (prepend (literal a)
-    |               (prepend (literal b) ())))))
+    | (eval () (literal
+    |   (prepend (literal a)
+    |             (prepend (literal b) ()))))
     ? uncaught exception: (unbound-identifier prepend)
 
 Something fairly complicated that uses `bind`...?
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (display
-    |   (bind bindings (prepend
-    |                    (prepend (literal same) (prepend equal? ()))
-    |                    (prepend
-    |                      (prepend (literal x) (prepend #f ()))
-    |                      ()))
-    |     (eval bindings (literal (same x x)))))
+    | (bind bindings (prepend
+    |                  (prepend (literal same) (prepend equal? ()))
+    |                  (prepend
+    |                    (prepend (literal x) (prepend #f ()))
+    |                    ()))
+    |   (eval bindings (literal (same x x))))
     = #t
 
 If two bindings for the same identifier are supplied in the environment
 alist passed to `eval`, the one closer to the front of the alist takes
 precedence.
 
-    | (define literal (macro (s a e) (head a)))
-    | (define bind (macro (self args env)
-    |   (eval
-    |     (prepend (prepend (head args) (prepend (eval env (head (tail args))) ())) env)
-    |     (head (tail (tail args))))))
-    | (display
     |   (bind bindings (prepend
     |                    (prepend (literal foo) (prepend (literal yes) ()))
     |                    (prepend
     |                       (prepend (literal foo) (prepend (literal no) ()))
     |                       ()))
-    |     (eval bindings (literal foo))))
+    |     (eval bindings (literal foo)))
     = yes
 
 `eval` will happily use whatever type of value you like as the
 environment, however, subsequent evaluation will fail when it
 tries to look up things in that environment.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
     |   (eval 103 (literal
     |     (prepend (literal a)
-    |              (prepend (literal b) ())))))
+    |              (prepend (literal b) ()))))
     ? uncaught exception: (expected-env-alist 103)
 
 Evaluation expects the contents of the list which makes up the
 environment to be two-element lists.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
     |   (eval (prepend #f ()) (literal
     |     (prepend (literal a)
-    |              (prepend (literal b) ())))))
+    |              (prepend (literal b) ()))))
     ? uncaught exception: (expected-env-entry #f)
 
 Evaluation expects the head of each sublist in the list which makes up the
 environment to be a symbol.
 
-    | (define literal (macro (s a e) (head a)))
-    | (display
     |   (eval (prepend (prepend 7 (prepend #f ())) ()) (literal
     |     (prepend (literal a)
-    |              (prepend (literal b) ())))))
+    |              (prepend (literal b) ()))))
     ? uncaught exception: (expected-symbol 7)
 
 `eval` expects exactly two arguments.
 
-    | (display
-    |   (eval))
+    |   (eval)
     ? uncaught exception: (illegal-arguments ())
 
-    | (display
-    |   (eval 4 5 6))
+    |   (eval 4 5 6)
     ? uncaught exception: (illegal-arguments (4 5 6))
 
 '<<SPEC'
