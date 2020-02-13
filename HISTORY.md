@@ -4,7 +4,9 @@ History of Robin
 Robin 0.6
 ---------
 
-*   Clean up of source code.  No language changes.
+*   Clean up of source code: stylistic and refactoring.
+*   No dedicated `Env` ADT; environments are `Expr`s.
+*   No language changes.
 
 Robin 0.5 (Late Sep 2019)
 ---------
