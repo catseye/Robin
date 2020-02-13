@@ -1,7 +1,7 @@
 module Language.Robin.Eval where
 
-import qualified Language.Robin.Env as Env
-import Language.Robin.Env (Env)
+--import qualified Language.Robin.Env as Env
+--import Language.Robin.Env (Env)
 import Language.Robin.Expr
 
 --
@@ -27,7 +27,7 @@ import Language.Robin.Expr
 eval :: Evaluable
 
 eval i env sym@(Symbol s) cc =
-    case Env.find s env of
+    case find s env of
         Just value ->
             cc value
         Nothing ->
@@ -65,14 +65,14 @@ eval i env e cc =
 errMsg msg term =
     List [(Symbol msg), term]
 
-makeMacroEnv :: Env Expr -> Expr -> Expr -> Env Expr
+makeMacroEnv :: Env -> Expr -> Expr -> Env
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
     let
         (List [(Symbol argSelf), (Symbol argFormal),
                (Symbol envFormal)]) = argList
-        newEnv = Env.insert argSelf m closedEnv
-        newEnv' = Env.insert argFormal actuals newEnv
-        newEnv'' = Env.insert envFormal (envToExpr env) newEnv'
+        newEnv = insert argSelf m closedEnv
+        newEnv' = insert argFormal actuals newEnv
+        newEnv'' = insert envFormal (envToExpr env) newEnv'
     in
         newEnv''
 

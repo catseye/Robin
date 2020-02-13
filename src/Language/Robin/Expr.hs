@@ -3,22 +3,24 @@ module Language.Robin.Expr where
 import Data.Char
 import Data.Int
 
-import qualified Language.Robin.Env as Env
-import Language.Robin.Env (Env)
-
 --
 -- An _evaluable_ is a Haskell object which behaves like a Robin macro.
 -- It describes builtins (which includes intrinsics), and also happens
 -- (perhaps unsurprisingly?) to be the type of the evaluator function.
 --
 
-type Evaluable = IEnv Expr -> Env Expr -> Expr -> (Expr -> Expr) -> Expr
---            internal-env    env         args    continuation      result
+type Evaluable = IEnv Expr -> Env -> Expr -> (Expr -> Expr) -> Expr
+--            internal-env    env    args    continuation      result
+
+--
+-- Basic expressions in Robin.  These may be evaluated, or they may be
+-- the result of evaluating an expression.
+--
 
 data Expr = Symbol String
           | Boolean Bool
           | Number Int32
-          | Macro (Env Expr) Expr Expr
+          | Macro Env Expr Expr
           | Intrinsic String Evaluable
           | List [Expr]
 
@@ -45,6 +47,37 @@ instance Show Expr where
                                      showl (expr:exprs) = (show expr) ++ " " ++ (showl exprs)
 
 --
+-- An environment is an alist which associates symbols with
+-- values (arbitrary S-expressions).
+--
+
+type Env = Expr
+
+empty :: Env
+empty = List []
+
+insert :: String -> Expr -> Env -> Env
+insert s value (List bindings) =
+    let
+       entry = List [Symbol s, value]
+    in
+       List (entry:bindings)
+
+find :: String -> Env -> Maybe Expr
+find _ (List []) = Nothing
+find s (List (List [Symbol t, value]:rest))
+    | s == t    = Just value
+    | otherwise = find s (List rest)
+find s (List (_:rest)) = find s (List rest)
+
+fromList :: [(String, Expr)] -> Env
+fromList [] = empty
+fromList ((s, val):rest) = insert s val $ fromList rest
+
+mergeEnvs :: Env -> Env -> Env
+mergeEnvs (List a) (List b) = (List (a ++ b))
+
+--
 -- Helpers
 --
 
@@ -56,24 +89,28 @@ append (List x) (List y) =
 -- return either an Env where each symbol is associated with its value,
 -- or an error message describing why the Env could not be created.
 --
-exprToEnv :: Expr -> Either (String, Expr) (Env Expr)
-exprToEnv (List []) = Right Env.empty
-exprToEnv (List (first:rest)) =
-    case first of
-        List [Symbol s, value] ->
-            case exprToEnv (List rest) of
-                Right remainder -> Right (Env.insert s value remainder)
-                other -> other
-        List [other, _] ->
-            Left ("expected-symbol", other)
-        other ->
-            Left ("expected-env-entry", other)
+
+-- exprToEnv :: Expr -> Either (String, Expr) Env
+-- exprToEnv (List []) = Right empty
+-- exprToEnv (List (first:rest)) =
+--     case first of
+--         List [Symbol s, value] ->
+--             case exprToEnv (List rest) of
+--                 Right remainder -> Right (insert s value remainder)
+--                 other -> other
+--         List [other, _] ->
+--             Left ("expected-symbol", other)
+--         other ->
+--             Left ("expected-env-entry", other)
+-- exprToEnv other = Left ("expected-env-alist", other)
+
+
+exprToEnv :: Expr -> Either (String, Expr) Env
+exprToEnv env@(List _) = Right env
 exprToEnv other = Left ("expected-env-alist", other)
 
-envToExpr :: Env Expr -> Expr
-envToExpr (Env.Env []) = List []
-envToExpr (Env.Env ((s, value):rest)) =
-    append (List [List [Symbol s, value]]) (envToExpr (Env.Env rest))
+envToExpr :: Env -> Expr
+envToExpr env = env
 
 --
 -- Predicates

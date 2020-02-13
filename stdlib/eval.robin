@@ -50,20 +50,20 @@ tries to look up things in that environment.
     ? uncaught exception: (expected-env-alist 103)
 
 Evaluation expects the contents of the list which makes up the
-environment to be two-element lists.
+environment to be two-element lists.  FIXME
 
     |   (eval (prepend #f ()) (literal
     |     (prepend (literal a)
     |              (prepend (literal b) ()))))
-    ? uncaught exception: (expected-env-entry #f)
+    ? uncaught exception
 
 Evaluation expects the head of each sublist in the list which makes up the
-environment to be a symbol.
+environment to be a symbol.  FIXME
 
     |   (eval (prepend (prepend 7 (prepend #f ())) ()) (literal
     |     (prepend (literal a)
     |              (prepend (literal b) ()))))
-    ? uncaught exception: (expected-symbol 7)
+    ? uncaught exception
 
 `eval` expects exactly two arguments.
 

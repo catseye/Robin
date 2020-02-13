@@ -2,8 +2,8 @@ module Language.Robin.Builtins where
 
 import Data.Int
 
-import qualified Language.Robin.Env as Env
-import Language.Robin.Env (Env)
+--import qualified Language.Robin.Env as Env
+--import Language.Robin.Env (Env)
 import Language.Robin.Expr
 import Language.Robin.Eval
 
@@ -26,14 +26,14 @@ evalAll i env (head:tail) acc cc =
     eval i env head (\value ->
         evalAll i env tail (value:acc) cc)
 
---          formals   actuals   origActuals env         i            wierd-cc
-evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
+--          formals   actuals   origActuals env    i            wierd-cc
+evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env -> IEnv Expr -> (Env -> Expr) -> Expr
 evalArgs [] [] _ _ _ cc =
-    cc Env.empty
+    cc empty
 evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env i cc =
     eval i env actual (\value ->
         evalArgs formals actuals origActuals env i (\nenv ->
-            cc $ Env.insert formal value nenv))
+            cc $ insert formal value nenv))
 evalArgs _ _ origActuals _ i cc =
     raise i $ errMsg "illegal-arguments" $ List origActuals
 
@@ -83,7 +83,7 @@ choose i env other cc = raise i $ errMsg "illegal-arguments" other
 bind :: Evaluable
 bind i env (List [(Symbol name), expr, body]) cc =
     eval i env expr (\value ->
-        eval i (Env.insert name value env) body cc)
+        eval i (insert name value env) body cc)
 bind i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinLet :: Evaluable
@@ -95,7 +95,7 @@ robinLet i env (List ((List bindings):body:_)) cc =
         cc env
     bindAll (List ((Symbol name):sexpr:_):rest) env ienv cc =
         eval ienv env sexpr (\value ->
-            bindAll rest (Env.insert name value env) ienv cc)
+            bindAll rest (insert name value env) ienv cc)
     bindAll (other:rest) env ienv cc =
         raise ienv (errMsg "illegal-binding" other)
 robinLet i env other cc = raise i $ errMsg "illegal-arguments" other
@@ -106,7 +106,7 @@ robinBindArgs i env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
         eval i env givenEnvExpr (\outerEnvExpr ->
             assertExprToEnv i outerEnvExpr (\outerEnv ->
                 evalArgs formals actuals actuals outerEnv i (\argEnv ->
-                    eval i (Env.mergeEnvs argEnv env) body cc))))
+                    eval i (mergeEnvs argEnv env) body cc))))
 robinBindArgs i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinFun :: Evaluable
@@ -115,7 +115,7 @@ robinFun i closedEnv (List [(List formals), body]) cc =
   where
     fun i env (List actuals) cc =
         evalArgs formals actuals actuals env i (\argEnv ->
-            eval i (Env.mergeEnvs argEnv closedEnv) body cc)
+            eval i (mergeEnvs argEnv closedEnv) body cc)
 robinFun i env other cc = raise i $ errMsg "illegal-arguments" other
 
 --
@@ -175,8 +175,8 @@ robinRemainder i env other cc = raise i $ errMsg "illegal-arguments" other
 -- Mapping of names to our functions, providing an evaluation environment.
 --
 
-robinBuiltins :: Env Expr
-robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
+robinBuiltins :: Env
+robinBuiltins = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("literal",   literal),
         ("list",      robinList),

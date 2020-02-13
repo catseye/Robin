@@ -1,7 +1,7 @@
 module Language.Robin.Intrinsics where
 
-import qualified Language.Robin.Env as Env
-import Language.Robin.Env (Env)
+--import qualified Language.Robin.Env as Env
+--import Language.Robin.Env (Env)
 import Language.Robin.Expr
 import Language.Robin.Eval
 
@@ -98,14 +98,14 @@ robinCatch :: Evaluable
 robinCatch i env (List [(Symbol s), handler, body]) cc =
     let
         handlerContinuation = (\errvalue ->
-            eval i (Env.insert s errvalue env) handler cc)
+            eval i (insert s errvalue env) handler cc)
         i' = setExceptionHandler handlerContinuation i
     in
         eval i' env body cc
 robinCatch i env other cc = raise i (errMsg "illegal-arguments" other)
 
-robinIntrinsics :: Env Expr
-robinIntrinsics = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
+robinIntrinsics :: Env
+robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("head",     robinHead),
         ("tail",     robinTail),

@@ -5,7 +5,7 @@ import System.Exit
 
 import Language.Robin.CmdLine
 
-import Language.Robin.Env (mergeEnvs)
+import Language.Robin.Expr (mergeEnvs)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
 
