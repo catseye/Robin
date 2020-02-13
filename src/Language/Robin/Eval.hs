@@ -95,8 +95,8 @@ assert env pred msg expr cc =
         True -> cc expr
         False -> raise env (errMsg msg expr)
 
-assertSymbol i = assert i (isSymbol) "expected-symbol"
-assertBoolean i = assert i (isBoolean) "expected-boolean"
-assertList i = assert i (isList) "expected-list"
-assertNumber i = assert i (isNumber) "expected-number"
-assertMacro i = assert i (isMacro) "expected-macro"
+assertSymbol env = assert env (isSymbol) "expected-symbol"
+assertBoolean env = assert env (isBoolean) "expected-boolean"
+assertList env = assert env (isList) "expected-list"
+assertNumber env = assert env (isNumber) "expected-number"
+assertMacro env = assert env (isMacro) "expected-macro"
