@@ -13,7 +13,7 @@ import Language.Robin.Env (Env)
 --
 
 type Evaluable = IEnv Expr -> Env Expr -> Expr -> (Expr -> Expr) -> Expr
---            internal-env    env             args    continuation      result
+--            internal-env    env         args    continuation      result
 
 data Expr = Symbol String
           | Boolean Bool
@@ -51,6 +51,11 @@ instance Show Expr where
 append (List x) (List y) =
     List (x ++ y)
 
+--
+-- Given a list of pairs (two-elements lists) of symbols and values,
+-- return either an Env where each symbol is associated with its value,
+-- or an error message describing why the Env could not be created.
+--
 exprToEnv :: Expr -> Either (String, Expr) (Env Expr)
 exprToEnv (List []) = Right Env.empty
 exprToEnv (List (first:rest)) =

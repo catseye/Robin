@@ -40,11 +40,8 @@ evalArgs _ _ origActuals _ i cc =
 --              formals   actuals   origActuals envExpr i            wierd-cc
 evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
 evalArgsExpr formals actuals origActuals envExpr i cc =
-    case exprToEnv envExpr of
-        Right env ->
-            evalArgs formals actuals origActuals env i cc
-        Left (msg, value) ->
-            raise i $ errMsg msg value
+    assertExprToEnv i envExpr (\env ->
+        evalArgs formals actuals origActuals env i cc)
 
 evalTwoNumbers :: (Int32 -> Int32 -> Expr) -> Evaluable
 evalTwoNumbers fn i env (List [xexpr, yexpr]) cc =
