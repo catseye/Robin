@@ -1,6 +1,11 @@
 History of Robin
 ================
 
+Robin 0.6
+---------
+
+*   Clean up of source code.  No language changes.
+
 Robin 0.5 (Late Sep 2019)
 ---------
 

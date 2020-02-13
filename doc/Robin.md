@@ -1,7 +1,7 @@
 Robin
 =====
 
-This document defines version 0.5 of the Robin programming language.
+This document defines version 0.6 of the Robin programming language.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,

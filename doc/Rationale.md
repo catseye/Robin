@@ -2,11 +2,11 @@ Robin: Design Goals and Rationale
 =================================
 
 This document documents some of the design goals and rationale
-for the design of Robin 0.5.  The contents are not well organized,
+for the design of Robin 0.6.  The contents are not well organized,
 and the document is not very comprehensive.
 
 In this document, "Robin" refers to the Robin programming language
-version 0.5.
+version 0.6.
 
 Robin is excessively principled
 -------------------------------
