@@ -1,7 +1,5 @@
 module Language.Robin.Eval where
 
---import qualified Language.Robin.Env as Env
---import Language.Robin.Env (Env)
 import Language.Robin.Expr
 
 --

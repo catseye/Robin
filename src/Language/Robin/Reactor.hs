@@ -5,8 +5,6 @@ import Data.Int
 import System.IO
 import System.Random
 
---import qualified Language.Robin.Env as Env
---import Language.Robin.Env (Env)
 import Language.Robin.Expr
 import Language.Robin.Eval
 

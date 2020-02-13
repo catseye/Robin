@@ -2,8 +2,6 @@ module Language.Robin.Builtins where
 
 import Data.Int
 
---import qualified Language.Robin.Env as Env
---import Language.Robin.Env (Env)
 import Language.Robin.Expr
 import Language.Robin.Eval
 
