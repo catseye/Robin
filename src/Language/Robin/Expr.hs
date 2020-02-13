@@ -9,8 +9,8 @@ import Data.Int
 -- (perhaps unsurprisingly?) to be the type of the evaluator function.
 --
 
-type Evaluable = IEnv Expr -> Env -> Expr -> (Expr -> Expr) -> Expr
---            internal-env    env    args    continuation      result
+type Evaluable = Env -> Expr -> (Expr -> Expr) -> Expr
+--               env    args    continuation      result
 
 --
 -- Basic expressions in Robin.  These may be evaluated, or they may be
@@ -106,15 +106,9 @@ isMacro (Intrinsic _ _) = True
 isMacro _               = False
 
 --
--- The _internal environment_ is the evaluation environment for Robin which is entirely
--- internal; Robin programs cannot see or modify it directly.  Here
--- we keep things like the continuation which is the current exception handler.
+-- Exceptions
 --
 
-data IEnv t = IEnv (t -> t)
-
-stop expr =
-    error ("uncaught exception: " ++ show expr)
-
-getExceptionHandler (IEnv handler) = handler
-setExceptionHandler handler (IEnv _) = (IEnv handler)
+stop expr = error ("uncaught exception: " ++ show expr)
+getExceptionHandler env = find "(exception-handler)" env
+setExceptionHandler handler env = insert "(exception-handler)" handler env

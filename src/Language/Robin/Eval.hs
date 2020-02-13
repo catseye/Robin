@@ -8,7 +8,7 @@ import Language.Robin.Expr
 -- Every evaluation function takes a continuation, and is implemented
 -- as a function with this signature:
 --
---     IEnv Expr -> Env Expr -> Expr -> (Expr -> Expr) -> Expr
+--     Env -> Expr -> (Expr -> Expr) -> Expr
 --
 -- (This is actually the `Evaluable` type from `Robin.Expr`.)
 --
@@ -24,12 +24,12 @@ import Language.Robin.Expr
 
 eval :: Evaluable
 
-eval i env sym@(Symbol s) cc =
+eval env sym@(Symbol s) cc =
     case find s env of
         Just value ->
             cc value
         Nothing ->
-            raise i (errMsg "unbound-identifier" sym)
+            raise env (errMsg "unbound-identifier" sym)
 
 --
 -- Evaluating a list means we must make several evaluations.  We
@@ -38,22 +38,22 @@ eval i env sym@(Symbol s) cc =
 -- passing it the tail of the list.
 --
 
-eval i env (List (applierExpr:actuals)) cc =
-    eval i env applierExpr (\applier ->
+eval env (List (applierExpr:actuals)) cc =
+    eval env applierExpr (\applier ->
         case applier of
             m@(Macro _ _ body) ->
-                eval i (makeMacroEnv env (List actuals) m) body cc
+                eval (makeMacroEnv env (List actuals) m) body cc
             b@(Intrinsic _ fun) ->
-                fun i env (List actuals) cc
+                fun env (List actuals) cc
             other ->
-                raise i (errMsg "inapplicable-object" other))
+                raise env (errMsg "inapplicable-object" other))
 
 --
 -- Everything else just evaluates to itself.  Continue the current
 -- continuation with that value.
 --
 
-eval i env e cc =
+eval env e cc =
     cc e
 
 --
@@ -78,18 +78,22 @@ makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
 -- Exception Handler
 --
 
-raise :: IEnv Expr -> Expr -> Expr
-raise i expr =
-    (getExceptionHandler i) expr
+raise :: Env -> Expr -> Expr
+raise env expr =
+    case getExceptionHandler env of
+        Just (Intrinsic _ evaluable) ->
+           evaluable env expr (\e -> stop e)
+        Nothing ->
+           stop expr
 
 --
 -- Assertions
 --
 
-assert i pred msg expr cc =
+assert env pred msg expr cc =
     case pred expr of
         True -> cc expr
-        False -> raise i (errMsg msg expr)
+        False -> raise env (errMsg msg expr)
 
 assertSymbol i = assert i (isSymbol) "expected-symbol"
 assertBoolean i = assert i (isBoolean) "expected-boolean"
