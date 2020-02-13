@@ -28,17 +28,14 @@ evalAll i env (head:tail) acc cc =
 
 --          formals   actuals   origActuals env         i            wierd-cc
 evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
-evalArgs formals actuals origActuals env i cc =
-    evalArgs' formals actuals origActuals env i cc
-    where
-        evalArgs' [] [] _ _ _ cc =
-            cc Env.empty
-        evalArgs' ((Symbol formal):formals) (actual:actuals) origActuals env i cc =
-            eval i env actual (\value ->
-                evalArgs' formals actuals origActuals env i (\nenv ->
-                    cc $ Env.insert formal value nenv))
-        evalArgs' _ _ origActuals _ i cc =
-            raise i $ errMsg "illegal-arguments" $ List origActuals
+evalArgs [] [] _ _ _ cc =
+    cc Env.empty
+evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env i cc =
+    eval i env actual (\value ->
+        evalArgs formals actuals origActuals env i (\nenv ->
+            cc $ Env.insert formal value nenv))
+evalArgs _ _ origActuals _ i cc =
+    raise i $ errMsg "illegal-arguments" $ List origActuals
 
 --              formals   actuals   origActuals envExpr i            wierd-cc
 evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
@@ -47,7 +44,7 @@ evalArgsExpr formals actuals origActuals envExpr i cc =
         Right env ->
             evalArgs formals actuals origActuals env i cc
         Left (msg, value) ->
-            raise i (errMsg msg value)
+            raise i $ errMsg msg value
 
 evalTwoNumbers :: (Int32 -> Int32 -> Expr) -> Evaluable
 evalTwoNumbers fn i env (List [xexpr, yexpr]) cc =
