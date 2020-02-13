@@ -37,11 +37,6 @@ evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env i cc =
 evalArgs _ _ origActuals _ i cc =
     raise i $ errMsg "illegal-arguments" $ List origActuals
 
---              formals   actuals   origActuals envExpr i            wierd-cc
-evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
-evalArgsExpr formals actuals origActuals envExpr i cc =
-    assertExprToEnv i envExpr (\env ->
-        evalArgs formals actuals origActuals env i cc)
 
 evalTwoNumbers :: (Int32 -> Int32 -> Expr) -> Evaluable
 evalTwoNumbers fn i env (List [xexpr, yexpr]) cc =
@@ -109,8 +104,9 @@ robinBindArgs :: Evaluable
 robinBindArgs i env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
     eval i env givenArgs (\(List actuals) ->
         eval i env givenEnvExpr (\outerEnvExpr ->
-            evalArgsExpr formals actuals actuals outerEnvExpr i (\argEnv ->
-                eval i (Env.mergeEnvs argEnv env) body cc)))
+            assertExprToEnv i outerEnvExpr (\outerEnv ->
+                evalArgs formals actuals actuals outerEnv i (\argEnv ->
+                    eval i (Env.mergeEnvs argEnv env) body cc))))
 robinBindArgs i env other cc = raise i $ errMsg "illegal-arguments" other
 
 robinFun :: Evaluable
