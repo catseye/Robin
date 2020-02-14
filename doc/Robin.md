@@ -872,23 +872,23 @@ An implementation is encouraged to allow these to be logged (and the
 reference implementation will display them if `--show-events` is given)
 but this is not a strict requirement.
 
-    | (reactor (line-terminal) 0
-    |   (macro (self args env)
-    |     (bind event (head args)
-    |       (bind event-type (head event)
-    |         (bind event-payload (head (tail event))
-    |           (if (equal? event-type (literal readln))
-    |             (if (equal? (head event-payload) 65)
-    |               (raise 999999)
-    |               (list 0 (list (literal writeln) event-payload)))
-    |             (list 0)))))))
-    + Cat
-    + Dog
-    + Alligator
-    + Bear
-    = Cat
-    = Dog
-    = Bear
+    @| (reactor (line-terminal) 0
+    @|   (macro (self args env)
+    @|     (bind event (head args)
+    @|       (bind event-type (head event)
+    @|         (bind event-payload (head (tail event))
+    @|           (if (equal? event-type (literal readln))
+    @|             (if (equal? (head event-payload) 65)
+    @|               (raise 999999)
+    @|               (list 0 (list (literal writeln) event-payload)))
+    @|             (list 0)))))))
+    @+ Cat
+    @+ Dog
+    @+ Alligator
+    @+ Bear
+    @= Cat
+    @= Dog
+    @= Bear
 
 Reactors can keep state.
 

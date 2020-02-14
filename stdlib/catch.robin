@@ -38,11 +38,11 @@ The innermost `catch` will catch the exception.
 An exception raised from within an exception handler is
 caught by the next innermost exception handler.
 
-    | (catch error (list error 5)
-    |   (catch error (list error 9)
-    |     (catch error (raise (list error error))
-    |       (raise 7))))
-    = ((7 7) 9)
+    @| (catch error (list error 5)
+    @|   (catch error (list error 9)
+    @|     (catch error (raise (list error error))
+    @|       (raise 7))))
+    @= ((7 7) 9)
 
 `catch` expects its first argument to be a symbol.
 
