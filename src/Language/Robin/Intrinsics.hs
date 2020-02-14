@@ -10,8 +10,8 @@ robinHead env (List [expr]) cc =
         assertList env x (\val ->
             case val of
                 List (a:_) -> cc a
-                other -> raise env $ errMsg "expected-list" other))
-robinHead env other cc = raise env $ errMsg "illegal-arguments" other
+                other -> errMsg "expected-list" other))
+robinHead env other cc = errMsg "illegal-arguments" other
 
 robinTail :: Evaluable
 robinTail env (List [expr]) cc =
@@ -19,25 +19,25 @@ robinTail env (List [expr]) cc =
         assertList env x (\val ->
             case val of
                 List (_:b) -> cc (List b)
-                other -> raise env $ errMsg "expected-list" other))
-robinTail env other cc = raise env $ errMsg "illegal-arguments" other
+                other -> errMsg "expected-list" other))
+robinTail env other cc = errMsg "illegal-arguments" other
 
 robinPrepend :: Evaluable
 robinPrepend env (List [e1, e2]) cc =
     eval env e1 (\x1 -> eval env e2 (\val ->
             case val of
                 List x2 -> cc $ List (x1:x2)
-                other -> raise env (errMsg "expected-list" other)))
-robinPrepend env other cc = raise env $ errMsg "illegal-arguments" other
+                other -> errMsg "expected-list" other))
+robinPrepend env other cc = errMsg "illegal-arguments" other
 
 equalP :: Evaluable
 equalP env (List [e1, e2]) cc =
     eval env e1 (\x1 -> eval env e2 (\x2 -> cc $ Boolean (x1 == x2)))
-equalP env other cc = raise env $ errMsg "illegal-arguments" other
+equalP env other cc = errMsg "illegal-arguments" other
 
 predP pred env (List [expr]) cc =
     eval env expr (\x -> cc $ Boolean $ pred x)
-predP pred env other cc = raise env $ errMsg "illegal-arguments" other
+predP pred env other cc = errMsg "illegal-arguments" other
 
 symbolP = predP isSymbol
 listP = predP isList
@@ -51,7 +51,7 @@ robinSubtract env (List [xexpr, yexpr]) cc =
             eval env yexpr (\y ->
                 assertNumber env y (\(Number yv) ->
                     cc (Number (xv - yv))))))
-robinSubtract env other cc = raise env $ errMsg "illegal-arguments" other
+robinSubtract env other cc = errMsg "illegal-arguments" other
 
 robinSign :: Evaluable
 robinSign env (List [expr]) cc =
@@ -60,7 +60,7 @@ robinSign env (List [expr]) cc =
             cc $ Number $ sign xv))
     where
         sign x = if x == 0 then 0 else if x < 0 then -1 else 1
-robinSign env other cc = raise env $ errMsg "illegal-arguments" other
+robinSign env other cc = errMsg "illegal-arguments" other
 
 robinIf :: Evaluable
 robinIf env (List [test, texpr, fexpr]) cc =
@@ -69,34 +69,24 @@ robinIf env (List [test, texpr, fexpr]) cc =
             case b of
                 True -> eval env texpr cc
                 False -> eval env fexpr cc))
-robinIf env other cc = raise env $ errMsg "illegal-arguments" other
+robinIf env other cc = errMsg "illegal-arguments" other
 
 robinEval :: Evaluable
 robinEval env (List [envlist, form]) cc =
     eval env envlist (\newEnvVal ->
         eval env form (\body ->
             eval newEnvVal body cc))
-robinEval env other cc = raise env $ errMsg "illegal-arguments" other
+robinEval env other cc = errMsg "illegal-arguments" other
 
 robinMacro :: Evaluable
 robinMacro env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) k =
     k $ Macro env args body
-robinMacro env other cc = raise env $ errMsg "illegal-arguments" other
+robinMacro env other cc = errMsg "illegal-arguments" other
 
 robinRaise :: Evaluable
 robinRaise env (List [expr]) cc =
-    eval env expr (\v -> raise env v)
-robinRaise env other cc = raise env $ errMsg "illegal-arguments" other
-
-robinCatch :: Evaluable
-robinCatch env (List [(Symbol s), handler, body]) cc =
-    let
-        exceptionHandler _ errvalue k =
-            eval (insert s errvalue env) handler cc
-        env' = setExceptionHandler (Intrinsic "(exception-handler)" exceptionHandler) env
-    in
-        eval env' body cc
-robinCatch env other cc = raise env $ errMsg "illegal-arguments" other
+    eval env expr (\v -> cc $ Error v)
+robinRaise env other cc = errMsg "illegal-arguments" other
 
 robinIntrinsics :: Env
 robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
@@ -114,6 +104,5 @@ robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("macro",    robinMacro),
         ("eval",     robinEval),
         ("if",       robinIf),
-        ("raise",    robinRaise),
-        ("catch",    robinCatch)
+        ("raise",    robinRaise)
       ]

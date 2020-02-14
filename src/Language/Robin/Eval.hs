@@ -29,7 +29,7 @@ eval env sym@(Symbol s) cc =
         Just value ->
             cc value
         Nothing ->
-            raise env (errMsg "unbound-identifier" sym)
+            errMsg "unbound-identifier" sym
 
 --
 -- Evaluating a list means we must make several evaluations.  We
@@ -46,7 +46,7 @@ eval env (List (applierExpr:actuals)) cc =
             b@(Intrinsic _ fun) ->
                 fun env (List actuals) cc
             other ->
-                raise env (errMsg "inapplicable-object" other))
+                errMsg "inapplicable-object" other)
 
 --
 -- Everything else just evaluates to itself.  Continue the current
@@ -61,7 +61,7 @@ eval env e cc =
 --
 
 errMsg msg term =
-    List [(Symbol msg), term]
+    Error (List [(Symbol msg), term])
 
 makeMacroEnv :: Env -> Expr -> Expr -> Env
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
@@ -75,25 +75,13 @@ makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
         newEnv''
 
 --
--- Exception Handler
---
-
-raise :: Env -> Expr -> Expr
-raise env expr =
-    case getExceptionHandler env of
-        Just (Intrinsic _ evaluable) ->
-           evaluable (empty) expr (\e -> e)
-        Nothing ->
-           error ("uncaught exception: " ++ show expr)
-
---
 -- Assertions
 --
 
 assert env pred msg expr cc =
     case pred expr of
         True -> cc expr
-        False -> raise env (errMsg msg expr)
+        False -> errMsg msg expr
 
 assertSymbol env = assert env (isSymbol) "expected-symbol"
 assertBoolean env = assert env (isBoolean) "expected-boolean"

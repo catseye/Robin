@@ -23,6 +23,7 @@ data Expr = Symbol String
           | Macro Env Expr Expr
           | Intrinsic String Evaluable
           | List [Expr]
+          | Error Expr
 
 instance Eq Expr where
     (Symbol x) == (Symbol y)           = x == y
@@ -31,6 +32,7 @@ instance Eq Expr where
     (Macro _ _ _) == (Macro _ _ _)     = False
     (Intrinsic x _) == (Intrinsic y _) = x == y
     (List x) == (List y)               = x == y
+    (Error x) == (Error y)             = x == y
     _ == _                             = False
 
 instance Show Expr where
@@ -41,6 +43,7 @@ instance Show Expr where
     show (Macro env args body) = ("(macro " ++ (show args) ++
                                   " " ++ (show body) ++ ")")
     show (Intrinsic name _)    = name
+    show (Error e)             = "***ERR:" ++ (show e) ++ "***"
     show (List exprs)          = "(" ++ (showl exprs) ++ ")" where
                                      showl [] = ""
                                      showl [expr] = show expr
@@ -105,9 +108,5 @@ isMacro (Macro _ _ _)   = True
 isMacro (Intrinsic _ _) = True
 isMacro _               = False
 
---
--- Exceptions
---
-
-getExceptionHandler env = find "(exception-handler)" env
-setExceptionHandler handler env = insert "(exception-handler)" handler env
+isError (Error _) = True
+isError _         = False
