@@ -36,13 +36,13 @@ evalArgs _ _ origActuals env cc =
     raise env $ errMsg "illegal-arguments" $ List origActuals
 
 
-evalTwoNumbers :: (Int32 -> Int32 -> Expr) -> Evaluable
+evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
 evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
     eval env xexpr (\x ->
         assertNumber env x (\(Number xv) ->
             eval env yexpr (\y ->
                 assertNumber env y (\(Number yv) ->
-                    cc (fn xv  yv)))))
+                    (fn xv yv cc)))))
 evalTwoNumbers fn env other cc = raise env $ errMsg "illegal-arguments" other
 
 --
@@ -124,16 +124,16 @@ robinFun env other cc = raise env $ errMsg "illegal-arguments" other
 --
 
 robinGt :: Evaluable
-robinGt = evalTwoNumbers (\x y -> Boolean (x > y))
+robinGt = evalTwoNumbers (\x y cc -> cc $ Boolean (x > y))
 
 robinGte :: Evaluable
-robinGte = evalTwoNumbers (\x y -> Boolean (x >= y))
+robinGte = evalTwoNumbers (\x y cc -> cc $ Boolean (x >= y))
 
 robinLt :: Evaluable
-robinLt = evalTwoNumbers (\x y -> Boolean (x < y))
+robinLt = evalTwoNumbers (\x y cc -> cc $ Boolean (x < y))
 
 robinLte :: Evaluable
-robinLte = evalTwoNumbers (\x y -> Boolean (x <= y))
+robinLte = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
 
 robinAbs :: Evaluable
 robinAbs env (List [expr]) cc =
@@ -141,10 +141,10 @@ robinAbs env (List [expr]) cc =
 robinAbs env other cc = raise env (errMsg "illegal-arguments" other)
 
 robinAdd :: Evaluable
-robinAdd = evalTwoNumbers (\x y -> Number (x + y))
+robinAdd = evalTwoNumbers (\x y cc -> cc $ Number (x + y))
 
 robinMultiply :: Evaluable
-robinMultiply = evalTwoNumbers (\x y -> Number (x * y))
+robinMultiply = evalTwoNumbers (\x y cc -> cc $ Number (x * y))
 
 robinDivide :: Evaluable
 robinDivide env (List [xexpr, yexpr]) cc =
