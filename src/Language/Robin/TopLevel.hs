@@ -57,7 +57,9 @@ collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) env react
     let
         state = eval env stateExpr id
         body = eval env bodyExpr id
-        newReactor = Reactor{ rid=(fromIntegral $ length reactors), env=env, state=state, body=body }
+        catchException env expr k = List [(Symbol "uncaught-exception"), expr]
+        env' = setExceptionHandler (Intrinsic "(exception-handler)" catchException) env
+        newReactor = Reactor{ rid=(fromIntegral $ length reactors), env=env', state=state, body=body }
     in
         collect rest env (newReactor:reactors) results
 
