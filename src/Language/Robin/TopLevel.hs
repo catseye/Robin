@@ -12,7 +12,7 @@ collect [] env reactors results = (env, reactors, results)
 collect ((List [Symbol "display", expr]):rest) env reactors results =
     let
         result = case eval env expr id of
-            (List [(Symbol "uncaught-exception"), expr]) -> Left expr
+            Error expr -> Left expr
             other -> Right other
     in
         collect rest env reactors (result:results)

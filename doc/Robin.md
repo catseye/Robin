@@ -549,8 +549,8 @@ the EXPR, or if the EXPR evaluates to `#f`, aborts processing the file.
     | (assert #f)
     ? assertion failed: #f
 
-    | (assert this-identfier-is-not-bound)
-    ? unbound-identifier
+    @| (assert this-identfier-is-not-bound)
+    @? unbound-identifier
 
 ### `require` ###
 
