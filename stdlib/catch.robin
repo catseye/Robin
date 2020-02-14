@@ -67,6 +67,15 @@ Note that the exception handler is evaluated in the environment it is
     |     (raise 2)))
     ? uncaught exception: (unbound-identifier flop)
 
+Note that the exception handler is retrieved from the environment that...
+something dynamic somthing.  FIXME
+
+    | (bind flop (fun (x) (raise x))
+    |   (list
+    |     (catch error (list 55 error) (flop 44))
+    |     (catch error (list 66 error) (flop 44))))
+    ? uncaught exception: (unbound-identifier flop)
+
 '<<SPEC'
 
 (require catch)
