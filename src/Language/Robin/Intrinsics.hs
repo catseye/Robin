@@ -91,8 +91,9 @@ robinRaise env other cc = raise env $ errMsg "illegal-arguments" other
 robinCatch :: Evaluable
 robinCatch env (List [(Symbol s), handler, body]) cc =
     let
-        env' = setExceptionHandler (Intrinsic "(exception-handler)" (\env errvalue k ->
-            eval (insert s errvalue env) handler cc)) env
+        exceptionHandler _ errvalue k =
+            eval (insert s errvalue env) handler cc
+        env' = setExceptionHandler (Intrinsic "(exception-handler)" exceptionHandler) env
     in
         eval env' body cc
 robinCatch env other cc = raise env $ errMsg "illegal-arguments" other

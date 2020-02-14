@@ -38,11 +38,11 @@ The innermost `catch` will catch the exception.
 An exception raised from within an exception handler is
 caught by the next innermost exception handler.
 
-    @| (catch error (list error 5)
-    @|   (catch error (list error 9)
-    @|     (catch error (raise (list error error))
-    @|       (raise 7))))
-    @= ((7 7) 9)
+    | (catch error (list error 5)
+    |   (catch error (list error 9)
+    |     (catch error (raise (list error error))
+    |       (raise 7))))
+    = ((7 7) 9)
 
 `catch` expects its first argument to be a symbol.
 
@@ -56,6 +56,16 @@ caught by the next innermost exception handler.
 
     | (catch error (list error #f) 42 43)
     ? uncaught exception: (illegal-arguments (error (list error #f) 42 43))
+
+    -> Tests for functionality "Evaluate Robin Expression (with Small)"
+
+Note that the exception handler is evaluated in the environment it is
+*defined* in, not the environment in effect when the exception is *handled*.
+
+    | (catch error (list flop error)
+    |   (bind flop 1
+    |     (raise 2)))
+    ? uncaught exception: (unbound-identifier flop)
 
 '<<SPEC'
 
