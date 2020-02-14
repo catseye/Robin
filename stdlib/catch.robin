@@ -67,14 +67,22 @@ Note that the exception handler is evaluated in the environment it is
     |     (raise 2)))
     ? uncaught exception: (unbound-identifier flop)
 
-Note that the exception handler is retrieved from the environment that...
-something dynamic somthing.  FIXME
+The exception handler that is invoked when an exception occurs is the
+exception handler that was in effect at the time of definition, not
+at the time of calling.  That is, exception handlers have lexical
+scope, not dynamic scope.  This is different from most other programming
+languages.  This might be essentially the same thing as what's sometimes
+called an "ejector".
+
+In the following, the `raise` isn't caught by the `catch` because the
+`catch` wasn't in effect when the `raise` was defined, i.e. the `catch`
+does not lexically enclose the `raise`.
 
     | (bind flop (fun (x) (raise x))
     |   (list
     |     (catch error (list 55 error) (flop 44))
     |     (catch error (list 66 error) (flop 44))))
-    ? uncaught exception: (unbound-identifier flop)
+    ? uncaught exception: 44
 
 '<<SPEC'
 

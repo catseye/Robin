@@ -4,9 +4,18 @@ History of Robin
 Robin 0.6
 ---------
 
+*   Exception handlers are now lexically scoped, rather than
+    dynamically scoped.  This is because dynamically scoped
+    exception handlers break referential transparency
+    (the value that your function evaluates when it raises
+    an exception depends on what exception handler is in
+    effect at that point.)
+
+For the reference implementation,
+
 *   Clean up of source code: stylistic and refactoring.
 *   No dedicated `Env` ADT; environments are `Expr`s.
-*   No language changes.
+*   No dedicated `IEnv` type; exception handler is in `Env`.
 
 Robin 0.5 (Late Sep 2019)
 ---------
