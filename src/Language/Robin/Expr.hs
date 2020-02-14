@@ -109,6 +109,5 @@ isMacro _               = False
 -- Exceptions
 --
 
-stop expr = error ("uncaught exception: " ++ show expr)
 getExceptionHandler env = find "(exception-handler)" env
 setExceptionHandler handler env = insert "(exception-handler)" handler env

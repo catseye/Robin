@@ -82,9 +82,9 @@ raise :: Env -> Expr -> Expr
 raise env expr =
     case getExceptionHandler env of
         Just (Intrinsic _ evaluable) ->
-           evaluable env expr (\e -> stop e)
+           evaluable env expr (\e -> e)
         Nothing ->
-           stop expr
+           error ("uncaught exception: " ++ show expr)
 
 --
 -- Assertions

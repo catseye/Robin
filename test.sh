@@ -8,8 +8,8 @@ if [ "${APPLIANCES}x" = "x" ]; then
   APPLIANCES="appliances/robin.md appliances/robin-no-builtins.md"
 fi
 
-#echo "Running tests on core semantics..."
-#falderal -b $APPLIANCES doc/Robin.md || exit 1
+echo "Running tests on core semantics..."
+falderal -b $APPLIANCES doc/Robin.md || exit 1
 
 if [ "${PACKAGES}x" = "x" ]; then
   PACKAGES="intrinsics small boolean arith list env misc"
