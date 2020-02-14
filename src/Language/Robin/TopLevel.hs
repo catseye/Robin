@@ -11,15 +11,13 @@ collect [] env reactors results = (env, reactors, results)
 
 collect ((List [Symbol "display", expr]):rest) env reactors results =
     let
+        catchException env expr k = List [(Symbol "uncaught-exception"), expr]
         env' = setExceptionHandler (Intrinsic "(exception-handler)" catchException) env
         result = case eval env' expr id of
-            -- TODO This is less than fantastic. Should we have a dedicated error Expr?
-            e@(List [(Symbol "uncaught-exception"), expr]) -> Left expr
+            (List [(Symbol "uncaught-exception"), expr]) -> Left expr
             other -> Right other
     in
         collect rest env reactors (result:results)
-    where
-        catchException env expr k = List [(Symbol "uncaught-exception"), expr]
 
 collect ((List [Symbol "assert", expr]):rest) env reactors results =
     case eval env expr id of

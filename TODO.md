@@ -29,6 +29,14 @@ might have performance benefits.  (Or perhaps not.)
 Opaque type might also be useful for internals, e.g. signaling
 to runtime system that an error occurred.
 
+Exceptions
+----------
+
+Raising a list that looks like `(uncaught-exception ...)`, and
+then catching anything that looks like that, is less than fantastic.
+(We do this in `display` and in reactors).  Should we have a
+dedicated `error` type Expr?
+
 Stdlib
 ------
 

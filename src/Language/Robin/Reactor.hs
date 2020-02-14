@@ -15,20 +15,10 @@ data Reactor = Reactor {
          body :: Expr   -- body takes three arguments: event state
      } deriving (Show, Eq)
 
-
 update :: Reactor -> Expr -> (Reactor, [Expr])
 update reactor@Reactor{rid=rid, env=env, state=state, body=body} event =
     let
         env' = setExceptionHandler (Intrinsic "(exception-handler)" catchException) env
-    in
-        case eval env' (List [body, event, state]) id of
-            command@(List [(Symbol "uncaught-exception"), expr]) ->
-                (reactor, [command])
-            (List (state':commands)) ->
-                (reactor{ state=state' }, applyStop commands)
-            expr ->
-                (reactor, [List [(Symbol "malformed-response"), expr]])
-    where
         catchException env expr k = List [(Symbol "uncaught-exception"), expr]
 
         -- If the reactor issued a 'stop' command, decorate that command
@@ -39,6 +29,14 @@ update reactor@Reactor{rid=rid, env=env, state=state, body=body} event =
             (List [Symbol "stop", Number rid]:applyStop commands)
         applyStop (command:commands) =
             (command:applyStop commands)
+    in
+        case eval env' (List [body, event, state]) id of
+            command@(List [(Symbol "uncaught-exception"), expr]) ->
+                (reactor, [command])
+            (List (state':commands)) ->
+                (reactor{ state=state' }, applyStop commands)
+            expr ->
+                (reactor, [List [(Symbol "malformed-response"), expr]])
 
 
 updateMany :: [Reactor] -> Expr -> ([Reactor], [Expr])
