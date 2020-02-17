@@ -88,6 +88,16 @@ robinRaise env (List [expr]) cc =
     eval env expr (\v -> cc $ Error v)
 robinRaise env other cc = errMsg "illegal-arguments" other
 
+robinCatch :: Evaluable
+robinCatch env (List [(Symbol s), handler, body]) cc =
+    eval env body (\result ->
+        case result of
+            e@(Error contents) ->
+                eval (insert s contents env) handler cc
+            _ ->
+                cc result)
+robinCatch env other cc = errMsg "illegal-arguments" other
+
 robinIntrinsics :: Env
 robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
@@ -104,5 +114,6 @@ robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("macro",    robinMacro),
         ("eval",     robinEval),
         ("if",       robinIf),
-        ("raise",    robinRaise)
+        ("raise",    robinRaise),
+        ("catch",    robinCatch)
       ]
