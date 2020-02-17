@@ -56,28 +56,28 @@ A function may have no arguments at all.
 But, a function must have exactly both a body and a list of formal arguments.
 Otherwise, an exception will be raised.
 
-    |   ((fun ()))
+    | ((fun ()))
     ? uncaught exception
 
-    |   ((fun))
+    | ((fun))
     ? uncaught exception
 
-    |   ((fun (a) a a))
+    | ((fun (a) a a))
     ? uncaught exception
 
-@An `illegal-arguments` exception will be raised if not enough arguments are
-@supplied to a function call.
-@
-@    |   ((fun (a b) (glerp b a))
-@    |     (prepend 1 ()))
-@    ? uncaught exception: (illegal-arguments
-@
-@An `illegal-arguments` exception will be raised if too many arguments are
-@supplied to a function call.
-@
-@    |   ((fun (a b) (glerp b a))
-@    |     1 (prepend 2 ()) 3)
-@    ? uncaught exception: (illegal-arguments
+An `illegal-arguments` exception will be raised if not enough arguments are
+supplied to a function call.
+
+    | ((fun (a b) (glerp b a))
+    |   (prepend 1 ()))
+    ? uncaught exception: (illegal-arguments
+
+An `illegal-arguments` exception will be raised if too many arguments are
+supplied to a function call.
+
+    | ((fun (a b) (glerp b a))
+    |   1 (prepend 2 ()) 3)
+    ? uncaught exception: (illegal-arguments
 
 `fun` is basically equivalent to Scheme's `lambda`.
 
@@ -103,4 +103,6 @@ Otherwise, an exception will be raised.
             )
             (self extended-env rest-formals rest-actuals env-for-actuals))))))
   (macro (iself iargs ienv)
-    (eval (extend-with-args env (head args) iargs ienv) (head (tail args)))))))
+    (catch (extend-with-args env (head args) iargs ienv)
+      error (raise error)
+      extended-env (eval extended-env (head (tail args))))))))
