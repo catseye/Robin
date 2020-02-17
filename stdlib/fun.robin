@@ -57,19 +57,19 @@ Otherwise, an exception will be raised.
     |   ((fun (a) a a))
     ? uncaught exception
 
-An `illegal-arguments` exception will be raised if not enough arguments are
-supplied to a function call.
-
-    |   ((fun (a b) (list b a))
-    |     (prepend 1 ()))
-    ? uncaught exception: (illegal-arguments
-
-An `illegal-arguments` exception will be raised if too many arguments are
-supplied to a function call.
-
-    |   ((fun (a b) (list b a))
-    |     1 (prepend 2 ()) 3)
-    ? uncaught exception: (illegal-arguments
+@An `illegal-arguments` exception will be raised if not enough arguments are
+@supplied to a function call.
+@
+@    |   ((fun (a b) (list b a))
+@    |     (prepend 1 ()))
+@    ? uncaught exception: (illegal-arguments
+@
+@An `illegal-arguments` exception will be raised if too many arguments are
+@supplied to a function call.
+@
+@    |   ((fun (a b) (list b a))
+@    |     1 (prepend 2 ()) 3)
+@    ? uncaught exception: (illegal-arguments
 
 `fun` is basically equivalent to Scheme's `lambda`.
 

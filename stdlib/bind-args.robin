@@ -2,9 +2,10 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
-`bind-args` is a macro for binding the arguments of another value to
-identifiers, as well as asserting that the correct number of arguments
-have been given to the macro.
+`bind-args` is a macro for evaluating a list of arguments and binding
+them to the identifiers in a list of identifiers, as well as asserting
+that the correct number of arguments have been given, and that none of
+the arguments evaluated to an error value.
 
 `bind-args` takes a literal list of identifiers, and expresion which
 evaluates to a literal list of expressions whose values are to be bound
@@ -96,10 +97,15 @@ become clear here: typically you would just pass the macro's `args` and
               (raise (list (literal illegal-arguments) orig-val-list)))
             (if (equal? val-list ())
               (raise (list (literal illegal-arguments) orig-val-list))
-              (self
-                (tail id-list) (tail val-list)
-                (prepend
-                  (list (head id-list) (eval given-env (head val-list)))
-                  env-acc)))))))
-      (new-env (bind-args-r id-list orig-val-list env)))
-      (eval new-env expr))))
+              (catch
+                (eval given-env (head val-list))
+                error (raise error)
+                actual (self
+                  (tail id-list) (tail val-list)
+                  (prepend
+                    (list (head id-list) actual)
+                    env-acc)))))))))
+      (catch
+        (bind-args-r id-list orig-val-list env)
+        error (raise error)
+        new-env (eval new-env expr)))))
