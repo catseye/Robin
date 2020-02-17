@@ -4,54 +4,67 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with literal and list)"
 
-`catch` handles error values.
+`catch` handles error values.  It takes 5 arguments.  It
+evaluates the first argument to a value.  If the value is an
+error value, a new environment is created where the payload of
+the error value is bound to the name provided in the second
+argument, and in this environment the third argument is evaluated,
+and this is the result of the `catch` expression.  On the other
+hand, if the value is not an error value, a new environment is
+created where the value is bound to the name provided in the
+fourth argument, and the fifth argument is evaluated.
 
-TODO: this is written as if catch handles exceptions, but it doesn't anymore.
+    | (catch
+    |   (literal (nice-value 999999))
+    |   error (list error #f)
+    |   value (list value #t))
+    = ((nice-value 999999) #t)
 
-If an exception is raised when evaluating the final argument of
-`catch`, the exception value is bound to the symbol given as the
-first argument of `catch`, and the second argument of `catch` is
-evaluated in that new environment.
-
-    | (catch error (list error #f)
-    |   (raise (literal (nasty-value 999999))))
+    | (catch
+    |   (raise (literal (nasty-value 999999)))
+    |   error (list error #f)
+    |   value (list value #t))
     = ((nasty-value 999999) #f)
 
-If an exception is raised in the body of a macro that is applied
+If an error is returned from the body of a macro that is applied
 in the context of a `catch`, it will still be catched.
 
-    | (catch error (list error #f)
-    |   ((macro (self args env) (raise (literal (nasty-value 1111)))) joe))
+    | (catch
+    |   ((macro (self args env) (raise (literal (nasty-value 1111)))) joe)
+    |   error (list error #f)
+    |   value (list value #t))
     = ((nasty-value 1111) #f)
 
-If nothing is raised, `catch` will evaluate to whatever its body
-evaluated to.
+Error values are just values, so the innermost `catch` will handle
+an error value.
 
-    | (catch error (list error #f) 42)
-    = 42
+    | (catch
+    |   (catch
+    |     (raise (literal (nasty-value 999999)))
+    |     error (list error #f)
+    |     value (list value #t))
+    |   error (list error #f)
+    |   value (list value #t))
+    = (((nasty-value 999999) #f) #t)
 
-The innermost `catch` will catch the exception.
+If an inner `catch` returns an error value itself, an outer `catch` can
+handle the error value it returned.
 
-    | (catch error (list error 5)
-    |   (catch error (list error 9)
-    |     (raise (literal derpy-value))))
-    = (derpy-value 9)
-
-An exception raised from within an exception handler is
-caught by the next innermost exception handler.
-
-    | (catch error (list error 5)
-    |   (catch error (list error 9)
-    |     (catch error (raise (list error error))
-    |       (raise 7))))
-    = ((7 7) 9)
+    | (catch
+    |   (catch
+    |     (raise (literal (nasty-value 999999)))
+    |     error (raise error)
+    |     value (list value #t))
+    |   error (list error 123)
+    |   value (list value #t))
+    = ((nasty-value 999999) 123)
 
 `catch` expects its first argument to be a symbol.
 
     | (catch (3 4) (list error #f) 42)
     ? uncaught exception: (illegal-arguments ((3 4) (list error #f) 42))
 
-`catch` expects exactly three arguments.
+`catch` expects exactly five arguments.
 
     | (catch error (list error #f))
     ? uncaught exception: (illegal-arguments (error (list error #f)))
@@ -59,14 +72,19 @@ caught by the next innermost exception handler.
     | (catch error (list error #f) 42 43)
     ? uncaught exception: (illegal-arguments (error (list error #f) 42 43))
 
+    | (catch error (list error #f) 42 43 44 45)
+    ? uncaught exception: (illegal-arguments (error (list error #f) 42 43 44 45))
+
     -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
 `catch` handles error values, and this does not include the environment
 in which the error value was produced.
 
-    | (catch error (list flop error)
+    | (catch
     |   (bind flop 1
-    |     (raise 2)))
+    |     (raise 2))
+    |   error (list flop error)
+    |   value (list 123 value))
     ? uncaught exception: (unbound-identifier flop)
 
 `catch` handles error values, and this does not include the environment
@@ -74,8 +92,8 @@ in which the error value was produced.
 
     | (bind flop (fun (x) (raise x))
     |   (list
-    |     (catch error (list 55 error) (flop 44))
-    |     (catch error (list 66 error) (flop 44))))
+    |     (catch (flop 44) error (list 55 error) value value)
+    |     (catch (flop 44) error (list 66 error) value value)))
     = ((55 44) (66 44))
 
 '<<SPEC'

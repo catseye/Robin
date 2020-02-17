@@ -89,13 +89,13 @@ robinRaise env (List [expr]) cc =
 robinRaise env other cc = errMsg "illegal-arguments" other
 
 robinCatch :: Evaluable
-robinCatch env (List [(Symbol s), handler, body]) cc =
-    eval env body (\result ->
+robinCatch env (List [expr, (Symbol s), errexpr, (Symbol v), okexpr]) cc =
+    eval env expr (\result ->
         case result of
             e@(Error contents) ->
-                eval (insert s contents env) handler cc
-            _ ->
-                cc result)
+                eval (insert s contents env) errexpr cc
+            other ->
+                eval (insert v other env) okexpr cc)
 robinCatch env other cc = errMsg "illegal-arguments" other
 
 robinIntrinsics :: Env

@@ -4,12 +4,13 @@ History of Robin
 Robin 0.6
 ---------
 
-*   Exception handlers are now lexically scoped, rather than
-    dynamically scoped.  This is because dynamically scoped
-    exception handlers break referential transparency
-    (the value that your function evaluates when it raises
-    an exception depends on what exception handler is in
-    effect at that point.)
+*   There are no more exceptions or exception handlers.
+    Rather, there are error values.  `raise` returns an
+    error value.  An error value is the wrong type for
+    most operations, which results in another error value
+    (indicating a type error), so errors cascase upwards.
+    The `catch` intrinsic is now intended for testing and
+    handling error values; it now takes 5 arguments.
 
 For the reference implementation,
 
