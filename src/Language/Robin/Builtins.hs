@@ -147,26 +147,14 @@ robinMultiply :: Evaluable
 robinMultiply = evalTwoNumbers (\x y cc -> cc $ Number (x * y))
 
 robinDivide :: Evaluable
-robinDivide env (List [xexpr, yexpr]) cc =
-    eval env xexpr (\x ->
-        assertNumber env x (\(Number xv) ->
-            eval env yexpr (\y ->
-                assertNumber env y (\(Number yv) ->
-                    case yv of
-                        0 -> errMsg "division-by-zero" $ Number xv
-                        _ -> cc $ Number (xv `div` yv)))))
-robinDivide env other cc = errMsg "illegal-arguments" other
+robinDivide = evalTwoNumbers (\x y cc -> case y of
+                                 0 -> errMsg "division-by-zero" $ Number x
+                                 _ -> cc $ Number (x `div` y))
 
 robinRemainder :: Evaluable
-robinRemainder env (List [xexpr, yexpr]) cc =
-    eval env xexpr (\x ->
-        assertNumber env x (\(Number xv) ->
-            eval env yexpr (\y ->
-                assertNumber env y (\(Number yv) ->
-                    case yv of
-                        0 -> errMsg "division-by-zero" $ Number xv
-                        _ -> cc $ Number (abs (xv `mod` yv))))))
-robinRemainder env other cc = errMsg "illegal-arguments" other
+robinRemainder = evalTwoNumbers (\x y cc -> case y of
+                                 0 -> errMsg "division-by-zero" $ Number x
+                                 _ -> cc $ Number (abs (x `mod` y)))
 
 --
 -- Mapping of names to our functions, providing an evaluation environment.
