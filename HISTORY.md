@@ -10,10 +10,10 @@ Robin 0.6
     transparency, while lexical exception handlers are of
     limited usefulness.
     
-    In their place are error values.  `raise` returns an
-    error value.  An error value is the wrong type for
+    In their place are error values.  `raise` evaluates to
+    an error value.  An error value is the wrong type for
     most operations, which results in another error value
-    (indicating a type error), so errors cascase upwards.
+    (indicating a type error), so errors cascade upwards.
     The `catch` intrinsic is now intended for testing and
     handling error values; it now takes 5 arguments.
 
