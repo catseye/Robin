@@ -23,8 +23,8 @@ Expressions in the list of values are evaluated.
     |   (list a b))
     = (1 9)
 
-Too many or too few arguments will raise an `illegal-arguments`
-exception.
+Too many or too few arguments will produce an `illegal-arguments`
+error value.
 
     | (bind-args (a b) (literal (1)) (env)
     |   (list a b))
@@ -34,7 +34,7 @@ exception.
     |   (list a b))
     ? uncaught exception: (illegal-arguments (1 2 3))
 
-The literal arguments are reported in the exception.
+The literal arguments are reported in the error value.
 
     | (bind-args (a) (literal ((subtract 5 4) (subtract 1 0))) (env)
     |   a)

@@ -4,14 +4,13 @@
 
     -> Tests for functionality "Evaluate core Robin Expression"
 
-`raise` evaluates its argument to obtain a value, then raises an
-exception with that value.
+`raise` evaluates its argument to obtain a value _x_, then produces
+an error value with _x_ as its payload.
 
-If no exception handlers have been installed in the execution
-history, the Robin program will terminate with an error, ceasing execution
-of all Robin processes immediately, returning control to the operating
-system.  For the sake of usability, the error should include a message which
-refers to the exception that triggered it, but this is not a strict
+See the Robin specification for the expected behaviour of error values.
+
+For the sake of usability, the error should include a message which
+refers to the condition that triggered it, but this is not a strict
 requirement.
 
     | (raise 999999)
@@ -25,10 +24,6 @@ exactly one argument.
 
     | (raise 2 3 4)
     ? uncaught exception: (illegal-arguments (2 3 4))
-
-A Robin environment may install exception handlers which are not defined
-in Robin code itself.  (i.e. exiting to the operating system is not a
-strict requirement.)
 
 '<<SPEC'
 

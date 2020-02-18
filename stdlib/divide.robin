@@ -25,7 +25,7 @@ to make it as big as possible without exceeding the first number.
     |   (divide 10 0)
     ? uncaught exception: (division-by-zero 10)
 
-Division by zero is undefined, and an exception will be raised.
+Division by zero is undefined, and an error value will be produced.
 
     |   (divide 10 0)
     ? uncaught exception: (division-by-zero 10)

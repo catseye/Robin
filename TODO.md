@@ -29,14 +29,6 @@ might have performance benefits.  (Or perhaps not.)
 Opaque type might also be useful for internals, e.g. signaling
 to runtime system that an error occurred.
 
-Exceptions
-----------
-
-Raising a list that looks like `(uncaught-exception ...)`, and
-then catching anything that looks like that, is less than fantastic.
-(We do this in `display` and in reactors).  Should we have a
-dedicated `error` type Expr?
-
 Stdlib
 ------
 
@@ -93,6 +85,11 @@ Rename "small" to "base".
 Rename `fun` to `function`.  This is because Robin prefers full words
 over abbreviations, which are jargon-y.
 
-Rename `raise` to `throw`.  This is because `throw` is the opposite
-of `catch`.  Also "raise" suggests an error, but it might be merely a
-non-local exit.
+Rename `raise` to `error`, because all it does now is create an
+error value.
+
+Perhaps rename "error values" to "exception values" or "abort values",
+because maybe they aren't all errors.
+
+Rename `catch` to `recover`, because all it does now is case on
+error type and extract the payload.

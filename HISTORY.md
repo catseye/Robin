@@ -4,8 +4,13 @@ History of Robin
 Robin 0.6
 ---------
 
-*   There are no more exceptions or exception handlers.
-    Rather, there are error values.  `raise` returns an
+*   Exceptions and exception handlers were removed from
+    the language.  This is because conventional exception
+    handlers have dynamic scope, and thus break referential
+    transparency, while lexical exception handlers are of
+    limited usefulness.
+    
+    In their place are error values.  `raise` returns an
     error value.  An error value is the wrong type for
     most operations, which results in another error value
     (indicating a type error), so errors cascase upwards.
