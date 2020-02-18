@@ -1,5 +1,10 @@
 module Language.Robin.Builtins where
 
+import Prelude (
+    ($), (>), (>=), (<), (<=), (+), (*), div, mod, abs, map, reverse, Bool(True, False)
+  )
+import qualified Prelude as P
+
 import Data.Int
 
 import Language.Robin.Expr
@@ -58,12 +63,12 @@ literal env (List (expr:_)) cc =
     cc expr
 literal env other cc = errMsg "illegal-arguments" other
 
-robinList :: Evaluable
-robinList env (List exprs) cc =
+list :: Evaluable
+list env (List exprs) cc =
     evalAll env exprs [] cc
 
-robinEnv :: Evaluable
-robinEnv env (List _) cc =
+env_ :: Evaluable
+env_ env (List _) cc =
     cc $ env
 
 choose :: Evaluable
@@ -84,8 +89,8 @@ bind env (List [(Symbol name), expr, body]) cc =
         eval (insert name value env) body cc)
 bind env other cc = errMsg "illegal-arguments" other
 
-robinLet :: Evaluable
-robinLet env (List ((List bindings):body:_)) cc =
+let_ :: Evaluable
+let_ env (List ((List bindings):body:_)) cc =
     bindAll bindings env (\env' ->
         eval env' body cc)
   where
@@ -96,24 +101,24 @@ robinLet env (List ((List bindings):body:_)) cc =
             bindAll rest (insert name value env) cc)
     bindAll (other:rest) env cc =
         errMsg "illegal-binding" other
-robinLet env other cc = errMsg "illegal-arguments" other
+let_ env other cc = errMsg "illegal-arguments" other
 
-robinBindArgs :: Evaluable
-robinBindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
+bindArgs :: Evaluable
+bindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
     eval env givenArgs (\(List actuals) ->
         eval env givenEnvExpr (\outerEnvExpr ->
             evalArgs formals actuals actuals outerEnvExpr (\argEnv ->
                 eval (mergeEnvs argEnv env) body cc)))
-robinBindArgs env other cc = errMsg "illegal-arguments" other
+bindArgs env other cc = errMsg "illegal-arguments" other
 
-robinFun :: Evaluable
-robinFun closedEnv (List [(List formals), body]) cc =
+fun :: Evaluable
+fun closedEnv (List [(List formals), body]) cc =
     cc $ Intrinsic "<lambda>" fun
   where
     fun env (List actuals) cc =
         evalArgs formals actuals actuals env (\argEnv ->
             eval (mergeEnvs argEnv closedEnv) body cc)
-robinFun env other cc = errMsg "illegal-arguments" other
+fun env other cc = errMsg "illegal-arguments" other
 
 --
 -- `Arith`
@@ -123,17 +128,17 @@ robinFun env other cc = errMsg "illegal-arguments" other
 -- See the relevant files in `stdlib` for normative definitions.
 --
 
-robinGt :: Evaluable
-robinGt = evalTwoNumbers (\x y cc -> cc $ Boolean (x > y))
+gtP :: Evaluable
+gtP = evalTwoNumbers (\x y cc -> cc $ Boolean (x > y))
 
-robinGte :: Evaluable
-robinGte = evalTwoNumbers (\x y cc -> cc $ Boolean (x >= y))
+gteP :: Evaluable
+gteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x >= y))
 
-robinLt :: Evaluable
-robinLt = evalTwoNumbers (\x y cc -> cc $ Boolean (x < y))
+ltP :: Evaluable
+ltP = evalTwoNumbers (\x y cc -> cc $ Boolean (x < y))
 
-robinLte :: Evaluable
-robinLte = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
+lteP :: Evaluable
+lteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
 
 robinAbs :: Evaluable
 robinAbs env (List [expr]) cc =
@@ -164,18 +169,18 @@ robinBuiltins :: Env
 robinBuiltins = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("literal",   literal),
-        ("list",      robinList),
-        ("env",       robinEnv),
+        ("list",      list),
+        ("env",       env_),
         ("choose",    choose),
         ("bind",      bind),
-        ("let",       robinLet),
-        ("bind-args", robinBindArgs),
-        ("fun",       robinFun),
+        ("let",       let_),
+        ("bind-args", bindArgs),
+        ("fun",       fun),
 
-        ("gt?",       robinGt),
-        ("gte?",      robinGte),
-        ("lt?",       robinLt),
-        ("lte?",      robinLte),
+        ("gt?",       gtP),
+        ("gte?",      gteP),
+        ("lt?",       ltP),
+        ("lte?",      lteP),
 
         ("abs",       robinAbs),
         ("add",       robinAdd),
