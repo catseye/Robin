@@ -24,7 +24,7 @@ evalAll env (head:tail) acc cc =
     eval env head (\value ->
         evalAll env tail (value:acc) cc)
 
---          formals   actuals   origActuals env    kont
+--          formals   actuals   origActuals env    continuation
 evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env -> (Env -> Expr) -> Expr
 evalArgs [] [] _ _ cc =
     cc empty

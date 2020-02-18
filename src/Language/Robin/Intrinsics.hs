@@ -79,8 +79,8 @@ robinEval env (List [envlist, form]) cc =
 robinEval env other cc = errMsg "illegal-arguments" other
 
 robinMacro :: Evaluable
-robinMacro env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) k =
-    k $ Macro env args body
+robinMacro env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc =
+    cc $ Macro env args body
 robinMacro env other cc = errMsg "illegal-arguments" other
 
 robinRaise :: Evaluable
