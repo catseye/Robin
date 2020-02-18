@@ -125,7 +125,7 @@ and Scheme do.
 
 It does so in the name of correctness: it is incorrect
 to pass more arguments to a function, than it expects,
-so you should be informed of this by means of an exception.
+so you should be informed of this by means of an error condition.
 
 But it goes further, with the doctrine that no function should
 have a variable number of arguments.  If you want a function

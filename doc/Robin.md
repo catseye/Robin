@@ -2,6 +2,8 @@ Robin
 =====
 
 This document defines version 0.6 of the Robin programming language.
+In this document, the name "Robin" by itself refers to the Robin
+programming language version 0.6.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
@@ -226,13 +228,14 @@ all the other data types.  It is inductively defined as follows:
 *   An empty list is a term.
 *   A list cell containing a term, prepended to another list
     (which may be empty), is a term.
+*   An error value is a term.
 *   Nothing else is a term.
 
 Terms have a textual representation (as S-expressions), but not all types
 have values that can be directly expressed in this textual representation.
 All terms have some meaning when interpeted as Robin programs, as
 defined by Robin's evaluation rules, but that meaning might be to
-raise an exception to indicate an error.
+produce an error value as an indication that the program is in error.
 
 ### Symbol ###
 
@@ -245,7 +248,7 @@ ones.)
 When in a Robin program proper, a symbol can be bound to a value, and
 in this context is it referred to as an _identifier_.  However, if an
 attempt is made to evaluate a symbol which is not an identifier,
-an exception will be raised.
+an error value will be produced.
 
     | this-symbol-is-not-bound
     ? uncaught exception: (unbound-identifier this-symbol-is-not-bound)
@@ -387,8 +390,30 @@ Lists cannot be directly applied, but since a list itself represents an
 application, that application is undertaken, and the result of it can
 be applied.
 
+### Error ###
+
+In Robin, errors are indicated by values with a special error type,
+called error values.  Trying to use an error value in most operations
+is itself an error, and consequently results in another error value
+being produced.  In this manner, errors tend to bubble up to some
+level of the evaluation where they are handled.  They may either be
+handled explicitly by the program itself with the `catch` intrinsic,
+or implicitly by the implementation, once they reach the outermost
+level of evaluation.
+
+What the implementation does to handle an error that reaches the
+outermost level is an implementation detail, but is generally
+expected to communicate the error to the user somehow.  The reference
+implementation of Robin produces an OS-level error code when asked to
+display an error value.  Examples of this behaviour can be found
+among the error-expecting tests in this document.
+
+An error value contains a single value, called the payload, which
+may be any Robin term.  The payload usually attempts to describe
+the error condition that the error value represents.
+
 (c) Conventional Data Types
------------------------------
+---------------------------
 
 This section lists data types that are not intrinsic, but are rather
 arrangements of intrinsic types in a way that follows a convention.
@@ -432,11 +457,10 @@ list functions, arithmetic functions, etc.)
 
 ### Intrinsics ###
 
-Robin 0.3 provides 15 intrinsics.  These represent
-the fundamental functionality that is used to evaluate programs, and that
-cannot be expressed as macros written in Robin (not without resorting to
-meta-circularity, at any rate.)  All other macros are built up on top of
-the intrinsics.
+Robin provides 15 intrinsics.  These represent the fundamental functionality
+that is used to evaluate programs, and that cannot be expressed as macros
+written in Robin (not without resorting to meta-circularity, at any rate.)
+All other macros are built up on top of the intrinsics.
 
 This set of intrinsics is not optional — every Robin implementation must
 provide them, or it's not Robin.
@@ -465,9 +489,9 @@ can be passed around as values.
 All of the 15 intrinsics are macros, but there is nothing ontologically
 requiring an intrinsic to be a value of macro type.
 
-Each of the 15 intrinsics provided by Robin 0.3 is specified in
-its own file in the standard library.  Because these are intrinsics,
-no Robin implementation is given for them in these files, but tests cases
+Each of the 15 intrinsics provided by Robin is specified in its own file
+in the standard library.  Because these are intrinsics, no Robin
+implementation is given for them in these files, but tests cases
 which describe their behaviour are.
 
 *   [catch](../stdlib/catch.robin)
@@ -656,7 +680,7 @@ interact with a user, a remote server on a network, or other source of
 events.  Reactors are similar to event handlers in Javascript, or to
 processes in Erlang.
 
-In Robin 0.3, a reactor is installed by giving a top-level form with the
+In Robin, a reactor is installed by giving a top-level form with the
 following syntax:
 
     (reactor SUBSCRIPTIONS INITIAL-STATE-EXPR TRANSDUCER)
