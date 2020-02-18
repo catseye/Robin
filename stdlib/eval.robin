@@ -32,45 +32,47 @@ If two bindings for the same identifier are supplied in the environment
 alist passed to `eval`, the one closer to the front of the alist takes
 precedence.
 
-    |   (bind bindings (prepend
-    |                    (prepend (literal foo) (prepend (literal yes) ()))
-    |                    (prepend
-    |                       (prepend (literal foo) (prepend (literal no) ()))
-    |                       ()))
-    |     (eval bindings (literal foo)))
+    | (bind bindings (prepend
+    |                  (prepend (literal foo) (prepend (literal yes) ()))
+    |                  (prepend
+    |                     (prepend (literal foo) (prepend (literal no) ()))
+    |                     ()))
+    |   (eval bindings (literal foo)))
     = yes
 
 `eval` will happily use whatever type of value you like as the
 environment, however, subsequent evaluation will fail when it
-tries to look up things in that environment.  FIXME: (expected-env-alist 103)
+tries to look up things in that environment.
 
-    |   (eval 103 (literal
-    |     (prepend (literal a)
-    |              (prepend (literal b) ()))))
-    ? uncaught exception
+    | (eval 103 (literal
+    |   (prepend (literal a)
+    |            (prepend (literal b) ()))))
+    ? uncaught exception: (unbound-identifier prepend)
 
 Evaluation expects the contents of the list which makes up the
-environment to be two-element lists.  FIXME
+environment to be two-element lists.  Any list of some other
+format will not work for looking things up.
 
-    |   (eval (prepend #f ()) (literal
-    |     (prepend (literal a)
-    |              (prepend (literal b) ()))))
-    ? uncaught exception
+    | (eval (prepend #f ()) (literal
+    |   (prepend (literal a)
+    |            (prepend (literal b) ()))))
+    ? uncaught exception: (unbound-identifier prepend)
 
 Evaluation expects the head of each sublist in the list which makes up the
-environment to be a symbol.  FIXME
+environment to be a symbol.  Any list of some other
+format will not work for looking things up.
 
-    |   (eval (prepend (prepend 7 (prepend #f ())) ()) (literal
-    |     (prepend (literal a)
-    |              (prepend (literal b) ()))))
-    ? uncaught exception
+    | (eval (prepend (prepend 7 (prepend #f ())) ()) (literal
+    |   (prepend (literal a)
+    |            (prepend (literal b) ()))))
+    ? uncaught exception: (unbound-identifier prepend)
 
 `eval` expects exactly two arguments.
 
-    |   (eval)
+    | (eval)
     ? uncaught exception: (illegal-arguments ())
 
-    |   (eval 4 5 6)
+    | (eval 4 5 6)
     ? uncaught exception: (illegal-arguments (4 5 6))
 
 '<<SPEC'
