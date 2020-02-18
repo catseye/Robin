@@ -28,8 +28,6 @@ update reactor@Reactor{rid=rid, env=env, state=state, body=body} event =
             (command:applyStop commands)
     in
         case eval env (List [body, event, state]) id of
-            command@(List [(Symbol "uncaught-exception"), expr]) ->
-                (reactor, [command])
             (List (state':commands)) ->
                 (reactor{ state=state' }, applyStop commands)
             expr ->

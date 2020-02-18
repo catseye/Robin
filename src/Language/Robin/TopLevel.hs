@@ -19,6 +19,8 @@ collect ((List [Symbol "display", expr]):rest) env reactors results =
 
 collect ((List [Symbol "assert", expr]):rest) env reactors results =
     case eval env expr id of
+        Error expr ->
+            error ("uncaught exception: " ++ show expr)
         Boolean False ->
             error ("assertion failed: " ++ show expr)
         _ ->
