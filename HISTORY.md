@@ -16,6 +16,10 @@ Robin 0.6
     (indicating a type error), so errors cascade upwards.
     The `catch` intrinsic is now intended for testing and
     handling error values; it now takes 5 arguments.
+*   Lookup of values in an environment is more forgiving;
+    if the alist for the environment is malformed, lookup
+    will not complain about the malformedness of it; the
+    identifier being sought will simply not be found.
 
 For the reference implementation,
 
