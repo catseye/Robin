@@ -1,7 +1,6 @@
 module Language.Robin.Intrinsics where
 
 import Prelude (($), (==), (>=), (<), (-), map)
-import qualified Prelude as P
 
 import Language.Robin.Expr
 import Language.Robin.Eval
