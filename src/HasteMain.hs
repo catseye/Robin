@@ -4,7 +4,7 @@ import Haste
 import Haste.DOM
 import Haste.Events
 
-import Language.Robin.Expr (mergeEnvs)
+import Language.Robin.Env (mergeEnvs)
 import Language.Robin.Parser (parseToplevel)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)

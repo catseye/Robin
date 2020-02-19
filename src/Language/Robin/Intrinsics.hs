@@ -3,6 +3,7 @@ module Language.Robin.Intrinsics where
 import Prelude (($), (==), (>=), (<), (-), map)
 
 import Language.Robin.Expr
+import Language.Robin.Env (Env, fromList, insert)
 import Language.Robin.Eval
 
 

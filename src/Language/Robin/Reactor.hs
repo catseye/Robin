@@ -8,6 +8,7 @@ import System.IO
 import System.Random
 
 import Language.Robin.Expr
+import Language.Robin.Env (Env)
 import Language.Robin.Eval
 
 data Reactor = Reactor {

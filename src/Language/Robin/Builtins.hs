@@ -8,6 +8,7 @@ import qualified Prelude as P
 import Data.Int
 
 import Language.Robin.Expr
+import Language.Robin.Env (Env, fromList, mergeEnvs, empty, insert)
 import Language.Robin.Eval
 
 -- 

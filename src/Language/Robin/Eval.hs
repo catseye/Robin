@@ -3,6 +3,7 @@ module Language.Robin.Eval where
 import Prelude (Maybe(Just, Nothing), Bool(True, False))
 
 import Language.Robin.Expr
+import Language.Robin.Env (Env, find, insert)
 
 --
 -- This evaluator is written in continuation-passing style.

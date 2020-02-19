@@ -9,8 +9,8 @@ import Data.Int
 -- (perhaps unsurprisingly?) to be the type of the evaluator function.
 --
 
-type Evaluable = Env -> Expr -> (Expr -> Expr) -> Expr
---               env    args    continuation      result
+type Evaluable = Expr -> Expr -> (Expr -> Expr) -> Expr
+--               env     args    continuation      result
 
 --
 -- Basic expressions in Robin.  These may be evaluated, or they may be
@@ -20,7 +20,7 @@ type Evaluable = Env -> Expr -> (Expr -> Expr) -> Expr
 data Expr = Symbol String
           | Boolean Bool
           | Number Int32
-          | Macro Env Expr Expr
+          | Macro Expr Expr Expr      -- the 1st Expr is actually an Env
           | Intrinsic String Evaluable
           | List [Expr]
           | Error Expr
@@ -48,38 +48,6 @@ instance Show Expr where
                                      showl [] = ""
                                      showl [expr] = show expr
                                      showl (expr:exprs) = (show expr) ++ " " ++ (showl exprs)
-
---
--- An environment is an alist which associates symbols with
--- values (arbitrary S-expressions).
---
-
-type Env = Expr
-
-empty :: Env
-empty = List []
-
-insert :: String -> Expr -> Env -> Env
-insert s value (List bindings) =
-    let
-       entry = List [Symbol s, value]
-    in
-       List (entry:bindings)
-
-find :: String -> Env -> Maybe Expr
-find _ (List []) = Nothing
-find s (List (List [Symbol t, value]:rest))
-    | s == t    = Just value
-    | otherwise = find s (List rest)
-find s (List (_:rest)) = find s (List rest)
-find _ (_) = Nothing
-
-fromList :: [(String, Expr)] -> Env
-fromList [] = empty
-fromList ((s, val):rest) = insert s val $ fromList rest
-
-mergeEnvs :: Env -> Env -> Env
-mergeEnvs (List a) (List b) = (List (a ++ b))
 
 --
 -- Helpers

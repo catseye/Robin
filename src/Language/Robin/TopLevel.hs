@@ -3,6 +3,7 @@ module Language.Robin.TopLevel (collect) where
 import Prelude (error, show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing), Either(Left, Right))
 
 import Language.Robin.Expr
+import Language.Robin.Env (Env, find, insert)
 import Language.Robin.Eval
 import Language.Robin.Reactor
 
