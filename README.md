@@ -85,9 +85,12 @@ of these intrinsics, while an implementation is free to provide its own
 
 ### PicoLisp ###
 
-[PicoLisp][] allows functions that do not evaluate their arguments.  Robin
-takes this concept and calls it a `macro`, and builds everything else on
-top of it.  There is a `function` form in Robin, but it's defined as a macro!
+[PicoLisp][] allows defining functions with unevaluated arguments.
+Robin adopts this kind of function for the basis of what it calls a `macro`,
+and builds everything else on top of `macro`s.  (There *is* a `function` form
+in Robin, but it's defined as a `macro`!)  This is much like how the [Kernel][]
+programming language builds everything from [fexpr][]s; however, Robin was
+developed oblivious of Kernel — it adapted the idea directly from PicoLisp.
 
 ### Haskell ###
 
@@ -131,7 +134,9 @@ Repository Layout
 
 [Scheme]:    http://schemers.org/
 [Haskell]:   https://www.haskell.org/
+[fexpr]:     https://en.wikipedia.org/wiki/Fexpr
 [PicoLisp]:  http://picolisp.com/
+[Kernel]:    http://web.cs.wpi.edu/~jshutt/kernel.html
 [Forth]:     https://en.wikipedia.org/wiki/Forth_(programming_language)
 [Pixley]:    https://catseye.tc/node/Pixley
 [Elm]:       https://elm-lang.org/
