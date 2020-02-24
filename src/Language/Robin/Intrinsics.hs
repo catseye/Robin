@@ -90,15 +90,15 @@ abort env (List [expr]) cc =
     eval env expr (\v -> cc $ Abort v)
 abort env other cc = errMsg "illegal-arguments" other
 
-catch :: Evaluable
-catch env (List [expr, (Symbol s), errexpr, (Symbol v), okexpr]) cc =
+recover :: Evaluable
+recover env (List [expr, (Symbol s), errexpr, (Symbol v), okexpr]) cc =
     eval env expr (\result ->
         case result of
             e@(Abort contents) ->
                 eval (insert s contents env) errexpr cc
             other ->
                 eval (insert v other env) okexpr cc)
-catch env other cc = errMsg "illegal-arguments" other
+recover env other cc = errMsg "illegal-arguments" other
 
 robinIntrinsics :: Env
 robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
@@ -117,5 +117,5 @@ robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("eval",     eval_),
         ("if",       if_),
         ("abort",    abort),
-        ("catch",    catch)
+        ("recover",  recover)
       ]

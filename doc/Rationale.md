@@ -358,7 +358,7 @@ Markdown.)
             eval
             if
             abort
-            catch
+            recover
           </td></tr>
         </table>
 

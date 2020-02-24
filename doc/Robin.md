@@ -398,7 +398,7 @@ called abort values.  Trying to use an abort value in most operations
 is an error, and consequently results in another abort value being produced.
 In this manner, aborts tend to bubble up to some level of the evaluation
 where they are handled.  They may either be handled explicitly by the
-program with the `catch` intrinsic, or implicitly by the implementation
+program with the `recover` intrinsic, or implicitly by the implementation
 once they reach the outermost level of evaluation.
 
 What the implementation does to handle an abort value that reaches the
@@ -495,7 +495,7 @@ implementation is given for them in these files, but tests cases
 which describe their behaviour are.
 
 *   [abort](../stdlib/abort.robin)
-*   [catch](../stdlib/catch.robin)
+*   [recover](../stdlib/recover.robin)
 *   [equal?](../stdlib/equal-p.robin)
 *   [eval](../stdlib/eval.robin)
 *   [head](../stdlib/head.robin)
