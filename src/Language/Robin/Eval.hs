@@ -68,7 +68,7 @@ eval env e cc =
 --
 
 errMsg msg term =
-    Error (List [(Symbol msg), term])
+    Abort (List [(Symbol msg), term])
 
 makeMacroEnv :: Env -> Expr -> Expr -> Env
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =

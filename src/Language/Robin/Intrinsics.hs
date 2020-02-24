@@ -87,14 +87,14 @@ macro env other cc = errMsg "illegal-arguments" other
 
 raise :: Evaluable
 raise env (List [expr]) cc =
-    eval env expr (\v -> cc $ Error v)
+    eval env expr (\v -> cc $ Abort v)
 raise env other cc = errMsg "illegal-arguments" other
 
 catch :: Evaluable
 catch env (List [expr, (Symbol s), errexpr, (Symbol v), okexpr]) cc =
     eval env expr (\result ->
         case result of
-            e@(Error contents) ->
+            e@(Abort contents) ->
                 eval (insert s contents env) errexpr cc
             other ->
                 eval (insert v other env) okexpr cc)

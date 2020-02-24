@@ -15,14 +15,14 @@ collect [] env reactors results = (env, reactors, results)
 collect ((List [Symbol "display", expr]):rest) env reactors results =
     let
         result = case eval env expr id of
-            Error expr -> Left expr
+            Abort expr -> Left expr
             other -> Right other
     in
         collect rest env reactors (result:results)
 
 collect ((List [Symbol "assert", expr]):rest) env reactors results =
     case eval env expr id of
-        Error expr ->
+        Abort expr ->
             error ("uncaught exception: " ++ show expr)
         Boolean False ->
             error ("assertion failed: " ++ show expr)
