@@ -94,12 +94,12 @@ become clear here: typically you would just pass the macro's `args` and
           (if (equal? id-list ())
             (if (equal? val-list ())
               env-acc
-              (raise (list (literal illegal-arguments) orig-val-list)))
+              (abort (list (literal illegal-arguments) orig-val-list)))
             (if (equal? val-list ())
-              (raise (list (literal illegal-arguments) orig-val-list))
+              (abort (list (literal illegal-arguments) orig-val-list))
               (catch
                 (eval given-env (head val-list))
-                error (raise error)
+                error (abort error)
                 actual (self
                   (tail id-list) (tail val-list)
                   (prepend
@@ -107,5 +107,5 @@ become clear here: typically you would just pass the macro's `args` and
                     env-acc)))))))))
       (catch
         (bind-args-r id-list orig-val-list env)
-        error (raise error)
+        error (abort error)
         new-env (eval new-env expr)))))

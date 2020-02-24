@@ -10,7 +10,7 @@ Robin 0.6
     transparency, while lexical exception handlers are of
     limited usefulness.
     
-    In their place are abort values.  `raise` evaluates to
+    In their place are abort values.  `abort` evaluates to
     an abort value.  An abort value is the wrong type for
     most operations, which results in another abort value
     (indicating a type error), so aborts cascade upwards.

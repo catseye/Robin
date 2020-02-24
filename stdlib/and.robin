@@ -47,4 +47,4 @@ but it can be demonstrated as follows.
     (if (eval env (head args))
       (if (eval env (head (tail args))) #t #f)
       #f)
-    (raise (list (literal illegal-arguments) args)))))
+    (abort (list (literal illegal-arguments) args)))))

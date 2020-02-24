@@ -85,8 +85,5 @@ Rename "small" to "base".
 Rename `fun` to `function`.  This is because Robin prefers full words
 over abbreviations, which are jargon-y.
 
-Rename `raise` to `abort`, because all it does now is create an
-abort value.
-
 Rename `catch` to `recover`, because all it does now is case on
 abort type and extract the payload.

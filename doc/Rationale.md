@@ -357,7 +357,7 @@ Markdown.)
             macro
             eval
             if
-            raise
+            abort
             catch
           </td></tr>
         </table>

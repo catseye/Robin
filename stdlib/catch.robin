@@ -21,7 +21,7 @@ fourth argument, and the fifth argument is evaluated.
     = ((nice-value 999999) #t)
 
     | (catch
-    |   (raise (literal (nasty-value 999999)))
+    |   (abort (literal (nasty-value 999999)))
     |   error (list error #f)
     |   value (list value #t))
     = ((nasty-value 999999) #f)
@@ -30,7 +30,7 @@ If an abort is returned from the body of a macro that is applied
 in the context of a `catch`, it will still be catched.
 
     | (catch
-    |   ((macro (self args env) (raise (literal (nasty-value 1111)))) joe)
+    |   ((macro (self args env) (abort (literal (nasty-value 1111)))) joe)
     |   error (list error #f)
     |   value (list value #t))
     = ((nasty-value 1111) #f)
@@ -40,7 +40,7 @@ an abort value.
 
     | (catch
     |   (catch
-    |     (raise (literal (nasty-value 999999)))
+    |     (abort (literal (nasty-value 999999)))
     |     error (list error #f)
     |     value (list value #t))
     |   error (list error #f)
@@ -52,8 +52,8 @@ handle the abort value it returned.
 
     | (catch
     |   (catch
-    |     (raise (literal (nasty-value 999999)))
-    |     error (raise error)
+    |     (abort (literal (nasty-value 999999)))
+    |     error (abort error)
     |     value (list value #t))
     |   error (list error 123)
     |   value (list value #t))
@@ -82,7 +82,7 @@ in which the abort value was produced.
 
     | (catch
     |   (bind flop 1
-    |     (raise 2))
+    |     (abort 2))
     |   error (list flop error)
     |   value (list 123 value))
     ? uncaught exception: (unbound-identifier flop)
@@ -90,7 +90,7 @@ in which the abort value was produced.
 `catch` handles abort values, and this does not include the environment
 in which the abort value was produced.
 
-    | (bind flop (fun (x) (raise x))
+    | (bind flop (fun (x) (abort x))
     |   (list
     |     (catch (flop 44) error (list 55 error) value value)
     |     (catch (flop 44) error (list 66 error) value value)))

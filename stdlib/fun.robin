@@ -89,9 +89,9 @@ supplied to a function call.
       (if (equal? formals ())
         (if (equal? actuals ())
           env-to-extend
-          (raise (list (literal illegal-arguments) (head (tail (tail args))))))
+          (abort (list (literal illegal-arguments) (head (tail (tail args))))))
         (if (equal? actuals ())
-          (raise (list (literal illegal-arguments) (head (tail (tail args)))))
+          (abort (list (literal illegal-arguments) (head (tail (tail args)))))
           (let (
               (formal (head formals))
               (actual (head actuals))
@@ -104,5 +104,5 @@ supplied to a function call.
             (self extended-env rest-formals rest-actuals env-for-actuals))))))
   (macro (iself iargs ienv)
     (catch (extend-with-args env (head args) iargs ienv)
-      error (raise error)
+      error (abort error)
       extended-env (eval extended-env (head (tail args))))))))

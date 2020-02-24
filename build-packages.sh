@@ -6,7 +6,7 @@ mkdir -p pkg
 
 cat stdlib/catch.robin stdlib/equal-p.robin stdlib/eval.robin stdlib/head.robin \
     stdlib/if.robin stdlib/list-p.robin stdlib/macro-p.robin stdlib/macro.robin \
-    stdlib/number-p.robin stdlib/prepend.robin stdlib/raise.robin stdlib/sign.robin \
+    stdlib/number-p.robin stdlib/prepend.robin stdlib/abort.robin stdlib/sign.robin \
     stdlib/subtract.robin stdlib/symbol-p.robin stdlib/tail.robin \
     > pkg/intrinsics.robin
 

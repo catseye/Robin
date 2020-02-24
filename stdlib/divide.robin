@@ -57,7 +57,7 @@ Division by zero is undefined, and an abort value will be produced.
         (self self (add n d) d (add 1 acc))))
       (bind-args (n d) args env
         (if (equal? d 0)
-          (raise (list (literal division-by-zero) n))
+          (abort (list (literal division-by-zero) n))
           (if (lt? n 0)
             (self (subtract 0 n) (subtract 0 d))
             (if (gt? d 0)

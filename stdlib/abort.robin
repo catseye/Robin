@@ -1,10 +1,10 @@
 ;'<<SPEC'
 
-### `raise` ###
+### `abort` ###
 
     -> Tests for functionality "Evaluate core Robin Expression"
 
-`raise` evaluates its argument to obtain a value _x_, then produces
+`abort` evaluates its argument to obtain a value _x_, then produces
 an abort value with _x_ as its payload.
 
 See the Robin specification for the expected behaviour of abort values.
@@ -13,18 +13,18 @@ For the sake of usability, the abort should include a message which
 refers to the condition that triggered it, but this is not a strict
 requirement.
 
-    | (raise 999999)
+    | (abort 999999)
     ? uncaught exception: 999999
 
-`raise`'s single argument may be any kind of value, but `raise` expects
+`abort`'s single argument may be any kind of value, but `abort` expects
 exactly one argument.
 
-    | (raise)
+    | (abort)
     ? uncaught exception: (illegal-arguments ())
 
-    | (raise 2 3 4)
+    | (abort 2 3 4)
     ? uncaught exception: (illegal-arguments (2 3 4))
 
 '<<SPEC'
 
-(require raise)
+(require abort)

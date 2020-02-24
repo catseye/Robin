@@ -494,6 +494,7 @@ in the standard library.  Because these are intrinsics, no Robin
 implementation is given for them in these files, but tests cases
 which describe their behaviour are.
 
+*   [abort](../stdlib/abort.robin)
 *   [catch](../stdlib/catch.robin)
 *   [equal?](../stdlib/equal-p.robin)
 *   [eval](../stdlib/eval.robin)
@@ -504,7 +505,6 @@ which describe their behaviour are.
 *   [macro](../stdlib/macro.robin)
 *   [number?](../stdlib/number-p.robin)
 *   [prepend](../stdlib/prepend.robin)
-*   [raise](../stdlib/raise.robin)
 *   [sign](../stdlib/sign.robin)
 *   [subtract](../stdlib/subtract.robin)
 *   [symbol?](../stdlib/symbol-p.robin)
@@ -906,7 +906,7 @@ but this is not a strict requirement.
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
     |             (if (equal? (head event-payload) 65)
-    |               (raise 999999)
+    |               (abort 999999)
     |               (list 0 (list (literal writeln) event-payload)))
     |             (list 0)))))))
     + Cat

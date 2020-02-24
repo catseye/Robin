@@ -85,10 +85,10 @@ macro env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), bo
     cc $ Macro env args body
 macro env other cc = errMsg "illegal-arguments" other
 
-raise :: Evaluable
-raise env (List [expr]) cc =
+abort :: Evaluable
+abort env (List [expr]) cc =
     eval env expr (\v -> cc $ Abort v)
-raise env other cc = errMsg "illegal-arguments" other
+abort env other cc = errMsg "illegal-arguments" other
 
 catch :: Evaluable
 catch env (List [expr, (Symbol s), errexpr, (Symbol v), okexpr]) cc =
@@ -116,6 +116,6 @@ robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
         ("macro",    macro),
         ("eval",     eval_),
         ("if",       if_),
-        ("raise",    raise),
+        ("abort",    abort),
         ("catch",    catch)
       ]
