@@ -20,7 +20,7 @@ The second argument to `prepend` must be a list.
     ? uncaught exception: (expected-list #f)
 
 The first argument to `prepend` can be any type, but fewer than or more than
-two arguments will produce an error value.
+two arguments will produce an abort value.
 
     | (prepend #t)
     ? uncaught exception: (illegal-arguments (#t))

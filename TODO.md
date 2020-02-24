@@ -49,7 +49,7 @@ Static analysis lib.  This is its own bucket of worms.  It should
 expose a macro that can be wrapped around an arbitrary standard
 Robin program _p_ and, if static analysis of _p_ is successful,
 simply evaluates to whatever _p_ evaluates to.  And if not
-successful, raises an error.  Should probably start small --
+successful, produces an abort.  Should probably start small --
 statically check the arity of every application, for instance.
 Note that this relies on the assumption that all standard symbols
 have their standard meanings.
@@ -85,11 +85,8 @@ Rename "small" to "base".
 Rename `fun` to `function`.  This is because Robin prefers full words
 over abbreviations, which are jargon-y.
 
-Rename `raise` to `error`, because all it does now is create an
-error value.
-
-Perhaps rename "error values" to "exception values" or "abort values",
-because maybe they aren't all errors.
+Rename `raise` to `abort`, because all it does now is create an
+abort value.
 
 Rename `catch` to `recover`, because all it does now is case on
-error type and extract the payload.
+abort type and extract the payload.

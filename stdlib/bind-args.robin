@@ -5,7 +5,7 @@
 `bind-args` is a macro for evaluating a list of arguments and binding
 them to the identifiers in a list of identifiers, as well as asserting
 that the correct number of arguments have been given, and that none of
-the arguments evaluated to an error value.
+the arguments evaluated to an abort value.
 
 `bind-args` takes a literal list of identifiers, and expresion which
 evaluates to a literal list of expressions whose values are to be bound
@@ -24,7 +24,7 @@ Expressions in the list of values are evaluated.
     = (1 9)
 
 Too many or too few arguments will produce an `illegal-arguments`
-error value.
+abort value.
 
     | (bind-args (a b) (literal (1)) (env)
     |   (list a b))
@@ -34,7 +34,7 @@ error value.
     |   (list a b))
     ? uncaught exception: (illegal-arguments (1 2 3))
 
-The literal arguments are reported in the error value.
+The literal arguments are reported in the abort value.
 
     | (bind-args (a) (literal ((subtract 5 4) (subtract 1 0))) (env)
     |   a)

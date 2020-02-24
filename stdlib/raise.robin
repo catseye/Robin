@@ -5,11 +5,11 @@
     -> Tests for functionality "Evaluate core Robin Expression"
 
 `raise` evaluates its argument to obtain a value _x_, then produces
-an error value with _x_ as its payload.
+an abort value with _x_ as its payload.
 
-See the Robin specification for the expected behaviour of error values.
+See the Robin specification for the expected behaviour of abort values.
 
-For the sake of usability, the error should include a message which
+For the sake of usability, the abort should include a message which
 refers to the condition that triggered it, but this is not a strict
 requirement.
 

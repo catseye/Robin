@@ -54,7 +54,7 @@ A function may have no arguments at all.
     = 7
 
 But, a function must have exactly both a body and a list of formal arguments.
-Otherwise, an error value will be produced.
+Otherwise, an abort value will be produced.
 
     | ((fun ()))
     ? uncaught exception
@@ -65,14 +65,14 @@ Otherwise, an error value will be produced.
     | ((fun (a) a a))
     ? uncaught exception
 
-An `illegal-arguments` error will be produced if not enough arguments are
+An `illegal-arguments` abort will be produced if not enough arguments are
 supplied to a function call.
 
     | ((fun (a b) (glerp b a))
     |   (prepend 1 ()))
     ? uncaught exception: (illegal-arguments
 
-An `illegal-arguments` error will be produced if too many arguments are
+An `illegal-arguments` abort will be produced if too many arguments are
 supplied to a function call.
 
     | ((fun (a b) (glerp b a))

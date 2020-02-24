@@ -26,7 +26,7 @@ The remainder is *always non-negative*.
     = 2
 
 Trying to find the remainder of a division by zero is undefined, and an
-error value will be produced.
+abort value will be produced.
 
     | (remainder 10 0)
     ? uncaught exception: (division-by-zero 10)

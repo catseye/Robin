@@ -12,7 +12,7 @@ any S-expression.
     | (literal (hello (there) world)))
     = (hello (there) world)
 
-`literal` requires at least one argument; otherwise, an error value will
+`literal` requires at least one argument; otherwise, an abort value will
 be produced.
 
     | (literal)

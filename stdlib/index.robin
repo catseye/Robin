@@ -18,7 +18,7 @@ list at the index given by the natural number.  The index is 0-based;
     = ipanema
 
 Attempting to index beyond the end of the list will produce an
-error value.
+abort value.
 
     |   (index 7 (literal (the girl from ipanema)))
     ? uncaught exception: (expected-list ())

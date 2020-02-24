@@ -10,12 +10,12 @@ Robin 0.6
     transparency, while lexical exception handlers are of
     limited usefulness.
     
-    In their place are error values.  `raise` evaluates to
-    an error value.  An error value is the wrong type for
-    most operations, which results in another error value
-    (indicating a type error), so errors cascade upwards.
+    In their place are abort values.  `raise` evaluates to
+    an abort value.  An abort value is the wrong type for
+    most operations, which results in another abort value
+    (indicating a type error), so aborts cascade upwards.
     The `catch` intrinsic is now intended for testing and
-    handling error values; it now takes 5 arguments.
+    handling abort values; it now takes 5 arguments.
 *   Lookup of values in an environment is more forgiving;
     if the alist for the environment is malformed, lookup
     will not complain about the malformedness of it; the

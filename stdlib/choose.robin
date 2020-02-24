@@ -19,7 +19,7 @@ associated with the test that passes.
     | (choose (else (literal woo)))
     = woo
     
-`choose` does require an `else` branch, or else an error value will be
+`choose` does require an `else` branch, or else an abort value will be
 produced.
 
     | (choose (#f (literal hi)) (#f (literal med)))
@@ -29,7 +29,7 @@ produced.
     ? uncaught exception
 
 Each branch of a `choose` needs to be a two-element list, or else an
-error value will be produced.
+abort value will be produced.
 
     | (choose (#t) (else (literal lo)))
     ? uncaught exception

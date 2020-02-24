@@ -48,17 +48,17 @@ Shadowing happens.
     | (let () (literal hi))
     = hi
 
-The list of bindings must be a list, or else an error value will be produced.
+The list of bindings must be a list, or else an abort value will be produced.
 
     | (let 999 (literal hi))
     ? uncaught exception
 
-Each binding in a list must be a list, or else an error value will be produced.
+Each binding in a list must be a list, or else an abort value will be produced.
 
     | (let (999) (literal hi))
     ? uncaught exception
 
-Both the body and the list of bindings are required, or else an error value
+Both the body and the list of bindings are required, or else an abort value
 will be produced.
 
     | (let ()))
@@ -73,7 +73,7 @@ and discarded, without being evaluated.
     | (let ((a 1)) a foo)
     = 1
 
-Each binding must have at least a name and a value, or else an error value
+Each binding must have at least a name and a value, or else an abort value
 will be produced.
 
     | (let ((a)) a)

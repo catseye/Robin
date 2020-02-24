@@ -40,7 +40,7 @@ Two values of different types are never equal.
     = #f
 
 Arguments to `equal?` can be any type, but fewer than or more than
-two arguments will produce an error value.
+two arguments will produce an abort value.
 
     | (equal? 7)
     ? uncaught exception: (illegal-arguments (7))
