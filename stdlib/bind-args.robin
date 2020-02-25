@@ -99,13 +99,13 @@ become clear here: typically you would just pass the macro's `args` and
               (abort (list (literal illegal-arguments) orig-val-list))
               (recover
                 (eval given-env (head val-list))
-                error (abort error)
                 actual (self
                   (tail id-list) (tail val-list)
                   (prepend
                     (list (head id-list) actual)
-                    env-acc)))))))))
+                    env-acc))
+                error (abort error))))))))
       (recover
         (bind-args-r id-list orig-val-list env)
-        error (abort error)
-        new-env (eval new-env expr)))))
+        new-env (eval new-env expr)
+        error (abort error)))))

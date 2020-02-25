@@ -5,25 +5,28 @@
     -> Tests for functionality "Evaluate Robin Expression (with literal and list)"
 
 `recover` handles abort values.  It takes 5 arguments.  It
-evaluates the first argument to a value.  If the value is an
-abort value, a new environment is created where the payload of
-the abort value is bound to the name provided in the second
-argument, and in this environment the third argument is evaluated,
-and this is the result of the `recover` expression.  On the other
-hand, if the value is not an abort value, a new environment is
+evaluates the first argument to a value.
+
+If the value is not an abort value, a new environment is
 created where the value is bound to the name provided in the
-fourth argument, and the fifth argument is evaluated.
+second argument, and the third argument is evaluated in this
+environment.
+
+On the other hand, if the value is an abort value, a new
+environment is created where the payload of the abort value is
+bound to the name provided in the fourth argument, and in this
+environment the fifth argument is evaluated.
 
     | (recover
     |   (literal (nice-value 999999))
-    |   error (list error #f)
-    |   value (list value #t))
+    |   value (list value #t)
+    |   error (list error #f))
     = ((nice-value 999999) #t)
 
     | (recover
     |   (abort (literal (nasty-value 999999)))
-    |   error (list error #f)
-    |   value (list value #t))
+    |   value (list value #t)
+    |   error (list error #f))
     = ((nasty-value 999999) #f)
 
 If an abort is returned from the body of a macro that is applied
@@ -31,8 +34,8 @@ in the context of a `recover`, it will still be recovered.
 
     | (recover
     |   ((macro (self args env) (abort (literal (nasty-value 1111)))) joe)
-    |   error (list error #f)
-    |   value (list value #t))
+    |   value (list value #t)
+    |   error (list error #f))
     = ((nasty-value 1111) #f)
 
 Abort values are just values, so the innermost `recover` will handle
@@ -41,10 +44,10 @@ an abort value.
     | (recover
     |   (recover
     |     (abort (literal (nasty-value 999999)))
-    |     error (list error #f)
-    |     value (list value #t))
-    |   error (list error #f)
-    |   value (list value #t))
+    |     value (list value #t)
+    |     error (list error #f))
+    |   value (list value #t)
+    |   error (list error #f))
     = (((nasty-value 999999) #f) #t)
 
 If an inner `recover` returns an abort value itself, an outer `recover` can
@@ -53,10 +56,10 @@ handle the abort value it returned.
     | (recover
     |   (recover
     |     (abort (literal (nasty-value 999999)))
-    |     error (abort error)
-    |     value (list value #t))
-    |   error (list error 123)
-    |   value (list value #t))
+    |     value (list value #t)
+    |     error (abort error))
+    |   value (list value #t)
+    |   error (list error 123))
     = ((nasty-value 999999) 123)
 
 `recover` expects its first argument to be a symbol.
@@ -83,8 +86,8 @@ in which the abort value was produced.
     | (recover
     |   (bind flop 1
     |     (abort 2))
-    |   error (list flop error)
-    |   value (list 123 value))
+    |   value (list 123 value)
+    |   error (list flop error))
     ? uncaught exception: (unbound-identifier flop)
 
 `recover` handles abort values, and this does not include the environment
@@ -92,8 +95,8 @@ in which the abort value was produced.
 
     | (bind flop (fun (x) (abort x))
     |   (list
-    |     (recover (flop 44) error (list 55 error) value value)
-    |     (recover (flop 44) error (list 66 error) value value)))
+    |     (recover (flop 44) value value error (list 55 error))
+    |     (recover (flop 44) value value error (list 66 error))))
     = ((55 44) (66 44))
 
 '<<SPEC'

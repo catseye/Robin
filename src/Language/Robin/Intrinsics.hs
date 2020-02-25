@@ -91,13 +91,13 @@ abort env (List [expr]) cc =
 abort env other cc = errMsg "illegal-arguments" other
 
 recover :: Evaluable
-recover env (List [expr, (Symbol s), errexpr, (Symbol v), okexpr]) cc =
+recover env (List [expr, (Symbol okName), okExpr, (Symbol abortName), abortExpr]) cc =
     eval env expr (\result ->
         case result of
             e@(Abort contents) ->
-                eval (insert s contents env) errexpr cc
+                eval (insert abortName contents env) abortExpr cc
             other ->
-                eval (insert v other env) okexpr cc)
+                eval (insert okName other env) okExpr cc)
 recover env other cc = errMsg "illegal-arguments" other
 
 robinIntrinsics :: Env
