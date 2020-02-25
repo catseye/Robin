@@ -26,7 +26,7 @@ For the reference implementation,
 
 *   Clean up of source code: stylistic and refactoring.
 *   No dedicated `Env` ADT; environments are `Expr`s.
-*   No dedicated `IEnv` type; exception handler is in `Env`.
+*   No dedicated `IEnv` type - no more exception handler.
 
 Robin 0.5 (Late Sep 2019)
 ---------
