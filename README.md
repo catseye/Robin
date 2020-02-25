@@ -21,8 +21,8 @@ below.
 Quick Start
 -----------
 
-The Robin reference interpreter is written in (about 1200 lines of) Haskell;
-to use it you'll need an implementation of Haskell installed (typically either
+The Robin reference interpreter is written in about 900 lines of Haskell.
+To use it, you'll need an implementation of Haskell installed (typically either
 `ghc` or Hugs).
 
 If you have [shelf][] installed, you can just run `shelf_dockgh catseye/Robin`.
