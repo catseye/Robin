@@ -32,10 +32,10 @@ The single argument to `bound?` should be a symbol.
 
 (define bound? (macro (self args env)
   (if (equal? args ())
-    (raise (list (literal illegal-arguments) args))
+    (abort (list (literal illegal-arguments) args))
     (if (equal? (tail args) ())
       (bind symbol (head args)
         (if (symbol? symbol)
           (if (equal? (lookup symbol env) ()) #f #t)
-          (raise (list (literal expected-symbol) symbol))))
-      (raise (list (literal illegal-arguments) args))))))
+          (abort (list (literal expected-symbol) symbol))))
+      (abort (list (literal illegal-arguments) args))))))

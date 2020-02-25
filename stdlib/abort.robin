@@ -1,0 +1,30 @@
+;'<<SPEC'
+
+### `abort` ###
+
+    -> Tests for functionality "Evaluate core Robin Expression"
+
+`abort` evaluates its argument to obtain a value _x_, then produces
+an abort value with _x_ as its payload.
+
+See the Robin specification for the expected behaviour of abort values.
+
+For the sake of usability, the abort should include a message which
+refers to the condition that triggered it, but this is not a strict
+requirement.
+
+    | (abort 999999)
+    ? uncaught exception: 999999
+
+`abort`'s single argument may be any kind of value, but `abort` expects
+exactly one argument.
+
+    | (abort)
+    ? uncaught exception: (illegal-arguments ())
+
+    | (abort 2 3 4)
+    ? uncaught exception: (illegal-arguments (2 3 4))
+
+'<<SPEC'
+
+(require abort)

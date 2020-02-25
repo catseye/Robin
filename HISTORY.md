@@ -1,6 +1,33 @@
 History of Robin
 ================
 
+Robin 0.6
+---------
+
+*   Exceptions and exception handlers were removed from
+    the language.  This is because conventional exception
+    handlers have dynamic scope, and thus break referential
+    transparency, while lexical exception handlers are of
+    limited usefulness.
+*   In their place are abort values.  The `raise` intrinsic
+    is replaced by `abort`, which evaluates to
+    an abort value.  An abort value is the wrong type for
+    most operations, which results in another abort value
+    (indicating a type error), so aborts cascade upwards.
+*   The `catch` intrinsic is replaced by `recover`, which
+    is intended for testing and handling abort values;
+    it takes 5 arguments.
+*   Lookup of values in an environment is more forgiving;
+    if the alist for the environment is malformed, lookup
+    will not complain about the malformedness of it; the
+    identifier being sought will simply not be found.
+
+For the reference implementation,
+
+*   Clean up of source code: stylistic and refactoring.
+*   No dedicated `Env` ADT; environments are `Expr`s.
+*   No dedicated `IEnv` type - no more exception handler.
+
 Robin 0.5 (Late Sep 2019)
 ---------
 

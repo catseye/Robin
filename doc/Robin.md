@@ -1,7 +1,9 @@
 Robin
 =====
 
-This document defines version 0.5 of the Robin programming language.
+This document defines version 0.6 of the Robin programming language.
+In this document, the name "Robin" by itself refers to the Robin
+programming language version 0.6.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
@@ -226,13 +228,14 @@ all the other data types.  It is inductively defined as follows:
 *   An empty list is a term.
 *   A list cell containing a term, prepended to another list
     (which may be empty), is a term.
+*   An abort value is a term.
 *   Nothing else is a term.
 
 Terms have a textual representation (as S-expressions), but not all types
 have values that can be directly expressed in this textual representation.
 All terms have some meaning when interpeted as Robin programs, as
 defined by Robin's evaluation rules, but that meaning might be to
-raise an exception to indicate an error.
+produce an abort value as an indication that the program is in error.
 
 ### Symbol ###
 
@@ -245,7 +248,7 @@ ones.)
 When in a Robin program proper, a symbol can be bound to a value, and
 in this context is it referred to as an _identifier_.  However, if an
 attempt is made to evaluate a symbol which is not an identifier,
-an exception will be raised.
+an abort value will be produced.
 
     | this-symbol-is-not-bound
     ? uncaught exception: (unbound-identifier this-symbol-is-not-bound)
@@ -387,8 +390,30 @@ Lists cannot be directly applied, but since a list itself represents an
 application, that application is undertaken, and the result of it can
 be applied.
 
+### Aborts ###
+
+In Robin, errors (and other conditions which cause computation to
+cease to continue) are indicated by values with a special abort type,
+called abort values.  Trying to use an abort value in most operations
+is an error, and consequently results in another abort value being produced.
+In this manner, aborts tend to bubble up to some level of the evaluation
+where they are handled.  They may either be handled explicitly by the
+program with the `recover` intrinsic, or implicitly by the implementation
+once they reach the outermost level of evaluation.
+
+What the implementation does to handle an abort value that reaches the
+outermost level is an implementation detail, but is generally expected
+to communicate it as an error to the user somehow.  The reference
+implementation of Robin produces an OS-level error code when asked to
+display an abort value.  Examples of this behaviour can be found
+among the error-expecting tests in this document.
+
+An abort value contains a single value, called the payload, which
+may be any Robin term.  The payload usually attempts to describe
+the error (or other) condition that the abort value represents.
+
 (c) Conventional Data Types
------------------------------
+---------------------------
 
 This section lists data types that are not intrinsic, but are rather
 arrangements of intrinsic types in a way that follows a convention.
@@ -432,11 +457,10 @@ list functions, arithmetic functions, etc.)
 
 ### Intrinsics ###
 
-Robin 0.3 provides 15 intrinsics.  These represent
-the fundamental functionality that is used to evaluate programs, and that
-cannot be expressed as macros written in Robin (not without resorting to
-meta-circularity, at any rate.)  All other macros are built up on top of
-the intrinsics.
+Robin provides 15 intrinsics.  These represent the fundamental functionality
+that is used to evaluate programs, and that cannot be expressed as macros
+written in Robin (not without resorting to meta-circularity, at any rate.)
+All other macros are built up on top of the intrinsics.
 
 This set of intrinsics is not optional — every Robin implementation must
 provide them, or it's not Robin.
@@ -465,12 +489,13 @@ can be passed around as values.
 All of the 15 intrinsics are macros, but there is nothing ontologically
 requiring an intrinsic to be a value of macro type.
 
-Each of the 15 intrinsics provided by Robin 0.3 is specified in
-its own file in the standard library.  Because these are intrinsics,
-no Robin implementation is given for them in these files, but tests cases
+Each of the 15 intrinsics provided by Robin is specified in its own file
+in the standard library.  Because these are intrinsics, no Robin
+implementation is given for them in these files, but tests cases
 which describe their behaviour are.
 
-*   [catch](../stdlib/catch.robin)
+*   [abort](../stdlib/abort.robin)
+*   [recover](../stdlib/recover.robin)
 *   [equal?](../stdlib/equal-p.robin)
 *   [eval](../stdlib/eval.robin)
 *   [head](../stdlib/head.robin)
@@ -480,7 +505,6 @@ which describe their behaviour are.
 *   [macro](../stdlib/macro.robin)
 *   [number?](../stdlib/number-p.robin)
 *   [prepend](../stdlib/prepend.robin)
-*   [raise](../stdlib/raise.robin)
 *   [sign](../stdlib/sign.robin)
 *   [subtract](../stdlib/subtract.robin)
 *   [symbol?](../stdlib/symbol-p.robin)
@@ -540,10 +564,13 @@ Also, more than one top-level S-expression may appear in a single file.
 
 ### `assert` ###
 
-`(assert EXPR)` evaluates the EXPR and, if there was an error evaluating
-the EXPR, or if the EXPR evaluates to `#f`, aborts processing the file.
+`(assert EXPR)` evaluates the EXPR and, if the EXPR evaluates to `#f`,
+or if it evaluates to an abort value, aborts processing the file.
 
     | (assert #t)
+    = 
+
+    | (assert 123)
     = 
 
     | (assert #f)
@@ -656,7 +683,7 @@ interact with a user, a remote server on a network, or other source of
 events.  Reactors are similar to event handlers in Javascript, or to
 processes in Erlang.
 
-In Robin 0.3, a reactor is installed by giving a top-level form with the
+In Robin, a reactor is installed by giving a top-level form with the
 following syntax:
 
     (reactor SUBSCRIPTIONS INITIAL-STATE-EXPR TRANSDUCER)
@@ -694,8 +721,8 @@ elements is an _command_, which is itself a two-element list containing:
 There may of course be zero commands in the returned list, but it is an
 error if the returned value is not a list containing at least one element.
 
-If the transducer throws an error, no commands will be executed, and
-the state of the transducer will remain unchanged.  Implementations
+If the transducer evaluates to an abort value, no commands will be executed,
+and the state of the transducer will remain unchanged.  Implementations
 should allow such occurrences to be visible and/or logged.
 
 In fact, commands _are_ events.  We just call them commands when it is
@@ -864,7 +891,7 @@ message of some kind, but it should otherwise ignore it and keep going.
     = Cat
     = Dog
 
-If evaluating the transducer of a reactor raises an error, the reactor
+If evaluating the transducer of a reactor returns an abort value, the reactor
 remains in the same state and issues no commands, but always recovers
 so that it can continue to handle subsequent events (i.e. it does not crash).
 
@@ -879,7 +906,7 @@ but this is not a strict requirement.
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
     |             (if (equal? (head event-payload) 65)
-    |               (raise 999999)
+    |               (abort 999999)
     |               (list 0 (list (literal writeln) event-payload)))
     |             (list 0)))))))
     + Cat

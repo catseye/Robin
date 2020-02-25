@@ -2,11 +2,11 @@ Robin: Design Goals and Rationale
 =================================
 
 This document documents some of the design goals and rationale
-for the design of Robin 0.5.  The contents are not well organized,
+for the design of Robin 0.6.  The contents are not well organized,
 and the document is not very comprehensive.
 
 In this document, "Robin" refers to the Robin programming language
-version 0.5.
+version 0.6.
 
 Robin is excessively principled
 -------------------------------
@@ -28,10 +28,20 @@ operating system based on [Pixley][].  It is no longer an
 operating system design, but the reactive portion of it is
 still reminiscent of that.
 
+Note that, recently (2020), I wrote up a list of
+[Programming Language Feature Desiderata][].
+Robin ticks many of the boxes on that list;
+however, there are several parts of the underlying
+design that I'm not entirely pleased with.
+
 The case for homoiconicity
 --------------------------
 
 Either a language is homoiconic or it isn't.
+
+(At least, that was what I was thinking when I picked the
+S-expression-based syntax for Robin.  I now think the situation
+is more nuanced than that.)
 
 I often find homoiconic languages hard to read.  But having
 thought about it at some point, I concluded that, if I had
@@ -90,7 +100,9 @@ Macro as fundamental abstraction
 --------------------------------
 
 This is certainly the most unorthodox feature, the one that departs
-the most from Scheme et al.
+the most from Scheme et al.  (It does, however, land us squarely
+in the land of "Fexpr languages" like Kernel, but I was not aware
+of that when this design choice was made.)
 
 It allows the language to have no "special forms" whatsoever.
 (Scheme would need at least `define-syntax` if it wanted to define
@@ -115,6 +127,12 @@ as defined there, and thus can base their analysis on the semantics
 of that macro without caring about its definition, or that its
 definition contains `eval`.
 
+So the basic saving grace here is this: we can *define* the
+forms of the language using macros without necessarily *implementing*
+them using `macro`.  As long as the implementation's behaviour
+matches what the `macro` version specifies, it's compatible
+behaviour and thus an allowable implementation.
+
 No variable numbers of parameters
 ---------------------------------
 
@@ -125,7 +143,7 @@ and Scheme do.
 
 It does so in the name of correctness: it is incorrect
 to pass more arguments to a function, than it expects,
-so you should be informed of this by means of an exception.
+so you should be informed of this by means of an error condition.
 
 But it goes further, with the doctrine that no function should
 have a variable number of arguments.  If you want a function
@@ -339,8 +357,8 @@ Markdown.)
             macro
             eval
             if
-            raise
-            catch
+            abort
+            recover
           </td></tr>
         </table>
 
@@ -351,3 +369,4 @@ Markdown.)
 </table>
 
 [Pixley]: https://catseye.tc/node/Pixley
+[Programming Language Feature Desiderata]: https://gist.github.com/cpressey/2f12b865027a30f86fc3a3d1f08216ad

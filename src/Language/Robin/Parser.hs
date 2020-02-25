@@ -2,6 +2,8 @@
 
 module Language.Robin.Parser (parseToplevel, parseExpr) where
 
+import Prelude (return, read, map, fromIntegral, (==), (/=), (++), ($), String, Bool(True, False), Either(Left, Right))
+
 import Data.Char
 import Data.Int
 
@@ -78,13 +80,6 @@ comment = do
     spaces
     expr
 
---
--- The expression parsing function implements the overall grammar given above.
--- Note that we need to give the type of this parser here -- otherwise the
--- type inferencer freaks out for some reason.
---
-
-expr :: Parser Expr
 expr = do
     spaces
     r <- (symbol <|> number <|> boolean <|> list <|> stringSugar)

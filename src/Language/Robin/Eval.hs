@@ -1,37 +1,42 @@
 module Language.Robin.Eval where
 
-import qualified Language.Robin.Env as Env
-import Language.Robin.Env (Env)
+import Prelude (Maybe(Just, Nothing), Bool(True, False))
+
 import Language.Robin.Expr
+import Language.Robin.Env (Env, find, insert)
 
 --
 -- This evaluator is written in continuation-passing style.
 --
--- Every evaluation function takes a continuation, and is implemented
--- as a function with this signature:
+-- Every evaluation function has this signature:
 --
---     IEnv Expr -> Env Expr -> Expr -> (Expr -> Expr) -> Expr
+--     Env -> Expr -> (Expr -> Expr) -> Expr
 --
 -- (This is actually the `Evaluable` type from `Robin.Expr`.)
 --
--- The first argument is the internal context, which contains things like the
--- exception handler, etc.
---
--- The second argument is the Robin environment, which is directly visible
+-- The first argument is the Robin environment, which is directly visible
 -- (and modifiable, during `eval`) by the Robin program.
+--
+-- The second argument is the expression to be evaluated.
+--
+-- The third argument is the continuation.  Once the expression has been
+-- evaluated, the continuation will be applied with the result of the
+-- evaluation.
+--
+
+eval :: Evaluable
+
 --
 -- When evaluating a symbol, look it up in the environment to obtain a
 -- value.  Then continue the current continuation with that value.
 --
 
-eval :: Evaluable
-
-eval i env sym@(Symbol s) cc =
-    case Env.find s env of
+eval env sym@(Symbol s) cc =
+    case find s env of
         Just value ->
             cc value
         Nothing ->
-            raise i (errMsg "unbound-identifier" sym)
+            errMsg "unbound-identifier" sym
 
 --
 -- Evaluating a list means we must make several evaluations.  We
@@ -40,22 +45,22 @@ eval i env sym@(Symbol s) cc =
 -- passing it the tail of the list.
 --
 
-eval i env (List (applierExpr:actuals)) cc =
-    eval i env applierExpr (\applier ->
+eval env (List (applierExpr:actuals)) cc =
+    eval env applierExpr (\applier ->
         case applier of
             m@(Macro _ _ body) ->
-                eval i (makeMacroEnv env (List actuals) m) body cc
+                eval (makeMacroEnv env (List actuals) m) body cc
             b@(Intrinsic _ fun) ->
-                fun i env (List actuals) cc
+                fun env (List actuals) cc
             other ->
-                raise i (errMsg "inapplicable-object" other))
+                errMsg "inapplicable-object" other)
 
 --
 -- Everything else just evaluates to itself.  Continue the current
 -- continuation with that value.
 --
 
-eval i env e cc =
+eval env e cc =
     cc e
 
 --
@@ -63,38 +68,30 @@ eval i env e cc =
 --
 
 errMsg msg term =
-    List [(Symbol msg), term]
+    Abort (List [(Symbol msg), term])
 
-makeMacroEnv :: Env Expr -> Expr -> Expr -> Env Expr
+makeMacroEnv :: Env -> Expr -> Expr -> Env
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
     let
         (List [(Symbol argSelf), (Symbol argFormal),
                (Symbol envFormal)]) = argList
-        newEnv = Env.insert argSelf m closedEnv
-        newEnv' = Env.insert argFormal actuals newEnv
-        newEnv'' = Env.insert envFormal (envToExpr env) newEnv'
+        newEnv = insert argSelf m closedEnv
+        newEnv' = insert argFormal actuals newEnv
+        newEnv'' = insert envFormal env newEnv'
     in
         newEnv''
-
---
--- Exception Handler
---
-
-raise :: IEnv Expr -> Expr -> Expr
-raise i expr =
-    (getExceptionHandler i) expr
 
 --
 -- Assertions
 --
 
-assert i pred msg expr cc =
+assert env pred msg expr cc =
     case pred expr of
         True -> cc expr
-        False -> raise i (errMsg msg expr)
+        False -> errMsg msg expr
 
-assertSymbol i = assert i (isSymbol) "expected-symbol"
-assertBoolean i = assert i (isBoolean) "expected-boolean"
-assertList i = assert i (isList) "expected-list"
-assertNumber i = assert i (isNumber) "expected-number"
-assertMacro i = assert i (isMacro) "expected-macro"
+assertSymbol env = assert env (isSymbol) "expected-symbol"
+assertBoolean env = assert env (isBoolean) "expected-boolean"
+assertList env = assert env (isList) "expected-list"
+assertNumber env = assert env (isNumber) "expected-number"
+assertMacro env = assert env (isMacro) "expected-macro"

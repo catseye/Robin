@@ -1,10 +1,14 @@
 module Language.Robin.Builtins where
 
+import Prelude (
+    ($), (>), (>=), (<), (<=), (+), (*), div, mod, map, reverse, Bool(True, False)
+  )
+import qualified Prelude as P
+
 import Data.Int
 
-import qualified Language.Robin.Env as Env
-import Language.Robin.Env (Env)
 import Language.Robin.Expr
+import Language.Robin.Env (Env, fromList, mergeEnvs, empty, insert)
 import Language.Robin.Eval
 
 -- 
@@ -13,50 +17,39 @@ import Language.Robin.Eval
 -- 
 -- Note, these are functions which are built-in to the Robin reference
 -- intepreter, for performance, but they are *not* intrinsic to the
--- Robin language.  (See Intrinsics.lhs for those.)
+-- Robin language.  (See Intrinsics.hs for those.)
 --
 
 --
 -- Helper functions
 --
 
-evalAll i env [] acc cc =
+evalAll env [] acc cc =
     cc $ List $ reverse acc
-evalAll i env (head:tail) acc cc =
-    eval i env head (\value ->
-        evalAll i env tail (value:acc) cc)
+evalAll env (head:tail) acc cc =
+    eval env head (\value ->
+        evalAll env tail (value:acc) cc)
 
---          formals   actuals   origActuals env         i            wierd-cc
-evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
-evalArgs formals actuals origActuals env i cc =
-    evalArgs' formals actuals origActuals env i cc
-    where
-        evalArgs' [] [] _ _ _ cc =
-            cc Env.empty
-        evalArgs' ((Symbol formal):formals) (actual:actuals) origActuals env i cc =
-            eval i env actual (\value ->
-                evalArgs' formals actuals origActuals env i (\nenv ->
-                    cc $ Env.insert formal value nenv))
-        evalArgs' _ _ origActuals _ i cc =
-            raise i (errMsg "illegal-arguments" (List origActuals))
+--          formals   actuals   origActuals env    continuation
+evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env -> (Env -> Expr) -> Expr
+evalArgs [] [] _ _ cc =
+    cc empty
+evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env cc =
+    eval env actual (\value ->
+        evalArgs formals actuals origActuals env (\nenv ->
+            cc $ insert formal value nenv))
+evalArgs _ _ origActuals env cc =
+    errMsg "illegal-arguments" $ List origActuals
 
---              formals   actuals   origActuals envExpr i            wierd-cc
-evalArgsExpr :: [Expr] -> [Expr] -> [Expr] ->   Expr -> IEnv Expr -> (Env Expr -> Expr) -> Expr
-evalArgsExpr formals actuals origActuals envExpr i cc =
-    case exprToEnv envExpr of
-        Right env ->
-            evalArgs formals actuals origActuals env i cc
-        Left (msg, value) ->
-            raise i (errMsg msg value)
 
-evalTwoNumbers :: (Int32 -> Int32 -> Expr) -> Evaluable
-evalTwoNumbers fn i env (List [xexpr, yexpr]) cc =
-    eval i env xexpr (\x ->
-        assertNumber i x (\(Number xv) ->
-            eval i env yexpr (\y ->
-                assertNumber i y (\(Number yv) ->
-                    cc (fn xv  yv)))))
-evalTwoNumbers fn i env other cc = raise i (errMsg "illegal-arguments" other)
+evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
+evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
+    eval env xexpr (\x ->
+        assertNumber env x (\(Number xv) ->
+            eval env yexpr (\y ->
+                assertNumber env y (\(Number yv) ->
+                    (fn xv yv cc)))))
+evalTwoNumbers fn env other cc = errMsg "illegal-arguments" other
 
 --
 -- `Small`
@@ -67,66 +60,66 @@ evalTwoNumbers fn i env other cc = raise i (errMsg "illegal-arguments" other)
 --
 
 literal :: Evaluable
-literal i env (List (expr:_)) cc =
+literal env (List (expr:_)) cc =
     cc expr
-literal i env other cc = raise i (errMsg "illegal-arguments" other)
+literal env other cc = errMsg "illegal-arguments" other
 
-robinList :: Evaluable
-robinList i env (List exprs) cc =
-    evalAll i env exprs [] cc
+list :: Evaluable
+list env (List exprs) cc =
+    evalAll env exprs [] cc
 
-robinEnv :: Evaluable
-robinEnv i env (List _) cc =
-    cc $ envToExpr env
+env_ :: Evaluable
+env_ env (List _) cc =
+    cc $ env
 
 choose :: Evaluable
-choose i env (List [(List [(Symbol "else"), branch])]) cc =
-    eval i env branch cc
-choose i env (List ((List [test, branch]):rest)) cc =
-    eval i env test (\x ->
+choose env (List [(List [(Symbol "else"), branch])]) cc =
+    eval env branch cc
+choose env (List ((List [test, branch]):rest)) cc =
+    eval env test (\x ->
         case x of
             Boolean True ->
-                eval i env branch cc
+                eval env branch cc
             Boolean False ->
-                choose i env (List rest) cc)
-choose i env other cc = raise i (errMsg "illegal-arguments" other)
+                choose env (List rest) cc)
+choose env other cc = errMsg "illegal-arguments" other
 
 bind :: Evaluable
-bind i env (List [(Symbol name), expr, body]) cc =
-    eval i env expr (\value ->
-        eval i (Env.insert name value env) body cc)
-bind i env other cc = raise i (errMsg "illegal-arguments" other)
+bind env (List [(Symbol name), expr, body]) cc =
+    eval env expr (\value ->
+        eval (insert name value env) body cc)
+bind env other cc = errMsg "illegal-arguments" other
 
-robinLet :: Evaluable
-robinLet i env (List ((List bindings):body:_)) cc =
-    bindAll bindings env i (\env' ->
-        eval i env' body cc)
+let_ :: Evaluable
+let_ env (List ((List bindings):body:_)) cc =
+    bindAll bindings env (\env' ->
+        eval env' body cc)
   where
-    bindAll [] env ienv cc =
+    bindAll [] env cc =
         cc env
-    bindAll (List ((Symbol name):sexpr:_):rest) env ienv cc =
-        eval ienv env sexpr (\value ->
-            bindAll rest (Env.insert name value env) ienv cc)
-    bindAll (other:rest) env ienv cc =
-        raise ienv (errMsg "illegal-binding" other)
-robinLet i env other cc = raise i (errMsg "illegal-arguments" other)
+    bindAll (List ((Symbol name):sexpr:_):rest) env cc =
+        eval env sexpr (\value ->
+            bindAll rest (insert name value env) cc)
+    bindAll (other:rest) env cc =
+        errMsg "illegal-binding" other
+let_ env other cc = errMsg "illegal-arguments" other
 
-robinBindArgs :: Evaluable
-robinBindArgs i env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
-    eval i env givenArgs (\(List actuals) ->
-        eval i env givenEnvExpr (\outerEnvExpr ->
-            evalArgsExpr formals actuals actuals outerEnvExpr i (\argEnv ->
-                eval i (Env.mergeEnvs argEnv env) body cc)))
-robinBindArgs i env other cc = raise i (errMsg "illegal-arguments" other)
+bindArgs :: Evaluable
+bindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
+    eval env givenArgs (\(List actuals) ->
+        eval env givenEnvExpr (\outerEnvExpr ->
+            evalArgs formals actuals actuals outerEnvExpr (\argEnv ->
+                eval (mergeEnvs argEnv env) body cc)))
+bindArgs env other cc = errMsg "illegal-arguments" other
 
-robinFun :: Evaluable
-robinFun i closedEnv (List [(List formals), body]) cc =
+fun :: Evaluable
+fun closedEnv (List [(List formals), body]) cc =
     cc $ Intrinsic "<lambda>" fun
   where
-    fun i env (List actuals) cc =
-        evalArgs formals actuals actuals env i (\argEnv ->
-            eval i (Env.mergeEnvs argEnv closedEnv) body cc)
-robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
+    fun env (List actuals) cc =
+        evalArgs formals actuals actuals env (\argEnv ->
+            eval (mergeEnvs argEnv closedEnv) body cc)
+fun env other cc = errMsg "illegal-arguments" other
 
 --
 -- `Arith`
@@ -136,75 +129,63 @@ robinFun i env other cc = raise i (errMsg "illegal-arguments" other)
 -- See the relevant files in `stdlib` for normative definitions.
 --
 
-robinGt :: Evaluable
-robinGt = evalTwoNumbers (\x y -> Boolean (x > y))
+gtP :: Evaluable
+gtP = evalTwoNumbers (\x y cc -> cc $ Boolean (x > y))
 
-robinGte :: Evaluable
-robinGte = evalTwoNumbers (\x y -> Boolean (x >= y))
+gteP :: Evaluable
+gteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x >= y))
 
-robinLt :: Evaluable
-robinLt = evalTwoNumbers (\x y -> Boolean (x < y))
+ltP :: Evaluable
+ltP = evalTwoNumbers (\x y cc -> cc $ Boolean (x < y))
 
-robinLte :: Evaluable
-robinLte = evalTwoNumbers (\x y -> Boolean (x <= y))
+lteP :: Evaluable
+lteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
 
-robinAbs :: Evaluable
-robinAbs i env (List [expr]) cc =
-    eval i env expr (\x -> assertNumber i x (\(Number xv) -> cc (Number $ abs xv)))
-robinAbs i env other cc = raise i (errMsg "illegal-arguments" other)
+abs :: Evaluable
+abs env (List [expr]) cc =
+    eval env expr (\x -> assertNumber env x (\(Number xv) -> cc (Number $ P.abs xv)))
+abs env other cc = errMsg "illegal-arguments" other
 
-robinAdd :: Evaluable
-robinAdd = evalTwoNumbers (\x y -> Number (x + y))
+add :: Evaluable
+add = evalTwoNumbers (\x y cc -> cc $ Number (x + y))
 
-robinMultiply :: Evaluable
-robinMultiply = evalTwoNumbers (\x y -> Number (x * y))
+multiply :: Evaluable
+multiply = evalTwoNumbers (\x y cc -> cc $ Number (x * y))
 
-robinDivide :: Evaluable
-robinDivide i env (List [xexpr, yexpr]) cc =
-    eval i env xexpr (\x ->
-        assertNumber i x (\(Number xv) ->
-            eval i env yexpr (\y ->
-                assertNumber i y (\(Number yv) ->
-                    case yv of
-                        0 -> raise i (errMsg "division-by-zero" (Number xv))
-                        _ -> cc (Number (xv `div` yv))))))
-robinDivide i env other cc = raise i (errMsg "illegal-arguments" other)
+divide :: Evaluable
+divide = evalTwoNumbers (\x y cc -> case y of
+                                 0 -> errMsg "division-by-zero" $ Number x
+                                 _ -> cc $ Number (x `div` y))
 
-robinRemainder :: Evaluable
-robinRemainder i env (List [xexpr, yexpr]) cc =
-    eval i env xexpr (\x ->
-        assertNumber i x (\(Number xv) ->
-            eval i env yexpr (\y ->
-                assertNumber i y (\(Number yv) ->
-                    case yv of
-                        0 -> raise i (errMsg "division-by-zero" (Number xv))
-                        _ -> cc (Number (abs (xv `mod` yv)))))))
-robinRemainder i env other cc = raise i (errMsg "illegal-arguments" other)
+remainder :: Evaluable
+remainder = evalTwoNumbers (\x y cc -> case y of
+                                 0 -> errMsg "division-by-zero" $ Number x
+                                 _ -> cc $ Number (P.abs (x `mod` y)))
 
 --
 -- Mapping of names to our functions, providing an evaluation environment.
 --
 
-robinBuiltins :: Env Expr
-robinBuiltins = Env.fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
+robinBuiltins :: Env
+robinBuiltins = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
       [
         ("literal",   literal),
-        ("list",      robinList),
-        ("env",       robinEnv),
+        ("list",      list),
+        ("env",       env_),
         ("choose",    choose),
         ("bind",      bind),
-        ("let",       robinLet),
-        ("bind-args", robinBindArgs),
-        ("fun",       robinFun),
+        ("let",       let_),
+        ("bind-args", bindArgs),
+        ("fun",       fun),
 
-        ("gt?",       robinGt),
-        ("gte?",      robinGte),
-        ("lt?",       robinLt),
-        ("lte?",      robinLte),
+        ("gt?",       gtP),
+        ("gte?",      gteP),
+        ("lt?",       ltP),
+        ("lte?",      lteP),
 
-        ("abs",       robinAbs),
-        ("add",       robinAdd),
-        ("multiply",  robinMultiply),
-        ("divide",    robinDivide),
-        ("remainder", robinRemainder)
+        ("abs",       abs),
+        ("add",       add),
+        ("multiply",  multiply),
+        ("divide",    divide),
+        ("remainder", remainder)
       ]

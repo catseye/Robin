@@ -48,18 +48,18 @@ Shadowing happens.
     | (let () (literal hi))
     = hi
 
-The list of bindings must be a list, or else an exception will be raised.
+The list of bindings must be a list, or else an abort value will be produced.
 
     | (let 999 (literal hi))
     ? uncaught exception
 
-Each binding in a list must be a list, or else an exception will be raised.
+Each binding in a list must be a list, or else an abort value will be produced.
 
     | (let (999) (literal hi))
     ? uncaught exception
 
-Both the body and the list of bindings are required, or else an exception
-will be raised.
+Both the body and the list of bindings are required, or else an abort value
+will be produced.
 
     | (let ()))
     ? uncaught exception
@@ -73,8 +73,8 @@ and discarded, without being evaluated.
     | (let ((a 1)) a foo)
     = 1
 
-Each binding must have at least a name and a value, or else an exception
-will be raised.
+Each binding must have at least a name and a value, or else an abort value
+will be produced.
 
     | (let ((a)) a)
     ? uncaught exception
@@ -109,4 +109,4 @@ The identifier in a binding must be a symbol.
                 (bind newbindings (tail bindings)
                   (bind newargs (prepend newbindings (tail args))
                     (eval newenv (prepend self newargs))))))
-            (raise (prepend (literal illegal-binding) (prepend binding ()))))))))))
+            (abort (prepend (literal illegal-binding) (prepend binding ()))))))))))

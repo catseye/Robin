@@ -12,8 +12,8 @@ any S-expression.
     | (literal (hello (there) world)))
     = (hello (there) world)
 
-`literal` requires at least one argument; otherwise, an exception will
-be raised.
+`literal` requires at least one argument; otherwise, an abort value will
+be produced.
 
     | (literal)
     ? uncaught exception
