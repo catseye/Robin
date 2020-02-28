@@ -21,13 +21,13 @@ insist (Right x) = x
 
 robinExpr str = insist $ parseExpr str
 
-stdEval env expr = eval (IEnv stop) env expr id
+stdEval env expr = eval env expr id
 
 
 --
 -- (gt? a b) should match Haskell's `a > b` in all cases.
 --
-propGt :: Env Expr -> Int32 -> Int32 -> Bool
+propGt :: Env -> Int32 -> Int32 -> Bool
 propGt env a b =
     stdEval env expr == Boolean (a > b)
     where
@@ -36,7 +36,7 @@ propGt env a b =
 --
 -- (lt? a b) should match Haskell's `a < b` in all cases.
 --
-propLt :: Env Expr -> Int32 -> Int32 -> Bool
+propLt :: Env -> Int32 -> Int32 -> Bool
 propLt env a b =
     stdEval env expr == Boolean (a < b)
     where
@@ -45,7 +45,7 @@ propLt env a b =
 --
 -- env? should evaluate to true on any valid binding alist.
 --
-propEnv :: Env Expr -> [(String, Int32)] -> Bool
+propEnv :: Env -> [(String, Int32)] -> Bool
 propEnv env entries =
     stdEval env expr == Boolean True
     where
@@ -57,7 +57,7 @@ propEnv env entries =
 -- The following should be true for any symbol s and binding alist a:
 -- (lookup s (delete s a))) == ()
 --
-propDel :: Env Expr -> String -> [(String, Int32)] -> Property
+propDel :: Env -> String -> [(String, Int32)] -> Property
 propDel env sym entries =
     sym /= "" ==> (stdEval env expr == List [])
     where
@@ -69,7 +69,7 @@ propDel env sym entries =
 -- The following should be true for any symbol s and binding alist a:
 -- (lookup s (extend s 1 x))) == (1)
 --
-propExt :: Env Expr -> String -> [(String, Int32)] -> Property
+propExt :: Env -> String -> [(String, Int32)] -> Property
 propExt env sym entries =
     sym /= "" ==> (stdEval env expr == List [Number 1])
     where
@@ -79,7 +79,6 @@ propExt env sym entries =
 
 
 testAll = do
-    quickCheck (propEnvExpr)
     env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
     noBuiltinsEnv <- loadEnv "pkg/stdlib.robin" robinIntrinsics [] []
     quickCheck (propGt noBuiltinsEnv)

@@ -19,3 +19,5 @@ for PACKAGE in $PACKAGES; do
     echo "Running tests on '$PACKAGE' package..."
     falderal -b $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
+
+ghc -isrc src/QuickCheckTests.hs -e testAll || exit 1
