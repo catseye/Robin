@@ -1,6 +1,17 @@
 History of Robin
 ================
 
+Robin 0.7
+---------
+
+*   The meaning of multiple `define`s of the same symbol
+    has changed: it is allowed for the purposes of
+    providing multiple equivalent definitions of a symbol.
+    The implementation is allowed to (but not required to)
+    try to disprove the definitions are equivalent.  This
+    obviates the need for `define-if-absent`, which has
+    been removed.
+
 Robin 0.6
 ---------
 

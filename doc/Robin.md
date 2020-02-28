@@ -1,9 +1,9 @@
 Robin
 =====
 
-This document defines version 0.6 of the Robin programming language.
+This document defines version 0.7 of the Robin programming language.
 In this document, the name "Robin" by itself refers to the Robin
-programming language version 0.6.
+programming language version 0.7.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
@@ -621,12 +621,6 @@ You may define multiple names.
     = #f
     = #t
 
-Names may not be redefined once defined.
-
-    | (define true #t)
-    | (define true #f)
-    ? symbol already defined: true
-
 Names previously defined can be used in a definition.
 
     | (define true #t)
@@ -642,27 +636,43 @@ they are defined later on in the file.
     | (display also-true)
     ? unbound-identifier
 
-### `define-if-absent` ###
-
-`(define-if-absent SYMBOL EXPR)` defines a global name, if it not
-already defined.
-
-    | (define-if-absent true #t)
-    | (display true)
-    = #t
-
-`define-if-absent` does nothing if the name is already defined.
+A name may be defined multiple times.  The meaning of this is that
+several _equivalent definitions_ are being given for the name.
 
     | (define true #t)
-    | (define-if-absent true #f)
+    | (define true #t)
     | (display true)
     = #t
 
-You may not try to `define-if-absent` anything that's not a symbol.
+An implementation is allowed to check that the definitions are
+equivalent, and object with an error condition if it can prove
+that they are not equivalent.  So, for example, the following
+is allowed to be considered an error:
 
-    | (define-if-absent #f #t)
-    | (display #f)
-    ? illegal top-level form: (define-if-absent #f #t)
+    (define true #t)
+    (define true #f)
+
+An implementation should not, however, object with an error condition
+if it cannot prove the inequivalence (although it is certainly free
+to produce a warning in this case).  A good example of this would
+perhaps be a definition of a function that goes through a Collatz
+sequence and evaluates to `#t`, and a function that simply always
+evaluates to `#t`.
+
+An implementation is also allowed to simply take it on faith that
+the definitions are equivalent.
+
+    | (define true #t)
+    | (define true (and #t #t))
+    | (display true)
+    = #t
+
+If they are not genuinely equivalent, of course, that is a bug,
+like any other bug — the semantics of Robin's `define` do not
+excuse the programmer from exercising their own diligence.  The
+question of which definition Robin picks in this instance is not
+a sensible question, because the definitions are *supposed* to
+be equivalent.
 
 ### `reactor` ###
 

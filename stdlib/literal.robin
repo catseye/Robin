@@ -27,4 +27,4 @@ Any arguments beyond the first argument are simply ignored and discarded.
 
 '<<SPEC'
 
-(define-if-absent literal (macro (self args env) (head args)))
+(define literal (macro (self args env) (head args)))

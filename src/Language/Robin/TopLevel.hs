@@ -39,16 +39,7 @@ collect ((List [Symbol "require", sym@(Symbol s)]):rest) env reactors results =
 collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) env reactors results =
     case find s env of
         Just _ ->
-            error ("symbol already defined: " ++ show sym)
-        Nothing ->
-            let
-                result = eval env expr id
-            in
-                collect rest (insert s result env) reactors results
-
-collect ((List [Symbol "define-if-absent", sym@(Symbol s), expr]):rest) env reactors results =
-    case find s env of
-        Just _ ->
+            -- for now, take it entirely on faith that the definitions are equivalent
             collect rest env reactors results
         Nothing ->
             let

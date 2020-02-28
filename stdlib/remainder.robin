@@ -47,7 +47,7 @@ abort value will be produced.
 
 '<<SPEC'
 
-(define-if-absent remainder (macro (self args env)
+(define remainder (macro (self args env)
   (bind remainder-r-pos (fun (self n d acc) ;(d is positive)
     (if (gt? d n)
       n

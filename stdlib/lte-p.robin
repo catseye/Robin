@@ -38,6 +38,6 @@ if the first number is less than or equal to the second.
 
 '<<SPEC'
 
-(define-if-absent lte? (macro (self args env)
+(define lte? (macro (self args env)
   (bind-args (a b) args env
     (if (equal? a b) #t (lt? a b)))))

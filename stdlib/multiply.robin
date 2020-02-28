@@ -35,7 +35,7 @@ Both of the arguments to `multiply` must be numbers.
 
 '<<SPEC'
 
-(define-if-absent multiply (macro (self args env)
+(define multiply (macro (self args env)
   (bind multiply-r (fun (self a b) ;(b must be positive)
     (if (equal? b 1)
       a

@@ -53,7 +53,7 @@ if the first number is strictly greater than the second.
 
 '<<SPEC'
 
-(define-if-absent gt? (macro (self args env)
+(define gt? (macro (self args env)
   (bind cmp-same-sign? (macro (self args env)
     (bind-args (a b c) args env
       (equal? (sign (subtract a b)) c)))

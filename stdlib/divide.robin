@@ -46,7 +46,7 @@ Division by zero is undefined, and an abort value will be produced.
 
 '<<SPEC'
 
-(define-if-absent divide (macro (self args env)
+(define divide (macro (self args env)
   (bind divide-r-pos (fun (self n d acc) ;(d is positive)
     (if (gt? d n)
       acc
