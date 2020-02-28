@@ -9,7 +9,7 @@ import System.Environment
 import System.Exit
 
 import Language.Robin.Expr
-import Language.Robin.Env (Env, mergeEnvs, fromList)
+import Language.Robin.Env (Env, mergeEnvs, fromList, find)
 import Language.Robin.Eval (eval)
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
@@ -17,12 +17,35 @@ import Language.Robin.Builtins (robinBuiltins)
 import qualified Language.Robin.TopLevel as TopLevel
 
 
-insist (Right x) = x
-
-robinExpr str = insist $ parseExpr str
-
 stdEval env expr = eval env expr id
 
+robinIntrinsic name = case find name robinIntrinsics of
+    Just intrinsic -> pure intrinsic
+
+instance Arbitrary Expr where
+    arbitrary = oneof [
+                  Symbol <$> arbitrary,
+                  Boolean <$> arbitrary,
+                  Number <$> arbitrary,
+                  Abort <$> arbitrary,
+                  List <$> arbitrary,
+                  Macro <$> arbitrary <*> arbitrary <*> arbitrary,
+                  robinIntrinsic "head",
+                  robinIntrinsic "tail",
+                  robinIntrinsic "prepend",
+                  robinIntrinsic "list?",
+                  robinIntrinsic "symbol?",
+                  robinIntrinsic "macro?",
+                  robinIntrinsic "number?",
+                  robinIntrinsic "equal?",
+                  robinIntrinsic "subtract",
+                  robinIntrinsic "sign",
+                  robinIntrinsic "macro",
+                  robinIntrinsic "eval",
+                  robinIntrinsic "if",
+                  robinIntrinsic "abort",
+                  robinIntrinsic "recover"
+                ]
 
 --
 -- (gt? a b) should match Haskell's `a > b` in all cases.
