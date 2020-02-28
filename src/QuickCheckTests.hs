@@ -4,17 +4,13 @@ import Test.QuickCheck
 
 import Data.Int
 
-import System.IO
-import System.Environment
-import System.Exit
-
 import Language.Robin.Expr
 import Language.Robin.Env (Env, mergeEnvs, fromList, find)
 import Language.Robin.Eval (eval)
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
-import qualified Language.Robin.TopLevel as TopLevel
+import qualified Language.Robin.CmdLine as CmdLine
 
 
 stdEval env expr = eval env expr id
@@ -107,8 +103,8 @@ propList env e l =
 
 
 testAll = do
-    env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
-    noBuiltinsEnv <- loadEnv "pkg/stdlib.robin" robinIntrinsics [] []
+    env <- CmdLine.loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins)
+    noBuiltinsEnv <- CmdLine.loadEnv "pkg/stdlib.robin" robinIntrinsics
     quickCheck (propGt noBuiltinsEnv)
     quickCheck (propLt noBuiltinsEnv)
     quickCheck (propEnv env)
@@ -116,14 +112,3 @@ testAll = do
     quickCheck (propExt env)
     --quickCheck (propListEq env)
     quickCheck (propList env)
-
-
-loadEnv filename env reactors results = do
-    program <- readFile filename
-    case parseToplevel program of
-        Right topExprs -> do
-            (env', reactors', results') <- return $ TopLevel.collect topExprs env reactors results
-            return env'
-        Left problem -> do
-            hPutStr stderr (show problem)
-            exitWith $ ExitFailure 1

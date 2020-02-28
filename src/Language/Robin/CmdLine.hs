@@ -1,9 +1,11 @@
 module Language.Robin.CmdLine where
 
+import Prelude (id, error, return, show, (++), ($), Bool(True), Either(Left, Right))
+
 import System.IO
 import System.Exit
 
-import Language.Robin.Expr
+import Language.Robin.Expr (Expr(List, Symbol))
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import qualified Language.Robin.TopLevel as TopLevel
@@ -37,8 +39,13 @@ processRobin parsed convertToToplevel env reactors results =
         Right expr -> do
             return $ TopLevel.collect (convertToToplevel expr) env reactors results
         Left problem -> do
-            hPutStr stderr (show problem)
-            exitWith $ ExitFailure 1
+            abortWith (show problem)
+
+
+loadEnv filename env = do
+    program <- readFile filename
+    (env', _, _) <- processRobin (parseToplevel program) id env [] []
+    return env'
 
 
 writeResults [] = return ()
