@@ -54,6 +54,20 @@ statically check the arity of every application, for instance.
 Note that this relies on the assumption that all standard symbols
 have their standard meanings.
 
+TopLevel
+--------
+
+`rename` form.
+
+Testing
+-------
+
+A flag to the reference interpreter to tell it to QuickCheck
+multiple definitions.
+
+Some way to make it easier to test reactive programs, i.e.
+some way to provide mock facilities.
+
 Reactors
 --------
 
