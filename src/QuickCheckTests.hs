@@ -85,6 +85,17 @@ propExt env sym entries =
 
 
 --
+-- The following should be true for any list l:
+-- (equal? l l)
+--
+propListEq :: Env -> Expr -> Property
+propListEq env l =
+    isList l ==> (stdEval env expr == Boolean True)
+    where
+        expr = List [Symbol "equal?", List [Symbol "literal", l], List [Symbol "literal", l]]
+
+
+--
 -- The following should be true for any expr e and list l:
 -- (tail (prepend e l)) is a list
 --
@@ -103,6 +114,7 @@ testAll = do
     quickCheck (propEnv env)
     quickCheck (propDel env)
     quickCheck (propExt env)
+    --quickCheck (propListEq env)
     quickCheck (propList env)
 
 
