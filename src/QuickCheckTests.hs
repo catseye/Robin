@@ -19,8 +19,6 @@ import qualified Language.Robin.TopLevel as TopLevel
 
 stdEval env expr = eval env expr id
 
-robinIntrinsic name = case find name robinIntrinsics of
-    Just intrinsic -> pure intrinsic
 
 instance Arbitrary Expr where
     arbitrary = oneof [
@@ -29,22 +27,7 @@ instance Arbitrary Expr where
                   Number <$> arbitrary,
                   Abort <$> arbitrary,
                   List <$> arbitrary,
-                  Macro <$> arbitrary <*> arbitrary <*> arbitrary,
-                  robinIntrinsic "head",
-                  robinIntrinsic "tail",
-                  robinIntrinsic "prepend",
-                  robinIntrinsic "list?",
-                  robinIntrinsic "symbol?",
-                  robinIntrinsic "macro?",
-                  robinIntrinsic "number?",
-                  robinIntrinsic "equal?",
-                  robinIntrinsic "subtract",
-                  robinIntrinsic "sign",
-                  robinIntrinsic "macro",
-                  robinIntrinsic "eval",
-                  robinIntrinsic "if",
-                  robinIntrinsic "abort",
-                  robinIntrinsic "recover"
+                  Macro <$> arbitrary <*> arbitrary <*> arbitrary
                 ]
 
 --
@@ -101,6 +84,17 @@ propExt env sym entries =
         alist = fromList $ map (\(k,v) -> (k, Number v)) entries
 
 
+--
+-- The following should be true for any expr e and list l:
+-- (tail (prepend e l)) is a list
+--
+propList :: Env -> Expr -> Expr -> Property
+propList env e l =
+    isList l ==> (isList (stdEval env expr))
+    where
+        expr = List [Symbol "tail", List [Symbol "prepend", List [Symbol "literal", e], List [Symbol "literal", l]]]
+
+
 testAll = do
     env <- loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins) [] []
     noBuiltinsEnv <- loadEnv "pkg/stdlib.robin" robinIntrinsics [] []
@@ -109,6 +103,8 @@ testAll = do
     quickCheck (propEnv env)
     quickCheck (propDel env)
     quickCheck (propExt env)
+    quickCheck (propList env)
+
 
 loadEnv filename env reactors results = do
     program <- readFile filename
