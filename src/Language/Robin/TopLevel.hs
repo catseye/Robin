@@ -47,6 +47,8 @@ collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) outcome@Outcome{ e
     case find s env of
         Just _ ->
             -- for now, take it entirely on faith that the definitions are equivalent
+            -- note we can't just collect all definitions into env naively, because we
+            -- don't want to end up using a slow definition indiscriminately.
             collect rest outcome
         Nothing ->
             let

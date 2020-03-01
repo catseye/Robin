@@ -5,7 +5,7 @@ import Test.QuickCheck
 import Data.Int
 
 import Language.Robin.Expr
-import Language.Robin.Env (Env, mergeEnvs, fromList, find)
+import Language.Robin.Env (Env, mergeEnvs, fromList, find, insert, empty)
 import Language.Robin.Eval (eval)
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
@@ -102,8 +102,40 @@ propList env e l =
         expr = List [Symbol "tail", List [Symbol "prepend", List [Symbol "literal", e], List [Symbol "literal", l]]]
 
 
+collate (List []) mapEnv = mapEnv
+collate (List (List [Symbol s, value]:rest)) mapEnv =
+    let
+        v = case find s mapEnv of
+                Nothing ->
+                    List [value]
+                Just (List list) ->
+                    List ([value] ++ list)
+        mapEnv' = insert s v mapEnv
+    in
+        collate (List rest) mapEnv'
+
+
+showMultiples (List []) = return ()
+showMultiples (List (List [Symbol s, (List list)]:rest)) =
+    if
+        length list >= 2
+      then do
+        putStrLn $ show list
+        showMultiples (List rest)
+      else
+        showMultiples (List rest)
+
+
+showEntries (List []) = return ()
+showEntries (List (List [Symbol s, value]:rest)) = do
+    putStrLn $ show (s, value)
+    showEntries (List rest)
+
+
 testAll = do
     env <- CmdLine.loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins)
+    let c = collate env empty
+    showMultiples c
     noBuiltinsEnv <- CmdLine.loadEnv "pkg/stdlib.robin" robinIntrinsics
     quickCheck (propGt noBuiltinsEnv)
     quickCheck (propLt noBuiltinsEnv)

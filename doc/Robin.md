@@ -660,10 +660,10 @@ sequence and evaluates to `#t`, and a function that simply always
 evaluates to `#t`.
 
 An implementation is also allowed to simply take it on faith that
-the definitions are equivalent.
+the definitions are equivalent.  (This is not the best example.)
 
     | (define true #t)
-    | (define true (and #t #t))
+    | (define true ((macro (self args env) #t)))
     | (display true)
     = #t
 
