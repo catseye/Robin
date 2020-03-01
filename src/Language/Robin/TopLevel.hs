@@ -1,59 +1,66 @@
-module Language.Robin.TopLevel (collect) where
+module Language.Robin.TopLevel where
 
 import Prelude (error, show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing), Either(Left, Right))
 
 import Language.Robin.Expr
 import Language.Robin.Env (Env, find, insert)
 import Language.Robin.Eval
-import Language.Robin.Reactor
+import qualified Language.Robin.Reactor as Reactor
 
 
-collect :: [Expr] -> Env -> [Reactor] -> [Either Expr Expr] -> (Env, [Reactor], [Either Expr Expr])
+data Outcome = Outcome {
+                 env :: Env,
+                 reactors :: [Reactor.Reactor],
+                 results :: [Either Expr Expr]
+               }
 
-collect [] env reactors results = (env, reactors, results)
 
-collect ((List [Symbol "display", expr]):rest) env reactors results =
+collect :: [Expr] -> Outcome -> Outcome
+
+collect [] result = result
+
+collect ((List [Symbol "display", expr]):rest) outcome@Outcome{ env=env, results=results } =
     let
         result = case eval env expr id of
             Abort expr -> Left expr
             other -> Right other
     in
-        collect rest env reactors (result:results)
+        collect rest outcome{ results=(result:results) }
 
-collect ((List [Symbol "assert", expr]):rest) env reactors results =
+collect ((List [Symbol "assert", expr]):rest) outcome@Outcome{ env=env } =
     case eval env expr id of
         Abort expr ->
             error ("uncaught exception: " ++ show expr)
         Boolean False ->
             error ("assertion failed: " ++ show expr)
         _ ->
-            collect rest env reactors results
+            collect rest outcome
 
-collect ((List [Symbol "require", sym@(Symbol s)]):rest) env reactors results =
+collect ((List [Symbol "require", sym@(Symbol s)]):rest) outcome@Outcome{ env=env } =
     case find s env of
         Nothing ->
             error ("assertion failed: (bound? " ++ show sym ++ ")")
         _ ->
-            collect rest env reactors results
+            collect rest outcome
 
-collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) env reactors results =
+collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) outcome@Outcome{ env=env } =
     case find s env of
         Just _ ->
             -- for now, take it entirely on faith that the definitions are equivalent
-            collect rest env reactors results
+            collect rest outcome
         Nothing ->
             let
                 result = eval env expr id
             in
-                collect rest (insert s result env) reactors results
+                collect rest outcome{ env=(insert s result env) }
 
-collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) env reactors results =
+collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) outcome@Outcome{ env=env, reactors=reactors } =
     let
         state = eval env stateExpr id
         body = eval env bodyExpr id
-        newReactor = Reactor{ rid=(fromIntegral $ length reactors), env=env, state=state, body=body }
+        newReactor = Reactor.Reactor{ Reactor.rid=(fromIntegral $ length reactors), Reactor.env=env, Reactor.state=state, Reactor.body=body }
     in
-        collect rest env (newReactor:reactors) results
+        collect rest outcome{ reactors=(newReactor:reactors) }
 
-collect (topExpr:rest) env reactors results =
+collect (topExpr:rest) outcome =
     error ("illegal top-level form: " ++ show topExpr)

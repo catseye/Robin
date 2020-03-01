@@ -36,8 +36,11 @@ processArgs args env = processArgs' args env [] [] where
 
 processRobin parsed convertToToplevel env reactors results =
     case parsed of
-        Right expr -> do
-            return $ TopLevel.collect (convertToToplevel expr) env reactors results
+        Right expr ->
+            let
+                outcome = TopLevel.collect (convertToToplevel expr) TopLevel.Outcome{ TopLevel.env=env, TopLevel.reactors=reactors, TopLevel.results=results }
+            in
+                return (TopLevel.env outcome, TopLevel.reactors outcome, TopLevel.results outcome)
         Left problem -> do
             abortWith (show problem)
 
