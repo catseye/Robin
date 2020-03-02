@@ -101,48 +101,54 @@ propList env e l =
     where
         expr = List [Symbol "tail", List [Symbol "prepend", List [Symbol "literal", e], List [Symbol "literal", l]]]
 
+--
+-- The following should be true for any equivalent applicable expressions e1 and e2 and any list l:
+-- (apply (prepend e1 l)) == (apply (prepend e2 l))
+--
 
-collate (List []) mapEnv = mapEnv
-collate (List (List [Symbol s, value]:rest)) mapEnv =
-    let
-        v = case find s mapEnv of
-                Nothing ->
-                    List [value]
-                Just (List list) ->
-                    List ([value] ++ list)
-        mapEnv' = insert s v mapEnv
-    in
-        collate (List rest) mapEnv'
+propEquivApply :: Env -> Expr -> Expr -> Expr -> Property
+propEquivApply env e1 e2 l =
+    isList l ==> (r1 == r2)
+    where
+        r1 = stdEval env (append (List [e1]) l)
+        r2 = stdEval env (append (List [e1]) l)
 
-
-showMultiples (List []) = return ()
-showMultiples (List (List [Symbol s, (List list)]:rest)) =
-    if
-        length list >= 2
-      then do
-        putStrLn $ show list
-        showMultiples (List rest)
-      else
-        showMultiples (List rest)
+--
+-- ========================================================
+--
 
 
-showEntries (List []) = return ()
-showEntries (List (List [Symbol s, value]:rest)) = do
-    putStrLn $ show (s, value)
-    showEntries (List rest)
-
-
-testAll = do
+testBuiltins = do
     (env, secondaryDefs) <- CmdLine.loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins)
-
-    let c = collate env empty
-    showMultiples c
-
-    (noBuiltinsEnv, _) <- CmdLine.loadEnv "pkg/stdlib.robin" robinIntrinsics
-    quickCheck (propGt noBuiltinsEnv)
-    quickCheck (propLt noBuiltinsEnv)
     quickCheck (propEnv env)
     quickCheck (propDel env)
     quickCheck (propExt env)
     --quickCheck (propListEq env)
     quickCheck (propList env)
+
+
+testNoBuiltins = do
+    (noBuiltinsEnv, _) <- CmdLine.loadEnv "pkg/stdlib.robin" robinIntrinsics
+    quickCheck (propGt noBuiltinsEnv)
+    quickCheck (propLt noBuiltinsEnv)
+
+
+
+
+testSecondaryDefEnv (List []) env = return ()
+testSecondaryDefEnv (List (List [Symbol name, secondaryDef]:rest)) env = do
+    let Just primaryDef = find name env
+    putStrLn $ show (name, primaryDef, secondaryDef)
+    quickCheck (propEquivApply primaryDef secondaryDef)
+    testSecondaryDefEnv (List rest) env
+
+
+testSecondaryDefs = do
+    (env, secondaryDefs) <- CmdLine.loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins)
+    testSecondaryDefEnv secondaryDefs env
+
+
+testAll = do
+    testBuiltins
+    testNoBuiltins
+    --testSecondaryDefs
