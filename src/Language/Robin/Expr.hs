@@ -29,7 +29,7 @@ instance Eq Expr where
     (Symbol x) == (Symbol y)           = x == y
     (Boolean x) == (Boolean y)         = x == y
     (Number x) == (Number y)           = x == y
-    (Macro _ _ _) == (Macro _ _ _)     = False
+    (Macro e1 a1 b1) == (Macro e2 a2 b2) = e1 == e2 && a1 == a2 && b1 == b2
     (Intrinsic x _) == (Intrinsic y _) = x == y
     (List x) == (List y)               = x == y
     (Abort x) == (Abort y)             = x == y

@@ -123,16 +123,14 @@ testBuiltins = do
     quickCheck (propEnv env)
     quickCheck (propDel env)
     quickCheck (propExt env)
-    --quickCheck (propListEq env)
     quickCheck (propList env)
+    --quickCheck (propListEq env)
 
 
 testNoBuiltins = do
     (noBuiltinsEnv, _) <- CmdLine.loadEnv "pkg/stdlib.robin" robinIntrinsics
     quickCheck (propGt noBuiltinsEnv)
     quickCheck (propLt noBuiltinsEnv)
-
-
 
 
 testSecondaryDefEnv (List []) env = return ()
