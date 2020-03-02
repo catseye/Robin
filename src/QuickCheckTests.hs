@@ -133,10 +133,12 @@ showEntries (List (List [Symbol s, value]:rest)) = do
 
 
 testAll = do
-    env <- CmdLine.loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins)
+    (env, secondaryDefs) <- CmdLine.loadEnv "pkg/stdlib.robin" (mergeEnvs robinIntrinsics robinBuiltins)
+
     let c = collate env empty
     showMultiples c
-    noBuiltinsEnv <- CmdLine.loadEnv "pkg/stdlib.robin" robinIntrinsics
+
+    (noBuiltinsEnv, _) <- CmdLine.loadEnv "pkg/stdlib.robin" robinIntrinsics
     quickCheck (propGt noBuiltinsEnv)
     quickCheck (propLt noBuiltinsEnv)
     quickCheck (propEnv env)

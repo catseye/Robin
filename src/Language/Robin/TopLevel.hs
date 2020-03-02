@@ -3,19 +3,20 @@ module Language.Robin.TopLevel where
 import Prelude (error, show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing), Either(Left, Right))
 
 import Language.Robin.Expr
-import Language.Robin.Env (Env, find, insert)
+import Language.Robin.Env (Env, find, insert, empty)
 import Language.Robin.Eval
 import qualified Language.Robin.Reactor as Reactor
 
 
 data World = World {
                env :: Env,
+               secondaryDefs :: Env,
                reactors :: [Reactor.Reactor],
                results :: [Either Expr Expr]
              }
 
 initialWorld env =
-    World{ env=env, reactors=[], results=[] }
+    World{ env=env, reactors=[], results=[], secondaryDefs=empty }
 
 destructureWorld world =
     (env world, reactors world, results world)
@@ -49,13 +50,13 @@ collect ((List [Symbol "require", sym@(Symbol s)]):rest) world@World{ env=env } 
         _ ->
             collect rest world
 
-collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) world@World{ env=env } =
+collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) world@World{ env=env, secondaryDefs=secondaryDefs } =
     case find s env of
         Just _ ->
-            -- for now, take it entirely on faith that the definitions are equivalent
-            -- note we can't just collect all definitions into env naively, because we
-            -- don't want to end up using a slow definition indiscriminately.
-            collect rest world
+            let
+                result = eval env expr id
+            in
+                collect rest world{ secondaryDefs=(insert s result secondaryDefs) }
         Nothing ->
             let
                 result = eval env expr id

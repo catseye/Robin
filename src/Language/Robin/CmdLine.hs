@@ -1,6 +1,6 @@
 module Language.Robin.CmdLine where
 
-import Prelude (id, error, return, show, (++), ($), Bool(True), Either(Left, Right))
+import Prelude (id, error, return, show, (++), ($), String, Bool(True), Either(Left, Right))
 
 import System.IO
 import System.Exit
@@ -8,7 +8,7 @@ import System.Exit
 import Language.Robin.Expr (Expr(List, Symbol))
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
-import Language.Robin.TopLevel (initialWorld, destructureWorld, collect)
+import Language.Robin.TopLevel (initialWorld, destructureWorld, collect, secondaryDefs)
 
 
 abortWith msg = do
@@ -46,7 +46,7 @@ loadEnv filename env = do
     program <- readFile filename
     world <- processRobin (parseToplevel program) (id) (initialWorld env)
     let (env', _, _) = destructureWorld world
-    return env'
+    return (env', secondaryDefs world)
 
 
 writeResults [] = return ()
