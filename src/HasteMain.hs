@@ -21,8 +21,8 @@ driver [progElem, resultElem, runButtonElem] = do
             case parseToplevel program of
                 Right topExprs -> do
                     let env = (mergeEnvs robinIntrinsics robinBuiltins)
-                    let outcome = TopLevel.collect topExprs TopLevel.Outcome{ TopLevel.env=env, TopLevel.reactors=[], TopLevel.results=[] }
-                    let (env', reactors, results) = (TopLevel.env outcome, TopLevel.reactors outcome, TopLevel.results outcome)
+                    let world = TopLevel.collect topExprs TopLevel.World{ TopLevel.env=env, TopLevel.reactors=[], TopLevel.results=[] }
+                    let (env', reactors, results) = (TopLevel.env world, TopLevel.reactors world, TopLevel.results world)
                     setProp resultElem "textContent" $ showResults results
                 Left problem -> do
                     setProp resultElem "textContent" $ show $ problem

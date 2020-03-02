@@ -38,9 +38,9 @@ processRobin parsed convertToToplevel env reactors results =
     case parsed of
         Right expr ->
             let
-                outcome = TopLevel.collect (convertToToplevel expr) TopLevel.Outcome{ TopLevel.env=env, TopLevel.reactors=reactors, TopLevel.results=results }
+                world = TopLevel.collect (convertToToplevel expr) TopLevel.World{ TopLevel.env=env, TopLevel.reactors=reactors, TopLevel.results=results }
             in
-                return (TopLevel.env outcome, TopLevel.reactors outcome, TopLevel.results outcome)
+                return (TopLevel.env world, TopLevel.reactors world, TopLevel.results world)
         Left problem -> do
             abortWith (show problem)
 
