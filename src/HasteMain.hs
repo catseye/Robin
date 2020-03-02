@@ -8,7 +8,7 @@ import Language.Robin.Env (mergeEnvs)
 import Language.Robin.Parser (parseToplevel)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.Builtins (robinBuiltins)
-import qualified Language.Robin.TopLevel as TopLevel
+import Language.Robin.TopLevel (initialWorld, destructureWorld, collect)
 
 
 main = withElems ["prog", "result", "run-button"] driver
@@ -21,8 +21,8 @@ driver [progElem, resultElem, runButtonElem] = do
             case parseToplevel program of
                 Right topExprs -> do
                     let env = (mergeEnvs robinIntrinsics robinBuiltins)
-                    let world = TopLevel.collect topExprs TopLevel.World{ TopLevel.env=env, TopLevel.reactors=[], TopLevel.results=[] }
-                    let (env', reactors, results) = (TopLevel.env world, TopLevel.reactors world, TopLevel.results world)
+                    let world = collect topExprs (initialWorld env)
+                    let (env', reactors, results) = destructureWorld world
                     setProp resultElem "textContent" $ showResults results
                 Left problem -> do
                     setProp resultElem "textContent" $ show $ problem

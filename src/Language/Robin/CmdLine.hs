@@ -8,7 +8,7 @@ import System.Exit
 import Language.Robin.Expr (Expr(List, Symbol))
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
-import qualified Language.Robin.TopLevel as TopLevel
+import Language.Robin.TopLevel (initialWorld, destructureWorld, collect)
 
 
 abortWith msg = do
@@ -21,33 +21,31 @@ processFlags ("--show-events":rest) env showEvents = processFlags rest env True
 processFlags args env showEvents = (args, env, showEvents)
 
 
-processArgs args env = processArgs' args env [] [] where
-    processArgs' [] env reactors results =
-        return (env, reactors, results)
-    processArgs' ("eval":filename:rest) env reactors results = do
+processArgs args env = processArgs' args $ initialWorld env where
+    processArgs' [] world =
+        return $ destructureWorld world
+    processArgs' ("eval":filename:rest) world = do
         exprText <- readFile filename
-        (env', reactors', results') <- processRobin (parseExpr exprText) (\expr -> [List [Symbol "display", expr]]) env reactors results
-        processArgs' rest env' reactors' results'
-    processArgs' (filename:rest) env reactors results = do
+        world' <- processRobin (parseExpr exprText) (\expr -> [List [Symbol "display", expr]]) world
+        processArgs' rest world'
+    processArgs' (filename:rest) world = do
         toplevelText <- readFile filename
-        (env', reactors', results') <- processRobin (parseToplevel toplevelText) id env reactors results
-        processArgs' rest env' reactors' results'
+        world' <- processRobin (parseToplevel toplevelText) id world
+        processArgs' rest world'
 
 
-processRobin parsed convertToToplevel env reactors results =
+processRobin parsed convertToToplevel world =
     case parsed of
         Right expr ->
-            let
-                world = TopLevel.collect (convertToToplevel expr) TopLevel.World{ TopLevel.env=env, TopLevel.reactors=reactors, TopLevel.results=results }
-            in
-                return (TopLevel.env world, TopLevel.reactors world, TopLevel.results world)
+            return $ collect (convertToToplevel expr) world
         Left problem -> do
             abortWith (show problem)
 
 
 loadEnv filename env = do
     program <- readFile filename
-    (env', _, _) <- processRobin (parseToplevel program) id env [] []
+    world <- processRobin (parseToplevel program) (id) (initialWorld env)
+    let (env', _, _) = destructureWorld world
     return env'
 
 

@@ -14,6 +14,12 @@ data World = World {
                results :: [Either Expr Expr]
              }
 
+initialWorld env =
+    World{ env=env, reactors=[], results=[] }
+
+destructureWorld world =
+    (env world, reactors world, results world)
+
 
 collect :: [Expr] -> World -> World
 
