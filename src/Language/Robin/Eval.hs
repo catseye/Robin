@@ -50,7 +50,7 @@ eval env (List (applierExpr:actuals)) cc =
         case applier of
             m@(Macro _ _ body) ->
                 eval (makeMacroEnv env (List actuals) m) body cc
-            b@(Intrinsic _ fun) ->
+            b@(Builtin _ fun) ->
                 fun env (List actuals) cc
             other ->
                 errMsg "inapplicable-object" other)

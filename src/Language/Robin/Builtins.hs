@@ -114,7 +114,7 @@ bindArgs env other cc = errMsg "illegal-arguments" other
 
 fun :: Evaluable
 fun closedEnv (List [(List formals), body]) cc =
-    cc $ Intrinsic "<lambda>" fun
+    cc $ Builtin "<lambda>" fun
   where
     fun env (List actuals) cc =
         evalArgs formals actuals actuals env (\argEnv ->
@@ -167,7 +167,7 @@ remainder = evalTwoNumbers (\x y cc -> case y of
 --
 
 robinBuiltins :: Env
-robinBuiltins = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
+robinBuiltins = fromList $ map (\(name,bif) -> (name, Builtin name bif))
       [
         ("literal",   literal),
         ("list",      list),
