@@ -11,6 +11,15 @@ Robin 0.7
     try to disprove the definitions are equivalent.  This
     obviates the need for `define-if-absent`, which has
     been removed.
+*   Two macro values are now considered equal if their
+    definitions are exactly equal (intensional equality
+    sans alpha-conversion).
+
+For the reference implementation,
+
+*   In the QuickCheck tests that attempt to test
+    that multiple definitions for a symbol, when given,
+    are equivalent.
 
 Robin 0.6
 ---------

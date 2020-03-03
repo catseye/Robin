@@ -17,6 +17,9 @@ stdEval env expr = eval env expr id
 
 
 instance Arbitrary Expr where
+    -- TODO: we need to make this sized.
+    -- TODO: establish some arbitrary newtypes, like RobinEnv, and RobinList, which
+    --       are restricted in the set of terms they will generate.
     arbitrary = oneof [
                   Symbol <$> arbitrary,
                   Boolean <$> arbitrary,
@@ -81,14 +84,14 @@ propExt env sym entries =
 
 
 --
--- The following should be true for any list l:
--- (equal? l l)
+-- The following should be true for any expression e:
+-- (equal? (literal e) (literal e))
 --
-propListEq :: Env -> Expr -> Property
-propListEq env l =
-    isList l ==> (stdEval env expr == Boolean True)
+propEqual :: Env -> Expr -> Bool
+propEqual env e =
+    stdEval env expr == Boolean True
     where
-        expr = List [Symbol "equal?", List [Symbol "literal", l], List [Symbol "literal", l]]
+        expr = List [Symbol "equal?", List [Symbol "literal", e], List [Symbol "literal", e]]
 
 
 --
@@ -124,7 +127,7 @@ testBuiltins = do
     quickCheck (propDel env)
     quickCheck (propExt env)
     quickCheck (propList env)
-    --quickCheck (propListEq env)
+    --verboseCheck (propEqual env)
 
 
 testNoBuiltins = do
