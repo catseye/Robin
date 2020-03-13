@@ -17,8 +17,8 @@ Robin 0.7
 
 For the reference implementation,
 
-*   In the QuickCheck tests that attempt to test
-    that multiple definitions for a symbol, when given,
+*   There are now QuickCheck tests that check whether
+    the multiple definitions for a symbol, when given,
     are equivalent.
 
 Robin 0.6

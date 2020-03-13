@@ -17,17 +17,40 @@ stdEval env expr = eval env expr id
 
 
 instance Arbitrary Expr where
-    -- TODO: we need to make this sized.
-    -- TODO: establish some arbitrary newtypes, like RobinEnv, and RobinList, which
-    --       are restricted in the set of terms they will generate.
-    arbitrary = oneof [
-                  Symbol <$> arbitrary,
-                  Boolean <$> arbitrary,
-                  Number <$> arbitrary,
-                  Abort <$> arbitrary,
-                  List <$> arbitrary,
-                  Macro <$> arbitrary <*> arbitrary <*> arbitrary
+    --
+    -- Note that it's important that we narrow down how many subexpressions each expression
+    -- has, otherwise we generate a lot of infinitely large expressions, which don't help.
+    -- This is modelled after the technique shown here: https://stackoverflow.com/a/15959889
+    --
+    arbitrary = sized arbExpr where
+        arbExpr :: Int -> Gen Expr
+        arbExpr 0 = oneof [
+                            Symbol <$> arbitrary,
+                            Boolean <$> arbitrary,
+                            Number <$> arbitrary
+                          ]
+        arbExpr n = do
+          (Positive m) <- arbitrary
+          let n' = n `div` (m + 1)
+          oneof [
+                   Abort <$> (arbExpr n'),
+                   List <$> (arbExprList n'),
+                   Macro <$> (arbExpr n') <*> (arbExpr n') <*> (arbExpr n')
                 ]
+
+        arbExprList :: Int -> Gen [Expr]
+        arbExprList 0 = do
+            return []
+        arbExprList n = do
+            (Positive m) <- arbitrary
+            let n' = n `div` (m + 1)
+            head <- arbExpr n'
+            tail <- arbExprList n'
+            return (head:tail)
+
+
+-- TODO: establish some arbitrary newtypes too, like RobinEnv, and RobinList, which
+--       are restricted in the set of terms they will generate.
 
 --
 -- (gt? a b) should match Haskell's `a > b` in all cases.
@@ -127,7 +150,7 @@ testBuiltins = do
     quickCheck (propDel env)
     quickCheck (propExt env)
     quickCheck (propList env)
-    --verboseCheck (propEqual env)
+    quickCheck (propEqual env)
 
 
 testNoBuiltins = do
@@ -139,8 +162,8 @@ testNoBuiltins = do
 testSecondaryDefEnv (List []) env = return ()
 testSecondaryDefEnv (List (List [Symbol name, secondaryDef]:rest)) env = do
     let Just primaryDef = find name env
-    putStrLn $ show (name, primaryDef, secondaryDef)
-    quickCheck (propEquivApply primaryDef secondaryDef)
+    putStrLn $ "Comparing multiple definitions of " ++ name ++ "..."
+    quickCheckWith stdArgs{ maxSuccess=1000 } (propEquivApply primaryDef secondaryDef)
     testSecondaryDefEnv (List rest) env
 
 
@@ -152,4 +175,4 @@ testSecondaryDefs = do
 testAll = do
     testBuiltins
     testNoBuiltins
-    --testSecondaryDefs
+    testSecondaryDefs

@@ -62,9 +62,6 @@ TopLevel
 Testing
 -------
 
-A flag to the reference interpreter to tell it to QuickCheck
-multiple definitions.
-
 Some way to make it easier to test reactive programs, i.e.
 some way to provide mock facilities.
 
@@ -98,3 +95,14 @@ Rename "small" to "base".
 
 Rename `fun` to `function`.  This is because Robin prefers full words
 over abbreviations, which are jargon-y.
+
+Distribution
+------------
+
+Probably need to bite the bullet and add a `cabal` or `stack`
+package descriptor.
+
+    cabal install random-1.1
+    cabal install parsec-3.1.1
+    cabal install QuickCheck-2.13.2
+
