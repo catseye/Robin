@@ -23,19 +23,19 @@ associated with the test that passes.
 produced.
 
     | (choose (#f (literal hi)) (#f (literal med)))
-    ? uncaught exception
+    ? abort
 
     | (choose)
-    ? uncaught exception
+    ? abort
 
 Each branch of a `choose` needs to be a two-element list, or else an
 abort value will be produced.
 
     | (choose (#t) (else (literal lo)))
-    ? uncaught exception
+    ? abort
 
     | (choose (#f 66) (else))
-    ? uncaught exception
+    ? abort
 
 `choose` is basically equivalent to Scheme's `cond`.
 

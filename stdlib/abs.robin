@@ -17,13 +17,13 @@ the absolute value of that number (where the sign is always positive.)
 `abs` expects exactly one numeric argument.
 
     |   (abs)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
     |   (abs 14 23)
-    ? uncaught exception: (illegal-arguments (14 23))
+    ? abort (illegal-arguments (14 23))
 
     |   (abs #t)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 

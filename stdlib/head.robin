@@ -13,15 +13,15 @@ of that list.
 `head` expects its argument to be a list.
 
     | (head #f)
-    ? uncaught exception: (expected-list #f)
+    ? abort (expected-list #f)
 
 `head` expects exactly one argument.
 
     | (head (prepend #t ()) (prepend #f ()))
-    ? uncaught exception: (illegal-arguments ((prepend #t ()) (prepend #f ())))
+    ? abort (illegal-arguments ((prepend #t ()) (prepend #f ())))
 
     | (head)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 `head` is basically equivalent to Scheme's `car`.
 

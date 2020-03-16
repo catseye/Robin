@@ -25,16 +25,16 @@ if the first number is less than or equal to the second.
 `lte?` expects exactly two arguments, both numbers.
 
     | (lte? 14)
-    ? uncaught exception: (illegal-arguments (14))
+    ? abort (illegal-arguments (14))
 
     | (lte? 14 23 57)
-    ? uncaught exception: (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments (14 23 57))
 
     | (lte? 14 #t)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
     | (lte? #t 51)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 

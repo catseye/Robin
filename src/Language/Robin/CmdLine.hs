@@ -54,4 +54,4 @@ writeResults ((Right result):results) = do
     putStrLn $ show result
     writeResults results
 writeResults ((Left expr):results) =
-    abortWith ("uncaught exception: " ++ show expr)
+    abortWith $ show expr

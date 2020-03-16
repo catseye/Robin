@@ -251,7 +251,7 @@ attempt is made to evaluate a symbol which is not an identifier,
 an abort value will be produced.
 
     | this-symbol-is-not-bound
-    ? uncaught exception: (unbound-identifier this-symbol-is-not-bound)
+    ? (abort (unbound-identifier this-symbol-is-not-bound))
 
 For a symbol to appear unevaluated in a Robin program, it must be
 introduced as a literal.  However, there is no intrinsic way to do this,
@@ -286,7 +286,7 @@ Booleans always evaluate to themselves.
 Booleans cannot be applied.
 
     | (#t 1 2 3)
-    ? uncaught exception: (inapplicable-object #t)
+    ? (abort (inapplicable-object #t))
 
 ### Integers ###
 
@@ -310,7 +310,7 @@ Integers always evaluate to themselves.
 Integers cannot be applied.
 
     | (900 1 2 3)
-    ? uncaught exception: (inapplicable-object 900)
+    ? (abort (inapplicable-object 900))
 
 ### Macros ###
 
@@ -411,6 +411,12 @@ among the error-expecting tests in this document.
 An abort value contains a single value, called the payload, which
 may be any Robin term.  The payload usually attempts to describe
 the error (or other) condition that the abort value represents.
+
+Abort values have a textual representation which matches an
+expression that, when evaluated, evaluates to the abort value.
+
+    | (abort 12345)
+    ? (abort 12345)
 
 (c) Conventional Data Types
 ---------------------------
@@ -592,7 +598,7 @@ required to do this, it is simply permitted.
     = 
 
     | (require mumbo-jumbo)
-    ? ABORT:(bound? mumbo-jumbo)
+    ? (abort (bound? mumbo-jumbo))
 
     | (define mumbo-jumbo 1)
     | (require mumbo-jumbo)

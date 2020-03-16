@@ -28,17 +28,17 @@ abort value.
 
     | (bind-args (a b) (literal (1)) (env)
     |   (list a b))
-    ? uncaught exception: (illegal-arguments (1))
+    ? abort (illegal-arguments (1))
 
     | (bind-args (a b) (literal (1 2 3)) (env)
     |   (list a b))
-    ? uncaught exception: (illegal-arguments (1 2 3))
+    ? abort (illegal-arguments (1 2 3))
 
 The literal arguments are reported in the abort value.
 
     | (bind-args (a) (literal ((subtract 5 4) (subtract 1 0))) (env)
     |   a)
-    ? uncaught exception: (illegal-arguments ((subtract 5 4) (subtract 1 0)))
+    ? abort (illegal-arguments ((subtract 5 4) (subtract 1 0)))
 
 This is how it might be used in a macro definition.  The reason for the
 seemingly strange requirements of the second and third arguments should
@@ -62,19 +62,19 @@ become clear here: typically you would just pass the macro's `args` and
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add (subtract 0 0)))
-    ? uncaught exception: (illegal-arguments ((subtract 0 0)))
+    ? abort (illegal-arguments ((subtract 0 0)))
 
     | (bind add (macro (self args env)
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add 9 9 9))
-    ? uncaught exception: (illegal-arguments (9 9 9))
+    ? abort (illegal-arguments (9 9 9))
 
     | (bind add (macro (self args env)
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add 1 n))
-    ? uncaught exception: (unbound-identifier n)
+    ? abort (unbound-identifier n)
 
 '<<SPEC'
 

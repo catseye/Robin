@@ -51,21 +51,21 @@ Shadowing happens.
 The list of bindings must be a list, or else an abort value will be produced.
 
     | (let 999 (literal hi))
-    ? uncaught exception
+    ? abort
 
 Each binding in a list must be a list, or else an abort value will be produced.
 
     | (let (999) (literal hi))
-    ? uncaught exception
+    ? abort
 
 Both the body and the list of bindings are required, or else an abort value
 will be produced.
 
     | (let ()))
-    ? uncaught exception
+    ? abort
 
     | (let)
-    ? uncaught exception
+    ? abort
 
 Any arguments given beyond the body and list of bindings will be ignored
 and discarded, without being evaluated.
@@ -77,10 +77,10 @@ Each binding must have at least a name and a value, or else an abort value
 will be produced.
 
     | (let ((a)) a)
-    ? uncaught exception
+    ? abort
 
     | (let (()) 7)
-    ? uncaught exception
+    ? abort
 
 Anything given in a binding beyond the name and the value will simply be
 ignored and discarded, without being evaluated or otherwise examined.
@@ -91,7 +91,7 @@ ignored and discarded, without being evaluated or otherwise examined.
 The identifier in a binding must be a symbol.
 
     | (let ((3 1)) 3)
-    ? uncaught exception: (illegal-binding (3 1))
+    ? abort (illegal-binding (3 1))
 
 `let` is basically equivalent to Scheme's `let*` or Haskell's `let`.
 

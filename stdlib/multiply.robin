@@ -20,18 +20,18 @@ of those two numbers.
 `multiply` expects exactly two arguments.
 
     |   (multiply 14)
-    ? uncaught exception: (illegal-arguments (14))
+    ? abort (illegal-arguments (14))
 
     |   (multiply 6 7 7)
-    ? uncaught exception: (illegal-arguments (6 7 7))
+    ? abort (illegal-arguments (6 7 7))
 
 Both of the arguments to `multiply` must be numbers.
 
     |   (multiply 14 #t)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
     |   (multiply #t 51)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 

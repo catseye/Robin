@@ -21,17 +21,17 @@ Attempting to index beyond the end of the list will produce an
 abort value.
 
     |   (index 7 (literal (the girl from ipanema)))
-    ? uncaught exception: (expected-list ())
+    ? abort (expected-list ())
 
 `index` expects its first argument to be a number.
 
     |   (index (literal goofy) (list 1 2 3 4 5))
-    ? uncaught exception: (expected-number goofy)
+    ? abort (expected-number goofy)
 
 `index` expects its second argument to be a list.
 
     |   (index 8 (literal whatnot))
-    ? uncaught exception: (expected-list whatnot)
+    ? abort (expected-list whatnot)
 
 '<<SPEC'
 

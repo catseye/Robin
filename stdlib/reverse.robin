@@ -10,7 +10,7 @@ the elements is reversed.
     = (5 4 3 2 1)
 
     |   (reverse (literal fairies-wear-boots))
-    ? uncaught exception: (expected-list fairies-wear-boots)
+    ? abort (expected-list fairies-wear-boots)
 
 '<<SPEC'
 (define reverse (fun (li)

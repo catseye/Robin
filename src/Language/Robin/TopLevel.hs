@@ -29,7 +29,7 @@ collect [] result = result
 collect ((List [Symbol "display", expr]):rest) world@World{ env=env, results=results } =
     let
         result = case eval env expr id of
-            Abort expr -> Left expr
+            Abort expr -> Left (Abort expr)
             other -> Right other
     in
         collect rest world{ results=(result:results) }

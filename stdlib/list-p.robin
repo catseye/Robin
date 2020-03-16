@@ -30,10 +30,10 @@ The argument to `list?` may (naturally) be any type, but there must be
 exactly one argument.
 
     |   (list? (prepend 4 ()) (prepend 6 ()))
-    ? uncaught exception: (illegal-arguments ((prepend 4 ()) (prepend 6 ())))
+    ? abort (illegal-arguments ((prepend 4 ()) (prepend 6 ())))
 
     |   (list?)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 

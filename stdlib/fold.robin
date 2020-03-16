@@ -22,7 +22,7 @@ application of the function.
     = (((() three) dog) night)
 
     | (fold 99 (fun (x a) a) (literal (three dog night)))
-    ? uncaught exception: (inapplicable-object 99)
+    ? abort (inapplicable-object 99)
 
 '<<SPEC'
 

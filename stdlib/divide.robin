@@ -23,26 +23,26 @@ to make it as big as possible without exceeding the first number.
     = 0
 
     |   (divide 10 0)
-    ? uncaught exception: (division-by-zero 10)
+    ? abort (division-by-zero 10)
 
 Division by zero is undefined, and an abort value will be produced.
 
     |   (divide 10 0)
-    ? uncaught exception: (division-by-zero 10)
+    ? abort (division-by-zero 10)
 
 `div` expects exactly two arguments, both numbers.
 
     |   (divide 14)
-    ? uncaught exception: (illegal-arguments (14))
+    ? abort (illegal-arguments (14))
 
     |   (divide 14 23 57)
-    ? uncaught exception: (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments (14 23 57))
 
     |   (divide 14 #t)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
     |   (divide #t 51)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 

@@ -16,7 +16,7 @@ any S-expression.
 be produced.
 
     | (literal)
-    ? uncaught exception
+    ? abort
 
 Any arguments beyond the first argument are simply ignored and discarded.
 

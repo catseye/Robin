@@ -12,7 +12,7 @@ order, which satisfy the predicate.
     = (two four six)
 
     |   (filter (fun (x) x) (literal (#t #t #f banana #t #f)))
-    ? uncaught exception: (expected-boolean banana)
+    ? abort (expected-boolean banana)
 
 '<<SPEC'
 

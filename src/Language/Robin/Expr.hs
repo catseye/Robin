@@ -43,7 +43,7 @@ instance Show Expr where
     show (Macro env args body) = ("(macro " ++ (show args) ++
                                   " " ++ (show body) ++ ")")
     show (Builtin name _)      = name
-    show (Abort e)             = "***ABORT:" ++ (show e) ++ "***"
+    show (Abort e)             = "(abort " ++ (show e) ++ ")"
     show (List exprs)          = "(" ++ (showl exprs) ++ ")" where
                                      showl [] = ""
                                      showl [expr] = show expr

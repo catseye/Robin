@@ -19,10 +19,10 @@ The following should be true for any identifier i and alist x.
     = ()
 
     |   (delete (literal q) 55)
-    ? uncaught exception: (expected-list 55)
+    ? abort (expected-list 55)
 
     |   (delete (literal q) (literal ((a 7) 99 (q 4))))
-    ? uncaught exception: (expected-list 99)
+    ? abort (expected-list 99)
 
 '<<SPEC'
 

@@ -14,15 +14,15 @@ the logical negation of that boolean.
 `not` expects exactly one argument.
 
     | (not)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
     | (not #t #f)
-    ? uncaught exception: (illegal-arguments (#t #f))
+    ? abort (illegal-arguments (#t #f))
 
 `not` expects its single argument to be a boolean.
 
     | (not 33)
-    ? uncaught exception: (expected-boolean 33)
+    ? abort (expected-boolean 33)
 
 '<<SPEC'
 

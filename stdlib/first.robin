@@ -13,10 +13,10 @@ It then evaluates to the prefix of the given list of the desired length.
     = (1 2 3)
 
     |   (first 6 (list 1 2 3 4 5))
-    ? uncaught exception: (expected-list ())
+    ? abort (expected-list ())
 
     |   (first 1 (literal foo))
-    ? uncaught exception: (expected-list foo)
+    ? abort (expected-list foo)
 
     |   (first 0 (literal foo))
     = ()

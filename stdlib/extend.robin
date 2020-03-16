@@ -16,7 +16,7 @@ The following should be true for any identifier i and alist x.
     = ((b 6))
 
     | (extend (literal b) 6 81)
-    ? uncaught exception: (expected-list 81)
+    ? abort (expected-list 81)
 
 '<<SPEC'
 

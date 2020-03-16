@@ -20,18 +20,18 @@ logical conjunction (boolean "and") of these two values.
 `and` expects exactly two arguments.
 
     | (and #f)
-    ? uncaught exception
+    ? abort
 
     | (and #t #f #f)
-    ? uncaught exception: (illegal-arguments (#t #f #f))
+    ? abort (illegal-arguments (#t #f #f))
 
 `and` expects both of its arguments to be booleans.
 
     | (and 100 #t)
-    ? uncaught exception: (expected-boolean 100)
+    ? abort (expected-boolean 100)
 
     | (and #t 99)
-    ? uncaught exception: (expected-boolean 99)
+    ? abort (expected-boolean 99)
 
 `and` is short-circuiting in the sense that no arguments after the first
 `#f` argument will be evaluated.  Fully testing this requires side-effects,

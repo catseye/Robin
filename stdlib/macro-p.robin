@@ -29,10 +29,10 @@ The argument to `macro?` may (naturally) be any type, but there must be
 exactly one argument.
 
     | (macro? macro macro)
-    ? uncaught exception: (illegal-arguments (macro macro))
+    ? abort (illegal-arguments (macro macro))
 
     | (macro?)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 

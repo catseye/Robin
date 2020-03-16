@@ -20,18 +20,18 @@ evaluates to 0 if that number is 0, 1 if that number is positive, or
 `sign` expects a number.
 
     | (sign #f)
-    ? uncaught exception: (expected-number #f)
+    ? abort (expected-number #f)
 
     | (sign (literal k))
-    ? uncaught exception: (expected-number k)
+    ? abort (expected-number k)
 
 `sign` expects exactly one argument.
 
     | (sign 100 200 300)
-    ? uncaught exception: (illegal-arguments (100 200 300))
+    ? abort (illegal-arguments (100 200 300))
 
     | (sign)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 

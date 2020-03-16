@@ -29,21 +29,21 @@ Trying to find the remainder of a division by zero is undefined, and an
 abort value will be produced.
 
     | (remainder 10 0)
-    ? uncaught exception: (division-by-zero 10)
+    ? abort (division-by-zero 10)
 
 `remainder` expects exactly two arguments, both numbers.
 
     | (remainder 14)
-    ? uncaught exception: (illegal-arguments (14))
+    ? abort (illegal-arguments (14))
 
     | (remainder 14 23 57)
-    ? uncaught exception: (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments (14 23 57))
 
     | (remainder 14 #t)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
     | (remainder #t 51)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 

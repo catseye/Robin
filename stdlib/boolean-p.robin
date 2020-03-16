@@ -18,10 +18,10 @@ The argument to `boolean?` may (naturally) be any type, but there must be
 exactly one argument.
 
     | (boolean? #t #f)
-    ? uncaught exception: (illegal-arguments (#t #f))
+    ? abort (illegal-arguments (#t #f))
 
     | (boolean?)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 
