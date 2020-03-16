@@ -1,6 +1,6 @@
 module Language.Robin.CmdLine where
 
-import Prelude (id, error, return, show, (++), ($), String, Bool(True), Either(Left, Right))
+import Prelude (id, return, show, (++), ($), String, Bool(True), Either(Left, Right))
 
 import System.IO
 import System.Exit
@@ -54,4 +54,4 @@ writeResults ((Right result):results) = do
     putStrLn $ show result
     writeResults results
 writeResults ((Left expr):results) =
-    error $ "uncaught exception: " ++ show expr
+    abortWith ("uncaught exception: " ++ show expr)

@@ -20,8 +20,7 @@ For the reference implementation,
 *   There are now QuickCheck tests that check whether
     the multiple definitions for a symbol, when given,
     are equivalent.
-*   `error` is no longer used anywhere except the
-    `Robin.Language.CmdLine` module.
+*   `error` is no longer used anywhere in the source.
 
 Robin 0.6
 ---------
