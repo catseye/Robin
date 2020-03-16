@@ -43,10 +43,13 @@ collect ((List [Symbol "assert", expr]):rest) world@World{ env=env } =
         _ ->
             collect rest world
 
-collect ((List [Symbol "require", sym@(Symbol s)]):rest) world@World{ env=env } =
+collect ((List [Symbol "require", sym@(Symbol s)]):rest) world@World{ env=env, results=results } =
     case find s env of
         Nothing ->
-            error ("assertion failed: (bound? " ++ show sym ++ ")")
+            let
+                abort = Abort (List [Symbol "bound?", sym])
+            in
+                world{ results=((Left abort):results) }
         _ ->
             collect rest world
 

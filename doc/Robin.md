@@ -592,7 +592,7 @@ required to do this, it is simply permitted.
     = 
 
     | (require mumbo-jumbo)
-    ? assertion failed: (bound? mumbo-jumbo)
+    ? ABORT:(bound? mumbo-jumbo)
 
     | (define mumbo-jumbo 1)
     | (require mumbo-jumbo)
