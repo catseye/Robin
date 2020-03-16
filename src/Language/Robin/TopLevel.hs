@@ -37,7 +37,7 @@ collect ((List [Symbol "display", expr]):rest) world@World{ env=env, results=res
 collect ((List [Symbol "assert", expr]):rest) world@World{ env=env, results=results } =
     case eval env expr id of
         Abort expr ->
-            world{ results=((Left (Abort (Symbol ("uncaught exception: " ++ show expr)))):results) }
+            world{ results=((Left (Abort expr)):results) }
         Boolean False ->
             world{ results=((Left (Abort (Symbol ("assertion failed: " ++ show expr)))):results) }
         _ ->
