@@ -29,6 +29,11 @@ might have performance benefits.  (Or perhaps not.)
 Opaque type might also be useful for internals, e.g. signaling
 to runtime system that an error occurred.
 
+Representation
+--------------
+
+Canonical representation of abort values.
+
 Stdlib
 ------
 
