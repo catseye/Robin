@@ -34,22 +34,19 @@ collect ((List [Symbol "display", expr]):rest) world@World{ env=env, results=res
     in
         collect rest world{ results=(result:results) }
 
-collect ((List [Symbol "assert", expr]):rest) world@World{ env=env } =
+collect ((List [Symbol "assert", expr]):rest) world@World{ env=env, results=results } =
     case eval env expr id of
         Abort expr ->
-            error ("uncaught exception: " ++ show expr)
+            world{ results=((Left (Abort (Symbol ("uncaught exception: " ++ show expr)))):results) }
         Boolean False ->
-            error ("assertion failed: " ++ show expr)
+            world{ results=((Left (Abort (Symbol ("assertion failed: " ++ show expr)))):results) }
         _ ->
             collect rest world
 
 collect ((List [Symbol "require", sym@(Symbol s)]):rest) world@World{ env=env, results=results } =
     case find s env of
         Nothing ->
-            let
-                abort = Abort (List [Symbol "bound?", sym])
-            in
-                world{ results=((Left abort):results) }
+            world{ results=((Left (Abort (List [Symbol "bound?", sym]))):results) }
         _ ->
             collect rest world
 
