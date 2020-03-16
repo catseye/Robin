@@ -1,6 +1,6 @@
 module Language.Robin.TopLevel where
 
-import Prelude (error, show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing), Either(Left, Right))
+import Prelude (show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing), Either(Left, Right))
 
 import Language.Robin.Expr
 import Language.Robin.Env (Env, find, insert, empty)
@@ -71,5 +71,5 @@ collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) world@Wor
     in
         collect rest world{ reactors=(newReactor:reactors) }
 
-collect (topExpr:rest) world =
-    error ("illegal top-level form: " ++ show topExpr)
+collect (expr:rest) world@World{ results=results } =
+    world{ results=((Left (Abort (Symbol ("illegal top-level form: " ++ show expr)))):results) }
