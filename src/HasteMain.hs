@@ -27,6 +27,4 @@ driver [progElem, resultElem, runButtonElem] = do
                 Left problem -> do
                     setProp resultElem "textContent" $ show $ problem
         showResults results =
-            (foldl (\a x -> x ++ "\n" ++ a) "" (map (showResult) results))
-        showResult (Right result) = show result
-        showResult (Left result) = "uncaught exception: " ++ (show result)
+            (foldl (\a x -> x ++ "\n" ++ a) "" (map (show) results))

@@ -5,7 +5,7 @@ import Prelude (id, return, show, (++), ($), String, Bool(True), Either(Left, Ri
 import System.IO
 import System.Exit
 
-import Language.Robin.Expr (Expr(List, Symbol))
+import Language.Robin.Expr (Expr(List, Symbol, Abort))
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
 import Language.Robin.TopLevel (initialWorld, destructureWorld, collect, secondaryDefs)
@@ -50,8 +50,8 @@ loadEnv filename env = do
 
 
 writeResults [] = return ()
-writeResults ((Right result):results) = do
+writeResults (expr@(Abort _):results) =
+    abortWith $ show expr
+writeResults (result:results) = do
     putStrLn $ show result
     writeResults results
-writeResults ((Left expr):results) =
-    abortWith $ show expr

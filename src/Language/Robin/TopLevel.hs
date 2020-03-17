@@ -1,6 +1,6 @@
 module Language.Robin.TopLevel where
 
-import Prelude (show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing), Either(Left, Right))
+import Prelude (show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing))
 
 import Language.Robin.Expr
 import Language.Robin.Env (Env, find, insert, empty)
@@ -12,7 +12,7 @@ data World = World {
                env :: Env,
                secondaryDefs :: Env,
                reactors :: [Reactor.Reactor],
-               results :: [Either Expr Expr]
+               results :: [Expr]
              }
 
 assertionFailed expr =
@@ -33,26 +33,21 @@ collect :: [Expr] -> World -> World
 collect [] result = result
 
 collect ((List [Symbol "display", expr]):rest) world@World{ env=env, results=results } =
-    let
-        result = case eval env expr id of
-            Abort expr -> Left (Abort expr)
-            other -> Right other
-    in
-        collect rest world{ results=(result:results) }
+    collect rest world{ results=((eval env expr id):results) }
 
 collect ((List [Symbol "assert", expr]):rest) world@World{ env=env, results=results } =
     case eval env expr id of
         Abort expr ->
-            world{ results=((Left (Abort expr)):results) }
+            world{ results=((Abort expr):results) }
         Boolean False ->
-            world{ results=((Left (Abort $ assertionFailed expr)):results) }
+            world{ results=((Abort $ assertionFailed expr):results) }
         _ ->
             collect rest world
 
 collect ((List [Symbol "require", sym@(Symbol s)]):rest) world@World{ env=env, results=results } =
     case find s env of
         Nothing ->
-            world{ results=((Left (Abort $ assertionFailed (List [Symbol "bound?", sym]))):results) }
+            world{ results=((Abort $ assertionFailed (List [Symbol "bound?", sym])):results) }
         _ ->
             collect rest world
 
@@ -78,4 +73,4 @@ collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) world@Wor
         collect rest world{ reactors=(newReactor:reactors) }
 
 collect (expr:rest) world@World{ results=results } =
-    world{ results=((Left (Abort $ illegalTopLevel expr)):results) }
+    world{ results=((Abort $ illegalTopLevel expr):results) }
