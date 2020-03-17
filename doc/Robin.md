@@ -580,7 +580,7 @@ or if it evaluates to an abort value, aborts processing the file.
     = 
 
     | (assert #f)
-    ? assertion failed: #f
+    ? (abort (assertion-failed #f))
 
     | (assert this-identfier-is-not-bound)
     ? unbound-identifier
@@ -598,7 +598,7 @@ required to do this, it is simply permitted.
     = 
 
     | (require mumbo-jumbo)
-    ? (abort (bound? mumbo-jumbo))
+    ? (abort (assertion-failed (bound? mumbo-jumbo)))
 
     | (define mumbo-jumbo 1)
     | (require mumbo-jumbo)
@@ -616,7 +616,7 @@ You may not try to define anything that's not a symbol.
 
     | (define #f #t)
     | (display #f)
-    ? illegal top-level form: (define #f #t)
+    ? (abort (illegal-toplevel (define #f #t)))
 
 You may define multiple names.
 

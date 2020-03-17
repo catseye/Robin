@@ -15,6 +15,12 @@ data World = World {
                results :: [Either Expr Expr]
              }
 
+assertionFailed expr =
+    List [Symbol "assertion-failed", expr]
+
+illegalTopLevel expr =
+    List [Symbol "illegal-toplevel", expr]
+
 initialWorld env =
     World{ env=env, reactors=[], results=[], secondaryDefs=empty }
 
@@ -39,14 +45,14 @@ collect ((List [Symbol "assert", expr]):rest) world@World{ env=env, results=resu
         Abort expr ->
             world{ results=((Left (Abort expr)):results) }
         Boolean False ->
-            world{ results=((Left (Abort (Symbol ("assertion failed: " ++ show expr)))):results) }
+            world{ results=((Left (Abort $ assertionFailed expr)):results) }
         _ ->
             collect rest world
 
 collect ((List [Symbol "require", sym@(Symbol s)]):rest) world@World{ env=env, results=results } =
     case find s env of
         Nothing ->
-            world{ results=((Left (Abort (List [Symbol "bound?", sym]))):results) }
+            world{ results=((Left (Abort $ assertionFailed (List [Symbol "bound?", sym]))):results) }
         _ ->
             collect rest world
 
@@ -72,4 +78,4 @@ collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) world@Wor
         collect rest world{ reactors=(newReactor:reactors) }
 
 collect (expr:rest) world@World{ results=results } =
-    world{ results=((Left (Abort (Symbol ("illegal top-level form: " ++ show expr)))):results) }
+    world{ results=((Left (Abort $ illegalTopLevel expr)):results) }
