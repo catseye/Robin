@@ -7,7 +7,7 @@ Overview
 --------
 
 **Robin** is an [excessively principled](doc/Rationale.md)
-functional programming language with
+and [thoroughly specified](doc/Robin.md) functional programming language with
 [eager evaluation, latent typing, and a homoiconic syntax](#scheme),
 based on a [radically simple core semantics](#forth) in which
 [the macro, rather than the function, is the fundamental abstraction](#picolisp).
@@ -21,7 +21,7 @@ below.
 Quick Start
 -----------
 
-The Robin reference interpreter is written in about 900 lines of Haskell.
+The Robin reference interpreter is written in about 1300 lines of Haskell.
 To use it, you'll need an implementation of Haskell installed (typically either
 `ghc` or Hugs).
 
@@ -58,9 +58,11 @@ slow, so you may want to skip them.  You can skip them by running
 
     APPLIANCES="appliances/robin.md" ./test.sh
 
-There are also some QuickCheck tests which you can run with
-
-    ghc -isrc src/QuickCheckTests.hs -e testAll
+The test suite will also run some property tests (using QuickCheck).  Notably,
+for every macro that is defined multiple times (which includes much of stdlib,
+where the core definitions are written in Robin but also implemented in Haskell
+as "builtins" in the reference interpreter), QuickCheck will attempt to falsify
+the assertion that the definitions define the same macro.
 
 Extended Description
 --------------------
@@ -143,4 +145,3 @@ Repository Layout
 [The Elm Architecture]: https://guide.elm-lang.org/architecture/
 [shelf]:     https://catseye.tc/node/shelf
 [Falderal]:  https://catseye.tc/node/Falderal
-[Perl]:      https://www.perl.org/
