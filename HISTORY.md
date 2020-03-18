@@ -14,6 +14,7 @@ Robin 0.7
 *   Two macro values are now considered equal if their
     definitions are exactly equal (intensional equality
     sans alpha-conversion).
+*   Abort values now have a defined representation.
 
 For the reference implementation,
 

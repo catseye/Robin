@@ -1,6 +1,6 @@
 module Language.Robin.TopLevel where
 
-import Prelude (show, id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing))
+import Prelude (id, fromIntegral, length, ($), (++), Bool(False), Maybe(Just, Nothing))
 
 import Language.Robin.Expr
 import Language.Robin.Env (Env, find, insert, empty)
