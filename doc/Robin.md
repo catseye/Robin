@@ -643,7 +643,10 @@ they are defined later on in the file.
     ? unbound-identifier
 
 A name may be defined multiple times.  The meaning of this is that
-several _equivalent definitions_ are being given for the name.
+several _semantically equivalent definitions_ are being given for the
+name.  In this context, "semantically equivalent" means that given the
+same arguments in the same environment, the two defintions will always
+evaluate to the same value.
 
     | (define true #t)
     | (define true #t)
@@ -651,34 +654,41 @@ several _equivalent definitions_ are being given for the name.
     = #t
 
 An implementation is allowed to check that the definitions are
-equivalent, and object with an error condition if it can prove
-that they are not equivalent.  So, for example, the following
-is allowed to be considered an error:
+semantically equivalent, and object with an error condition if it can
+prove that they are not semantically equivalent.  So, for example, the
+following is allowed to be considered an error:
 
     (define true #t)
     (define true #f)
 
 An implementation should not, however, object with an error condition
-if it cannot prove the inequivalence (although it is certainly free
-to produce a warning in this case).  A good example of this would
+if it cannot prove the semantic inequivalence (although it is certainly
+free to produce a warning in this case).  A good example of this would
 perhaps be a definition of a function that goes through a Collatz
 sequence and evaluates to `#t`, and a function that simply always
 evaluates to `#t`.
 
 An implementation is also allowed to simply take it on faith that
-the definitions are equivalent.  (This is not the best example.)
+the definitions are semantically equivalent.  (The following example
+is perhaps not the best example.)
 
     | (define true #t)
     | (define true ((macro (self args env) #t)))
     | (display true)
     = #t
 
-If they are not genuinely equivalent, of course, that is a bug,
-like any other bug — the semantics of Robin's `define` do not
-excuse the programmer from exercising their own diligence.  The
-question of which definition Robin picks in this instance is not
-a sensible question, because the definitions are *supposed* to
-be equivalent.
+If they are not genuinely equivalent, of course, that is a programmer
+error like any programmer error — the semantics of Robin's `define`
+do not excuse the programmer from exercising their own diligence.
+
+Since the definitions are supposed to be equivalent, which definition
+the implementation chooses, is ultimately up to the implementation.
+The implementation could even choose to use different definitions in
+different places.  However, the current convention is that the
+definition that is generally preferred because it is the most efficient
+will be given first (perhaps as a built-in provided by the implementation),
+so implementations would do well to support choosing the first definition
+for each symbol that has multiple definitions.
 
 ### `reactor` ###
 
