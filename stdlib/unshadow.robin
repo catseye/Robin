@@ -10,7 +10,7 @@ will be visible instead.
     = x
 
     | (unshadow if (if #t (literal x) (literal y)))
-    ? uncaught exception: (unbound-identifier if)
+    ? abort (unbound-identifier if)
 
     | (bind if (literal what)
     |   (unshadow if (if #t (literal x) (literal y))))
@@ -18,7 +18,7 @@ will be visible instead.
 
     | (bind q 400
     |   (unshadow q q))
-    ? uncaught exception: (unbound-identifier q)
+    ? abort (unbound-identifier q)
 
     | (bind q 200
     |   (bind q 400

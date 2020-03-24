@@ -57,33 +57,33 @@ But, a function must have exactly both a body and a list of formal arguments.
 Otherwise, an abort value will be produced.
 
     | ((fun ()))
-    ? uncaught exception
+    ? abort
 
     | ((fun))
-    ? uncaught exception
+    ? abort
 
     | ((fun (a) a a))
-    ? uncaught exception
+    ? abort
 
 An `illegal-arguments` abort will be produced if not enough arguments are
 supplied to a function call.
 
     | ((fun (a b) (glerp b a))
     |   (prepend 1 ()))
-    ? uncaught exception: (illegal-arguments
+    ? abort (illegal-arguments
 
 An `illegal-arguments` abort will be produced if too many arguments are
 supplied to a function call.
 
     | ((fun (a b) (glerp b a))
     |   1 (prepend 2 ()) 3)
-    ? uncaught exception: (illegal-arguments
+    ? abort (illegal-arguments
 
 `fun` is basically equivalent to Scheme's `lambda`.
 
 '<<SPEC'
 
-(define-if-absent fun (macro (self args env)
+(define fun (macro (self args env)
   (bind extend-with-args (macro (self args env)
     (bind-args (env-to-extend formals actuals env-for-actuals) args env
       (if (equal? formals ())

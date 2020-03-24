@@ -101,7 +101,7 @@ recover env (List [expr, (Symbol okName), okExpr, (Symbol abortName), abortExpr]
 recover env other cc = errMsg "illegal-arguments" other
 
 robinIntrinsics :: Env
-robinIntrinsics = fromList $ map (\(name,bif) -> (name, Intrinsic name bif))
+robinIntrinsics = fromList $ map (\(name,bif) -> (name, Builtin name bif))
       [
         ("head",     head),
         ("tail",     tail),

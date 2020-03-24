@@ -13,15 +13,15 @@ list (the sublist obtained by removing the first element.)
 `tail` expects its argument to be a list.
 
     | (tail #f)
-    ? uncaught exception: (expected-list #f)
+    ? abort (expected-list #f)
 
 `tail` expects exactly one argument.
 
     | (tail (prepend #t ()) (prepend #f ()))
-    ? uncaught exception: (illegal-arguments ((prepend #t ()) (prepend #f ())))
+    ? abort (illegal-arguments ((prepend #t ()) (prepend #f ())))
 
     | (tail)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 `tail` is basically equivalent to Scheme's `cdr`.
 

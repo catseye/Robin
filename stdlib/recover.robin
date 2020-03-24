@@ -65,18 +65,18 @@ handle the abort value it returned.
 `recover` expects its first argument to be a symbol.
 
     | (recover (3 4) (list error #f) 42)
-    ? uncaught exception: (illegal-arguments ((3 4) (list error #f) 42))
+    ? abort (illegal-arguments ((3 4) (list error #f) 42))
 
 `recover` expects exactly five arguments.
 
     | (recover error (list error #f))
-    ? uncaught exception: (illegal-arguments (error (list error #f)))
+    ? abort (illegal-arguments (error (list error #f)))
 
     | (recover error (list error #f) 42 43)
-    ? uncaught exception: (illegal-arguments (error (list error #f) 42 43))
+    ? abort (illegal-arguments (error (list error #f) 42 43))
 
     | (recover error (list error #f) 42 43 44 45)
-    ? uncaught exception: (illegal-arguments (error (list error #f) 42 43 44 45))
+    ? abort (illegal-arguments (error (list error #f) 42 43 44 45))
 
     -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
@@ -88,7 +88,7 @@ in which the abort value was produced.
     |     (abort 2))
     |   value (list 123 value)
     |   error (list flop error))
-    ? uncaught exception: (unbound-identifier flop)
+    ? abort (unbound-identifier flop)
 
 `recover` handles abort values, and this does not include the environment
 in which the abort value was produced.

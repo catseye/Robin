@@ -1,9 +1,9 @@
 Robin
 =====
 
-This document defines version 0.6 of the Robin programming language.
+This document defines version 0.7 of the Robin programming language.
 In this document, the name "Robin" by itself refers to the Robin
-programming language version 0.6.
+programming language version 0.7.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
@@ -251,7 +251,7 @@ attempt is made to evaluate a symbol which is not an identifier,
 an abort value will be produced.
 
     | this-symbol-is-not-bound
-    ? uncaught exception: (unbound-identifier this-symbol-is-not-bound)
+    ? (abort (unbound-identifier this-symbol-is-not-bound))
 
 For a symbol to appear unevaluated in a Robin program, it must be
 introduced as a literal.  However, there is no intrinsic way to do this,
@@ -286,7 +286,7 @@ Booleans always evaluate to themselves.
 Booleans cannot be applied.
 
     | (#t 1 2 3)
-    ? uncaught exception: (inapplicable-object #t)
+    ? (abort (inapplicable-object #t))
 
 ### Integers ###
 
@@ -310,7 +310,7 @@ Integers always evaluate to themselves.
 Integers cannot be applied.
 
     | (900 1 2 3)
-    ? uncaught exception: (inapplicable-object 900)
+    ? (abort (inapplicable-object 900))
 
 ### Macros ###
 
@@ -411,6 +411,12 @@ among the error-expecting tests in this document.
 An abort value contains a single value, called the payload, which
 may be any Robin term.  The payload usually attempts to describe
 the error (or other) condition that the abort value represents.
+
+Abort values have a textual representation which matches an
+expression that, when evaluated, evaluates to the abort value.
+
+    | (abort 12345)
+    ? (abort 12345)
 
 (c) Conventional Data Types
 ---------------------------
@@ -574,7 +580,7 @@ or if it evaluates to an abort value, aborts processing the file.
     = 
 
     | (assert #f)
-    ? assertion failed: #f
+    ? (abort (assertion-failed #f))
 
     | (assert this-identfier-is-not-bound)
     ? unbound-identifier
@@ -592,7 +598,7 @@ required to do this, it is simply permitted.
     = 
 
     | (require mumbo-jumbo)
-    ? assertion failed: (bound? mumbo-jumbo)
+    ? (abort (assertion-failed (bound? mumbo-jumbo)))
 
     | (define mumbo-jumbo 1)
     | (require mumbo-jumbo)
@@ -610,7 +616,7 @@ You may not try to define anything that's not a symbol.
 
     | (define #f #t)
     | (display #f)
-    ? illegal top-level form: (define #f #t)
+    ? (abort (illegal-toplevel (define #f #t)))
 
 You may define multiple names.
 
@@ -620,12 +626,6 @@ You may define multiple names.
     | (display true)
     = #f
     = #t
-
-Names may not be redefined once defined.
-
-    | (define true #t)
-    | (define true #f)
-    ? symbol already defined: true
 
 Names previously defined can be used in a definition.
 
@@ -642,27 +642,53 @@ they are defined later on in the file.
     | (display also-true)
     ? unbound-identifier
 
-### `define-if-absent` ###
-
-`(define-if-absent SYMBOL EXPR)` defines a global name, if it not
-already defined.
-
-    | (define-if-absent true #t)
-    | (display true)
-    = #t
-
-`define-if-absent` does nothing if the name is already defined.
+A name may be defined multiple times.  The meaning of this is that
+several _semantically equivalent definitions_ are being given for the
+name.  In this context, "semantically equivalent" means that given the
+same arguments in the same environment, the two defintions will always
+evaluate to the same value.
 
     | (define true #t)
-    | (define-if-absent true #f)
+    | (define true #t)
     | (display true)
     = #t
 
-You may not try to `define-if-absent` anything that's not a symbol.
+An implementation is allowed to check that the definitions are
+semantically equivalent, and object with an error condition if it can
+prove that they are not semantically equivalent.  So, for example, the
+following is allowed to be considered an error:
 
-    | (define-if-absent #f #t)
-    | (display #f)
-    ? illegal top-level form: (define-if-absent #f #t)
+    (define true #t)
+    (define true #f)
+
+An implementation should not, however, object with an error condition
+if it cannot prove the semantic inequivalence (although it is certainly
+free to produce a warning in this case).  A good example of this would
+perhaps be a definition of a function that goes through a Collatz
+sequence and evaluates to `#t`, and a function that simply always
+evaluates to `#t`.
+
+An implementation is also allowed to simply take it on faith that
+the definitions are semantically equivalent.  (The following example
+is perhaps not the best example.)
+
+    | (define true #t)
+    | (define true ((macro (self args env) #t)))
+    | (display true)
+    = #t
+
+If they are not genuinely equivalent, of course, that is a programmer
+error like any programmer error — the semantics of Robin's `define`
+do not excuse the programmer from exercising their own diligence.
+
+Since the definitions are supposed to be equivalent, which definition
+the implementation chooses, is ultimately up to the implementation.
+The implementation could even choose to use different definitions in
+different places.  However, the current convention is that the
+definition that is generally preferred because it is the most efficient
+will be given first (perhaps as a built-in provided by the implementation),
+so implementations would do well to support choosing the first definition
+for each symbol that has multiple definitions.
 
 ### `reactor` ###
 

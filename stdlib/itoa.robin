@@ -21,7 +21,7 @@ a string representing that integer in decimal.
     = (45 55 54 53)
 
     | (itoa (literal m))
-    ? uncaught exception: (expected-number m)
+    ? abort (expected-number m)
 
 '<<SPEC'
 

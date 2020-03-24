@@ -31,10 +31,10 @@ The argument to `number?` may (naturally) be any type, but there must be
 exactly one argument.
 
     | (number? 6 4)
-    ? uncaught exception: (illegal-arguments (6 4))
+    ? abort (illegal-arguments (6 4))
 
     | (number?)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 

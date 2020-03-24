@@ -17,10 +17,10 @@ desired position.  The position 0 indicates the beginning of the list.
     = ()
 
     |   (rest 6 (list 1 2 3 4 5))
-    ? uncaught exception: (expected-list ())
+    ? abort (expected-list ())
 
     |   (rest 1 (literal foo))
-    ? uncaught exception: (expected-list foo)
+    ? abort (expected-list foo)
 
     |   (rest 0 (literal foo))
     = foo

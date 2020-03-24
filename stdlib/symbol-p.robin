@@ -24,10 +24,10 @@ The argument to `symbol?` may (naturally) be any type, but there must be
 exactly one argument.
 
     | (symbol? 77 88)
-    ? uncaught exception: (illegal-arguments (77 88))
+    ? abort (illegal-arguments (77 88))
 
     | (symbol?)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 

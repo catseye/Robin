@@ -40,20 +40,20 @@ if the first number is strictly less than the second.
 `lt?` expects exactly two arguments, both numbers.
 
     | (lt? 14)
-    ? uncaught exception: (illegal-arguments (14))
+    ? abort (illegal-arguments (14))
 
     | (lt? 14 23 57)
-    ? uncaught exception: (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments (14 23 57))
 
     | (lt? 14 #t)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
     | (lt? #t 51)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 
-(define-if-absent lt? (macro (self args env)
+(define lt? (macro (self args env)
   (bind cmp-same-sign? (macro (self args env)
     (bind-args (a b c) args env
       (equal? (sign (subtract a b)) c)))

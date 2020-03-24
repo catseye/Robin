@@ -14,16 +14,16 @@ refers to the condition that triggered it, but this is not a strict
 requirement.
 
     | (abort 999999)
-    ? uncaught exception: 999999
+    ? abort 999999
 
 `abort`'s single argument may be any kind of value, but `abort` expects
 exactly one argument.
 
     | (abort)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
     | (abort 2 3 4)
-    ? uncaught exception: (illegal-arguments (2 3 4))
+    ? abort (illegal-arguments (2 3 4))
 
 '<<SPEC'
 

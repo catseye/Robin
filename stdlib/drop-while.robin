@@ -20,7 +20,7 @@ predicate.
     = ()
 
     |   (drop-while (fun (x) (symbol? x)) #f)
-    ? uncaught exception: (expected-list #f)
+    ? abort (expected-list #f)
 
 '<<SPEC'
 

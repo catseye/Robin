@@ -14,7 +14,7 @@ empty list at the very tail.)
     = 5
 
     |   (length (literal whatnot))
-    ? uncaught exception: (expected-list whatnot)
+    ? abort (expected-list whatnot)
 
 '<<SPEC'
 

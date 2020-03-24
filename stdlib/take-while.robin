@@ -19,7 +19,7 @@ of the list whose elements all satisfy the predicate.
     = ()
 
     |   (take-while (fun (x) (symbol? x)) #f)
-    ? uncaught exception: (expected-list #f)
+    ? abort (expected-list #f)
 
 '<<SPEC'
 

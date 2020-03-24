@@ -39,20 +39,20 @@ it evaluates.
 `bind` expects exactly three arguments, or else an abort value will be produced.
 
     |   (bind smoosh (fun (x y) (list y x)))
-    ? uncaught exception
+    ? abort
 
     |   (bind smoosh)
-    ? uncaught exception
+    ? abort
 
     |   (bind)
-    ? uncaught exception
+    ? abort
 
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
 
 '<<SPEC'
 
-(define-if-absent bind (macro (self args env)
+(define bind (macro (self args env)
   (eval
     (prepend
       (prepend (head args) (prepend (eval env (head (tail args)))

@@ -20,18 +20,18 @@ the "exclusive-or" of those booleans.
 `xor` expects exactly two arguments.
 
     | (xor #f)
-    ? uncaught exception: (illegal-arguments (#f))
+    ? abort (illegal-arguments (#f))
 
     | (xor #t #f #f)
-    ? uncaught exception: (illegal-arguments (#t #f #f))
+    ? abort (illegal-arguments (#t #f #f))
 
 `xor` expects both of its arguments to be booleans.
 
     | (xor 100 #t)
-    ? uncaught exception: (expected-boolean 100)
+    ? abort (expected-boolean 100)
 
     | (xor #t 99)
-    ? uncaught exception: (expected-boolean 99)
+    ? abort (expected-boolean 99)
 
 This test demonstrates that these functions really do evaluate their
 arguments.

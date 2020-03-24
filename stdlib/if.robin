@@ -25,15 +25,15 @@ The second and third arguments can be arbitrary expressions, but `if`
 expects its first argument to be a boolean.
 
     | (if 5 7 9)
-    ? uncaught exception: (expected-boolean 5)
+    ? abort (expected-boolean 5)
 
 `if` expects exactly three arguments.
 
     | (if #t 7)
-    ? uncaught exception: (illegal-arguments (#t 7))
+    ? abort (illegal-arguments (#t 7))
 
     | (if #t 7 8 9)
-    ? uncaught exception: (illegal-arguments (#t 7 8 9))
+    ? abort (illegal-arguments (#t 7 8 9))
 
 `if` is basically equivalent to Scheme's `if`.
 

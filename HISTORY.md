@@ -1,6 +1,28 @@
 History of Robin
 ================
 
+Robin 0.7
+---------
+
+*   The meaning of multiple `define`s of the same symbol
+    has changed: it is allowed for the purposes of providing
+    multiple semantically equivalent definitions of a symbol.
+    The implementation is allowed to (but not required to) try
+    to disprove the definitions are semantically equivalent.
+    This obviates the need for `define-if-absent`, which has
+    been removed.
+*   Two macro values are now considered equal if their
+    definitions are exactly equal (intensional equality
+    sans alpha-conversion).
+*   Abort values now have a defined representation.
+
+For the reference implementation,
+
+*   There are now QuickCheck tests that check whether
+    the multiple definitions for a symbol, when given,
+    are semantically equivalent.
+*   `error` is no longer used anywhere in the source.
+
 Robin 0.6
 ---------
 

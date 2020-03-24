@@ -25,19 +25,19 @@ if the first number is greater than or equal to the second.
 `gte?` expects exactly two arguments, both numbers.
 
     | (gte? 14)
-    ? uncaught exception: (illegal-arguments (14))
+    ? abort (illegal-arguments (14))
 
     | (gte? 14 23 57)
-    ? uncaught exception: (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments (14 23 57))
 
     | (gte? 14 #t)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
     | (gte? #t 51)
-    ? uncaught exception: (expected-number #t)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 
-(define-if-absent gte? (macro (self args env)
+(define gte? (macro (self args env)
   (bind-args (a b) args env
     (if (equal? a b) #t (gt? a b)))))

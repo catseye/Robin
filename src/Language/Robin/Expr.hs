@@ -21,19 +21,19 @@ data Expr = Symbol String
           | Boolean Bool
           | Number Int32
           | Macro Expr Expr Expr      -- the 1st Expr is actually an Env
-          | Intrinsic String Evaluable
+          | Builtin String Evaluable
           | List [Expr]
           | Abort Expr
 
 instance Eq Expr where
-    (Symbol x) == (Symbol y)           = x == y
-    (Boolean x) == (Boolean y)         = x == y
-    (Number x) == (Number y)           = x == y
-    (Macro _ _ _) == (Macro _ _ _)     = False
-    (Intrinsic x _) == (Intrinsic y _) = x == y
-    (List x) == (List y)               = x == y
-    (Abort x) == (Abort y)             = x == y
-    _ == _                             = False
+    (Symbol x) == (Symbol y)             = x == y
+    (Boolean x) == (Boolean y)           = x == y
+    (Number x) == (Number y)             = x == y
+    (Macro e1 a1 b1) == (Macro e2 a2 b2) = e1 == e2 && a1 == a2 && b1 == b2
+    (Builtin x _) == (Builtin y _)       = x == y
+    (List x) == (List y)                 = x == y
+    (Abort x) == (Abort y)               = x == y
+    _ == _                               = False
 
 instance Show Expr where
     show (Symbol s)            = s
@@ -42,8 +42,8 @@ instance Show Expr where
     show (Number n)            = show n
     show (Macro env args body) = ("(macro " ++ (show args) ++
                                   " " ++ (show body) ++ ")")
-    show (Intrinsic name _)    = name
-    show (Abort e)             = "***ABORT:" ++ (show e) ++ "***"
+    show (Builtin name _)      = name
+    show (Abort e)             = "(abort " ++ (show e) ++ ")"
     show (List exprs)          = "(" ++ (showl exprs) ++ ")" where
                                      showl [] = ""
                                      showl [expr] = show expr
@@ -72,9 +72,9 @@ isNumber _          = False
 isList (List _) = True
 isList _        = False
 
-isMacro (Macro _ _ _)   = True
-isMacro (Intrinsic _ _) = True
-isMacro _               = False
+isMacro (Macro _ _ _) = True
+isMacro (Builtin _ _) = True
+isMacro _             = False
 
 isAbort (Abort _) = True
 isAbort _         = False

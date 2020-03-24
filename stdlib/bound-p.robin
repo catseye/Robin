@@ -18,15 +18,15 @@ current environment, or `#f` if it is not.
 The single argument to `bound?` should be a symbol.
 
     | (bound? 3)
-    ? uncaught exception: (expected-symbol 3)
+    ? abort (expected-symbol 3)
 
 `bound?` expects exactly two arguments.
 
     | (bound? bound? bound?)
-    ? uncaught exception: (illegal-arguments (bound? bound?))
+    ? abort (illegal-arguments (bound? bound?))
 
     | (bound?)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 

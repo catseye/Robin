@@ -17,16 +17,16 @@ length.
     = (3 4 5)
 
     |   (last 6 (list 1 2 3 4 5))
-    ? uncaught exception: (expected-list ())
+    ? abort (expected-list ())
 
     |   (last 1 (literal foo))
-    ? uncaught exception: (expected-list foo)
+    ? abort (expected-list foo)
 
 Unlike `first`, `last` does care if it's not a list, even when the count
 is zero.
 
     |   (last 0 (literal foo)))
-    ? uncaught exception: (expected-list foo)
+    ? abort (expected-list foo)
 
 '<<SPEC'
 

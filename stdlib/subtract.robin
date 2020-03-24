@@ -22,18 +22,18 @@ Addition may be accomplished by negating the second argument.
 `subtract` expects both of its arguments to be numbers.
 
     | (subtract #f 100)
-    ? uncaught exception: (expected-number #f)
+    ? abort (expected-number #f)
 
     | (subtract 100 ())
-    ? uncaught exception: (expected-number ())
+    ? abort (expected-number ())
 
 `subtract` expects exactly two arguments.
 
     | (subtract 100 200 300)
-    ? uncaught exception: (illegal-arguments (100 200 300))
+    ? abort (illegal-arguments (100 200 300))
 
     | (subtract)
-    ? uncaught exception: (illegal-arguments ())
+    ? abort (illegal-arguments ())
 
 '<<SPEC'
 
