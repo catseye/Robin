@@ -62,7 +62,9 @@ The test suite will also run some property tests (using QuickCheck).  Notably,
 for every macro that is defined multiple times (which includes much of stdlib,
 where the core definitions are written in Robin but also implemented in Haskell
 as "builtins" in the reference interpreter), QuickCheck will attempt to falsify
-the assertion that the definitions define the same macro.
+the assertion that the definitions define the same macro.  These attempts are
+currently rather crude; there is lots of room for improvement for them in some
+future release.
 
 Extended Description
 --------------------
