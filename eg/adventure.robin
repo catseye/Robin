@@ -1,4 +1,8 @@
 (require fun)
+(require empty?)
+
+(define command (macro (self args env)
+  (list (head args) (eval env (head (tail args))))))
 
 (reactor (line-terminal) (list 0 0) (macro (self args env)
   (let ((event (head args))
@@ -7,26 +11,23 @@
         (state (head (tail args)))
         (x (head state))
         (y (head (tail state)))
+        (room-message (fun (x y)
+          (append
+            (literal ''You are in room #'')
+            (list (add x 55) (add y 55)))))
         (move (fun (msg dx dy state)
           (let ((newx (add x dx))
                 (newy (add y dy))
-                (newstate (list newx newy))
-                (room (append
-                  (literal ''You are in room #'')
-                  (list (add newx 65) (add newy 65)))))
+                (newstate (list newx newy)))
             (list newstate
-                  (list (literal writeln) msg)
-                  (list (literal writeln) room)))))
+                  (command writeln msg)
+                  (command writeln (room-message newx newy))))))
         (dont-understand (fun (state)
-          (list state (list (literal writeln)
-                            (literal ''Please enter n, s, e, or w, or q to quit.''))))))
+          (list state (command writeln (literal ''Please enter n, s, e, or w, or q to quit.''))))))
     (choose
       ((equal? event-type (literal init))
-        (list state (list (literal writeln)
-                          (literal ''Welcome to Not Quite an Adventure!''))))
-      ((equal? event-type (literal eof))
-        (list state (list (literal writeln)
-                          (literal ''Bye!''))))
+        (list state (command writeln (literal ''Welcome to Not Quite an Adventure!''))
+                    (command writeln (room-message x y))))
       ((equal? event-type (literal readln))
         (if (empty? event-payload)
           (dont-understand state)
@@ -41,7 +42,7 @@
               ((equal? letter (literal ''w''))
                 (move (literal ''West!'') (subtract 0 1) 0 state))
               ((equal? letter (literal ''q''))
-                (list state (list (literal stop) 0)))
+                (list state (command writeln (literal ''Bye!'')) (command stop 0)))
               (else
                 (dont-understand state))))))
        (else
