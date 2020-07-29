@@ -1,10 +1,5 @@
 module Language.Robin.Builtins where
 
-import Prelude (
-    ($), (>), (>=), (<), (<=), (+), (*), div, mod, map, reverse, Bool(True, False)
-  )
-import qualified Prelude as P
-
 import Data.Int
 
 import Language.Robin.Expr
@@ -141,10 +136,10 @@ ltP = evalTwoNumbers (\x y cc -> cc $ Boolean (x < y))
 lteP :: Evaluable
 lteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
 
-abs :: Evaluable
-abs env (List [expr]) cc =
-    eval env expr (\x -> assertNumber env x (\(Number xv) -> cc (Number $ P.abs xv)))
-abs env other cc = errMsg "illegal-arguments" other
+robinAbs :: Evaluable
+robinAbs env (List [expr]) cc =
+    eval env expr (\x -> assertNumber env x (\(Number xv) -> cc (Number $ abs xv)))
+robinAbs env other cc = errMsg "illegal-arguments" other
 
 add :: Evaluable
 add = evalTwoNumbers (\x y cc -> cc $ Number (x + y))
@@ -160,7 +155,7 @@ divide = evalTwoNumbers (\x y cc -> case y of
 remainder :: Evaluable
 remainder = evalTwoNumbers (\x y cc -> case y of
                                  0 -> errMsg "division-by-zero" $ Number x
-                                 _ -> cc $ Number (P.abs (x `mod` y)))
+                                 _ -> cc $ Number (abs (x `mod` y)))
 
 --
 -- Mapping of names to our functions, providing an evaluation environment.
@@ -183,7 +178,7 @@ robinBuiltins = fromList $ map (\(name,bif) -> (name, Builtin name bif))
         ("lt?",       ltP),
         ("lte?",      lteP),
 
-        ("abs",       abs),
+        ("abs",       robinAbs),
         ("add",       add),
         ("multiply",  multiply),
         ("divide",    divide),

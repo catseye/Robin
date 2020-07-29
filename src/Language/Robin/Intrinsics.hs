@@ -1,7 +1,5 @@
 module Language.Robin.Intrinsics where
 
-import Prelude (($), (==), (>=), (<), (-), map)
-
 import Language.Robin.Expr
 import Language.Robin.Env (Env, fromList, insert)
 import Language.Robin.Eval
@@ -103,15 +101,15 @@ recover env other cc = errMsg "illegal-arguments" other
 robinIntrinsics :: Env
 robinIntrinsics = fromList $ map (\(name,bif) -> (name, Builtin name bif))
       [
-        ("head",     head),
-        ("tail",     tail),
+        ("head",     Language.Robin.Intrinsics.head),
+        ("tail",     Language.Robin.Intrinsics.tail),
         ("prepend",  prepend),
         ("list?",    listP),
         ("symbol?",  symbolP),
         ("macro?",   macroP),
         ("number?",  numberP),
         ("equal?",   equalP),
-        ("subtract", subtract),
+        ("subtract", Language.Robin.Intrinsics.subtract),
         ("sign",     sign),
         ("macro",    macro),
         ("eval",     eval_),

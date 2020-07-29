@@ -1,7 +1,5 @@
 module Language.Robin.Reactor where
 
-import Prelude (id, Show, Eq, (++))
-
 import qualified Data.Char as Char
 import Data.Int
 import System.IO

@@ -1,7 +1,5 @@
 module Language.Robin.CmdLine where
 
-import Prelude (id, return, show, (++), ($), String, Bool(True), Either(Left, Right))
-
 import System.IO
 import System.Exit
 
