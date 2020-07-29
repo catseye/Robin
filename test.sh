@@ -20,4 +20,8 @@ for PACKAGE in $PACKAGES; do
     falderal -b $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
 
-ghc -isrc src/QuickCheckTests.hs -e testAll || exit 1
+if [ "x$FORCE_HUGS" != "x" ] ; then
+    runhugs -isrc src/QuickCheckTests.hs || exit 1
+elif command -v runhaskell 2>&1 >/dev/null ; then
+    runhaskell -isrc src/QuickCheckTests.hs || exit 1
+fi

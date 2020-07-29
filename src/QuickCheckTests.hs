@@ -25,17 +25,17 @@ instance Arbitrary Expr where
     arbitrary = sized arbExpr where
         arbExpr :: Int -> Gen Expr
         arbExpr 0 = oneof [
-                            Symbol <$> arbitrary,
-                            Boolean <$> arbitrary,
-                            Number <$> arbitrary
+                            Symbol `fmap` arbitrary,
+                            Boolean `fmap` arbitrary,
+                            Number `fmap` arbitrary
                           ]
         arbExpr n = do
           (Positive m) <- arbitrary
           let n' = n `div` (m + 1)
           oneof [
-                   Abort <$> (arbExpr n'),
-                   List <$> (arbExprList n'),
-                   Macro <$> (arbExpr n') <*> (arbExpr n') <*> (arbExpr n')
+                   Abort `fmap` (arbExpr n'),
+                   List `fmap` (arbExprList n'),
+                   Macro `fmap` (arbExpr n') <*> (arbExpr n') <*> (arbExpr n')
                 ]
 
         arbExprList :: Int -> Gen [Expr]
@@ -163,7 +163,7 @@ testSecondaryDefEnv (List []) env = return ()
 testSecondaryDefEnv (List (List [Symbol name, secondaryDef]:rest)) env = do
     let Just primaryDef = find name env
     putStrLn $ "Comparing multiple definitions of " ++ name ++ "..."
-    quickCheckWith stdArgs{ maxSuccess=1000 } (propEquivApply primaryDef secondaryDef)
+    quickCheck (propEquivApply primaryDef secondaryDef)
     testSecondaryDefEnv (List rest) env
 
 
@@ -172,7 +172,7 @@ testSecondaryDefs = do
     testSecondaryDefEnv secondaryDefs env
 
 
-testAll = do
+main = do
     testBuiltins
     testNoBuiltins
     testSecondaryDefs
