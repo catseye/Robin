@@ -1,9 +1,9 @@
 Robin
 =====
 
-This document defines version 0.7 of the Robin programming language.
+This document defines version 0.8 of the Robin programming language.
 In this document, the name "Robin" by itself refers to the Robin
-programming language version 0.7.
+programming language version 0.8.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
@@ -693,8 +693,8 @@ for each symbol that has multiple definitions.
 ### `reactor` ###
 
 `(reactor LIST-OF-SYMBOLS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
-permit the construction of reactive Robin programs.  See the
-[Reactors](#reactors) section for more information on reactors.
+permit the construction of Robin programs that interact with their environment.
+See the [Reactors](#reactors) section for more information on reactors.
 
 Part 3. Robin Reactors
 ----------------------
@@ -704,10 +704,9 @@ Part 3. Robin Reactors
 To separate the concerns of computation and interaction, Robin provides
 a construct called a _reactor_.  While evaluation of a Robin expression
 accomplishes side-effect-free computation, reactors permit the construction
-of so-called "reactive" programs, which are driven by events and may
-interact with a user, a remote server on a network, or other source of
-events.  Reactors are similar to event handlers in Javascript, or to
-processes in Erlang.
+of event-driven programs which may interact with a user, a remote server on
+a network, or other source of events, while they are executing.  Reactors
+are similar to event handlers in Javascript, or to processes in Erlang.
 
 In Robin, a reactor is installed by giving a top-level form with the
 following syntax:

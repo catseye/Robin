@@ -25,7 +25,7 @@ How well does the result cohere?  Not really.
 
 It started off as an idea for how I would like to design an
 operating system based on [Pixley][].  It is no longer an
-operating system design, but the reactive portion of it is
+operating system design, but the event-driven portion of it is
 still reminiscent of that.
 
 Note that, recently (2020), I wrote up a list of

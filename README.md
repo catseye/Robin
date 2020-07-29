@@ -1,7 +1,7 @@
 Robin
 =====
 
-_Version 0.7.  Work-in-progress, subject to change._
+_Version 0.8.  Work-in-progress, subject to change._
 
 Overview
 --------
@@ -13,7 +13,7 @@ based on a [radically simple core semantics](#forth) in which
 [the macro, rather than the function, is the fundamental abstraction](#picolisp).
 
 Expressions in Robin are [referentially transparent](#haskell); programs
-interact with the outside world [through a reactive framework](#elm).
+interact with the outside world [through an event-driven framework](#elm).
 
 For more information, see the [extended description](#extended-description)
 below.
@@ -104,7 +104,7 @@ does not, however, adopt lazy evaluation or a static type system.)
 
 ### Elm ###
 
-Reactive programs in Robin are built by composing transducers which are driven
+Interactive programs in Robin are built by composing transducers which are driven
 by events and produce effects (which are modelled as further events), in a
 manner very similar to [The Elm Architecture][].
 
