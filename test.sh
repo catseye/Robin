@@ -21,7 +21,7 @@ for PACKAGE in $PACKAGES; do
 done
 
 if [ "x$FORCE_HUGS" != "x" ] ; then
-    runhugs -isrc src/QuickCheckTests.hs || exit 1
+    echo "Can't run QuickCheck tests with Hugs, skipping"
 elif command -v runhaskell 2>&1 >/dev/null ; then
     runhaskell -isrc src/QuickCheckTests.hs || exit 1
 fi
