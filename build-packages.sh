@@ -10,8 +10,8 @@ cat stdlib/abort.robin stdlib/equal-p.robin stdlib/eval.robin stdlib/head.robin 
     stdlib/subtract.robin stdlib/symbol-p.robin stdlib/tail.robin \
     > pkg/intrinsics.robin
 
-cat stdlib/literal.robin stdlib/env.robin stdlib/list.robin stdlib/bind.robin \
-    stdlib/let.robin stdlib/choose.robin \
+cat stdlib/literal.robin stdlib/env.robin stdlib/bind.robin \
+    stdlib/list.robin stdlib/let.robin stdlib/choose.robin \
     stdlib/bind-args.robin \
     stdlib/fun.robin > pkg/small.robin
 

@@ -1,6 +1,6 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Evaluate Robin Expression (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with literal and bind and list)"
 
 `list` is a macro which evaluates each of its arguments, and evaluates to a
 (proper) list containing each of the results, in the same order.
@@ -24,8 +24,12 @@ Unlike `literal`, `list` does evaluate its arguments, all of them.
 '<<SPEC'
 
 (define list (macro (args env)
-  (if (equal? args ())
-    ()
-    (prepend (eval env (head args))
-              (eval env (prepend self (tail args)))))))
+  (bind list-r (macro (args env)
+    (bind self (eval (head args) env)
+      (bind items (eval (head (tail args)) env)
+        (if (equal? items ())
+          ()
+          (prepend (eval env (head items))
+                   (self self (tail items)))))))
+    (list-r list-r args))))
 
