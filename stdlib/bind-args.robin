@@ -100,7 +100,7 @@ become clear here: typically you would just pass the macro's `args` and
               (abort (list (literal illegal-arguments) orig-val-list))
               (recover
                 (eval given-env (head val-list))
-                actual (self
+                actual (self self
                   (tail id-list) (tail val-list)
                   (prepend
                     (list (head id-list) actual)
