@@ -30,7 +30,7 @@ The single argument to `bound?` should be a symbol.
 
 '<<SPEC'
 
-(define bound? (macro (self args env)
+(define bound? (macro (args env)
   (if (equal? args ())
     (abort (list (literal illegal-arguments) args))
     (if (equal? (tail args) ())

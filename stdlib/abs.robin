@@ -27,6 +27,6 @@ the absolute value of that number (where the sign is always positive.)
 
 '<<SPEC'
 
-(define abs (macro (self args env)
+(define abs (macro (args env)
   (bind-args (a) args env
     (if (equal? (sign a) 1) a (subtract 0 a)))))

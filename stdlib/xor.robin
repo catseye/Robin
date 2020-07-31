@@ -41,6 +41,6 @@ arguments.
 
 '<<SPEC'
 
-(define xor (macro (self args env)
+(define xor (macro (args env)
   (bind-args (a b) args env
     (or (and a (not b)) (and (not a) b)))))

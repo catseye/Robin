@@ -1,10 +1,10 @@
 (require fun)
 (require empty?)
 
-(define command (macro (self args env)
+(define command (macro (args env)
   (list (head args) (eval env (head (tail args))))))
 
-(reactor (line-terminal) (list 0 0) (macro (self args env)
+(reactor (line-terminal) (list 0 0) (macro (args env)
   (let ((event (head args))
         (event-type (head event))
         (event-payload (head (tail event)))

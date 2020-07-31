@@ -62,14 +62,14 @@ The characters of the string are given between pairs of single quotes.
 Such a form is parsed as a conventional string data type (see
 the "String" section in the Robin Expression Language for details.)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal ''Hello''))
     = (72 101 108 108 111)
 
 A single single quote may appear in string literals of this kind.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal ''He'llo''))
     = (72 101 39 108 108 111)
@@ -79,24 +79,24 @@ may be given.  The sentinel between the leading single quote pair must
 match the sentinel given between the trailing single quote pair.  The
 sentinel may consist of any text not containing a single quote.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal 'X'Hello'X'))
     = (72 101 108 108 111)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal '...('Hello'...('))
     = (72 101 108 108 111)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal 'X'Hello'Y'))
     ? unexpected end of input
 
 A sentinelized literal like this may embed a pair of single quotes.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal 'X'Hel''lo'X'))
     = (72 101 108 39 39 108 111)
@@ -104,7 +104,7 @@ A sentinelized literal like this may embed a pair of single quotes.
 By choosing different sentinels, string literals may contain any other
 string literal.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal 'X'Hel'Y'bye'Y'lo'X'))
     = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
@@ -113,7 +113,7 @@ No interpolation of escape sequences is done in a Robin string literal.
 (Functions to convert escape sequences commonly found in other languages
 may one day be available in a standard module.)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal ''Hello\nworld''))
     = (72 101 108 108 111 92 110 119 111 114 108 100)
@@ -121,7 +121,7 @@ may one day be available in a standard module.)
 All characters which appear in the source text between the delimiters
 of the string literal are literally included in the string.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal ''Hello
     | world''))
@@ -129,7 +129,7 @@ of the string literal are literally included in the string.
 
 Adjacent string literals are not automatically concatenated.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (macro (a e) (head a)))
     | (display
     |   (literal (''Hello'' ''world'')))
     = ((72 101 108 108 111) (119 111 114 108 100))
@@ -259,7 +259,7 @@ so in order to demonstrate it, we must use something we haven't
 covered yet: a macro.  We'll just go ahead and show the example, and
 will explain macros later.
 
-    | ((macro (s a e) (head a)) hello)
+    | ((macro (a e) (head a)) hello)
     = hello
 
 A Robin implementation is not expected to be able to generate new symbols
@@ -333,9 +333,6 @@ Whereas a function evaluates each of its arguments to values, and
 binds each of those values to a formal parameter of the function, then
 evaluates the body of the function in that new environment, a macro:
 
-*   binds the macro value itself to the first formal parameter of the
-    macro (by convention called `self`) — this is to facilitate writing
-    recursive macros;
 *   binds the literal tail of the list of the macro application to
     the second formal parameter of the macro (by convention called `args`);
 *   binds a binding alist representing the environment in effect at the
@@ -350,12 +347,12 @@ Macros evaluate to themselves.
 Macros are represented as the S-expression expansion of their
 implementation.
 
-    | (macro (self args env) args)
-    = (macro (self args env) args)
+    | (macro (args env) args)
+    = (macro (args env) args)
 
 Macros can be applied, and that is the typical use of them.
 
-    | ((macro (self args env) args) 1)
+    | ((macro (args env) args) 1)
     = (1)
 
 ### Lists ###
@@ -381,9 +378,9 @@ by whitespace.
 
 Non-empty lists do not evaluate to themselves; rather, they represent a macro
 application.  However, the `literal` macro (whose definition is
-`(macro (s a e) (head a))`) may be used to obtain a literal list.
+`(macro (a e) (head a))`) may be used to obtain a literal list.
 
-    | ((macro (s a e) (head a)) (7 8)))
+    | ((macro (a e) (head a)) (7 8)))
     = (7 8)
 
 Lists cannot be directly applied, but since a list itself represents an
@@ -673,7 +670,7 @@ the definitions are semantically equivalent.  (The following example
 is perhaps not the best example.)
 
     | (define true #t)
-    | (define true ((macro (self args env) #t)))
+    | (define true ((macro (args env) #t)))
     | (display true)
     = #t
 
@@ -826,7 +823,7 @@ essentially doesn't keep any state — the initial state of the reactor is simpl
 the integer 0, and the state is set to 0 after each event is reacted to.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind event (head args)
     |       (bind event-type (head event)
     |         (if (equal? event-type (literal init))
@@ -846,7 +843,7 @@ marker characters.
 Thus we can construct a simple `cat` program:
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind event (head args)
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
@@ -881,7 +878,7 @@ where NUMBER is a random number between 0 and 65535.
 A reactor can issue multiple commands in its response to an event.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind event (head args)
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
@@ -901,7 +898,7 @@ When receiving a malformed command, a facility may produce a warning
 message of some kind, but it should otherwise ignore it and keep going.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind event (head args)
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
@@ -925,7 +922,7 @@ reference implementation will display them if `--show-events` is given)
 but this is not a strict requirement.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind event (head args)
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
@@ -944,10 +941,10 @@ but this is not a strict requirement.
 
 Reactors can keep state.
 
-    | (define inc (macro (self args env)
+    | (define inc (macro (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind state (head (tail args))
     |       (bind event (head args)
     |         (bind event-type (head event)
@@ -965,10 +962,10 @@ Reactors can keep state.
 Multiple reactors can be instantiated, will react to the same events.
 Note that reactors react in the *opposite* order they were installed.
 
-    | (define inc (macro (self args env)
+    | (define inc (macro (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind state (head (tail args))
     |       (bind event (head args)
     |         (bind event-type (head event)
@@ -977,7 +974,7 @@ Note that reactors react in the *opposite* order they were installed.
     |               (list (inc state) (list (literal writeln) (list state)))
     |               (list state))))))))
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind event (head args)
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
@@ -997,10 +994,10 @@ Note that reactors react in the *opposite* order they were installed.
 
 A reactor can stop by issuing a `stop` command.
 
-    | (define inc (macro (self args env)
+    | (define inc (macro (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind state (head (tail args))
     |       (bind event (head args)
     |         (bind event-type (head event)
@@ -1021,10 +1018,10 @@ A reactor can stop by issuing a `stop` command.
 
 Stopping one reactor does not stop others.
 
-    | (define inc (macro (self args env)
+    | (define inc (macro (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind state (head (tail args))
     |       (bind event (head args)
     |         (bind event-type (head event)
@@ -1035,7 +1032,7 @@ Stopping one reactor does not stop others.
     |                 (list (inc state) (list (literal writeln) event-payload)))
     |               (list state))))))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
+    |   (macro (args env)
     |     (bind state (head (tail args))
     |       (bind event (head args)
     |         (bind event-type (head event)

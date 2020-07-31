@@ -41,7 +41,7 @@ abort value will be produced.
 
 '<<SPEC'
 
-(define choose (macro (self args env)
+(define choose (macro (args env)
   (bind branch (head args)
     (bind test (head branch)
       (bind then (head (tail branch))

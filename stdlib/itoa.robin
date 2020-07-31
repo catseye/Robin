@@ -25,17 +25,17 @@ a string representing that integer in decimal.
 
 '<<SPEC'
 
-(define itoa (macro (self args env)
-  (bind itoa-r (macro (self args env)
-    (bind-args (val) args env
+(define itoa (macro (args env)
+  (bind itoa-r (macro (args env)
+    (bind-args (self val) args env
       (if (equal? val 0)
         ()
         (let ((digit (remainder val 10))
               (rest  (divide val 10)))
-          (prepend (add 48 digit) (self rest))))))
+          (prepend (add 48 digit) (self self rest))))))
     (bind-args (val) args env
       (if (equal? val 0)
         (list 48)
         (if (lt? val 0)
-          (prepend 45 (reverse (itoa-r (subtract 0 val))))
-          (reverse (itoa-r val))))))))
+          (prepend 45 (reverse (itoa-r itoa-r (subtract 0 val))))
+          (reverse (itoa-r itoa-r val))))))))

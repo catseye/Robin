@@ -10,31 +10,31 @@ it evaluates.
     |     (list x x))
     = (hello hello)
 
-    |   (bind dup (macro (self args env)
+    |   (bind dup (macro (args env)
     |               (list (head args) (head args)))
     |     (dup g))
     = (g g)
 
-    |   (bind dup (macro (self args env)
+    |   (bind dup (macro (args env)
     |               (bind x (eval env (head args))
     |                 (list x x)))
     |     (dup (literal g)))
     = (g g)
 
-    |   (bind dup (macro (self args env)
+    |   (bind dup (macro (args env)
     |               (bind x (eval env (head args))
     |                 (list x x)))
     |     (dup (dup (literal g))))
     = ((g g) (g g))
 
-    |   (bind find (macro (self args env)
-    |                (bind-args (alist key) args env
-    |                  (if (equal? alist (literal ())) (literal ())
-    |                    (if (equal? key (head (head alist)))
-    |                       (head alist)
-    |                       (self (tail alist) key)))))
-    |     (find (literal ((c d) (e f) (a b))) (literal a)))
-    = (a b)
+    /|   (bind find (macro (self args env)
+    /|                (bind-args (alist key) args env
+    /|                  (if (equal? alist (literal ())) (literal ())
+    /|                    (if (equal? key (head (head alist)))
+    /|                       (head alist)
+    /|                       (self (tail alist) key)))))
+    /|     (find (literal ((c d) (e f) (a b))) (literal a)))
+    /= (a b)
 
 `bind` expects exactly three arguments, or else an abort value will be produced.
 
@@ -52,7 +52,7 @@ binding may be given.
 
 '<<SPEC'
 
-(define bind (macro (self args env)
+(define bind (macro (args env)
   (eval
     (prepend
       (prepend (head args) (prepend (eval env (head (tail args)))

@@ -26,6 +26,6 @@ Both of the arguments to `add` must be numbers.
 
 '<<SPEC'
 
-(define add (macro (self args env)
+(define add (macro (args env)
   (bind-args (a b) args env
     (subtract a (subtract 0 b)))))

@@ -33,7 +33,7 @@ If an abort is returned from the body of a macro that is applied
 in the context of a `recover`, it will still be recovered.
 
     | (recover
-    |   ((macro (self args env) (abort (literal (nasty-value 1111)))) joe)
+    |   ((macro (args env) (abort (literal (nasty-value 1111)))) joe)
     |   value (list value #t)
     |   error (list error #f))
     = ((nasty-value 1111) #f)

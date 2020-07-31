@@ -4,7 +4,7 @@ and output the last digit of each number so generated.''
 (require let) (require choose) (require itoa) (require abs) (require remainder)
 
 (reactor (line-terminal random-u16-source) 0
-  (macro (self args env)
+  (macro (args env)
     (let ((event (head args))
           (event-type (head event))
           (event-payload (head (tail event))))

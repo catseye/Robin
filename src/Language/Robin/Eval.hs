@@ -71,10 +71,8 @@ errMsg msg term =
 makeMacroEnv :: Env -> Expr -> Expr -> Env
 makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
     let
-        (List [(Symbol argSelf), (Symbol argFormal),
-               (Symbol envFormal)]) = argList
-        newEnv = insert argSelf m closedEnv
-        newEnv' = insert argFormal actuals newEnv
+        (List [(Symbol argFormal), (Symbol envFormal)]) = argList
+        newEnv' = insert argFormal actuals closedEnv
         newEnv'' = insert envFormal env newEnv'
     in
         newEnv''

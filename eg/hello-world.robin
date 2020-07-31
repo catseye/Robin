@@ -2,7 +2,7 @@
 (require literal)
 
 (reactor (line-terminal) 0
-  (macro (self args env)
+  (macro (args env)
     (bind event (head args)
       (bind event-type (head event)
         (if (equal? event-type (literal init))

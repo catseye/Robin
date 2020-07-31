@@ -14,7 +14,7 @@ While it is possible to pass a macro that is not a function, it is not
 very productive.  (Also, it exposes the implementation of `map`, so this
 is not a very good test.)
 
-    |   (map (macro (self args env) args) (literal (three dog night)))
+    |   (map (macro (args env) args) (literal (three dog night)))
     = (((head li)) ((head li)) ((head li)))
 
 '<<SPEC'

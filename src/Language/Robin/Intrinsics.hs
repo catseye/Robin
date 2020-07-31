@@ -79,7 +79,7 @@ eval_ env (List [envlist, form]) cc =
 eval_ env other cc = errMsg "illegal-arguments" other
 
 macro :: Evaluable
-macro env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc =
+macro env (List [args@(List [(Symbol argsS), (Symbol envS)]), body]) cc =
     cc $ Macro env args body
 macro env other cc = errMsg "illegal-arguments" other
 

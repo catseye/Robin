@@ -26,6 +26,6 @@ the logical negation of that boolean.
 
 '<<SPEC'
 
-(define not (macro (self args env)
+(define not (macro (args env)
   (bind-args (a) args env
     (if a #f #t))))

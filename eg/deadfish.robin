@@ -5,7 +5,7 @@
 (require itoa)
 
 (reactor (line-terminal) 0
-  (macro (self args env)
+  (macro (args env)
     (bind event (head args)
       (bind event-type (head event)
         (bind event-payload (head (tail event))
@@ -16,7 +16,7 @@
                 (if (equal? prev-state 256)
                   0
                   prev-state))
-              (bind prompt (macro (self args env)
+              (bind prompt (macro (args env)
                   (bind show (eval env (head args))
                     (bind state (eval env (head (tail args)))
                       (if show

@@ -45,7 +45,7 @@ be chosen instead.
 '<<SPEC'
 
 (define unshadow
-  (macro (self args env)
+  (macro (args env)
     (bind remove-binding-r (fun (self id li)
       (if (empty? li)
         li
