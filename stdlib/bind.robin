@@ -54,7 +54,7 @@ it evaluates.
 The identifier in a binding must be a symbol.
 
     | (bind 3 1 3)
-    ? abort (illegal-binding (3 1))
+    ? abort
 
 `bind` is basically equivalent to Scheme's `let`, but only one
 binding may be given.
@@ -62,8 +62,11 @@ binding may be given.
 '<<SPEC'
 
 (define bind (macro (args env)
-  (eval
-    (prepend
-      (prepend (head args) (prepend (eval env (head (tail args)))
-                                       ())) env)
-    (head (tail (tail args))))))
+  (if
+    (symbol? (head args))
+    (eval
+      (prepend
+        (prepend (head args) (prepend (eval env (head (tail args)))
+                                         ())) env)
+      (head (tail (tail args))))
+    (abort ((literal expected-symbol) (head args))))))
