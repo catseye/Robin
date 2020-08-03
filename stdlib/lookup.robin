@@ -2,6 +2,13 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with List)"
 
+`lookup` evaluates its first argument to a value of any type, and its
+second argument to obtain an alist.  It then searches through the
+pairs of the alist, looking for the first pair whose first element
+is equal to the value.  If such a pair is found, it returns a
+one-element list containing the second element of that pair.  If no
+such pair is found, the empty list is returned.
+
     | (lookup (literal b) (literal ((a 1) (b 2) (c 3))))
     = (2)
 

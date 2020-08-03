@@ -17,6 +17,11 @@ Robin 0.8
     there are other ways to obtain an operator than applying
     a `macro` form (for instance there have always been
     intrinsic operators; it's not fair to call them "macros".)
+*   The Robin definition of `bind` now checks that the name
+    being bound is a symbol.  The Robin definition of `let`
+    is now based on that of `bind` so it inherits this behaviour.
+*   The documentation for the alist functions in the standard
+    library was improved.
 
 For the reference implementation,
 

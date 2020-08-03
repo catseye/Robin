@@ -2,6 +2,11 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with List)"
 
+`extend` evaluates its first two arguments to values of any type, and its
+third argument to obtain an alist.  It returns a new alist which
+associates the first two values in a new pair.  The new pair shadows
+any existing pairs with the same key that may already be in the alist.
+
     | (extend (literal b) 6 (literal ((a 1) (b 2) (c 3))))
     = ((b 6) (a 1) (b 2) (c 3))
 
