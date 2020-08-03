@@ -58,8 +58,8 @@ Division by zero is undefined, and an abort value will be produced.
       (bind-args (n d) args env
         (if (equal? d 0)
           (abort (list (literal division-by-zero) n))
-          (if (lt? n 0)
-            (self (subtract 0 n) (subtract 0 d))
-            (if (gt? d 0)
-              (divide-r-pos divide-r-pos n d 0)
-              (divide-r-neg divide-r-neg n d 0)))))))))
+          (bind n-prime (if (lt? n 0) (subtract 0 n) n)
+            (bind d-prime (if (lt? n 0) (subtract 0 d) d)
+              (if (gt? d-prime 0)
+                (divide-r-pos divide-r-pos n-prime d-prime 0)
+                (divide-r-neg divide-r-neg n-prime d-prime 0))))))))))
