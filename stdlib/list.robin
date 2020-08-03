@@ -8,8 +8,8 @@
     | (list 1 2 3 4 5)
     = (1 2 3 4 5)
 
-    | (list (list 2 3) (list 6 7))
-    = ((2 3) (6 7))
+    | (list (list 2 3) (list 6 7) (list (subtract 9 1) 9))
+    = ((2 3) (6 7) (8 9))
 
 `list` need not have any arguments at all; the result is the empty list.
 

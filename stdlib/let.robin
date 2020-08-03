@@ -97,16 +97,17 @@ The identifier in a binding must be a symbol.
 
 '<<SPEC'
 
+
 (define let (macro (args env)
-  (bind bindings (head args)
-    (if (equal? bindings ())
-      (eval env (head (tail args)))
-      (bind binding (head bindings)
-        (bind name (head binding)
-          (if (symbol? name)
-            (bind value (eval env (head (tail binding)))
-              (bind newenv (prepend (prepend name (prepend value ())) env)
-                (bind newbindings (tail bindings)
-                  (bind newargs (prepend newbindings (tail args))
-                    (eval newenv (prepend self newargs))))))
-            (abort (prepend (literal illegal-binding) (prepend binding ()))))))))))
+  (bind body (head (tail args))
+    (bind expand-let-r (macro (iargs ienv)
+      (bind self (eval ienv (head iargs))
+        (bind items (eval ienv (head (tail iargs)))
+          (if (equal? items ())
+            body
+            (prepend (literal bind)
+              (prepend (head (head items))
+                (prepend (head (tail (head items)))
+                  (prepend (self self (tail items))
+                           ()))))))))
+      (eval env (expand-let-r expand-let-r (head args)))))))
