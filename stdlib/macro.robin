@@ -2,7 +2,7 @@
 
 ### `macro` ###
 
-    -> Tests for functionality "Evaluate Robin Expression (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with literal and bind)"
 
 `macro` takes its first argument to be a list of three formal
 parameters, and its second argument to be an arbitrary expression,
@@ -28,72 +28,59 @@ Another facility that can be defined simply by a macro is `env`:
 
     (define env (macro (a e) e))
 
-These tests are written against the "small" library, which defines
-both of these symbols (and a few others such as `bind` and `let`).
-
 Macros have "closure" behavior; that is, bindings in force when a
 macro is defined will still be in force when the macro is applied,
-even if they are no longer lexically in scope.  (Please try to ignore
-the heavy `define`s that are used in this test...)
+even if they are no longer lexically in scope.
 
-    | ((let
-    |    ((a (literal these-are))
-    |     (m (macro (args env) (prepend a args))))
-    |   m) my args)
+    | ((bind a (literal these-are)
+    |    (macro (args env) (prepend a args)))
+    |      my args)
     = (these-are my args)
 
 Macros can return macros.
 
-    | (let
-    |   ((mk (macro (argsa env)
-    |       (macro (argsb env)
-    |         (prepend (head argsb) argsa))))
-    |    (mk2 (mk vindaloo)))
-    |   (mk2 chicken))
+    | (bind mk (macro (argsa env)
+    |   (macro (argsb env)
+    |     (prepend (head argsb) argsa)))
+    |   (bind mk2 (mk vindaloo)
+    |     (mk2 chicken)))
     = (chicken vindaloo)
 
 Arguments to macros shadow any other bindings in effect.
 
-    | (let
-    |   ((args (literal a))
-    |    (b (macro (args env) (prepend args args))))
-    |   (b 7))
+    | (bind args (literal a)
+    |   (bind b (macro (args env) (prepend args args))
+    |     (b 7)))
     = ((7) 7)
 
-/`self` is there to let you write recursive macros.  The following
-/example demonstrates this; it evaluates `(prepend b d)` in an environment
-/where all the identifiers you list after `qqq` have been bound to 0.
-/
-/    | (bind qqq
-/    |   (macro (self args env)
-/    |     (if (equal? args ())
-/    |       (eval env (literal (prepend b (prepend d ()))))
-/    |       (eval (prepend (prepend (head args) (prepend 0 ())) env)
-/    |         (prepend self (tail args)))))
-/    |   (bind b 1 (bind d 4 (qqq b c d))))
-/    = (0 0)
-/
-/    | (bind qqq
-/    |   (macro (self args env)
-/    |     (if (equal? args ())
-/    |       (eval env (literal (prepend b (prepend d ()))))
-/    |       (eval (prepend (prepend (head args) (prepend 0 ())) env)
-/    |         (prepend self (tail args)))))
-/    |   (bind b 1 (bind d 4 (qqq x y z))))
-/    = (1 4)
+Recursive macros can be written; they can be used by passing the macro to itself
+when it is called.  The following examples demonstrate this.
 
-/A recursive `macro` application doesn't have to be tail-recursive.
-/
-/    | (bind make-env
-/    |   (macro (self args env)
-/    |     (if (equal? args ())
-/    |       ()
-/    |       (prepend (prepend (head args)
-/    |                   (prepend (eval env (head args)) ()))
-/    |         (eval env
-/    |           (prepend self (tail args))))))
-/    |   (bind b 1 (bind d 4 (make-env b d macro))))
-/    = ((b 1) (d 4) (macro macro))
+    | (bind elem?-r
+    |   (macro (args env)
+    |     (bind self (eval env (head args))
+    |       (bind target (eval env (head (tail args)))
+    |         (bind items (eval env (head (tail (tail args))))
+    |           (if (equal? items ()) #f
+    |             (if (equal? (head items) target) #t
+    |               (self self target (tail items))))))))
+    |   (elem?-r elem?-r (literal c) (literal (a b c d e f))))
+    = #t
+
+    | (bind elem?-r
+    |   (macro (args env)
+    |     (bind self (eval env (head args))
+    |       (bind target (eval env (head (tail args)))
+    |         (bind items (eval env (head (tail (tail args))))
+    |           (if (equal? items ()) #f
+    |             (if (equal? (head items) target) #t
+    |               (self self target (tail items))))))))
+    |   (elem?-r elem?-r (literal c) (literal (a b d e f))))
+    = #f
+
+A recursive `macro` application doesn't have to be tail-recursive.
+
+TODO write something like fibonacci as a macro here to demonstrate that.
 
 `macro` expects exactly two arguments.
 
