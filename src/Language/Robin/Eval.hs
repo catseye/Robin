@@ -38,14 +38,14 @@ eval env sym@(Symbol s) cc =
 
 --
 -- Evaluating a list means we must make several evaluations.  We
--- evaluate the head to obtain something to apply (which must be a
--- "builtin".)  We then apply the "builtin", passing it the tail of the list.
+-- evaluate the head to obtain something to apply, which must be an
+-- operator.  We then apply the operator, passing it the tail of the list.
 --
 
 eval env (List (applierExpr:actuals)) cc =
     eval env applierExpr (\applier ->
         case applier of
-            Builtin _ fun ->
+            Operator _ fun ->
                 fun env (List actuals) cc
             other ->
                 errMsg "inapplicable-object" other)

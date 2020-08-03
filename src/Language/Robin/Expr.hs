@@ -20,7 +20,7 @@ type Evaluable = Expr -> Expr -> (Expr -> Expr) -> Expr
 data Expr = Symbol String
           | Boolean Bool
           | Number Int32
-          | Builtin String Evaluable
+          | Operator String Evaluable
           | List [Expr]
           | Abort Expr
 
@@ -28,7 +28,7 @@ instance Eq Expr where
     (Symbol x) == (Symbol y)             = x == y
     (Boolean x) == (Boolean y)           = x == y
     (Number x) == (Number y)             = x == y
-    (Builtin x _) == (Builtin y _)       = x == y
+    (Operator x _) == (Operator y _)     = x == y
     (List x) == (List y)                 = x == y
     (Abort x) == (Abort y)               = x == y
     _ == _                               = False
@@ -38,7 +38,7 @@ instance Show Expr where
     show (Boolean True)        = "#t"
     show (Boolean False)       = "#f"
     show (Number n)            = show n
-    show (Builtin name _)      = name
+    show (Operator name _)     = name
     show (Abort e)             = "(abort " ++ (show e) ++ ")"
     show (List exprs)          = "(" ++ (showl exprs) ++ ")" where
                                      showl [] = ""
@@ -71,5 +71,5 @@ isList _        = False
 isAbort (Abort _) = True
 isAbort _         = False
 
-isOperator (Builtin _ _) = True
-isOperator _             = False
+isOperator (Operator _ _) = True
+isOperator _              = False

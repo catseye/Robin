@@ -80,7 +80,7 @@ eval_ env other cc = errMsg "illegal-arguments" other
 
 macro :: Evaluable
 macro env (List [args@(List [(Symbol argsS), (Symbol envS)]), body]) cc =
-    cc $ Builtin "<macro>" $ makeMacro env args body
+    cc $ Operator "<macro>" $ makeMacro env args body
 macro env other cc = errMsg "illegal-arguments" other
 
 abort :: Evaluable
@@ -99,7 +99,7 @@ recover env (List [expr, (Symbol okName), okExpr, (Symbol abortName), abortExpr]
 recover env other cc = errMsg "illegal-arguments" other
 
 robinIntrinsics :: Env
-robinIntrinsics = fromList $ map (\(name,bif) -> (name, Builtin name bif))
+robinIntrinsics = fromList $ map (\(name,bif) -> (name, Operator name bif))
       [
         ("head",     Language.Robin.Intrinsics.head),
         ("tail",     Language.Robin.Intrinsics.tail),

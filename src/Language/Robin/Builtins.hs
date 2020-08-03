@@ -10,7 +10,7 @@ import Language.Robin.Eval
 -- Robin Builtins
 -- ==============
 -- 
--- Note, these are functions which are built-in to the Robin reference
+-- Note, these are operators which are built-in to the Robin reference
 -- intepreter, for performance, but they are *not* intrinsic to the
 -- Robin language.  (See Intrinsics.hs for those.)
 --
@@ -109,7 +109,7 @@ bindArgs env other cc = errMsg "illegal-arguments" other
 
 fun :: Evaluable
 fun closedEnv (List [(List formals), body]) cc =
-    cc $ Builtin "<lambda>" fun
+    cc $ Operator "<lambda>" fun
   where
     fun env (List actuals) cc =
         evalArgs formals actuals actuals env (\argEnv ->
@@ -162,7 +162,7 @@ remainder = evalTwoNumbers (\x y cc -> case y of
 --
 
 robinBuiltins :: Env
-robinBuiltins = fromList $ map (\(name,bif) -> (name, Builtin name bif))
+robinBuiltins = fromList $ map (\(name,bif) -> (name, Operator name bif))
       [
         ("literal",   literal),
         ("list",      list),
