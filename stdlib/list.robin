@@ -24,9 +24,9 @@ Unlike `literal`, `list` does evaluate its arguments, all of them.
 '<<SPEC'
 
 (define list (macro (args env)
-  (bind list-r (macro (args env)
-    (bind self (eval (head args) env)
-      (bind items (eval (head (tail args)) env)
+  (bind list-r (macro (iargs ienv)
+    (bind self (eval ienv (head iargs))
+      (bind items (eval ienv (head (tail iargs)))
         (if (equal? items ())
           ()
           (prepend (eval env (head items))
