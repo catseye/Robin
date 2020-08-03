@@ -20,7 +20,6 @@ type Evaluable = Expr -> Expr -> (Expr -> Expr) -> Expr
 data Expr = Symbol String
           | Boolean Bool
           | Number Int32
-          | Macro Expr Expr Expr      -- the 1st Expr is actually an Env
           | Builtin String Evaluable
           | List [Expr]
           | Abort Expr
@@ -29,7 +28,6 @@ instance Eq Expr where
     (Symbol x) == (Symbol y)             = x == y
     (Boolean x) == (Boolean y)           = x == y
     (Number x) == (Number y)             = x == y
-    (Macro e1 a1 b1) == (Macro e2 a2 b2) = e1 == e2 && a1 == a2 && b1 == b2
     (Builtin x _) == (Builtin y _)       = x == y
     (List x) == (List y)                 = x == y
     (Abort x) == (Abort y)               = x == y
@@ -40,8 +38,6 @@ instance Show Expr where
     show (Boolean True)        = "#t"
     show (Boolean False)       = "#f"
     show (Number n)            = show n
-    show (Macro env args body) = ("(macro " ++ (show args) ++
-                                  " " ++ (show body) ++ ")")
     show (Builtin name _)      = name
     show (Abort e)             = "(abort " ++ (show e) ++ ")"
     show (List exprs)          = "(" ++ (showl exprs) ++ ")" where
@@ -72,9 +68,8 @@ isNumber _          = False
 isList (List _) = True
 isList _        = False
 
-isMacro (Macro _ _ _) = True
-isMacro (Builtin _ _) = True
-isMacro _             = False
-
 isAbort (Abort _) = True
 isAbort _         = False
+
+isOperator (Builtin _ _) = True
+isOperator _             = False

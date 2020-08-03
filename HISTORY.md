@@ -12,11 +12,18 @@ Robin 0.8
     the macro itself as the first argument to the macro.)
     The Robin definitions of macros in the standard library
     such as `let` and `list` have been rewritten this way.
+*   The object that a `macro` form evaluates to is no
+    longer called a "macro".  It is an "operator".  There
+    there are other ways to obtain an operator than applying
+    a `macro` form (for instance there have always been
+    intrinsic operators; it's not fair to call them "macros".)
 
 For the reference implementation,
 
 *   Fixed recent import changes which prevented it from
     running under Hugs.
+*   The `Macro` type of expressions has been removed,
+    and `Builtin` renamed `Operator`.
 
 Robin 0.7
 ---------

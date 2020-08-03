@@ -42,7 +42,7 @@ predP pred env other cc = errMsg "illegal-arguments" other
 
 symbolP = predP isSymbol
 listP = predP isList
-macroP = predP isMacro
+operatorP = predP isOperator
 numberP = predP isNumber
 
 subtract :: Evaluable
@@ -80,7 +80,7 @@ eval_ env other cc = errMsg "illegal-arguments" other
 
 macro :: Evaluable
 macro env (List [args@(List [(Symbol argsS), (Symbol envS)]), body]) cc =
-    cc $ Macro env args body
+    cc $ Builtin "<macro>" $ makeMacro env args body
 macro env other cc = errMsg "illegal-arguments" other
 
 abort :: Evaluable
@@ -106,7 +106,7 @@ robinIntrinsics = fromList $ map (\(name,bif) -> (name, Builtin name bif))
         ("prepend",  prepend),
         ("list?",    listP),
         ("symbol?",  symbolP),
-        ("macro?",   macroP),
+        ("operator?",operatorP),
         ("number?",  numberP),
         ("equal?",   equalP),
         ("subtract", Language.Robin.Intrinsics.subtract),

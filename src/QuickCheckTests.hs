@@ -34,8 +34,8 @@ instance Arbitrary Expr where
           let n' = n `div` (m + 1)
           oneof [
                    Abort <$> (arbExpr n'),
-                   List <$> (arbExprList n'),
-                   Macro <$> (arbExpr n') <*> (arbExpr n') <*> (arbExpr n')
+                   List <$> (arbExprList n')
+                   -- TODO Operator ??
                 ]
 
         arbExprList :: Int -> Gen [Expr]

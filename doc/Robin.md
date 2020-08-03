@@ -314,6 +314,8 @@ Integers cannot be applied.
 
 ### Macros ###
 
+TODO rewrite this section
+
 A macro is a term which, in an environment, describes how to
 translate one S-expression to another.
 
@@ -344,13 +346,13 @@ Macros are defined with the `macro` intrinsic.
 
 Macros evaluate to themselves.
 
-Macros are represented as the S-expression expansion of their
-implementation.
+Operators are represented as an opaque descriptor (TODO this should be the
+metadata of the operator.)
 
     | (macro (args env) args)
-    = (macro (args env) args)
+    = <macro>
 
-Macros can be applied, and that is the typical use of them.
+Operators can be applied, and that is the typical use of them.
 
     | ((macro (args env) args) 1)
     = (1)

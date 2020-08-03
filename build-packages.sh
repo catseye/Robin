@@ -5,7 +5,7 @@ echo "Building Robin convenience packages..."
 mkdir -p pkg
 
 cat stdlib/abort.robin stdlib/equal-p.robin stdlib/eval.robin stdlib/head.robin \
-    stdlib/if.robin stdlib/list-p.robin stdlib/macro-p.robin stdlib/macro.robin \
+    stdlib/if.robin stdlib/list-p.robin stdlib/operator-p.robin stdlib/macro.robin \
     stdlib/number-p.robin stdlib/prepend.robin stdlib/recover.robin stdlib/sign.robin \
     stdlib/subtract.robin stdlib/symbol-p.robin stdlib/tail.robin \
     > pkg/intrinsics.robin

@@ -39,16 +39,13 @@ eval env sym@(Symbol s) cc =
 --
 -- Evaluating a list means we must make several evaluations.  We
 -- evaluate the head to obtain something to apply (which must be a
--- macro or intrinsic.)  We then apply the body of the macro,
--- passing it the tail of the list.
+-- "builtin".)  We then apply the "builtin", passing it the tail of the list.
 --
 
 eval env (List (applierExpr:actuals)) cc =
     eval env applierExpr (\applier ->
         case applier of
-            m@(Macro _ _ body) ->
-                eval (makeMacroEnv env (List actuals) m) body cc
-            b@(Builtin _ fun) ->
+            Builtin _ fun ->
                 fun env (List actuals) cc
             other ->
                 errMsg "inapplicable-object" other)
@@ -68,14 +65,22 @@ eval env e cc =
 errMsg msg term =
     Abort (List [(Symbol msg), term])
 
-makeMacroEnv :: Env -> Expr -> Expr -> Env
-makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
+makeMacro :: Expr -> Expr -> Expr -> Evaluable
+makeMacro defineTimeEnv formals body =
+    \callTimeEnv actuals cc ->
+        let
+            env = makeMacroEnv callTimeEnv actuals defineTimeEnv formals
+        in
+            eval env body cc
+
+makeMacroEnv callTimeEnv actuals defineTimeEnv argList =
     let
         (List [(Symbol argFormal), (Symbol envFormal)]) = argList
-        newEnv' = insert argFormal actuals closedEnv
-        newEnv'' = insert envFormal env newEnv'
+        newEnv' = insert argFormal actuals defineTimeEnv
+        newEnv'' = insert envFormal callTimeEnv newEnv'
     in
         newEnv''
+
 
 --
 -- Assertions
@@ -90,4 +95,4 @@ assertSymbol env = assert env (isSymbol) "expected-symbol"
 assertBoolean env = assert env (isBoolean) "expected-boolean"
 assertList env = assert env (isList) "expected-list"
 assertNumber env = assert env (isNumber) "expected-number"
-assertMacro env = assert env (isMacro) "expected-macro"
+assertOperator env = assert env (isOperator) "expected-operator"
