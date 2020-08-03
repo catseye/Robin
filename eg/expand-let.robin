@@ -1,0 +1,19 @@
+;''Example of a recursive macro.  It takes a list of bindings a la `let`
+   and returns a snippet of code `bind`ing those values.  This is actually
+   how `let` is now defined in the stdlib.''
+
+(define expand-let (macro (args env)
+  (bind body (head (tail args))
+    (bind expand-let-r (macro (iargs ienv)
+      (bind self (eval ienv (head iargs))
+        (bind items (eval ienv (head (tail iargs)))
+          (if (equal? items ())
+            body
+            (prepend (literal bind)
+              (prepend (head (head items))
+                (prepend (head (tail (head items)))
+                  (prepend (self self (tail items))
+                           ()))))))))
+      (expand-let-r expand-let-r (head args))))))
+
+(display (expand-let ((a 1) (b 2) (c 3)) foo))
