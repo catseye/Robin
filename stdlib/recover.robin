@@ -2,7 +2,7 @@
 
 ### `recover` ###
 
-    -> Tests for functionality "Evaluate Robin Expression (with literal and list)"
+    -> Tests for functionality "Evaluate Robin Expression (with literal and bind and list)"
 
 `recover` handles abort values.  It takes 5 arguments.  It
 evaluates the first argument to a value.
@@ -93,7 +93,7 @@ in which the abort value was produced.
 `recover` handles abort values, and this does not include the environment
 in which the abort value was produced.
 
-    | (bind flop (fun (x) (abort x))
+    | (bind flop (macro (args env) (bind x (eval env (head args)) (abort x)))
     |   (list
     |     (recover (flop 44) value value error (list 55 error))
     |     (recover (flop 44) value value error (list 66 error))))
