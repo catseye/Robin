@@ -1,6 +1,23 @@
 History of Robin
 ================
 
+Robin 0.8
+---------
+
+*   The `macro` form no longer provides the `self`
+    argument to its definition.  If recursion is desired
+    in the definition of a macro, the macro should be
+    written recursively (in the same way functions have
+    traditionally been written recursively in Robin: pass
+    the macro itself as the first argument to the macro.)
+    The Robin definitions of macros in the standard library
+    such as `let` and `list` have been rewritten this way.
+
+For the reference implementation,
+
+*   Fixed recent import changes which prevented it from
+    running under Hugs.
+
 Robin 0.7
 ---------
 
