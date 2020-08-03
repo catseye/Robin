@@ -9,6 +9,9 @@ The following functionalities are used to test Robin Expressions.
     -> Functionality "Evaluate Robin Expression (with literal and list)" is implemented by shell command
     -> "bin/robin stdlib/literal.robin stdlib/list.robin eval %(test-body-file)"
 
+    -> Functionality "Evaluate Robin Expression (with literal and bind)" is implemented by shell command
+    -> "bin/robin stdlib/literal.robin stdlib/bind.robin eval %(test-body-file)"
+
     -> Functionality "Evaluate Robin Expression (with literal and bind and list)" is implemented by shell command
     -> "bin/robin stdlib/literal.robin stdlib/bind.robin stdlib/list.robin eval %(test-body-file)"
 
