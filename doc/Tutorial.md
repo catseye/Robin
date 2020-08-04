@@ -1,12 +1,14 @@
 A Short Robin Tutorial
 ======================
 
-This document will lead you through writing a few simple Robin programs.
+This tutorial will lead you through writing a few simple Robin programs.
 
-We will assume you've written some programs in a Lisp-like language
-such as Scheme or Racket or [Irken][].  If you haven't, it will probably
-help a lot if you work through one of the many excellent tutorials
-available for these languages.
+This document is aimed at programmers who have written some programs in a
+Lisp-like language such as Scheme or Racket or [Irken][].  If you haven't,
+it will probably help a lot if you work through one of the many excellent
+tutorials available for these languages first.  This tutorial will
+concentrate on the more unusual features of Robin, the ones that are not
+shared with many other languages.
 
 [Irken]: https://github.com/samrushing/irken-compiler/blob/master/docs/intro.md
 
@@ -66,8 +68,9 @@ Intrinsics vs. the Standard Library
 -----------------------------------
 
 Expressions in Robin are based on a very simple definition, in which there
-are only 15 intrinsic operations.  `subtract` is one such intrinsic
-operation.  `add`, by contrast, is not an intrinsic.  If you create a program
+are only 15 intrinsic operators.  `subtract` is one such intrinsic
+operator.  `add`, by contrast, is not an intrinsic operator.  If you create
+a program
 
     (define one 1)
     (display (add 8 one))
@@ -78,7 +81,7 @@ and run it with
 
 you'll get an error like
 
-    Main.hs: uncaught exception: (unbound-identifier add)
+    (abort (unbound-identifier add))
 
 However, Robin does come with a standard library of operations, which are
 defined in terms of intrinsics.  You need to tell Robin to load this standard
@@ -90,6 +93,8 @@ You'll see the answer you probably expected,
 
     9
 
+(Actually this isn't the way the reference interpreter behaves right now.)
+
 Functions
 ---------
 
@@ -97,7 +102,7 @@ Let's write a factorial function, and compute 5!.
 
     (define fact (fun (self n)
       (multiply n
-        (if (> n 1)
+        (if (gt? n 1)
           (self self (subtract n 1))
           1))))
     (display (fact fact 5))
@@ -126,11 +131,11 @@ Builtins
 --------
 
 Even though they are defined in Robin, parts of the Standard Library
-are often implemented in some other language.  This is because their
-definition in Robin is intended to be correct and normative, not
-necessarily efficient.  If the implementation of the operation in some
-other language has the same semantics as the Robin definition of the
-operation, it can be used interchangeably, and more efficiently.
+are often implemented in some other language.  This is because, while
+their definition in Robin is intended to be correct and normative, it
+is not necessarily efficient.  If some other, more efficient
+implementation of the operation has the same semantics as the Robin
+definition of the operation, they can be used interchangeably.
 
 In particular, the reference implementation exposes, by default,
 a set of "builtins" which map to the "small" subset of the standard
@@ -145,6 +150,8 @@ If you do this, you'll see
 You might conclude from this that `fun` is not a built-in — and you'd
 be right!  Unlike basically every other Lisp-like language, in Robin,
 `fun` is a derived form.  It's implemented as a macro.
+
+(Actually this isn't the way the reference interpreter behaves right now.)
 
 Macros
 ------
