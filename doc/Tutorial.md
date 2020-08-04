@@ -53,14 +53,15 @@ And if you run it again you will get the output
 
     7
 
-As of this version of Robin, there are only 4 kinds of top-level
-forms:
+As of this version of Robin, there are five kinds of top-level forms:
 
 *   `display` evaluates an expression and outputs the result.
 *   `define` evaluates an expression and assigns a name to it.
 *   `assert` evaluates an expression and causes the interprter
     to abort with a message, if the expression does not evaluate
     to `#t` (true).
+*   `require` behaves like `assert`, but intends to signal that
+    a particular symbol needs to have been given a meaning.
 *   `reactor` evaluates some expressions, creates a reactor
     based on them, and installs it.
 
@@ -134,11 +135,11 @@ You'll see a message such as the following:
 
 You might conclude from this that `fun` is not a built-in — and you'd
 be right!  Unlike basically every other Lisp-like language, in Robin,
-`fun` is a derived form.  It's implemented as a macro in the Standard
-Library.
+`fun` is a derived form.  It's implemented as a macro in the standard
+library.
 
 As you saw above, you can ask the Robin reference interpreter to
-load in the Standard Library before it runs your program:
+load in the standard library before it runs your program:
 
     bin/robin pkg/stdlib.robin fact.robin
 
@@ -149,7 +150,7 @@ and you'll see the expected
 but you may notice that it's not exactly quick to come back with
 that answer.
 
-Even though they are defined in Robin, parts of the Standard Library
+Even though they are defined in Robin, parts of the standard library
 are often implemented in some other language.  This is because, while
 their definition in Robin is intended to be correct and normative, it
 is not necessarily efficient.  If some other, more efficient
@@ -175,7 +176,25 @@ will work just as well:
 Macros
 ------
 
-(To be written).
+As we mentioned above, functions aren't intrinsic to Robin — the
+`fun` operator that creates a function is defined as a macro in the
+standard library.
+
+You're quite free to simply import the standard library and use `fun`
+without knowing or caring that it's defined as a macro.
+
+However, you can write your own macros as well.
+
+The main difference between a function and a macro is that a macro
+does *not* evaluate the arguments that are passed to it.  It receives
+them as unevaluated S-expressions.  It also receives a value representing
+the environment in which it was called, and using this, it can evaluate
+the arguments itself, if it wishes.  In this case it will act a lot like
+a conventional function.  But it doesn't have to do this — it can
+evaluate the arguments in some other environment, or it can treat them
+as unevaluated data.
+
+(To be continued).
 
 Reactors
 --------
