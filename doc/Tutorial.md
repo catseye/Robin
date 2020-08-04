@@ -220,7 +220,47 @@ evaluate their arguments, just like functions.
 
 If you run this you should see 76.
 
+Referential transparency
+------------------------
+
+The code you've been writing inside those `define`s and `display`s
+is an _expression_.  Expressions are distinct from top-level forms;
+you can't say `display` inside an expression, and you can't say
+`subtract` at the top level.  (This is different from a lot of
+Lisps and Schemes, and it is quite intentional.)
+
+In fact, in Robin, expressions cannot have any side-effects.  This
+is sometimes described as "purely functional".
+
+An implication of this is that all data in Robin is immutable: once
+created, a list or other data structure cannot be changed.  Rather, a
+new data structure, similar to the original data structure but altered
+in some way, must be created.
+
+(This is not quite the same as re-binding a name to a new value.
+In this case, no values have changed.  And in fact the old name
+binding still exists, it is merely _shadowed_ temporarily by the
+new binding.)
+
+We can be even more specific and say that in Robin, all expressions
+are _referentially transparent_.  There are a number of equivalent
+ways to describe what this means.  One that I find intuitive is:
+
+> Evaluation of an operator relies on nothing except its input values,
+> and has an effect on nothing except its output value.
+
+(I also find it reminiscent of the saying "Take only photographs,
+leave only footprints", but as to whether that has any mnemonic value,
+well, YMMV.)
+
+(TODO: explain `abort` values.)
+
 Reactors
 --------
 
-(To be written).
+The problem with expressions being referentially transparent is that,
+in practice, software usually _does something_ over and above calculating
+the result of an expression.  Users click buttons, shapes get displayed,
+files get written to filesystems.
+
+(To be continued).
