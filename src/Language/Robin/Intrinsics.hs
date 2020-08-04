@@ -80,7 +80,7 @@ eval_ env other cc = errMsg "illegal-arguments" other
 
 macro :: Evaluable
 macro env (List [args@(List [(Symbol argsS), (Symbol envS)]), body]) cc =
-    cc $ Operator "<macro>" $ makeMacro env args body
+    cc $ Operator "<operator>" $ makeMacro env args body
 macro env other cc = errMsg "illegal-arguments" other
 
 abort :: Evaluable

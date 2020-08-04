@@ -62,14 +62,14 @@ The characters of the string are given between pairs of single quotes.
 Such a form is parsed as a conventional string data type (see
 the "String" section in the Robin Expression Language for details.)
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal ''Hello''))
     = (72 101 108 108 111)
 
 A single single quote may appear in string literals of this kind.
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal ''He'llo''))
     = (72 101 39 108 108 111)
@@ -79,24 +79,24 @@ may be given.  The sentinel between the leading single quote pair must
 match the sentinel given between the trailing single quote pair.  The
 sentinel may consist of any text not containing a single quote.
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal 'X'Hello'X'))
     = (72 101 108 108 111)
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal '...('Hello'...('))
     = (72 101 108 108 111)
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal 'X'Hello'Y'))
     ? unexpected end of input
 
 A sentinelized literal like this may embed a pair of single quotes.
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal 'X'Hel''lo'X'))
     = (72 101 108 39 39 108 111)
@@ -104,7 +104,7 @@ A sentinelized literal like this may embed a pair of single quotes.
 By choosing different sentinels, string literals may contain any other
 string literal.
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal 'X'Hel'Y'bye'Y'lo'X'))
     = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
@@ -113,7 +113,7 @@ No interpolation of escape sequences is done in a Robin string literal.
 (Functions to convert escape sequences commonly found in other languages
 may one day be available in a standard module.)
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal ''Hello\nworld''))
     = (72 101 108 108 111 92 110 119 111 114 108 100)
@@ -121,7 +121,7 @@ may one day be available in a standard module.)
 All characters which appear in the source text between the delimiters
 of the string literal are literally included in the string.
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal ''Hello
     | world''))
@@ -129,7 +129,7 @@ of the string literal are literally included in the string.
 
 Adjacent string literals are not automatically concatenated.
 
-    | (define literal (macro (a e) (head a)))
+    | (define literal (macro (args env) (head args)))
     | (display
     |   (literal (''Hello'' ''world'')))
     = ((72 101 108 108 111) (119 111 114 108 100))
@@ -224,7 +224,7 @@ all the other data types.  It is inductively defined as follows:
 *   A symbol is a term.
 *   A boolean is a term.
 *   An integer is a term.
-*   A macro is a term.
+*   An operator is a term.
 *   An empty list is a term.
 *   A list cell containing a term, prepended to another list
     (which may be empty), is a term.
@@ -256,8 +256,8 @@ an abort value will be produced.
 For a symbol to appear unevaluated in a Robin program, it must be
 introduced as a literal.  However, there is no intrinsic way to do this,
 so in order to demonstrate it, we must use something we haven't
-covered yet: a macro.  We'll just go ahead and show the example, and
-will explain macros later.
+covered yet: an operator.  We'll just go ahead and show the example, and
+will explain operators later.
 
     | ((macro (a e) (head a)) hello)
     = hello
@@ -272,7 +272,7 @@ it is what the symbol is bound to in the environment that is applied.
 
 There are two values of Boolean type, `#t`, representing truth, and `#f`,
 representing falsehood.  By convention, an identifier which ends in `?`
-is a macro or function which evaluates to a Boolean.  The `if` intrinsic
+denotes an operator which evaluates to a Boolean.  The `if` intrinsic
 expects a Boolean expression as its first argument.
 
 Booleans always evaluate to themselves.
@@ -312,45 +312,45 @@ Integers cannot be applied.
     | (900 1 2 3)
     ? (abort (inapplicable-object 900))
 
-### Macros ###
+### Operators ###
 
-TODO rewrite this section
-
-A macro is a term which, in an environment, describes how to
-translate one S-expression to another.
+An operator is a term which describes how to translate a given term to
+another term, in a given environment.
 
 One area where Robin diverges significantly from Lisp and Scheme is that,
-whereas Lisp and Scheme support macro capabilities, in Robin, the macro
-is a **fundamental type**.  Other abstractions, such as function values, are
-built on top of macros.  Macros are "first-class" objects that may exist
-at runtime and can evaluate to other macros.  Therefore, the word "macro"
-has, perhaps, a slightly different meaning in Robin than in Lisp or Scheme.
+whereas Lisp and Scheme support macro capabilities, in Robin, `macro`
+is the fundamental way to define new operators.  Other ways to define
+operators, such as functions, are built on top of `macro`.
 
-They can also be compared to the one-argument `lambda` form from PicoLisp;
-again, however, unlike PicoLisp's variety of `lambda` forms, Robin's
-macros are the *only* abstraction of this kind fundamentally available, and
-other such abstractions *must* be built on top of macros.
+More specifically, what Robin calls "macros" have been called "fexprs"
+in early Lisps, and they can also be compared to PicoLisp's one-argument
+`lambda` form.  Unlike PicoLisp however, there is no variety of
+`lambda` forms in Robin, only the `macro` operator, on top of which all
+other such abstractions must be built.
 
 Whereas a function evaluates each of its arguments to values, and
 binds each of those values to a formal parameter of the function, then
-evaluates the body of the function in that new environment, a macro:
+evaluates the body of the function in that new environment, an
+operator defined by `macro`:
 
-*   binds the literal tail of the list of the macro application to
-    the second formal parameter of the macro (by convention called `args`);
+*   binds the literal tail of the list of the operator application to
+    the first formal parameter of the `macro` (by convention called `args`);
 *   binds a binding alist representing the environment in effect at the
-    point the macro was evaluated to the third formal parameter (by
+    point the operator was evaluated to the second formal parameter (by
     convention called `env`); and
-*   evaluates the body of the macro in that environment.
+*   evaluates the body of the `macro` in that environment.
 
-Macros are defined with the `macro` intrinsic.
+Operators are either intrinsic, or are defined with the `macro` intrinsic.
+(They may be built-in to an implementation as well, but they still need to
+be given a definition in terms of `macro` in any case.)
 
-Macros evaluate to themselves.
+Operators evaluate to themselves.
 
 Operators are represented as an opaque descriptor (TODO this should be the
 metadata of the operator.)
 
     | (macro (args env) args)
-    = <macro>
+    = <operator>
 
 Operators can be applied, and that is the typical use of them.
 
@@ -380,9 +380,9 @@ by whitespace.
 
 Non-empty lists do not evaluate to themselves; rather, they represent a macro
 application.  However, the `literal` macro (whose definition is
-`(macro (a e) (head a))`) may be used to obtain a literal list.
+`(macro (args env) (head args))`) may be used to obtain a literal list.
 
-    | ((macro (a e) (head a)) (7 8)))
+    | ((macro (args env) (head args)) (7 8)))
     = (7 8)
 
 Lists cannot be directly applied, but since a list itself represents an
@@ -443,7 +443,7 @@ we call it a _binding alist_.  The idea is that it is a Robin representation
 of an evaluation environment, where the symbols in the heads of the sublists
 are bound to the values in the tails of the pairs.  Binding alists can be
 created from the environment currently in effect (such as in the case of the
-third argument of a macro) and can be used to change the evaluation
+second argument of a macro) and can be used to change the evaluation
 environment that is in effect (such as in the first argument to `eval`.)
 
 (d) Standard Environments
@@ -462,10 +462,10 @@ list functions, arithmetic functions, etc.)
 
 ### Intrinsics ###
 
-Robin provides 15 intrinsics.  These represent the fundamental functionality
-that is used to evaluate programs, and that cannot be expressed as macros
-written in Robin (not without resorting to meta-circularity, at any rate.)
-All other macros are built up on top of the intrinsics.
+Robin provides 15 intrinsic operators.  These represent the fundamental
+functionality that is used to evaluate programs, and that cannot be expressed
+as macros written in Robin (not without resorting to meta-circularity, at any
+rate.)  All other operators are built up on top of the intrinsics.
 
 This set of intrinsics is not optional — every Robin implementation must
 provide them, or it's not Robin.
@@ -477,22 +477,18 @@ But they are not obligated to; they might evaluate them in a modified
 environment, or not evaluate them at all and treat them as a literal
 S-expression.
 
-Macros that are defined intrinsically does not support every operation
-that defined macro support; for example, they do not support examining
-their internals.  The canonical representation of an intrinsic is the name
-its bound to.
+The canonical representation of an intrinsic operator is the canonical
+name, to which it is bound in the standard environment.  (TODO: this will
+likely change when operators get metadata.)
 
     | head
     = head
 
-All parts of the Robin Expression Language, including intrinsics,
+All parts of the Robin Expression Language, including intrinsic operators,
 can be passed around as values.
 
     | (prepend if (prepend head ()))
     = (if head)
-
-All of the 15 intrinsics are macros, but there is nothing ontologically
-requiring an intrinsic to be a value of macro type.
 
 Each of the 15 intrinsics provided by Robin is specified in its own file
 in the standard library.  Because these are intrinsics, no Robin
@@ -506,9 +502,9 @@ which describe their behaviour are.
 *   [head](../stdlib/head.robin)
 *   [if](../stdlib/if.robin)
 *   [list?](../stdlib/list-p.robin)
-*   [macro?](../stdlib/macro-p.robin)
 *   [macro](../stdlib/macro.robin)
 *   [number?](../stdlib/number-p.robin)
+*   [operator?](../stdlib/operator-p.robin)
 *   [prepend](../stdlib/prepend.robin)
 *   [sign](../stdlib/sign.robin)
 *   [subtract](../stdlib/subtract.robin)
@@ -521,12 +517,13 @@ The "small" library represents indispensible functionality that
 all but the most austere Robin programs would like to be built on.
 
 *   [literal](../stdlib/literal.robin)
-*   [list](../stdlib/list.robin)
-*   [bind](../stdlib/bind.robin)
 *   [env](../stdlib/env.robin)
+*   [bind](../stdlib/bind.robin)
+*   [list](../stdlib/list.robin)
 *   [let](../stdlib/let.robin)
 *   [choose](../stdlib/choose.robin)
 *   [bind-args](../stdlib/bind-args.robin)
+*   [fun](../stdlib/fun.robin)
 
 ### Standard Library ###
 
@@ -719,8 +716,8 @@ a _facility_ with which the reactor wishes to be able to interact.
 The second argument is evaluated, and becomes the _initial state_ of the
 reactor.
 
-The third argument of the `reactor` form is evaluated to obtain a
-macro.  This is called the _transducer_ of the reactor.
+The third argument of the `reactor` form is evaluated to obtain an
+operator.  This is called the _transducer_ of the reactor.
 
 Whenever an event of interest to the reactor occurs, the transducer is
 evaluated, being passed two (pre-evaluated) arguments:
@@ -1069,7 +1066,7 @@ reactor has started, and later even unsubscribe from it as well.
 
 It is not really recommended to implement a system with multiple
 reactors.  It is better to compose a single large reactor out of
-multiple macros.
+multiple operators.
 
 But currently we allow it, so we should say some words about it.
 
