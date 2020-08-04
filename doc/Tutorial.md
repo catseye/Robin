@@ -187,14 +187,38 @@ However, you can write your own macros as well.
 
 The main difference between a function and a macro is that a macro
 does *not* evaluate the arguments that are passed to it.  It receives
-them as unevaluated S-expressions.  It also receives a value representing
-the environment in which it was called, and using this, it can evaluate
-the arguments itself, if it wishes.  In this case it will act a lot like
-a conventional function.  But it doesn't have to do this — it can
-evaluate the arguments in some other environment, or it can treat them
-as unevaluated data.
+them as an unevaluated S-expression.  What it does with this unevaluated
+S-expression is completely up to it.
 
-(To be continued).
+One trivial thing it can do with it is simply return it unmodified.
+This is what the `literal` operator in the standard library does, and
+this is how it's defined:
+
+    (define literal (macro (args env)
+      args))
+
+With this definition in place you can run
+
+    (display (literal (hello world)))
+
+and you'll see
+
+    (hello world)
+
+So `literal` is essentially the same as `quote` in Lisp or Scheme.
+Except, of course, it's not intrinsic to the language.  We wrote a
+macro to do it instead.
+
+A macro defined this way also has access to the environment in which
+it was called (the `env` parameter).  There is also an intrinsic
+operator called `eval` which evaluates a given S-expression in a
+given environment.  With these tools, we can write macros that *do*
+evaluate their arguments, just like functions.
+
+    (define id (macro (args env) (eval env (head args))))
+    (display (id (subtract 80 4)))
+
+If you run this you should see 76.
 
 Reactors
 --------
