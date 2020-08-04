@@ -93,8 +93,6 @@ You'll see the answer you probably expected,
 
     9
 
-(Actually this isn't the way the reference interpreter behaves right now.)
-
 Functions
 ---------
 
@@ -106,10 +104,6 @@ Let's write a factorial function, and compute 5!.
           (self self (subtract n 1))
           1))))
     (display (fact fact 5))
-
-`multiply` is not an intrinsic, so you'll need to run this with
-
-    bin/robin pkg/stdlib.robin fact.robin
 
 Some of this definition is probably what you would expect from a
 recursive definition of factorial in any Lisp-like language.
@@ -130,6 +124,31 @@ This is related to the so-called Y combinator.
 Builtins
 --------
 
+If you run the above factorial program with the reference interpreter,
+
+    bin/robin fact.robin
+
+You'll see a message such as the following:
+
+    (abort (inapplicable-object (abort (unbound-identifier fun))))
+
+You might conclude from this that `fun` is not a built-in — and you'd
+be right!  Unlike basically every other Lisp-like language, in Robin,
+`fun` is a derived form.  It's implemented as a macro in the Standard
+Library.
+
+As you saw above, you can ask the Robin reference interpreter to
+load in the Standard Library before it runs your program:
+
+    bin/robin pkg/stdlib.robin fact.robin
+
+and you'll see the expected
+
+    120
+
+but you may notice that it's not exactly quick to come back with
+that answer.
+
 Even though they are defined in Robin, parts of the Standard Library
 are often implemented in some other language.  This is because, while
 their definition in Robin is intended to be correct and normative, it
@@ -137,21 +156,21 @@ is not necessarily efficient.  If some other, more efficient
 implementation of the operation has the same semantics as the Robin
 definition of the operation, they can be used interchangeably.
 
-In particular, the reference implementation exposes, by default,
+In particular, the reference implementation can expose, if requested,
 a set of "builtins" which map to the "small" subset of the standard
-library.  You can turn them off with:
+library.  You can turn them on with:
 
-    bin/robin --no-builtins pkg/stdlib.robin fact.robin
+    bin/robin --enable-builtins fact.robin
 
-If you do this, you'll see
+When you run this, you'll see it displays the answer much more promptly
+this time.
 
-    Main.hs: uncaught exception: (unbound-identifier fun)
+Note that the reference implementation doesn't implement all of the
+standard library as builtins; and note that there is no conflict if you
+have it process the built-in definitions externally as well.  So this
+will work just as well:
 
-You might conclude from this that `fun` is not a built-in — and you'd
-be right!  Unlike basically every other Lisp-like language, in Robin,
-`fun` is a derived form.  It's implemented as a macro.
-
-(Actually this isn't the way the reference interpreter behaves right now.)
+    bin/robin --enable-builtins pkg/stdlib.robin fact.robin
 
 Macros
 ------

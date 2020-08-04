@@ -29,6 +29,9 @@ For the reference implementation,
     running under Hugs.
 *   The `Macro` type of expressions has been removed,
     and `Builtin` renamed `Operator`.
+*   No builtins are exposed by default.  The `--no-builtins`
+    flag was replaced by the `--enable-builtins` flag, which
+    has the complementary effect.
 
 Robin 0.7
 ---------
