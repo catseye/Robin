@@ -69,8 +69,8 @@ Intrinsics vs. the Standard Library
 -----------------------------------
 
 Expressions in Robin are based on a very simple definition, in which there
-are only 15 intrinsic operators.  `subtract` is one such intrinsic
-operator.  `add`, by contrast, is not an intrinsic operator.  If you create
+are only 15 intrinsic operators.  `[subtract][]` is one such intrinsic
+operator.  `[add][]`, by contrast, is not an intrinsic operator.  If you create
 a program
 
     (define one 1)
@@ -133,7 +133,7 @@ You'll see a message such as the following:
 
     (abort (inapplicable-object (abort (unbound-identifier fun))))
 
-You might conclude from this that `fun` is not a built-in — and you'd
+You might conclude from this that `[fun][]` is not a built-in — and you'd
 be right!  Unlike basically every other Lisp-like language, in Robin,
 `fun` is a derived form.  It's implemented as a macro in the standard
 library.
@@ -183,7 +183,7 @@ standard library.
 You're quite free to simply import the standard library and use `fun`
 without knowing or caring that it's defined as a macro.
 
-However, you can write your own macros as well.
+However, you can write your own macros as well, using `[macro][]`.
 
 The main difference between a function and a macro is that a macro
 does *not* evaluate the arguments that are passed to it.  It receives
@@ -191,8 +191,8 @@ them as an unevaluated S-expression.  What it does with this unevaluated
 S-expression is completely up to it.
 
 One trivial thing it can do with it is simply return it unmodified.
-This is what the `literal` operator in the standard library does, and
-this is how it's defined:
+This is what the `[literal][]` operator in the standard library does,
+and this is how it's defined:
 
     (define literal (macro (args env)
       args))
@@ -211,7 +211,7 @@ macro to do it instead.
 
 A macro defined this way also has access to the environment in which
 it was called (the `env` parameter).  There is also an intrinsic
-operator called `eval` which evaluates a given S-expression in a
+operator called `[eval][]` which evaluates a given S-expression in a
 given environment.  With these tools, we can write macros that *do*
 evaluate their arguments, just like functions.
 
@@ -219,6 +219,10 @@ evaluate their arguments, just like functions.
     (display (id (subtract 80 4)))
 
 If you run this you should see 76.
+
+This distinction between "functions" and "macros" is rather minor,
+and often we don't care to distinguish between them, so we call them
+all "operators".
 
 ### Recursive macros
 
@@ -270,9 +274,9 @@ them already as results of running some of the example code above.
 An abort value is produced whenever an operator encounters an error
 and can't provide a sensible value.
 
-You can also produce one explicitly with the `abort` operator:
+You can also produce one explicitly with the `[abort][]` operator:
 
-    (abort (literal (something went wrong)))
+    (display (abort (literal (something went wrong))))
 
 Also, most operators have the following convenient behaviour:
 _if any of their inputs are an abort value, they produce an abort value_.
@@ -281,6 +285,26 @@ In addition, they usually nest the abort value they received inside the abort
 value they produce.  This leads to a chain of abort values.  This chain is
 similar to the traceback that is provided when an uncaught exception
 occurs in a procedural language such as Python or Java.
+
+It is often quite reasonable to simply let a program evaluate to an
+`abort` value, if there was an error in it — a philosophy sometimes
+known as "[let it crash][]".  However, if it does become important to
+recover from such an error condition, the `[recover][]` operator can be
+used to intercept an abort value and achieve some alternate computation
+instead.
+
+    (display (recover
+      (abort (literal (something went wrong)))
+      value (list value #t)
+      error (list error #f)))
+
+Running this (with stdlib) you should see:
+
+    ((something went wrong) #f)
+
+which, you will note, is not an abort value.
+
+[let it crash]: http://stratus3d.com/blog/2020/01/20/applying-the-let-it-crash-philosophy-outside-erlang/
 
 Reactors
 --------
@@ -291,3 +315,20 @@ the result of an expression.  Users click buttons, shapes get displayed,
 files get written to filesystems.
 
 (To be continued).
+
+[abort][]: ../stdlib/abort.robin
+[recover][]: ../stdlib/recover.robin
+[equal?][]: ../stdlib/equal-p.robin
+[eval][]: ../stdlib/eval.robin
+[head][]: ../stdlib/head.robin
+[if][]: ../stdlib/if.robin
+[list?][]: ../stdlib/list-p.robin
+[macro][]: ../stdlib/macro.robin
+[number?][]: ../stdlib/number-p.robin
+[operator?][]: ../stdlib/operator-p.robin
+[prepend][]: ../stdlib/prepend.robin
+[sign][]: ../stdlib/sign.robin
+[subtract][]: ../stdlib/subtract.robin
+[symbol?][]: ../stdlib/symbol-p.robin
+[tail][]: ../stdlib/tail.robin
+[add][]: ../stdlib/add.robin

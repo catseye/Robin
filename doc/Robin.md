@@ -535,7 +535,7 @@ It's categorized in "packages".
     take-while drop-while first rest last prefix? flatten
 *   *alist*: lookup extend delete
 *   *env*: env? bound? export sandbox unbind unshadow
-*   *arith*: abs add > >= < <= multiply divide remainder
+*   *arith*: abs add gt? gte? lt? lte? multiply divide remainder
 *   *misc*: itoa
 
 Part 2. Robin Toplevel Language
