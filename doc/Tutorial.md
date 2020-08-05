@@ -220,6 +220,10 @@ evaluate their arguments, just like functions.
 
 If you run this you should see 76.
 
+### Recursive macros
+
+(To be written).
+
 Referential transparency
 ------------------------
 
@@ -230,30 +234,53 @@ you can't say `display` inside an expression, and you can't say
 Lisps and Schemes, and it is quite intentional.)
 
 In fact, in Robin, expressions cannot have any side-effects.  This
-is sometimes described as "purely functional".
+is sometimes called being "purely functional".
 
 An implication of this is that all data in Robin is immutable: once
 created, a list or other data structure cannot be changed.  Rather, a
 new data structure, similar to the original data structure but altered
 in some way, must be created.
 
-(This is not quite the same as re-binding a name to a new value.
-In this case, no values have changed.  And in fact the old name
-binding still exists, it is merely _shadowed_ temporarily by the
-new binding.)
-
 We can be even more specific and say that in Robin, all expressions
 are _referentially transparent_.  There are a number of equivalent
 ways to describe what this means.  One that I find intuitive is:
 
-> Evaluation of an operator relies on nothing except its input values,
-> and has an effect on nothing except its output value.
+> Evaluation of an operator is affected by nothing except its input
+> values, and has an effect on nothing except its output value.
 
 (I also find it reminiscent of the saying "Take only photographs,
 leave only footprints", but as to whether that has any mnemonic value,
 well, YMMV.)
 
-(TODO: explain `abort` values.)
+This is a surprisingly strong guarantee.  This is good, because it
+helps immensely in reasoning about programs.  But it can be surprising.
+
+### Abort values
+
+For example, it rules out conventional exception handling, because
+conventionally, exception handling involves setting up an exception
+handler, and when an exception occurs in some operator, this handler
+is invoked.  But this handler is not an input value to the operator.
+So the operator is relying on something that was not passed to it.
+So it is not referentially transparent.
+
+So instead of exceptions, Robin has _abort values_.  You've seen
+them already as results of running some of the example code above.
+
+An abort value is produced whenever an operator encounters an error
+and can't provide a sensible value.
+
+You can also produce one explicitly with the `abort` operator:
+
+    (abort (literal (something went wrong)))
+
+Also, most operators have the following convenient behaviour:
+_if any of their inputs are an abort value, they produce an abort value_.
+
+In addition, they usually nest the abort value they received inside the abort
+value they produce.  This leads to a chain of abort values.  This chain is
+similar to the traceback that is provided when an uncaught exception
+occurs in a procedural language such as Python or Java.
 
 Reactors
 --------
