@@ -28,7 +28,7 @@ update reactor@Reactor{rid=rid, env=env, state=state, body=body} event =
         applyStop (command:commands) =
             (command:applyStop commands)
     in
-        case eval env (List [body, event, state]) id of
+        case eval env (List [body, event, state]) of
             (List (state':commands)) ->
                 (reactor{ state=state' }, applyStop commands)
             expr ->

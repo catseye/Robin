@@ -31,10 +31,10 @@ collect :: [Expr] -> World -> World
 collect [] result = result
 
 collect ((List [Symbol "display", expr]):rest) world@World{ env=env, results=results } =
-    collect rest world{ results=((eval env expr id):results) }
+    collect rest world{ results=((eval env expr):results) }
 
 collect ((List [Symbol "assert", expr]):rest) world@World{ env=env, results=results } =
-    case eval env expr id of
+    case eval env expr of
         Abort expr ->
             world{ results=((Abort expr):results) }
         Boolean False ->
@@ -53,19 +53,19 @@ collect ((List [Symbol "define", sym@(Symbol s), expr]):rest) world@World{ env=e
     case find s env of
         Just _ ->
             let
-                result = eval env expr id
+                result = eval env expr
             in
                 collect rest world{ secondaryDefs=(insert s result secondaryDefs) }
         Nothing ->
             let
-                result = eval env expr id
+                result = eval env expr
             in
                 collect rest world{ env=(insert s result env) }
 
 collect ((List [Symbol "reactor", facExpr, stateExpr, bodyExpr]):rest) world@World{ env=env, reactors=reactors } =
     let
-        state = eval env stateExpr id
-        body = eval env bodyExpr id
+        state = eval env stateExpr
+        body = eval env bodyExpr
         newReactor = Reactor.Reactor{ Reactor.rid=(fromIntegral $ length reactors), Reactor.env=env, Reactor.state=state, Reactor.body=body }
     in
         collect rest world{ reactors=(newReactor:reactors) }

@@ -6,9 +6,9 @@ import Language.Robin.Env (Env, find, insert)
 --
 -- This evaluator is written in continuation-passing style.
 --
--- Every evaluation function has this signature:
+-- The evaluation function has this signature:
 --
---     Env -> Expr -> (Expr -> Expr) -> Expr
+--     Env -> Expr -> Expr
 --
 -- (This is actually the `Evaluable` type from `Robin.Expr`.)
 --
@@ -16,10 +16,6 @@ import Language.Robin.Env (Env, find, insert)
 -- (and modifiable, during `eval`) by the Robin program.
 --
 -- The second argument is the expression to be evaluated.
---
--- The third argument is the continuation.  Once the expression has been
--- evaluated, the continuation will be applied with the result of the
--- evaluation.
 --
 
 eval :: Evaluable
@@ -29,10 +25,10 @@ eval :: Evaluable
 -- value.  Then continue the current continuation with that value.
 --
 
-eval env sym@(Symbol s) cc =
+eval env sym@(Symbol s) =
     case find s env of
         Just value ->
-            cc value
+            value
         Nothing ->
             errMsg "unbound-identifier" sym
 
@@ -42,21 +38,18 @@ eval env sym@(Symbol s) cc =
 -- operator.  We then apply the operator, passing it the tail of the list.
 --
 
-eval env (List (applierExpr:actuals)) cc =
-    eval env applierExpr (\applier ->
-        case applier of
-            Operator _ fun ->
-                fun env (List actuals) cc
-            other ->
-                errMsg "inapplicable-object" other)
+eval env (List (applierExpr:actuals)) =
+    case eval env applierExpr of
+        Operator _ op ->
+            op env (List actuals)
+        other ->
+            errMsg "inapplicable-object" other
 
 --
--- Everything else just evaluates to itself.  Continue the current
--- continuation with that value.
+-- Everything else just evaluates to itself.
 --
 
-eval env e cc =
-    cc e
+eval env e = e
 
 --
 -- Helper functions
@@ -67,11 +60,11 @@ errMsg msg term =
 
 makeMacro :: Expr -> Expr -> Expr -> Evaluable
 makeMacro defineTimeEnv formals body =
-    \callTimeEnv actuals cc ->
+    \callTimeEnv actuals ->
         let
             env = makeMacroEnv callTimeEnv actuals defineTimeEnv formals
         in
-            eval env body cc
+            eval env body
 
 makeMacroEnv callTimeEnv actuals defineTimeEnv argList =
     let

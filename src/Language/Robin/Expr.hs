@@ -9,8 +9,8 @@ import Data.Int
 -- (perhaps unsurprisingly?) to be the type of the evaluator function.
 --
 
-type Evaluable = Expr -> Expr -> (Expr -> Expr) -> Expr
---               env     args    continuation      result
+type Evaluable = Expr -> Expr -> Expr
+--               env     args    result
 
 --
 -- Basic expressions in Robin.  These may be evaluated, or they may be

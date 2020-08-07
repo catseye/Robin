@@ -19,32 +19,35 @@ import Language.Robin.Eval
 -- Helper functions
 --
 
-evalAll env [] acc cc =
-    cc $ List $ reverse acc
-evalAll env (head:tail) acc cc =
-    eval env head (\value ->
-        evalAll env tail (value:acc) cc)
+evalAll env [] acc =
+    List $ reverse acc
+evalAll env (head:tail) acc =
+    let
+        value = (eval env head)
+    in
+        evalAll env tail (value:acc)
 
---          formals   actuals   origActuals env    continuation
-evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env -> (Env -> Expr) -> Expr
-evalArgs [] [] _ _ cc =
-    cc empty
-evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env cc =
-    eval env actual (\value ->
-        evalArgs formals actuals origActuals env (\nenv ->
-            cc $ insert formal value nenv))
-evalArgs _ _ origActuals env cc =
+--          formals   actuals   origActuals env
+evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env -> Expr
+evalArgs [] [] _ _ =
+    empty
+evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env =
+    let
+        value = eval env actual
+        nenv = evalArgs formals actuals origActuals env
+    in
+        insert formal value nenv
+evalArgs _ _ origActuals env =
     errMsg "illegal-arguments" $ List origActuals
 
 
-evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
-evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
-    eval env xexpr (\x ->
-        assertNumber env x (\(Number xv) ->
-            eval env yexpr (\y ->
-                assertNumber env y (\(Number yv) ->
-                    (fn xv yv cc)))))
-evalTwoNumbers fn env other cc = errMsg "illegal-arguments" other
+evalTwoNumbers :: (Int32 -> Int32 -> Expr) -> Evaluable
+evalTwoNumbers fn env (List [xexpr, yexpr]) =
+    case (eval env xexpr, eval env yexpr) of
+        (Number xv, Number yv) -> fn xv yv
+        (other, Number yv)     -> errMsg "expected-number" other
+        (_, other)             -> errMsg "expected-number" other
+evalTwoNumbers fn env other = errMsg "illegal-arguments" other
 
 --
 -- `Small`
@@ -55,66 +58,76 @@ evalTwoNumbers fn env other cc = errMsg "illegal-arguments" other
 --
 
 literal :: Evaluable
-literal env (List (expr:_)) cc =
-    cc expr
-literal env other cc = errMsg "illegal-arguments" other
+literal env (List (expr:_)) = expr
+literal env other = errMsg "illegal-arguments" other
 
 list :: Evaluable
-list env (List exprs) cc =
-    evalAll env exprs [] cc
+list env (List exprs) =
+    evalAll env exprs []
 
 env_ :: Evaluable
-env_ env (List _) cc =
-    cc $ env
+env_ env (List _) = env
 
 choose :: Evaluable
-choose env (List [(List [(Symbol "else"), branch])]) cc =
-    eval env branch cc
-choose env (List ((List [test, branch]):rest)) cc =
-    eval env test (\x ->
-        case x of
-            Boolean True ->
-                eval env branch cc
-            Boolean False ->
-                choose env (List rest) cc)
-choose env other cc = errMsg "illegal-arguments" other
+choose env (List [(List [(Symbol "else"), branch])]) =
+    eval env branch
+choose env (List ((List [test, branch]):rest)) =
+    case eval env test of
+        Boolean True ->
+            eval env branch
+        Boolean False ->
+            choose env (List rest)
+choose env other = errMsg "illegal-arguments" other
 
 bind :: Evaluable
-bind env (List [(Symbol name), expr, body]) cc =
-    eval env expr (\value ->
-        eval (insert name value env) body cc)
-bind env other cc = errMsg "illegal-arguments" other
+bind env (List [(Symbol name), expr, body]) =
+    let
+        value = eval env expr
+        env' = insert name value env
+    in
+        eval env' body
+bind env other = errMsg "illegal-arguments" other
 
 let_ :: Evaluable
-let_ env (List ((List bindings):body:_)) cc =
-    bindAll bindings env (\env' ->
-        eval env' body cc)
-  where
-    bindAll [] env cc =
-        cc env
-    bindAll (List ((Symbol name):sexpr:_):rest) env cc =
-        eval env sexpr (\value ->
-            bindAll rest (insert name value env) cc)
-    bindAll (other:rest) env cc =
-        errMsg "illegal-binding" other
-let_ env other cc = errMsg "illegal-arguments" other
+let_ env (List ((List bindings):body:_)) =
+    let
+        env' = bindAll bindings env
+    in
+        eval env' body
+    where
+        bindAll [] env = env
+        bindAll (List ((Symbol name):expr:_):rest) env =
+            let
+                value = eval env expr
+                env' = insert name value env
+            in
+                bindAll rest env'
+        bindAll (other:rest) env =
+            errMsg "illegal-binding" other
+let_ env other = errMsg "illegal-arguments" other
 
 bindArgs :: Evaluable
-bindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
-    eval env givenArgs (\(List actuals) ->
-        eval env givenEnvExpr (\outerEnvExpr ->
-            evalArgs formals actuals actuals outerEnvExpr (\argEnv ->
-                eval (mergeEnvs argEnv env) body cc)))
-bindArgs env other cc = errMsg "illegal-arguments" other
+bindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) =
+    let
+        List actuals = eval env givenArgs
+        outerEnvExpr = eval env givenEnvExpr
+        argEnv = evalArgs formals actuals actuals outerEnvExpr
+    in
+        eval (mergeEnvs argEnv env) body
+bindArgs env other = errMsg "illegal-arguments" other
 
 fun :: Evaluable
-fun closedEnv (List [(List formals), body]) cc =
-    cc $ Operator "<lambda>" fun
-  where
-    fun env (List actuals) cc =
-        evalArgs formals actuals actuals env (\argEnv ->
-            eval (mergeEnvs argEnv closedEnv) body cc)
-fun env other cc = errMsg "illegal-arguments" other
+fun closedEnv (List [(List formals), body]) =
+    let
+        fun env (List actuals) =
+            let
+                argEnv = evalArgs formals actuals actuals env
+                env' = mergeEnvs argEnv closedEnv
+            in
+                eval env' body
+    in
+        Operator "<lambda>" fun
+fun env other = errMsg "illegal-arguments" other
 
 --
 -- `Arith`
@@ -125,37 +138,39 @@ fun env other cc = errMsg "illegal-arguments" other
 --
 
 gtP :: Evaluable
-gtP = evalTwoNumbers (\x y cc -> cc $ Boolean (x > y))
+gtP = evalTwoNumbers (\x y -> Boolean (x > y))
 
 gteP :: Evaluable
-gteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x >= y))
+gteP = evalTwoNumbers (\x y -> Boolean (x >= y))
 
 ltP :: Evaluable
-ltP = evalTwoNumbers (\x y cc -> cc $ Boolean (x < y))
+ltP = evalTwoNumbers (\x y -> Boolean (x < y))
 
 lteP :: Evaluable
-lteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
+lteP = evalTwoNumbers (\x y -> Boolean (x <= y))
 
-robinAbs :: Evaluable
-robinAbs env (List [expr]) cc =
-    eval env expr (\x -> assertNumber env x (\(Number xv) -> cc (Number $ abs xv)))
-robinAbs env other cc = errMsg "illegal-arguments" other
+abs_ :: Evaluable
+abs_ env (List [expr]) =
+    case eval env expr of
+        Number xv -> Number $ abs xv
+        other     -> errMsg "expected-number" other
+abs_ env other = errMsg "illegal-arguments" other
 
 add :: Evaluable
-add = evalTwoNumbers (\x y cc -> cc $ Number (x + y))
+add = evalTwoNumbers (\x y -> Number (x + y))
 
 multiply :: Evaluable
-multiply = evalTwoNumbers (\x y cc -> cc $ Number (x * y))
+multiply = evalTwoNumbers (\x y -> Number (x * y))
 
 divide :: Evaluable
-divide = evalTwoNumbers (\x y cc -> case y of
+divide = evalTwoNumbers (\x y -> case y of
                                  0 -> errMsg "division-by-zero" $ Number x
-                                 _ -> cc $ Number (x `div` y))
+                                 _ -> Number (x `div` y))
 
 remainder :: Evaluable
-remainder = evalTwoNumbers (\x y cc -> case y of
+remainder = evalTwoNumbers (\x y -> case y of
                                  0 -> errMsg "division-by-zero" $ Number x
-                                 _ -> cc $ Number (abs (x `mod` y)))
+                                 _ -> Number (abs (x `mod` y)))
 
 --
 -- Mapping of names to our functions, providing an evaluation environment.
@@ -178,7 +193,7 @@ robinBuiltins = fromList $ map (\(name,bif) -> (name, Operator name bif))
         ("lt?",       ltP),
         ("lte?",      lteP),
 
-        ("abs",       robinAbs),
+        ("abs",       abs_),
         ("add",       add),
         ("multiply",  multiply),
         ("divide",    divide),
