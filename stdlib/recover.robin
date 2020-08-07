@@ -87,16 +87,14 @@ handle the abort value it returned.
     | (recover error (list error #f) 42 43 44 45)
     ? abort (illegal-arguments (error (list error #f) 42 43 44 45))
 
-    -> Tests for functionality "Evaluate Robin Expression (with Small)"
-
 `recover` handles abort values, and this does not include the environment
 in which the abort value was produced.
 
     | (recover
     |   (bind flop 1
     |     (abort 2))
-    |   value (list 123 value)
-    |   error (list flop error))
+    |   value (prepend 123 (prepend value ()))
+    |   error (prepend flop (prepend error ())))
     ? abort (unbound-identifier flop)
 
 `recover` handles abort values, and this does not include the environment

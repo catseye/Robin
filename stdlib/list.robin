@@ -21,6 +21,12 @@ Unlike `literal`, `list` does evaluate its arguments, all of them.
     | (list (literal x) (literal y))
     = (x y)
 
+Attempting to construct a list containing an `abort` value will produce an
+`abort` value.
+
+    | (list (literal x) (abort 999))
+    ? abort 999
+
 '<<SPEC'
 
 (define list (macro (args env)
