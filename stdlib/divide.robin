@@ -7,42 +7,42 @@ result of integer division of the first number by the second.  Integer
 division computes by what integer the second number can be multiplied
 to make it as big as possible without exceeding the first number.
 
-    |   (divide 100 3)
+    | (divide 100 3)
     = 33
 
-    |   (divide (subtract 0 100) 3)
+    | (divide (subtract 0 100) 3)
     = -34
 
-    |   (divide 100 (subtract 0 3))
+    | (divide 100 (subtract 0 3))
     = -34
 
-    |   (divide 33 33)
+    | (divide 33 33)
     = 1
 
-    |   (divide 33 34)
+    | (divide 33 34)
     = 0
 
-    |   (divide 10 0)
+    | (divide 10 0)
     ? abort (division-by-zero 10)
 
 Division by zero is undefined, and an abort value will be produced.
 
-    |   (divide 10 0)
+    | (divide 10 0)
     ? abort (division-by-zero 10)
 
-`div` expects exactly two arguments, both numbers.
+`divide` expects exactly two arguments, both numbers.
 
-    |   (divide 14)
+    | (divide 14)
     ? abort (illegal-arguments (14))
 
-    |   (divide 14 23 57)
+    | (divide 14 23 57)
     ? abort (illegal-arguments (14 23 57))
 
-    |   (divide 14 #t)
+    | (divide 14 #t)
     ? abort (expected-number #t)
 
-    |   (divide #t 51)
-    ? abort (expected-number #t)
+    /| (divide #t 51)
+    /? abort (expected-number #t)
 
 '<<SPEC'
 
