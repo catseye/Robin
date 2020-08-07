@@ -29,7 +29,7 @@ environment the fifth argument is evaluated.
     |   error (list error #f))
     = ((nasty-value 999999) #f)
 
-If an abort is returned from the body of a macro that is applied
+If an abort value is returned from the body of a macro that is applied
 in the context of a `recover`, it will still be recovered.
 
     | (recover
@@ -37,6 +37,15 @@ in the context of a `recover`, it will still be recovered.
     |   value (list value #t)
     |   error (list error #f))
     = ((nasty-value 1111) #f)
+
+If an abort value is returned from an intrinsic operator, it will still
+be recovered.
+
+    | (recover
+    |   (subtract 4 (literal joe))
+    |   value (list value #t)
+    |   error (list error #f))
+    = ((expected-number joe) #f)
 
 Abort values are just values, so the innermost `recover` will handle
 an abort value.
