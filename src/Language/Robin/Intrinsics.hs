@@ -23,7 +23,6 @@ prepend :: Evaluable
 prepend env (List [e1, e2]) =
     case (eval env e1, eval env e2) of
         ((Abort a), _) -> Abort a
-        (_, (Abort a)) -> Abort a
         (x1, List x2)  -> List (x1:x2)
         (_, other)     -> errMsg "expected-list" other
 prepend env other = errMsg "illegal-arguments" other

@@ -34,6 +34,9 @@ Attempting to prepend an `abort` value to a list will produce an
     | (prepend (abort 999) (prepend #f ()))
     ? abort 999
 
+    | (prepend #t (abort 999))
+    ? abort 999
+
 `prepend` is basically equivalent to Scheme's `cons`, except for the
 requirement that the second argument be a list.
 
