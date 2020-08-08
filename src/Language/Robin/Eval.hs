@@ -55,9 +55,6 @@ eval env e = e
 -- Helper functions
 --
 
-errMsg msg term =
-    Abort (List [(Symbol msg), term])
-
 makeMacro :: Expr -> Expr -> Expr -> Evaluable
 makeMacro defineTimeEnv formals body =
     \callTimeEnv actuals ->
