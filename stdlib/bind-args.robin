@@ -74,7 +74,7 @@ become clear here: typically you would just pass the macro's `args` and
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add 1 n))
-    ? abort (unbound-identifier n)
+    ? abort (unbound-identifier (n
 
 '<<SPEC'
 

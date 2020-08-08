@@ -16,7 +16,7 @@ evaluates that S-expression in the given environment.
     | (eval () (literal
     |   (prepend (literal a)
     |             (prepend (literal b) ()))))
-    ? abort (unbound-identifier prepend)
+    ? (abort (inapplicable-object (abort (unbound-identifier (prepend ())))))
 
 Something fairly complicated that uses `bind`...?
 
@@ -47,7 +47,7 @@ tries to look up things in that environment.
     | (eval 103 (literal
     |   (prepend (literal a)
     |            (prepend (literal b) ()))))
-    ? abort (unbound-identifier prepend)
+    ? (abort (inapplicable-object (abort (unbound-identifier (prepend 103)))))
 
 Evaluation expects the contents of the list which makes up the
 environment to be two-element lists.  Any list of some other
@@ -56,7 +56,7 @@ format will not work for looking things up.
     | (eval (prepend #f ()) (literal
     |   (prepend (literal a)
     |            (prepend (literal b) ()))))
-    ? abort (unbound-identifier prepend)
+    ? (abort (inapplicable-object (abort (unbound-identifier (prepend (#f))))))
 
 Evaluation expects the head of each sublist in the list which makes up the
 environment to be a symbol.  Any list of some other
@@ -65,7 +65,7 @@ format will not work for looking things up.
     | (eval (prepend (prepend 7 (prepend #f ())) ()) (literal
     |   (prepend (literal a)
     |            (prepend (literal b) ()))))
-    ? abort (unbound-identifier prepend)
+    ? (abort (inapplicable-object (abort (unbound-identifier (prepend ((7 #f)))))))
 
 `eval` expects exactly two arguments.
 

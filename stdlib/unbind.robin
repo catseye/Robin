@@ -6,7 +6,7 @@
 second argument in that reduced environment.
 
     | (unbind if (if #t (literal x) (literal y)))
-    ? abort (unbound-identifier if)
+    ? abort (unbound-identifier (if
 
 If the identifier doesn't exist in the environment, no change is made to
 the environment.
@@ -22,7 +22,7 @@ in effect.
     |   (let ((x 8))
     |     (unbind x
     |       x)))
-    ? abort (unbound-identifier x)
+    ? abort (unbound-identifier (x
 
 '<<SPEC'
 

@@ -12,7 +12,7 @@ for the listed identifiers have been unbound.
 
     | (sandbox (prepend tail)
     |   (head (prepend 8 (prepend 9 ()))))
-    ? abort (unbound-identifier head)
+    ? abort (unbound-identifier (head
 
 '<<SPEC'
 

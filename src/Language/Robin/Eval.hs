@@ -30,12 +30,12 @@ eval env sym@(Symbol s) =
         Just value ->
             value
         Nothing ->
-            errMsg "unbound-identifier" sym
+            errMsg "unbound-identifier" (List [sym, env])
 
 --
--- Evaluating a list means we must make several evaluations.  We
--- evaluate the head to obtain something to apply, which must be an
--- operator.  We then apply the operator, passing it the tail of the list.
+-- When evaluating a list, we evaluate the head to obtain something to apply,
+-- which must be an operator.  We then apply the operator, passing it the
+-- tail of the list.
 --
 
 eval env (List (applierExpr:actuals)) =

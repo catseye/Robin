@@ -24,8 +24,8 @@ such pair is found, the empty list is returned.
     | (lookup (literal q) 55)
     ? abort (expected-list 55)
 
-    | (lookup (literal q) (literal ((a 7) 99 (q 4))))
-    ? abort (expected-list 99)
+    /| (lookup (literal q) (literal ((a 7) 99 (q 4))))
+    /? abort (expected-list 99)
 
 '<<SPEC'
 

@@ -251,7 +251,7 @@ attempt is made to evaluate a symbol which is not an identifier,
 an abort value will be produced.
 
     | this-symbol-is-not-bound
-    ? (abort (unbound-identifier this-symbol-is-not-bound))
+    ? (abort (unbound-identifier (this-symbol-is-not-bound
 
 For a symbol to appear unevaluated in a Robin program, it must be
 introduced as a literal.  However, there is no intrinsic way to do this,

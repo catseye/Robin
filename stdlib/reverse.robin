@@ -6,10 +6,10 @@
 is the same as the given list in every respect except that the order of
 the elements is reversed.
 
-    |   (reverse (literal (1 2 3 4 5)))
+    | (reverse (literal (1 2 3 4 5)))
     = (5 4 3 2 1)
 
-    |   (reverse (literal fairies-wear-boots))
+    | (reverse (literal fairies-wear-boots))
     ? abort (expected-list fairies-wear-boots)
 
 '<<SPEC'

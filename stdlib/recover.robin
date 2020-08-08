@@ -95,7 +95,7 @@ in which the abort value was produced.
     |     (abort 2))
     |   value (prepend 123 (prepend value ()))
     |   error (prepend flop (prepend error ())))
-    ? abort (unbound-identifier flop)
+    ? (abort (unbound-identifier (flop
 
 `recover` handles abort values, and this does not include the environment
 in which the abort value was produced.
