@@ -22,9 +22,15 @@ Robin 0.8
     is now based on that of `bind` so it inherits this behaviour.
 *   The documentation for the alist functions in the standard
     library was improved.
+*   When a reactor produces an abort value, it does not cause
+    a further event reporting the abort value to occur.
 
 For the reference implementation,
 
+*   When exceptions were replaced with abort values in 0.6, the
+    evaluator wasn't fully adapted to handling abort values in
+    all places.  Evaluator support has been changed to make it
+    harder to forget to check for the abort value when needed.
 *   Fixed recent import changes which prevented it from
     running under Hugs.
 *   The `Macro` type of expressions has been removed,
