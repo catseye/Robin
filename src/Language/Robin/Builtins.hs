@@ -87,16 +87,16 @@ bind env other cc = errMsg cc "illegal-arguments" other
 
 let_ :: Evaluable
 let_ env (List ((List bindings):body:_)) cc =
-    bindAll bindings env (\env' ->
+    bindAll cc bindings env (\env' ->
         eval env' body cc)
   where
-    bindAll [] env cc =
+    bindAll ecc [] env cc =
         cc env
-    bindAll (List ((Symbol name):sexpr:_):rest) env cc =
-        evalB cc env sexpr (\value ->
-            bindAll rest (insert name value env) cc)
-    bindAll (other:rest) env cc =
-        errMsg cc "illegal-binding" other
+    bindAll ecc (List ((Symbol name):sexpr:_):rest) env cc =
+        evalB ecc env sexpr (\value ->
+            bindAll ecc rest (insert name value env) cc)
+    bindAll ecc (other:rest) env cc =
+        errMsg ecc "illegal-binding" other
 let_ env other cc = errMsg cc "illegal-arguments" other
 
 bindArgs :: Evaluable
@@ -136,10 +136,10 @@ ltP = evalTwoNumbers (\x y cc -> cc $ Boolean (x < y))
 lteP :: Evaluable
 lteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
 
-robinAbs :: Evaluable
-robinAbs env (List [expr]) cc =
+abs_ :: Evaluable
+abs_ env (List [expr]) cc =
     eval env expr (\x -> assertNumber (cc) env x (\(Number xv) -> cc (Number $ abs xv)))
-robinAbs env other cc = errMsg cc "illegal-arguments" other
+abs_ env other cc = errMsg cc "illegal-arguments" other
 
 add :: Evaluable
 add = evalTwoNumbers (\x y cc -> cc $ Number (x + y))
@@ -178,7 +178,7 @@ robinBuiltins = fromList $ map (\(name,bif) -> (name, Operator name bif))
         ("lt?",       ltP),
         ("lte?",      lteP),
 
-        ("abs",       robinAbs),
+        ("abs",       abs_),
         ("add",       add),
         ("multiply",  multiply),
         ("divide",    divide),
