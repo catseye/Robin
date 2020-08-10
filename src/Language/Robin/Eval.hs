@@ -97,13 +97,6 @@ makeMacroEnv callTimeEnv actuals defineTimeEnv argList =
 -- Assertions
 --
 
-assert ecc env pred msg expr cc =
-    case pred expr of
-        True -> cc expr
-        False -> errMsg ecc msg expr
-
-assertList ecc env expr = assert ecc env (isList) "expected-list" expr
-
 evalExpect pred msg ecc env expr cc =
    eval env expr (\value ->
        case pred value of

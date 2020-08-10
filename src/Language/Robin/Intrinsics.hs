@@ -7,20 +7,18 @@ import Language.Robin.Eval
 
 head_ :: Evaluable
 head_ env (List [expr]) cc =
-    evalB cc env expr (\x ->
-        assertList cc env x (\val ->
-            case val of
-                List (a:_) -> cc a
-                other -> errMsg cc "expected-list" other))
+    evalToList cc env expr (\val ->
+       case val of
+           List (a:_) -> cc a
+           other -> errMsg cc "expected-list" other)  -- FIXME: should really be "expected-nonempty-list"
 head_ env other cc = errMsg cc "illegal-arguments" other
 
 tail_ :: Evaluable
 tail_ env (List [expr]) cc =
-    evalB cc env expr (\x ->
-        assertList cc env x (\val ->
-            case val of
-                List (_:b) -> cc (List b)
-                other -> errMsg cc "expected-list" other))
+    evalToList cc env expr (\val ->
+        case val of
+            List (_:b) -> cc (List b)
+            other -> errMsg cc "expected-list" other)
 tail_ env other cc = errMsg cc "illegal-arguments" other
 
 prepend :: Evaluable
