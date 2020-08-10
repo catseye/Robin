@@ -59,6 +59,16 @@ eval env e cc =
     cc e
 
 --
+-- Evaluate, handling abort values
+--
+
+evalB ecc env e cc =
+    eval env e (\value ->
+        case value of
+            Abort _ -> ecc value
+            _       -> cc value)
+
+--
 -- Helper functions
 --
 

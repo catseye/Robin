@@ -7,8 +7,8 @@ import Language.Robin.Eval
 
 head_ :: Evaluable
 head_ env (List [expr]) cc =
-    eval env expr (\x ->
-        assertList (cc) env x (\val ->
+    evalB cc env expr (\x ->
+        assertList cc env x (\val ->
             case val of
                 List (a:_) -> cc a
                 other -> errMsg cc "expected-list" other))
@@ -16,8 +16,8 @@ head_ env other cc = errMsg cc "illegal-arguments" other
 
 tail_ :: Evaluable
 tail_ env (List [expr]) cc =
-    eval env expr (\x ->
-        assertList (cc) env x (\val ->
+    evalB cc env expr (\x ->
+        assertList cc env x (\val ->
             case val of
                 List (_:b) -> cc (List b)
                 other -> errMsg cc "expected-list" other))
@@ -25,22 +25,20 @@ tail_ env other cc = errMsg cc "illegal-arguments" other
 
 prepend :: Evaluable
 prepend env (List [e1, e2]) cc =
-    eval env e1 (\x1 ->
-        case x1 of
-            Abort _ -> cc x1
-            _ -> eval env e2 (\val ->
-                    case val of
-                        List x2 -> cc $ List (x1:x2)
-                        other -> errMsg cc "expected-list" other))
+    evalB cc env e1 (\x1 ->
+        evalB cc env e2 (\val ->
+            case val of
+                List x2 -> cc $ List (x1:x2)
+                other -> errMsg cc "expected-list" other))
 prepend env other cc = errMsg cc "illegal-arguments" other
 
 equalP :: Evaluable
 equalP env (List [e1, e2]) cc =
-    eval env e1 (\x1 -> eval env e2 (\x2 -> cc $ Boolean (x1 == x2)))
+    evalB cc env e1 (\x1 -> evalB cc env e2 (\x2 -> cc $ Boolean (x1 == x2)))
 equalP env other cc = errMsg cc "illegal-arguments" other
 
 predP pred env (List [expr]) cc =
-    eval env expr (\x -> cc $ Boolean $ pred x)
+    evalB cc env expr (\x -> cc $ Boolean $ pred x)
 predP pred env other cc = errMsg cc "illegal-arguments" other
 
 symbolP = predP isSymbol
@@ -62,22 +60,22 @@ sign env (List [expr]) cc =
     let
         sgn x = if x == 0 then 0 else if x < 0 then -1 else 1
     in
-        eval env expr (\x ->
+        evalB cc env expr (\x ->
             assertNumber cc env x (\(Number xv) ->
                 cc $ Number $ sgn xv))
 sign env other cc = errMsg cc "illegal-arguments" other
 
 if_ :: Evaluable
 if_ env (List [test, texpr, fexpr]) cc =
-    eval env test (\x ->
+    evalB cc env test (\x ->
         assertBoolean cc env x (\(Boolean b) ->
             if b then eval env texpr cc else eval env fexpr cc))
 if_ env other cc = errMsg cc "illegal-arguments" other
 
 eval_ :: Evaluable
 eval_ env (List [envlist, form]) cc =
-    eval env envlist (\newEnvVal ->
-        eval env form (\body ->
+    evalB cc env envlist (\newEnvVal ->
+        evalB cc env form (\body ->
             eval newEnvVal body cc))
 eval_ env other cc = errMsg cc "illegal-arguments" other
 
