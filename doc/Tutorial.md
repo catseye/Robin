@@ -134,8 +134,8 @@ You'll see a message such as the following:
     (abort (inapplicable-object (abort (unbound-identifier fun))))
 
 You might conclude from this that [`fun`][] is not a built-in — and you'd
-be right!  Unlike basically every other Lisp-like language, in Robin,
-`fun` is a derived form.  It's implemented as a macro in the standard
+be right!  Unlike almost every other Lisp-like language, in Robin,
+`fun` is implemented as a macro.  It can be imported from the standard
 library.
 
 As you saw above, you can ask the Robin reference interpreter to
@@ -332,3 +332,6 @@ files get written to filesystems.
 [`symbol?`]: ../stdlib/symbol-p.robin
 [`tail`]: ../stdlib/tail.robin
 [`add`]: ../stdlib/add.robin
+[`fun`]: ../stdlib/fun.robin
+[`literal`]: ../stdlib/literal.robin
+[`abort`]: ../stdlib/abort.robin
