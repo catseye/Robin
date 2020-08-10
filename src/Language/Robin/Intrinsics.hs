@@ -26,10 +26,7 @@ tail_ env other cc = errMsg cc "illegal-arguments" other
 prepend :: Evaluable
 prepend env (List [e1, e2]) cc =
     evalB cc env e1 (\x1 ->
-        evalB cc env e2 (\val ->
-            case val of
-                List x2 -> cc $ List (x1:x2)
-                other -> errMsg cc "expected-list" other))
+        evalToList cc env e2 (\(List x2) -> cc $ List (x1:x2)))
 prepend env other cc = errMsg cc "illegal-arguments" other
 
 equalP :: Evaluable
@@ -47,29 +44,21 @@ operatorP = predP isOperator
 numberP = predP isNumber
 
 subtract_ :: Evaluable
-subtract_ env (List [xexpr, yexpr]) cc =
-    eval env xexpr (\x ->
-        assertNumber cc env x (\(Number xv) ->
-            eval env yexpr (\y ->
-                assertNumber cc env y (\(Number yv) ->
-                    cc (Number (xv - yv))))))
-subtract_ env other cc = errMsg cc "illegal-arguments" other
+subtract_ = evalTwoNumbers (\x y cc -> cc $ Number (x - y))
 
 sign :: Evaluable
 sign env (List [expr]) cc =
     let
         sgn x = if x == 0 then 0 else if x < 0 then -1 else 1
     in
-        evalB cc env expr (\x ->
-            assertNumber cc env x (\(Number xv) ->
-                cc $ Number $ sgn xv))
+        evalToNumber cc env expr (\(Number xv) ->
+            cc $ Number $ sgn xv)
 sign env other cc = errMsg cc "illegal-arguments" other
 
 if_ :: Evaluable
-if_ env (List [test, texpr, fexpr]) cc =
-    evalB cc env test (\x ->
-        assertBoolean cc env x (\(Boolean b) ->
-            if b then eval env texpr cc else eval env fexpr cc))
+if_ env (List [testExpr, trueExpr, falseExpr]) cc =
+    evalToBoolean cc env testExpr (\(Boolean b) ->
+        if b then eval env trueExpr cc else eval env falseExpr cc)
 if_ env other cc = errMsg cc "illegal-arguments" other
 
 eval_ :: Evaluable

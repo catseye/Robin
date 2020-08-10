@@ -1,5 +1,7 @@
 module Language.Robin.Eval where
 
+import Data.Int
+
 import Language.Robin.Expr
 import Language.Robin.Env (Env, find, insert)
 
@@ -100,8 +102,21 @@ assert ecc env pred msg expr cc =
         True -> cc expr
         False -> errMsg ecc msg expr
 
-assertSymbol ecc env expr = assert ecc env (isSymbol) "expected-symbol" expr
-assertBoolean ecc env expr = assert ecc env (isBoolean) "expected-boolean" expr
 assertList ecc env expr = assert ecc env (isList) "expected-list" expr
-assertNumber ecc env expr = assert ecc env (isNumber) "expected-number" expr
-assertOperator ecc env expr = assert ecc env (isOperator) "expected-operator" expr
+
+evalExpect pred msg ecc env expr cc =
+   eval env expr (\value ->
+       case pred value of
+           True -> cc value
+           False -> errMsg ecc msg value)
+
+evalToBoolean = evalExpect (isBoolean) "expected-boolean"
+evalToList = evalExpect (isList) "expected-list"
+evalToNumber = evalExpect (isNumber) "expected-number"
+
+evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
+evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
+    evalToNumber cc env xexpr (\(Number xv) ->
+        evalToNumber cc env yexpr (\(Number yv) ->
+            (fn xv yv cc)))
+evalTwoNumbers fn env other cc = errMsg cc "illegal-arguments" other

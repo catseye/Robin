@@ -1,7 +1,5 @@
 module Language.Robin.Builtins where
 
-import Data.Int
-
 import Language.Robin.Expr
 import Language.Robin.Env (Env, fromList, mergeEnvs, empty, insert)
 import Language.Robin.Eval
@@ -35,16 +33,6 @@ evalArgs ecc ((Symbol formal):formals) (actual:actuals) origActuals env cc =
             cc $ insert formal value nenv))
 evalArgs ecc _ _ origActuals env _ =
     errMsg ecc "illegal-arguments" $ List origActuals
-
-
-evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
-evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
-    evalB cc env xexpr (\x ->
-        assertNumber cc env x (\(Number xv) ->
-            evalB cc env yexpr (\y ->
-                assertNumber cc env y (\(Number yv) ->
-                    (fn xv yv cc)))))
-evalTwoNumbers fn env other cc = errMsg cc "illegal-arguments" other
 
 --
 -- `Small`
@@ -138,7 +126,7 @@ lteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
 
 abs_ :: Evaluable
 abs_ env (List [expr]) cc =
-    eval env expr (\x -> assertNumber (cc) env x (\(Number xv) -> cc (Number $ abs xv)))
+    evalToNumber cc env expr (\(Number xv) -> cc $ Number $ abs xv)
 abs_ env other cc = errMsg cc "illegal-arguments" other
 
 add :: Evaluable
