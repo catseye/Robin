@@ -42,8 +42,8 @@ abort value will be produced.
     | (remainder 14 #t)
     ? abort (expected-number #t)
 
-    /| (remainder #t 51)
-    /? abort (expected-number #t)
+    | (remainder #t 51)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 

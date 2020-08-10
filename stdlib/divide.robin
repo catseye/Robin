@@ -41,8 +41,8 @@ Division by zero is undefined, and an abort value will be produced.
     | (divide 14 #t)
     ? abort (expected-number #t)
 
-    /| (divide #t 51)
-    /? abort (expected-number #t)
+    | (divide #t 51)
+    ? abort (expected-number #t)
 
 '<<SPEC'
 
