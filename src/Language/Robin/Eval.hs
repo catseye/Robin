@@ -34,7 +34,7 @@ eval env sym@(Symbol s) cc =
         Just value ->
             cc value
         Nothing ->
-            errMsg "unbound-identifier" sym
+            errMsg cc "unbound-identifier" sym
 
 --
 -- Evaluating a list means we must make several evaluations.  We
@@ -48,7 +48,7 @@ eval env (List (applierExpr:actuals)) cc =
             Operator _ fun ->
                 fun env (List actuals) cc
             other ->
-                errMsg "inapplicable-object" other)
+                errMsg cc "inapplicable-object" other)
 
 --
 -- Everything else just evaluates to itself.  Continue the current
@@ -62,8 +62,7 @@ eval env e cc =
 -- Helper functions
 --
 
-errMsg msg term =
-    Abort (List [(Symbol msg), term])
+errMsg cc msg term = cc $ abortVal msg term
 
 makeMacro :: Expr -> Expr -> Expr -> Evaluable
 makeMacro defineTimeEnv formals body =
@@ -86,13 +85,13 @@ makeMacroEnv callTimeEnv actuals defineTimeEnv argList =
 -- Assertions
 --
 
-assert env pred msg expr cc =
+assert ecc env pred msg expr cc =
     case pred expr of
         True -> cc expr
-        False -> errMsg msg expr
+        False -> errMsg ecc msg expr
 
-assertSymbol env = assert env (isSymbol) "expected-symbol"
-assertBoolean env = assert env (isBoolean) "expected-boolean"
-assertList env = assert env (isList) "expected-list"
-assertNumber env = assert env (isNumber) "expected-number"
-assertOperator env = assert env (isOperator) "expected-operator"
+assertSymbol ecc env expr = assert ecc env (isSymbol) "expected-symbol" expr
+assertBoolean ecc env expr = assert ecc env (isBoolean) "expected-boolean" expr
+assertList ecc env expr = assert ecc env (isList) "expected-list" expr
+assertNumber ecc env expr = assert ecc env (isNumber) "expected-number" expr
+assertOperator ecc env expr = assert ecc env (isOperator) "expected-operator" expr

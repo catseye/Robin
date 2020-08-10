@@ -8,8 +8,12 @@ if [ "${APPLIANCES}x" = "x" ]; then
   APPLIANCES="appliances/robin.md appliances/robin-no-builtins.md"
 fi
 
+if [ "${FALDERAL}x" = "x" ]; then
+  FALDERAL="falderal -b"
+fi
+
 echo "Running tests on core semantics..."
-falderal -b $APPLIANCES doc/Robin.md || exit 1
+$FALDERAL $APPLIANCES doc/Robin.md || exit 1
 
 if [ "${PACKAGES}x" = "x" ]; then
   PACKAGES="intrinsics small boolean arith list env misc"
@@ -17,7 +21,7 @@ fi
 
 for PACKAGE in $PACKAGES; do
     echo "Running tests on '$PACKAGE' package..."
-    falderal -b $APPLIANCES pkg/$PACKAGE.robin || exit 1
+    $FALDERAL $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
 
 if [ "x$FORCE_HUGS" != "x" ] ; then

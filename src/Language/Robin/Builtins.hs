@@ -34,17 +34,17 @@ evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env cc =
         evalArgs formals actuals origActuals env (\nenv ->
             cc $ insert formal value nenv))
 evalArgs _ _ origActuals env cc =
-    errMsg "illegal-arguments" $ List origActuals
+    errMsg cc "illegal-arguments" $ List origActuals
 
 
 evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
 evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
     eval env xexpr (\x ->
-        assertNumber env x (\(Number xv) ->
+        assertNumber cc env x (\(Number xv) ->
             eval env yexpr (\y ->
-                assertNumber env y (\(Number yv) ->
+                assertNumber cc env y (\(Number yv) ->
                     (fn xv yv cc)))))
-evalTwoNumbers fn env other cc = errMsg "illegal-arguments" other
+evalTwoNumbers fn env other cc = errMsg cc "illegal-arguments" other
 
 --
 -- `Small`
@@ -57,7 +57,7 @@ evalTwoNumbers fn env other cc = errMsg "illegal-arguments" other
 literal :: Evaluable
 literal env (List (expr:_)) cc =
     cc expr
-literal env other cc = errMsg "illegal-arguments" other
+literal env other cc = errMsg cc "illegal-arguments" other
 
 list :: Evaluable
 list env (List exprs) cc =
@@ -77,13 +77,13 @@ choose env (List ((List [test, branch]):rest)) cc =
                 eval env branch cc
             Boolean False ->
                 choose env (List rest) cc)
-choose env other cc = errMsg "illegal-arguments" other
+choose env other cc = errMsg cc "illegal-arguments" other
 
 bind :: Evaluable
 bind env (List [(Symbol name), expr, body]) cc =
     eval env expr (\value ->
         eval (insert name value env) body cc)
-bind env other cc = errMsg "illegal-arguments" other
+bind env other cc = errMsg cc "illegal-arguments" other
 
 let_ :: Evaluable
 let_ env (List ((List bindings):body:_)) cc =
@@ -96,8 +96,8 @@ let_ env (List ((List bindings):body:_)) cc =
         eval env sexpr (\value ->
             bindAll rest (insert name value env) cc)
     bindAll (other:rest) env cc =
-        errMsg "illegal-binding" other
-let_ env other cc = errMsg "illegal-arguments" other
+        errMsg cc "illegal-binding" other
+let_ env other cc = errMsg cc "illegal-arguments" other
 
 bindArgs :: Evaluable
 bindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
@@ -105,7 +105,7 @@ bindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
         eval env givenEnvExpr (\outerEnvExpr ->
             evalArgs formals actuals actuals outerEnvExpr (\argEnv ->
                 eval (mergeEnvs argEnv env) body cc)))
-bindArgs env other cc = errMsg "illegal-arguments" other
+bindArgs env other cc = errMsg cc "illegal-arguments" other
 
 fun :: Evaluable
 fun closedEnv (List [(List formals), body]) cc =
@@ -114,7 +114,7 @@ fun closedEnv (List [(List formals), body]) cc =
     fun env (List actuals) cc =
         evalArgs formals actuals actuals env (\argEnv ->
             eval (mergeEnvs argEnv closedEnv) body cc)
-fun env other cc = errMsg "illegal-arguments" other
+fun env other cc = errMsg cc "illegal-arguments" other
 
 --
 -- `Arith`
@@ -138,8 +138,8 @@ lteP = evalTwoNumbers (\x y cc -> cc $ Boolean (x <= y))
 
 robinAbs :: Evaluable
 robinAbs env (List [expr]) cc =
-    eval env expr (\x -> assertNumber env x (\(Number xv) -> cc (Number $ abs xv)))
-robinAbs env other cc = errMsg "illegal-arguments" other
+    eval env expr (\x -> assertNumber (cc) env x (\(Number xv) -> cc (Number $ abs xv)))
+robinAbs env other cc = errMsg cc "illegal-arguments" other
 
 add :: Evaluable
 add = evalTwoNumbers (\x y cc -> cc $ Number (x + y))
@@ -149,12 +149,12 @@ multiply = evalTwoNumbers (\x y cc -> cc $ Number (x * y))
 
 divide :: Evaluable
 divide = evalTwoNumbers (\x y cc -> case y of
-                                 0 -> errMsg "division-by-zero" $ Number x
+                                 0 -> errMsg cc "division-by-zero" $ Number x
                                  _ -> cc $ Number (x `div` y))
 
 remainder :: Evaluable
 remainder = evalTwoNumbers (\x y cc -> case y of
-                                 0 -> errMsg "division-by-zero" $ Number x
+                                 0 -> errMsg cc "division-by-zero" $ Number x
                                  _ -> cc $ Number (abs (x `mod` y)))
 
 --

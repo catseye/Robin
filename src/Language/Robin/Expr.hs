@@ -52,6 +52,9 @@ instance Show Expr where
 append (List x) (List y) =
     List (x ++ y)
 
+abortVal msg term =
+    Abort (List [(Symbol msg), term])
+
 --
 -- Predicates
 --

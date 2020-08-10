@@ -7,25 +7,25 @@ considered to be a desired length, and its second argument to obtain a
 list.  It then evaluates to the suffix of the given list of the desired
 length.
 
-    |   (last 0 (list 1 2 3 4 5))
+    | (last 0 (list 1 2 3 4 5))
     = ()
 
-    |   (head (last 1 (list 1 2 3 4 5)))
+    | (head (last 1 (list 1 2 3 4 5)))
     = 5
 
-    |   (last 3 (list 1 2 3 4 5))
+    | (last 3 (list 1 2 3 4 5))
     = (3 4 5)
 
-    |   (last 6 (list 1 2 3 4 5))
+    | (last 6 (list 1 2 3 4 5))
     ? abort (expected-list ())
 
-    |   (last 1 (literal foo))
+    | (last 1 (literal foo))
     ? abort (expected-list foo)
 
 Unlike `first`, `last` does care if it's not a list, even when the count
 is zero.
 
-    |   (last 0 (literal foo)))
+    | (last 0 (literal foo)))
     ? abort (expected-list foo)
 
 '<<SPEC'
