@@ -23,7 +23,9 @@ evalAll env [] acc cc =
     cc $ List $ reverse acc
 evalAll env (head:tail) acc cc =
     eval env head (\value ->
-        evalAll env tail (value:acc) cc)
+        case value of
+            Abort _ -> cc value
+            _       -> evalAll env tail (value:acc) cc)
 
 --          formals   actuals   origActuals env    continuation
 evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env -> (Env -> Expr) -> Expr
