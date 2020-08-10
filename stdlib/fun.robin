@@ -103,6 +103,5 @@ supplied to a function call.
             )
             (self self extended-env rest-formals rest-actuals env-for-actuals))))))
   (macro (iargs ienv)
-    (recover (extend-with-args extend-with-args env (head args) iargs ienv)
-      extended-env (eval extended-env (head (tail args)))
-      error (abort error))))))
+    (bind extended-env (extend-with-args extend-with-args env (head args) iargs ienv)
+      (eval extended-env (head (tail args))))))))
