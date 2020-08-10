@@ -33,7 +33,7 @@ instance Arbitrary Expr where
           (Positive m) <- arbitrary
           let n' = n `div` (m + 1)
           oneof [
-                   Abort <$> (arbExpr n'),
+                   -- Abort <$> (arbExpr n'),   NOTE many laws do not hold in the presence of abort values
                    List <$> (arbExprList n')
                    -- TODO Operator ??
                 ]
