@@ -22,28 +22,26 @@ import Language.Robin.Eval
 evalAll env [] acc cc =
     cc $ List $ reverse acc
 evalAll env (head:tail) acc cc =
-    eval env head (\value ->
-        case value of
-            Abort _ -> cc value
-            _       -> evalAll env tail (value:acc) cc)
+    evalB cc env head (\value ->
+        evalAll env tail (value:acc) cc)
 
---          formals   actuals   origActuals env    continuation
-evalArgs :: [Expr] -> [Expr] -> [Expr] ->   Env -> (Env -> Expr) -> Expr
-evalArgs [] [] _ _ cc =
+--          errcont          formals   actuals   origActuals env    continuation
+evalArgs :: (Env -> Expr) -> [Expr] -> [Expr] -> [Expr] ->   Env -> (Env -> Expr) -> Expr
+evalArgs ecc [] [] _ _ cc =
     cc empty
-evalArgs ((Symbol formal):formals) (actual:actuals) origActuals env cc =
-    eval env actual (\value ->
-        evalArgs formals actuals origActuals env (\nenv ->
+evalArgs ecc ((Symbol formal):formals) (actual:actuals) origActuals env cc =
+    evalB ecc env actual (\value ->
+        evalArgs ecc formals actuals origActuals env (\nenv ->
             cc $ insert formal value nenv))
-evalArgs _ _ origActuals env cc =
-    errMsg cc "illegal-arguments" $ List origActuals
+evalArgs ecc _ _ origActuals env _ =
+    errMsg ecc "illegal-arguments" $ List origActuals
 
 
 evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
 evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
-    eval env xexpr (\x ->
+    evalB cc env xexpr (\x ->
         assertNumber cc env x (\(Number xv) ->
-            eval env yexpr (\y ->
+            evalB cc env yexpr (\y ->
                 assertNumber cc env y (\(Number yv) ->
                     (fn xv yv cc)))))
 evalTwoNumbers fn env other cc = errMsg cc "illegal-arguments" other
@@ -73,7 +71,7 @@ choose :: Evaluable
 choose env (List [(List [(Symbol "else"), branch])]) cc =
     eval env branch cc
 choose env (List ((List [test, branch]):rest)) cc =
-    eval env test (\x ->
+    evalB cc env test (\x ->
         case x of
             Boolean True ->
                 eval env branch cc
@@ -83,7 +81,7 @@ choose env other cc = errMsg cc "illegal-arguments" other
 
 bind :: Evaluable
 bind env (List [(Symbol name), expr, body]) cc =
-    eval env expr (\value ->
+    evalB cc env expr (\value ->
         eval (insert name value env) body cc)
 bind env other cc = errMsg cc "illegal-arguments" other
 
@@ -95,7 +93,7 @@ let_ env (List ((List bindings):body:_)) cc =
     bindAll [] env cc =
         cc env
     bindAll (List ((Symbol name):sexpr:_):rest) env cc =
-        eval env sexpr (\value ->
+        evalB cc env sexpr (\value ->
             bindAll rest (insert name value env) cc)
     bindAll (other:rest) env cc =
         errMsg cc "illegal-binding" other
@@ -103,9 +101,9 @@ let_ env other cc = errMsg cc "illegal-arguments" other
 
 bindArgs :: Evaluable
 bindArgs env (List [(List formals), givenArgs, givenEnvExpr, body]) cc =
-    eval env givenArgs (\(List actuals) ->
-        eval env givenEnvExpr (\outerEnvExpr ->
-            evalArgs formals actuals actuals outerEnvExpr (\argEnv ->
+    evalB cc env givenArgs (\(List actuals) ->
+        evalB cc env givenEnvExpr (\outerEnvExpr ->
+            evalArgs cc formals actuals actuals outerEnvExpr (\argEnv ->
                 eval (mergeEnvs argEnv env) body cc)))
 bindArgs env other cc = errMsg cc "illegal-arguments" other
 
@@ -114,7 +112,7 @@ fun closedEnv (List [(List formals), body]) cc =
     cc $ Operator "<lambda>" fun
   where
     fun env (List actuals) cc =
-        evalArgs formals actuals actuals env (\argEnv ->
+        evalArgs cc formals actuals actuals env (\argEnv ->
             eval (mergeEnvs argEnv closedEnv) body cc)
 fun env other cc = errMsg cc "illegal-arguments" other
 
