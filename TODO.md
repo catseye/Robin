@@ -118,7 +118,7 @@ the QuickCheck tests.
 Documentation
 -------------
 
-Finish the tutorial (recursive macros, reactors).
+Finish the tutorial (recursive macros, advanced usage of reactors).
 
 Reactors
 --------
