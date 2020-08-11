@@ -1,5 +1,9 @@
 ;''Continually generate random numbers from 0 to 65535
-and output the last digit of each number so generated.''
+and output the last digit of each number so generated.
+
+Note that the Robin definition of remainder, currently,
+is incredibly inefficient.  You probably want to run
+this with an optimized implementation of remainder.''
 
 (require let) (require choose) (require list) (require abs) (require remainder)
 
