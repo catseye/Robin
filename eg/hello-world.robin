@@ -3,10 +3,9 @@
 
 (reactor (line-terminal) 0
   (macro (args env)
-    (bind event (head args)
-      (bind event-type (head event)
-        (if (equal? event-type (literal init))
-          (list 0
-            (list (literal writeln) (literal ''Hello, world!''))
-            (list (literal stop) 0))
-          (list 0))))))
+    (bind-vals ((event-type event-payload) state) args
+      (if (equal? event-type (literal init))
+        (list state
+          (list (literal writeln) (literal ''Hello, world!''))
+          (list (literal stop) 0))
+        (list state)))))

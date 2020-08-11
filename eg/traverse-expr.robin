@@ -1,7 +1,9 @@
 (require let) (require choose) (require fold)
 
 ;''Demonstration of some code that traverses an expression, in preparation for
-   writing some actual Robin static analysis code, in Robin.''
+   writing some actual Robin static analysis code, in Robin.
+
+   Note, this example code is woefully incomplete.''
 
 (define traverse-expr (fun (expr)
   (bind traverse-r (fun (self expr acc)

@@ -1,14 +1,18 @@
 ;''Demonstrates what happens when a reactor receives an abort value
-   from its transducer.  Running with --show-events will show the
-   abort message, but it will not be sent back to the reactor.''
+   from its transducer.  To trigger this condition, enter a line
+   starting with a capital A.  Running with --show-events will show
+   the abort message, but it will not stop the reactor, nor will it
+   be sent back to the reactor in the form of a new event.
+
+   If you don't like this behaviour, you should wrap your transducer
+   in a recover to intercept the abort value before the reactor
+   system swallows it, and do something else with it instead.''
 
 (reactor (line-terminal) 0
   (macro (args env)
-    (bind event (head args)
-      (bind event-type (head event)
-        (bind event-payload (head (tail event))
-          (if (equal? event-type (literal readln))
-            (if (equal? (head event-payload) 65)
-              (abort 999999)
-              (list 0 (list (literal writeln) event-payload)))
-            (list 0)))))))
+    (bind-vals ((event-type event-payload) state) args
+      (if (equal? event-type (literal readln))
+        (if (equal? (head event-payload) 65)
+          (abort 999999)
+          (list state (list (literal writeln) event-payload)))
+        (list state)))))

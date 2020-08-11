@@ -1,7 +1,7 @@
 ;''Continually generate random numbers from 0 to 65535
 and output the last digit of each number so generated.''
 
-(require let) (require choose) (require itoa) (require abs) (require remainder)
+(require let) (require choose) (require list) (require abs) (require remainder)
 
 (reactor (line-terminal random-u16-source) 0
   (macro (args env)

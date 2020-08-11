@@ -1,3 +1,5 @@
+;''Example of a recursive function.''
+
 (define fact (fun (self n)
   (multiply n
     (if (gt? n 1)

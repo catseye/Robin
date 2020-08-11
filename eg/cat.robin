@@ -1,11 +1,9 @@
-(require bind)
+(require bind-vals)
 
 (reactor (line-terminal) 0
   (macro (args env)
-    (bind event (head args)
-      (bind event-type (head event)
-        (bind event-payload (head (tail event))
-          (if (equal? event-type (literal readln))
-            (list 0
-              (list (literal writeln) event-payload))
-            (list 0)))))))
+    (bind-vals ((event-type event-payload) state) args
+      (if (equal? event-type (literal readln))
+        (list state
+          (list (literal writeln) event-payload))
+        (list state)))))
