@@ -33,7 +33,7 @@ cat stdlib/boolean-p.robin \
 cat stdlib/env-p.robin stdlib/bound-p.robin stdlib/export.robin stdlib/sandbox.robin \
     stdlib/unbind.robin stdlib/unshadow.robin > pkg/env.robin
 
-cat stdlib/itoa.robin > pkg/misc.robin
+cat stdlib/itoa.robin stdlib/bind-vals.robin > pkg/misc.robin
 
 cat pkg/small.robin \
     pkg/boolean.robin \
