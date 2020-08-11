@@ -2,8 +2,8 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with Stdlib)"
 
-`bind-vals` is a macro for bindings the components of a list to the
-identifiers given in another list (of symbols).
+`bind-vals` is a macro for bindings the components of a possibly-deep list
+to the identifiers given in another possibly-deep list (of symbols).
 
 It is similar to `bind-args` but doesn't evaluate the values that are
 being bound.
@@ -17,6 +17,12 @@ Expressions in the list of values are not evaluated.
     | (bind-vals (a b) (literal ((subtract 5 4) (subtract 10 1)))
     |   (list a b))
     = ((subtract 5 4) (subtract 10 1))
+
+It handles deep lists.
+
+    | (bind-vals (a (b c)) (literal (1 (2 3)))
+    |   (list a b c))
+    = (1 2 3)
 
 This is how it might be used in a macro definition.
 
@@ -32,6 +38,12 @@ This is how it might be used in a macro definition.
     |   (add 4 (add 5 6)))
     ? (abort (expected-number (add 5 6)))
 
+    | (bind transducer (macro (args env)
+    |   (bind-vals ((event-type event-payload) state) args
+    |     (list state (list event-type event-payload))))
+    |   (transducer (click (button 12345)) 0))
+    = (0 (click (button 12345)))
+
 '<<SPEC'
 
 (define bind-vals
@@ -45,9 +57,14 @@ This is how it might be used in a macro definition.
           (self     (eval env (head args)))
           (id-list  (eval env (head (tail args))))
           (val-list (eval env (head (tail (tail args)))))
+          (expr     (eval env (head (tail (tail (tail args))))))
           )
           (if (equal? id-list ())
             expr
-            (list (literal bind) (head id-list) (list (literal literal) (head val-list))
-              (self self (tail id-list) (tail val-list))))))))
-      (eval env (bind-vals-r bind-vals-r id-list val-list)))))
+            (let ((id (head id-list)) (val (head val-list)))
+              (if (list? id)
+                (self self id val
+                  (self self (tail id-list) (tail val-list) expr))
+                (list (literal bind) id (list (literal literal) val)
+                  (self self (tail id-list) (tail val-list) expr)))))))))
+      (eval env (bind-vals-r bind-vals-r id-list val-list expr)))))
