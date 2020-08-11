@@ -37,3 +37,6 @@ The following functionalities are used to test Robin Toplevel programs.
 
     -> Functionality "Execute Robin Toplevel Program (with Small)" is implemented by shell command
     -> "bin/robin --enable-builtins %(test-body-file)"
+
+    -> Functionality "Execute Robin Toplevel Program (with Stdlib)" is implemented by shell command
+    -> "bin/robin --enable-builtins pkg/stdlib.robin %(test-body-file)"

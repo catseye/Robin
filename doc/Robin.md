@@ -790,7 +790,7 @@ Let's describe one such facility for concreteness.
 
 #### `line-terminal` ####
 
-    -> Tests for functionality "Execute Robin Toplevel Program (with Small)"
+    -> Tests for functionality "Execute Robin Toplevel Program (with Stdlib)"
 
 The `line-terminal` facility allows a Robin program to interact with
 something or someone over a line-oriented protocol, similar to what
@@ -823,7 +823,7 @@ the integer 0, and the state is set to 0 after each event is reacted to.
 
     | (reactor (line-terminal) 0
     |   (macro (args env)
-    |     (bind event (head args)
+    |     (bind-vals (event state) args
     |       (bind event-type (head event)
     |         (if (equal? event-type (literal init))
     |           (list 0
@@ -843,7 +843,7 @@ Thus we can construct a simple `cat` program:
 
     | (reactor (line-terminal) 0
     |   (macro (args env)
-    |     (bind event (head args)
+    |     (bind-vals (event state) args
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
@@ -878,7 +878,7 @@ A reactor can issue multiple commands in its response to an event.
 
     | (reactor (line-terminal) 0
     |   (macro (args env)
-    |     (bind event (head args)
+    |     (bind-vals (event state) args
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
@@ -898,7 +898,7 @@ message of some kind, but it should otherwise ignore it and keep going.
 
     | (reactor (line-terminal) 0
     |   (macro (args env)
-    |     (bind event (head args)
+    |     (bind-vals (event state) args
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
@@ -922,7 +922,7 @@ but this is not a strict requirement.
 
     | (reactor (line-terminal) 0
     |   (macro (args env)
-    |     (bind event (head args)
+    |     (bind-vals (event state) args
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
@@ -944,13 +944,12 @@ Reactors can keep state.
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
     |   (macro (args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
+    |     (bind-vals (event state) args
     |         (bind event-type (head event)
     |           (bind event-payload (head (tail event))
     |             (if (equal? event-type (literal readln))
     |               (list (inc state) (list (literal writeln) (list state)))
-    |               (list state))))))))
+    |               (list state)))))))
     + Cat
     + Dog
     + Giraffe
@@ -965,16 +964,15 @@ Note that reactors react in the *opposite* order they were installed.
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
     |   (macro (args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
+    |     (bind-vals (event state) args
     |         (bind event-type (head event)
     |           (bind event-payload (head (tail event))
     |             (if (equal? event-type (literal readln))
     |               (list (inc state) (list (literal writeln) (list state)))
-    |               (list state))))))))
+    |               (list state)))))))
     | (reactor (line-terminal) 0
     |   (macro (args env)
-    |     (bind event (head args)
+    |     (bind-vals (event state) args
     |       (bind event-type (head event)
     |         (bind event-payload (head (tail event))
     |           (if (equal? event-type (literal readln))
@@ -997,15 +995,14 @@ A reactor can stop by issuing a `stop` command.
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
     |   (macro (args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
+    |     (bind-vals (event state) args
     |         (bind event-type (head event)
     |           (bind event-payload (head (tail event))
     |             (if (equal? event-type (literal readln))
     |               (if (equal? state 68)
     |                 (list state (list (literal stop) 0))
     |                 (list (inc state) (list (literal writeln) event-payload)))
-    |               (list state))))))))
+    |               (list state)))))))
     + Cat
     + Dog
     + Giraffe
@@ -1021,24 +1018,22 @@ Stopping one reactor does not stop others.
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
     |   (macro (args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
+    |     (bind-vals (event state) args
     |         (bind event-type (head event)
     |           (bind event-payload (head (tail event))
     |             (if (equal? event-type (literal readln))
     |               (if (equal? state 68)
     |                 (list state (list (literal stop) 0))
     |                 (list (inc state) (list (literal writeln) event-payload)))
-    |               (list state))))))))
+    |               (list state)))))))
     | (reactor (line-terminal) 65
     |   (macro (args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
+    |     (bind-vals (event state) args
     |         (bind event-type (head event)
     |           (bind event-payload (head (tail event))
     |             (if (equal? event-type (literal readln))
     |               (list (inc state) (list (literal writeln) (list state)))
-    |               (list state))))))))
+    |               (list state)))))))
     + Cat
     + Dog
     + Giraffe
