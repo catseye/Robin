@@ -33,10 +33,10 @@ Division by zero is undefined, and an abort value will be produced.
 `divide` expects exactly two arguments, both numbers.
 
     | (divide 14)
-    ? abort (illegal-arguments (14))
+    ? abort (illegal-arguments
 
     | (divide 14 23 57)
-    ? abort (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments
 
     | (divide 14 #t)
     ? abort (expected-number #t)
@@ -46,7 +46,7 @@ Division by zero is undefined, and an abort value will be produced.
 
 '<<SPEC'
 
-(define divide (fexpr (args env)
+(define divide (fun (n d)
   (bind divide-r-pos (fun (self n d acc) ;(d is positive)
     (if (gt? d n)
       acc
@@ -55,11 +55,10 @@ Division by zero is undefined, and an abort value will be produced.
       (if (gt? (abs d) n)
         (subtract 0 (add 1 acc))
         (self self (add n d) d (add 1 acc))))
-      (bind-args (n d) args env
-        (if (equal? d 0)
-          (abort (list (literal division-by-zero) n))
-          (bind n-prime (if (lt? n 0) (subtract 0 n) n)
-            (bind d-prime (if (lt? n 0) (subtract 0 d) d)
-              (if (gt? d-prime 0)
-                (divide-r-pos divide-r-pos n-prime d-prime 0)
-                (divide-r-neg divide-r-neg n-prime d-prime 0))))))))))
+      (if (equal? d 0)
+        (abort (list (literal division-by-zero) n))
+        (bind n-prime (if (lt? n 0) (subtract 0 n) n)
+          (bind d-prime (if (lt? n 0) (subtract 0 d) d)
+            (if (gt? d-prime 0)
+              (divide-r-pos divide-r-pos n-prime d-prime 0)
+              (divide-r-neg divide-r-neg n-prime d-prime 0)))))))))

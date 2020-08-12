@@ -34,10 +34,10 @@ abort value will be produced.
 `remainder` expects exactly two arguments, both numbers.
 
     | (remainder 14)
-    ? abort (illegal-arguments (14))
+    ? abort (illegal-arguments
 
     | (remainder 14 23 57)
-    ? abort (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments
 
     | (remainder 14 #t)
     ? abort (expected-number #t)
@@ -47,7 +47,7 @@ abort value will be produced.
 
 '<<SPEC'
 
-(define remainder (fexpr (args env)
+(define remainder (fun (n d)
   (bind remainder-r-pos (fun (self n d acc) ;(d is positive)
     (if (gt? d n)
       n
@@ -56,11 +56,10 @@ abort value will be produced.
       (if (gt? (abs d) n)
         (add 1 n)
         (self self (add n d) d (add 1 acc))))
-      (bind-args (n d) args env
-        (if (equal? d 0)
-          (abort (list (literal division-by-zero) n))
-          (bind n-prime (if (lt? n 0) (subtract 0 n) n)
-            (bind d-prime (if (lt? n 0) (subtract 0 d) d)
-              (if (gt? d-prime 0)
-                (remainder-r-pos remainder-r-pos n-prime d-prime 0)
-                (remainder-r-neg remainder-r-neg n-prime d-prime 0))))))))))
+      (if (equal? d 0)
+        (abort (list (literal division-by-zero) n))
+        (bind n-prime (if (lt? n 0) (subtract 0 n) n)
+          (bind d-prime (if (lt? n 0) (subtract 0 d) d)
+            (if (gt? d-prime 0)
+              (remainder-r-pos remainder-r-pos n-prime d-prime 0)
+              (remainder-r-neg remainder-r-neg n-prime d-prime 0)))))))))
