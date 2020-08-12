@@ -1,5 +1,5 @@
 ;''
-    Deadfish ( http://esolangs.org/wiki/Deadfish ) implemented in Robin 0.9
+    Deadfish ( http://esolangs.org/wiki/Deadfish ) implemented in Robin 0.8
 ''
 
 (require itoa) (require bind-vals)
