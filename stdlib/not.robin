@@ -14,10 +14,10 @@ the logical negation of that boolean.
 `not` expects exactly one argument.
 
     | (not)
-    ? abort (illegal-arguments ())
+    ? abort (illegal-arguments
 
     | (not #t #f)
-    ? abort (illegal-arguments (#t #f))
+    ? abort (illegal-arguments
 
 `not` expects its single argument to be a boolean.
 
@@ -26,6 +26,5 @@ the logical negation of that boolean.
 
 '<<SPEC'
 
-(define not (fexpr (args env)
-  (bind-args (a) args env
-    (if a #f #t))))
+(define not (fun (a)
+  (if a #f #t)))
