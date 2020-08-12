@@ -37,6 +37,14 @@ abort value will be produced.
     | (choose (#f 66) (else))
     ? abort
 
+Bindings can be seen inside each of the branches, and inside the `else`.
+
+    | (bind n (literal hi) (choose (#t n) (else (literal lo))))
+    = hi
+
+    | (bind n (literal hi) (choose (#f (literal lo)) (else n)))
+    = hi
+
 `choose` is basically equivalent to Scheme's `cond`.
 
 '<<SPEC'
@@ -49,7 +57,7 @@ abort value will be produced.
           (bind test (head branch)
             (bind then (head (tail branch))
               (if (equal? test (literal else))
-                (eval ienv then)
+                (eval env then)
                 (if (eval env test)
                   (eval env then)
                   (self self (tail items))))))))))
