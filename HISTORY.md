@@ -17,13 +17,19 @@ Robin 0.8
     there are other ways to obtain an operator than applying
     a `macro` form (for instance there have always been
     intrinsic operators; it's not fair to call them "macros".)
+*   When a reactor produces an abort value, it does not cause
+    a further event reporting the abort value to occur.
+
+In the standard library,
+
 *   The Robin definition of `bind` now checks that the name
     being bound is a symbol.  The Robin definition of `let`
     is now based on that of `bind` so it inherits this behaviour.
 *   The documentation for the alist functions in the standard
     library was improved.
-*   When a reactor produces an abort value, it does not cause
-    a further event reporting the abort value to occur.
+*   Added the `bind-vals` operator, which is like `bind-args`
+    but does not evaluate the arguments, and which works on
+    possibly-deep lists.
 
 For the reference implementation,
 
