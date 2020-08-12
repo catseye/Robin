@@ -2,11 +2,11 @@
 (require empty?)
 (require bind-vals)
 
-(define command (macro (args env)
+(define command (fexpr (args env)
   (list (head args) (eval env (head (tail args))))))
 
 (reactor (line-terminal) (list 0 0)
-  (macro (args env)
+  (fexpr (args env)
     (bind-vals ((event-type event-payload) (x y)) args
       (let ((state (list x y))
             (room-message (fun (x y)

@@ -10,7 +10,8 @@ Overview
 and [thoroughly specified](doc/Robin.md) functional programming language with
 [eager evaluation, latent typing, and a homoiconic syntax](#scheme),
 based on a [radically simple core semantics](#forth) in which
-[the macro, rather than the function, is the fundamental abstraction](#picolisp).
+[the so-called "fexpr" is the fundamental abstraction](#picolisp)
+and both functions and macros are defined in terms of it.
 
 Expressions in Robin are [referentially transparent](#haskell); programs
 interact with the outside world [through an event-driven framework](#elm).
@@ -59,10 +60,10 @@ The tests that use only Robin's core semantics (with no help from implementation
     APPLIANCES="appliances/robin.md" ./test.sh
 
 The test suite will also run some property tests (using QuickCheck).  Notably,
-for every macro that is defined multiple times (which includes much of stdlib,
+for every operator that is defined multiple times (which includes much of stdlib,
 where the core definitions are written in Robin but also implemented in Haskell
 as "builtins" in the reference interpreter), QuickCheck will attempt to falsify
-the assertion that the definitions define the same macro.  These attempts are
+the assertion that the definitions define the same operator.  These attempts are
 currently rather crude; there is lots of room for improvement for them in some
 future release.
 
@@ -89,12 +90,15 @@ of these intrinsics, while an implementation is free to provide its own
 
 ### PicoLisp ###
 
-[PicoLisp][] allows defining functions with unevaluated arguments.
-Robin adopts this kind of function for the basis of what it calls a `macro`,
-and builds everything else on top of `macro`s.  (There *is* a `function` form
-in Robin, but it's defined as a `macro`!)  This is much like how the [Kernel][]
-programming language builds everything from [fexpr][]s; however, Robin was
-developed oblivious of Kernel — it adapted the idea directly from PicoLisp.
+In most languages, the arguments to a function are evaluated before the
+function is applied, but [PicoLisp][] allows defining functions with
+unevaluated arguments.  In historical Lisp, such operators were called
+[fexpr][]s.  Robin adopts fexprs as the fundamental abstraction — both
+functions and macros are defined in terms of fexprs.
+
+The [Kernel][] programming language also takes fexprs as its fundamental
+abstraction; however, Robin was developed oblivious of Kernel — it adapted
+the idea directly from PicoLisp.
 
 ### Haskell ###
 
@@ -118,7 +122,8 @@ except it is an S-expression.
 
 Deserves at least a passing mention here, as one thing that Robin
 discards from Scheme is its jargony terminology: no `cdr`, no `cons`,
-no `lambda`.
+no `lambda`.  (A notable exception is `fexpr` simply because there is no
+satisfying short, non-jargony word that connotes how these operators work.)
 
 For a full description of the Robin language, see
 [the Robin specification document](doc/Robin.md).

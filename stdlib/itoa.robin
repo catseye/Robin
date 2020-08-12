@@ -25,8 +25,8 @@ a string representing that integer in decimal.
 
 '<<SPEC'
 
-(define itoa (macro (args env)
-  (bind itoa-r (macro (args env)
+(define itoa (fexpr (args env)
+  (bind itoa-r (fexpr (args env)
     (bind-args (self val) args env
       (if (equal? val 0)
         ()

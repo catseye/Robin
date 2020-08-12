@@ -2,7 +2,7 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with Small)"
 
-`bind-args` is a macro for evaluating a list of arguments and binding
+`bind-args` is a fexpr for evaluating a list of arguments and binding
 them to the identifiers in a list of identifiers, as well as asserting
 that the correct number of arguments have been given, and that none of
 the arguments evaluated to an abort value.
@@ -40,37 +40,37 @@ The literal arguments are reported in the abort value.
     |   a)
     ? abort (illegal-arguments ((subtract 5 4) (subtract 1 0)))
 
-This is how it might be used in a macro definition.  The reason for the
+This is how it might be used in a fexpr definition.  The reason for the
 seemingly strange requirements of the second and third arguments should
-become clear here: typically you would just pass the macro's `args` and
+become clear here: typically you would just pass the fexpr's `args` and
 `env` to those arguments.
 
-    | (bind add (macro (args env)
+    | (bind add (fexpr (args env)
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add 4 (add 5 6)))
     = 15
 
-    | (bind add (macro (args env)
+    | (bind add (fexpr (args env)
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (bind r 7
     |     (add r r)))
     = 14
 
-    | (bind add (macro (args env)
+    | (bind add (fexpr (args env)
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add (subtract 0 0)))
     ? abort (illegal-arguments ((subtract 0 0)))
 
-    | (bind add (macro (args env)
+    | (bind add (fexpr (args env)
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add 9 9 9))
     ? abort (illegal-arguments (9 9 9))
 
-    | (bind add (macro (args env)
+    | (bind add (fexpr (args env)
     |   (bind-args (a b) args env
     |     (subtract a (subtract 0 b))))
     |   (add 1 n))
@@ -79,13 +79,13 @@ become clear here: typically you would just pass the macro's `args` and
 '<<SPEC'
 
 (define bind-args
-  (macro (args env)
+  (fexpr (args env)
     (let (
       (id-list       (head args))
       (orig-val-list (eval env (head (tail args))))
       (given-env     (eval env (head (tail (tail args)))))
       (expr          (head (tail (tail (tail args)))))
-      (bind-args-r   (macro (args env)
+      (bind-args-r   (fexpr (args env)
         (let (
           (self     (eval env (head args)))
           (id-list  (eval env (head (tail args))))

@@ -1,11 +1,11 @@
 ;''
-    Deadfish ( http://esolangs.org/wiki/Deadfish ) implemented in Robin 0.8
+    Deadfish ( http://esolangs.org/wiki/Deadfish ) implemented in Robin 0.9
 ''
 
 (require itoa) (require bind-vals)
 
 (reactor (line-terminal) 0
-  (macro (args env)
+  (fexpr (args env)
     (bind-vals ((event-type event-payload) prev-state) args
       (bind state
         (if (equal? prev-state (subtract 0 1))
@@ -13,7 +13,7 @@
           (if (equal? prev-state 256)
             0
             prev-state))
-        (bind prompt (macro (args env)
+        (bind prompt (fexpr (args env)
             (bind show (eval env (head args))
               (bind state (eval env (head (tail args)))
                 (if show

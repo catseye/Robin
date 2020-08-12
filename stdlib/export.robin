@@ -36,5 +36,5 @@ thus these tests are written to search the resulting alist.
 '<<SPEC'
 
 (define export
-  (macro (args env)
+  (fexpr (args env)
     (filter (fun (binding) (elem? (head binding) args)) env)))

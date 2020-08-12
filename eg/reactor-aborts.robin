@@ -9,7 +9,7 @@
    system swallows it, and do something else with it instead.''
 
 (reactor (line-terminal) 0
-  (macro (args env)
+  (fexpr (args env)
     (bind-vals ((event-type event-payload) state) args
       (if (equal? event-type (literal readln))
         (if (equal? (head event-payload) 65)

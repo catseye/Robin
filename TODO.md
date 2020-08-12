@@ -3,18 +3,6 @@ TODO
 
 (Note, some of these are possibly long-term plans.)
 
-The term "macro"
-----------------
-
-What we are currently calling a "macro" is actually a "fexpr"
-(for lack of a better name.)  Some Lisps (newLISP?) call it
-a macro too, but this is also a misleading name, based on
-what programmers expect from something called a "macro".
-
-Just as we have defined `fun` in terms of fexprs, we can
-define `macro` in terms of fexprs.  (It is expected to
-return a literal chunk of program, which we then evaluate.)
-
 Static analysis of fexprs
 -------------------------
 
@@ -90,7 +78,7 @@ Other libs
 as aliases.
 
 Static analysis lib.  This is its own bucket of worms.  It should
-expose a macro that can be wrapped around an arbitrary standard
+expose an operator that can be wrapped around an arbitrary standard
 Robin program _p_ and, if static analysis of _p_ is successful,
 simply evaluates to whatever _p_ evaluates to.  And if not
 successful, produces an abort.  Should probably start small --
@@ -118,7 +106,7 @@ the QuickCheck tests.
 Documentation
 -------------
 
-Finish the tutorial (recursive macros, advanced usage of reactors).
+Finish the tutorial (recursive fexprs, advanced usage of reactors).
 
 Reactors
 --------

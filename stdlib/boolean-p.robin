@@ -25,7 +25,7 @@ exactly one argument.
 
 '<<SPEC'
 
-(define boolean? (macro (args env)
+(define boolean? (fexpr (args env)
   (bind-args (b) args env
     (if (equal? b #t)
       #t

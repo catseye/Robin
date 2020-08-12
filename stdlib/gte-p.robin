@@ -38,6 +38,6 @@ if the first number is greater than or equal to the second.
 
 '<<SPEC'
 
-(define gte? (macro (args env)
+(define gte? (fexpr (args env)
   (bind-args (a b) args env
     (if (equal? a b) #t (gt? a b)))))

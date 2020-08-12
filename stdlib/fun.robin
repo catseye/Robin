@@ -83,8 +83,8 @@ supplied to a function call.
 
 '<<SPEC'
 
-(define fun (macro (args env)
-  (bind extend-with-args (macro (args env)
+(define fun (fexpr (args env)
+  (bind extend-with-args (fexpr (args env)
     (bind-args (self env-to-extend formals actuals env-for-actuals) args env
       (if (equal? formals ())
         (if (equal? actuals ())
@@ -102,6 +102,6 @@ supplied to a function call.
               (extended-env (prepend binding env-to-extend))
             )
             (self self extended-env rest-formals rest-actuals env-for-actuals))))))
-  (macro (iargs ienv)
+  (fexpr (iargs ienv)
     (bind extended-env (extend-with-args extend-with-args env (head args) iargs ienv)
       (eval extended-env (head (tail args))))))))

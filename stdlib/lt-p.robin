@@ -53,8 +53,8 @@ if the first number is strictly less than the second.
 
 '<<SPEC'
 
-(define lt? (macro (args env)
-  (bind cmp-same-sign? (macro (args env)
+(define lt? (fexpr (args env)
+  (bind cmp-same-sign? (fexpr (args env)
     (bind-args (a b c) args env
       (equal? (sign (subtract a b)) c)))
     (bind-args (a b) args env

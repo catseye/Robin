@@ -49,8 +49,8 @@ Bindings can be seen inside each of the branches, and inside the `else`.
 
 '<<SPEC'
 
-(define choose (macro (args env)
-  (bind choose-r (macro (iargs ienv)
+(define choose (fexpr (args env)
+  (bind choose-r (fexpr (iargs ienv)
     (bind self (eval ienv (head iargs))
       (bind items (eval ienv (head (tail iargs)))
         (bind branch (head items)

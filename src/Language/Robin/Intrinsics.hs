@@ -66,10 +66,10 @@ eval_ env (List [envlist, form]) cc =
             eval newEnvVal body cc))
 eval_ env other cc = errMsg cc "illegal-arguments" other
 
-macro :: Evaluable
-macro env (List [args@(List [(Symbol argsS), (Symbol envS)]), body]) cc =
-    cc $ Operator "<operator>" $ makeMacro env args body
-macro env other cc = errMsg cc "illegal-arguments" other
+fexpr :: Evaluable
+fexpr env (List [args@(List [(Symbol argsS), (Symbol envS)]), body]) cc =
+    cc $ Operator "<operator>" $ makeFexpr env args body
+fexpr env other cc = errMsg cc "illegal-arguments" other
 
 abort :: Evaluable
 abort env (List [expr]) cc =
@@ -99,7 +99,7 @@ robinIntrinsics = fromList $ map (\(name,bif) -> (name, Operator name bif))
         ("equal?",   equalP),
         ("subtract", subtract_),
         ("sign",     sign),
-        ("macro",    macro),
+        ("fexpr",    fexpr),
         ("eval",     eval_),
         ("if",       if_),
         ("abort",    abort),

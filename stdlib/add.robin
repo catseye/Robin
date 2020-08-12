@@ -26,6 +26,6 @@ Both of the arguments to `add` must be numbers.
 
 '<<SPEC'
 
-(define add (macro (args env)
+(define add (fexpr (args env)
   (bind-args (a b) args env
     (subtract a (subtract 0 b)))))

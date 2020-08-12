@@ -42,7 +42,7 @@ but it can be demonstrated as follows.
 
 '<<SPEC'
 
-(define and (macro (args env)
+(define and (fexpr (args env)
   (if (equal? (tail (tail args)) ())
     (if (eval env (head args))
       (if (eval env (head (tail args))) #t #f)

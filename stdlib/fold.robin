@@ -2,7 +2,7 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with List)"
 
-`fold` evaluates its first argument to obtain a macro, generally assumed to
+`fold` evaluates its first argument to obtain an operator, generally assumed to
 be a two-argument function, its second argument to obtain an initial value,
 and its third argument to obtain a list.  It then applies the function to
 successive elements of the list.  Each time the function is applied, an

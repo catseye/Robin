@@ -8,7 +8,7 @@ this with an optimized implementation of remainder.''
 (require let) (require choose) (require list) (require abs) (require remainder)
 
 (reactor (line-terminal random-u16-source) 0
-  (macro (args env)
+  (fexpr (args env)
     (let ((event (head args))
           (event-type (head event))
           (event-payload (head (tail event))))

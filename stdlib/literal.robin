@@ -27,4 +27,4 @@ Any arguments beyond the first argument are simply ignored and discarded.
 
 '<<SPEC'
 
-(define literal (macro (args env) (head args)))
+(define literal (fexpr (args env) (head args)))

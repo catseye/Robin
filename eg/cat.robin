@@ -1,7 +1,7 @@
 (require bind-vals)
 
 (reactor (line-terminal) 0
-  (macro (args env)
+  (fexpr (args env)
     (bind-vals ((event-type event-payload) state) args
       (if (equal? event-type (literal readln))
         (list state

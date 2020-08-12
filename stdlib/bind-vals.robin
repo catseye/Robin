@@ -2,7 +2,7 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with Stdlib)"
 
-`bind-vals` is a macro for bindings the components of a possibly-deep list
+`bind-vals` is a fexpr for bindings the components of a possibly-deep list
 to the identifiers given in another possibly-deep list (of symbols).
 
 It is similar to `bind-args` but doesn't evaluate the values that are
@@ -24,21 +24,21 @@ It handles deep lists.
     |   (list a b c))
     = (1 2 3)
 
-This is how it might be used in a macro definition.
+This is how it might be used in a fexpr definition.
 
-    | (bind add (macro (args env)
+    | (bind add (fexpr (args env)
     |   (bind-vals (a b) args
     |     (subtract a (subtract 0 b))))
     |   (add 4 5))
     = 9
 
-    | (bind add (macro (args env)
+    | (bind add (fexpr (args env)
     |   (bind-vals (a b) args
     |     (subtract a (subtract 0 b))))
     |   (add 4 (add 5 6)))
     ? (abort (expected-number (add 5 6)))
 
-    | (bind transducer (macro (args env)
+    | (bind transducer (fexpr (args env)
     |   (bind-vals ((event-type event-payload) state) args
     |     (list state (list event-type event-payload))))
     |   (transducer (click (button 12345)) 0))
@@ -47,12 +47,12 @@ This is how it might be used in a macro definition.
 '<<SPEC'
 
 (define bind-vals
-  (macro (args env)
+  (fexpr (args env)
     (let (
       (id-list       (head args))
       (val-list      (eval env (head (tail args))))
       (expr          (head (tail (tail args))))
-      (bind-vals-r   (macro (args env)
+      (bind-vals-r   (fexpr (args env)
         (let (
           (self     (eval env (head args)))
           (id-list  (eval env (head (tail args))))

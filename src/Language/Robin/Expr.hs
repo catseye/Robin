@@ -4,9 +4,10 @@ import Data.Char
 import Data.Int
 
 --
--- An _evaluable_ is a Haskell object which behaves like a Robin macro.
--- It describes builtins (which includes intrinsics), and also happens
--- (perhaps unsurprisingly?) to be the type of the evaluator function.
+-- An _evaluable_ is a Haskell object which implements a Robin operator.
+-- It describes both builtins (which includes intrinsics) and user-defined
+-- functions, macros, and fexprs, and also happens (perhaps unsurprisingly?)
+-- to be the type of the evaluator function.
 --
 
 type Evaluable = Expr -> Expr -> (Expr -> Expr) -> Expr

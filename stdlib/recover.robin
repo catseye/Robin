@@ -29,11 +29,11 @@ environment the fifth argument is evaluated.
     |   error (list error #f))
     = ((nasty-value 999999) #f)
 
-If an abort value is returned from the body of a macro that is applied
+If an abort value is returned from an operator that is applied
 in the context of a `recover`, it will still be recovered.
 
     | (recover
-    |   ((macro (args env) (abort (literal (nasty-value 1111)))) joe)
+    |   ((fexpr (args env) (abort (literal (nasty-value 1111)))) joe)
     |   value (list value #t)
     |   error (list error #f))
     = ((nasty-value 1111) #f)
@@ -100,7 +100,7 @@ in which the abort value was produced.
 `recover` handles abort values, and this does not include the environment
 in which the abort value was produced.
 
-    | (bind flop (macro (args env) (bind x (eval env (head args)) (abort x)))
+    | (bind flop (fexpr (args env) (bind x (eval env (head args)) (abort x)))
     |   (list
     |     (recover (flop 44) value value error (list 55 error))
     |     (recover (flop 44) value value error (list 66 error))))

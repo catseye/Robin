@@ -10,27 +10,27 @@ it evaluates.
     |   (prepend x (prepend x ())))
     = (hello hello)
 
-    | (bind dup (macro (args env)
+    | (bind dup (fexpr (args env)
     |             (prepend (head args) (prepend (head args) ())))
     |   (dup g))
     = (g g)
 
-    | (bind dup (macro (args env)
+    | (bind dup (fexpr (args env)
     |             (bind x (eval env (head args))
     |               (prepend x (prepend x ()))))
     |   (dup (literal g)))
     = (g g)
 
-    | (bind dup (macro (args env)
+    | (bind dup (fexpr (args env)
     |             (bind x (eval env (head args))
     |               (prepend x (prepend x ()))))
     |   (dup (dup (literal g))))
     = ((g g) (g g))
 
-`bind` can bind a recursive macro to a name.
+`bind` can bind a recursive fexpr to a name.
 
     | (bind elem?-r
-    |   (macro (args env)
+    |   (fexpr (args env)
     |     (bind self (eval env (head args))
     |       (bind target (eval env (head (tail args)))
     |         (bind items (eval env (head (tail (tail args))))
@@ -61,7 +61,7 @@ binding may be given.
 
 '<<SPEC'
 
-(define bind (macro (args env)
+(define bind (fexpr (args env)
   (if
     (symbol? (head args))
     (eval

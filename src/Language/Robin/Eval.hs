@@ -76,15 +76,15 @@ evalB ecc env e cc =
 
 errMsg cc msg term = cc $ abortVal msg term
 
-makeMacro :: Expr -> Expr -> Expr -> Evaluable
-makeMacro defineTimeEnv formals body =
+makeFexpr :: Expr -> Expr -> Expr -> Evaluable
+makeFexpr defineTimeEnv formals body =
     \callTimeEnv actuals cc ->
         let
-            env = makeMacroEnv callTimeEnv actuals defineTimeEnv formals
+            env = makeFexprEnv callTimeEnv actuals defineTimeEnv formals
         in
             eval env body cc
 
-makeMacroEnv callTimeEnv actuals defineTimeEnv argList =
+makeFexprEnv callTimeEnv actuals defineTimeEnv argList =
     let
         (List [(Symbol argFormal), (Symbol envFormal)]) = argList
         newEnv' = insert argFormal actuals defineTimeEnv

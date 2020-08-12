@@ -17,6 +17,6 @@ for the listed identifiers have been unbound.
 '<<SPEC'
 
 (define sandbox
-  (macro (args env)
+  (fexpr (args env)
     (eval (filter (fun (binding) (elem? (head binding) (head args))) env)
           (head (tail args)))))

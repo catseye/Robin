@@ -1,0 +1,108 @@
+;'<<SPEC'
+
+### `fexpr` ###
+
+    -> Tests for functionality "Evaluate Robin Expression (with literal and bind)"
+
+`fexpr` takes its first argument to be a list of two formal
+parameters, and its second argument to be an arbitrary expression,
+and uses these two arguments to build, and evaluate to, an operator
+value.
+
+When an application of this operator value is evaluated, the first
+formal argument will be bound to the literal, unevaluated list of
+arguments passed to the operator, and the second formal will be bound
+to an alist representing the environment in effect at the point
+the application occurs.
+
+These formals are conventionally called `args` and `env`,
+but different names can be chosen in the `fexpr` definition, for
+instance to avoid shadowing.
+
+`literal`, in fact, can be defined as a fexpr, and it is one of the
+simplest possible fexprs that can be written:
+
+    | ((fexpr (args env) (head args)) (why hello there))
+    = (why hello there)
+
+Another facility that can be defined simply by a fexpr is `env`:
+
+    (define env (fexpr (a e) e))
+
+Fexprs have "closure" behavior; that is, bindings in force when a
+fexpr is defined will still be in force when the fexpr is applied,
+even if they are no longer lexically in scope.
+
+    | ((bind a (literal these-are)
+    |    (fexpr (args env) (prepend a args)))
+    |      my args)
+    = (these-are my args)
+
+Fexprs can return fexprs.
+
+    | (bind mk (fexpr (argsa env)
+    |   (fexpr (argsb env)
+    |     (prepend (head argsb) argsa)))
+    |   (bind mk2 (mk vindaloo)
+    |     (mk2 chicken)))
+    = (chicken vindaloo)
+
+Arguments to fexprs shadow any other bindings in effect.
+
+    | (bind args (literal a)
+    |   (bind b (fexpr (args env) (prepend args args))
+    |     (b 7)))
+    = ((7) 7)
+
+Recursive fexprs can be written; they can be used by passing the fexpr to itself
+when it is called.  The following examples demonstrate this.
+
+    | (bind elem?-r
+    |   (fexpr (args env)
+    |     (bind self (eval env (head args))
+    |       (bind target (eval env (head (tail args)))
+    |         (bind items (eval env (head (tail (tail args))))
+    |           (if (equal? items ()) #f
+    |             (if (equal? (head items) target) #t
+    |               (self self target (tail items))))))))
+    |   (elem?-r elem?-r (literal c) (literal (a b c d e f))))
+    = #t
+
+    | (bind elem?-r
+    |   (fexpr (args env)
+    |     (bind self (eval env (head args))
+    |       (bind target (eval env (head (tail args)))
+    |         (bind items (eval env (head (tail (tail args))))
+    |           (if (equal? items ()) #f
+    |             (if (equal? (head items) target) #t
+    |               (self self target (tail items))))))))
+    |   (elem?-r elem?-r (literal c) (literal (a b d e f))))
+    = #f
+
+A recursive `fexpr` application doesn't have to be tail-recursive.
+
+TODO write something like fibonacci as a fexpr here to demonstrate that.
+
+`fexpr` expects exactly two arguments.
+
+    |   ((fexpr (args env)) (why hello there))
+    ? abort (illegal-arguments ((args env)))
+
+    |   ((fexpr (args env) prepend prepend) (why hello there))
+    ? abort (illegal-arguments ((args env) prepend prepend))
+
+`fexpr` expects its first argument to be a list of exactly two
+symbols.
+
+    |   ((fexpr 100 prepend) (why hello there))
+    ? abort (illegal-arguments (100 prepend))
+
+    |   ((fexpr (args) prepend) (why hello there))
+    ? abort (illegal-arguments ((args) prepend))
+
+    |   ((fexpr (args env foo) prepend) (why hello there))
+    ? abort (illegal-arguments ((args env foo) prepend))
+
+'<<SPEC'
+
+(require fexpr)
