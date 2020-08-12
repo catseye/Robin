@@ -40,10 +40,10 @@ if the first number is strictly greater than the second.
 `gt?` expects exactly two arguments, both numbers.
 
     | (gt? 14)
-    ? abort (illegal-arguments (14))
+    ? abort (illegal-arguments
 
     | (gt? 14 23 57)
-    ? abort (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments
 
     | (gt? 14 #t)
     ? abort (expected-number #t)
@@ -53,11 +53,9 @@ if the first number is strictly greater than the second.
 
 '<<SPEC'
 
-(define gt? (fexpr (args env)
-  (bind cmp-same-sign? (fexpr (args env)
-    (bind-args (a b c) args env
-      (equal? (sign (subtract a b)) c)))
-    (bind-args (a b) args env
-      (if (equal? (sign a) (sign b))
-        (cmp-same-sign? a b 1)
-        (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) 1))))))
+(define gt? (fun (a b)
+  (bind cmp-same-sign? (fun (a b c)
+    (equal? (sign (subtract a b)) c))
+    (if (equal? (sign a) (sign b))
+      (cmp-same-sign? a b 1)
+      (cmp-same-sign? (subtract (sign a) 1) (subtract (sign b) 1) 1)))))

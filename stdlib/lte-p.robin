@@ -25,10 +25,10 @@ if the first number is less than or equal to the second.
 `lte?` expects exactly two arguments, both numbers.
 
     | (lte? 14)
-    ? abort (illegal-arguments (14))
+    ? abort (illegal-arguments
 
     | (lte? 14 23 57)
-    ? abort (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments
 
     | (lte? 14 #t)
     ? abort (expected-number #t)
@@ -38,6 +38,5 @@ if the first number is less than or equal to the second.
 
 '<<SPEC'
 
-(define lte? (fexpr (args env)
-  (bind-args (a b) args env
-    (if (equal? a b) #t (lt? a b)))))
+(define lte? (fun (a b)
+  (if (equal? a b) #t (lt? a b))))
