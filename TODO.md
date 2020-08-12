@@ -71,6 +71,10 @@ Stdlib
 `(modulo x y)` which is always positive, change `remainder` to
 be sign of divisor (like R6RS.)
 
+`let` and `choose` follow the same pattern.  Consider a general
+`chain` combinator such that `(chain bind (...) ...)` is `let` and
+`(chain if (...) ...)` is `choose`.
+
 Other libs
 ----------
 
