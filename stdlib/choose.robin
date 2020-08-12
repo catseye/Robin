@@ -57,7 +57,7 @@ Bindings can be seen inside each of the branches, and inside the `else`.
           (bind test (head branch)
             (bind then (head (tail branch))
               (if (equal? test (literal else))
-                (eval ienv then)
+                (eval env then)
                 (if (eval env test)
                   (eval env then)
                   (self self (tail items))))))))))
