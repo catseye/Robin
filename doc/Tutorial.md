@@ -133,10 +133,13 @@ You'll see a message such as the following:
 
     (abort (inapplicable-object (abort (unbound-identifier fun))))
 
-You might conclude from this that [`fun`][] is not a built-in — and you'd
-be right!  Unlike almost every other Lisp-like language, in Robin,
-`fun` is implemented as a macro.  It can be imported from the standard
-library.
+You might conclude from this that [`fun`][] is not built-in to the
+language — and you'd be right!  Unlike almost every other Lisp-like
+language, in Robin, `fun` is defined in the standard library, which
+must be imported before it can be used.
+
+It's defined as a so-called "fexpr" (which is like a macro but
+even more general — more on them in a minute.)
 
 As you saw above, you can ask the Robin reference interpreter to
 load in the standard library before it runs your program:
@@ -173,19 +176,20 @@ will work just as well:
 
     bin/robin --enable-builtins pkg/stdlib.robin fact.robin
 
-Macros
+Fexprs
 ------
 
 As we mentioned above, functions aren't intrinsic to Robin — the
-`fun` operator that creates a function is defined as a macro in the
-standard library.
+`fun` operator that creates a function is defined as a so-called "fexpr"
+in the standard library.
 
 You're quite free to simply import the standard library and use `fun`
-without knowing or caring that it's defined as a macro.
+without knowing or caring that it's defined as a fexpr, whatever that
+is.
 
-However, you can write your own macros as well, using [`macro`][].
+However, you can write your own fexprs as well, using [`fexpr`][].
 
-The main difference between a function and a macro is that a macro
+The main difference between a fexpr and a function is that a fexpr
 does *not* evaluate the arguments that are passed to it.  It receives
 them as an unevaluated S-expression.  What it does with this unevaluated
 S-expression is completely up to it.
@@ -194,7 +198,7 @@ One trivial thing it can do with it is simply return it unmodified.
 This is what the [`literal`][] operator in the standard library does,
 and this is how it's defined:
 
-    (define literal (macro (args env)
+    (define literal (fexpr (args env)
       args))
 
 With this definition in place you can run
@@ -207,26 +211,35 @@ and you'll see
 
 So `literal` is essentially the same as `quote` in Lisp or Scheme.
 Except, of course, it's not intrinsic to the language.  We wrote a
-macro to do it instead.
+fexpr to do it instead.
 
-A macro defined this way also has access to the environment in which
+A fexpr defined this way also has access to the environment in which
 it was called (the `env` parameter).  There is also an intrinsic
 operator called [`eval`][] which evaluates a given S-expression in a
-given environment.  With these tools, we can write macros that *do*
+given environment.  With these tools, we can write fexprs that *do*
 evaluate their arguments, just like functions.
 
-    (define id (macro (args env) (eval env (head args))))
+    (define id (fexprs (args env) (eval env (head args))))
     (display (id (subtract 80 4)))
 
 If you run this you should see 76.
 
-This distinction between "functions" and "macros" is rather minor,
-and often we don't care to distinguish between them, so we call them
-all "operators".
+When we don't care to distinguish between "functions" and "fexprs"
+and "macros" we just call them all "operators".
 
-### Recursive macros
+### Recursive fexprs
 
 (To be written).
+
+Macros
+------
+
+Just like a function, in Robin, is a kind of fexpr, so too is a
+macro a kind of fexpr.  A macro is a fexpr whose return value is
+expected to be a piece of syntax which will be further evaluated
+as a Robin expression.
+
+(To be continued).
 
 Referential transparency
 ------------------------
@@ -347,7 +360,7 @@ This setup is very similar to "The Elm Architecture" used in the language Elm.
 Here is an example reactor.
 
     (reactor (line-terminal) 0
-      (macro (args env)
+      (fexpr (args env)
         (bind-vals ((event-type event-payload) state)
           (if (equal? event-type (literal init))
             (list state
@@ -363,7 +376,7 @@ The `0` at the top is the initial state.  In fact this example is so simple
 that the state does not change and does not make any difference to the
 program, but an initial state still must be given.
 
-After that is the transducer, given as a `macro`.  It receives, as its
+After that is the transducer, given as a `fexpr`.  It receives, as its
 arguments, an event, which consists of an event type and an event payload,
 and the current state.  It extracts these.
 
@@ -386,7 +399,7 @@ wait for the next event and process it.
 [`head`]: ../stdlib/head.robin
 [`if`]: ../stdlib/if.robin
 [`list?`]: ../stdlib/list-p.robin
-[`macro`]: ../stdlib/macro.robin
+[`fexpr`]: ../stdlib/fexpr.robin
 [`number?`]: ../stdlib/number-p.robin
 [`operator?`]: ../stdlib/operator-p.robin
 [`prepend`]: ../stdlib/prepend.robin

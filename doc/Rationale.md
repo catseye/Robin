@@ -96,7 +96,7 @@ with a piece of code.
 "the world's finest imperative language".  I'm looking
 for the world's finest functional language though, right?)
 
-Macro as fundamental abstraction
+Fexpr as fundamental abstraction
 --------------------------------
 
 This is certainly the most unorthodox feature, the one that departs
@@ -106,31 +106,31 @@ of that when this design choice was made.)
 
 It allows the language to have no "special forms" whatsoever.
 (Scheme would need at least `define-syntax` if it wanted to define
-`if`, `set!`, and the other parts of its syntax, as macros.)
+`if`, `set!`, and the other parts of its syntax, as fexprs.)
 
 Whether having no special forms whatsoever is advantageous in any
 way, or not, remains to be seen.
 
 One upshot is that any functionality expressible in the Robin
-expression language, can be passed to a macro or a function, as
-a parameter, or returned from a macro or function evaluation.
+expression language, can be passed to a fexpr or macro as
+a parameter, or returned from an operator application.
 
 One also thinks it might make analysis of the code simpler — a
 parser or analyzer doesn't need to account for any special forms.
 
-But, in practice, since everything is a macro, `eval` is called a
+But, in practice, since everything is a fexpr, `eval` is called a
 lot, and `eval` poses a significant problem for analysis.
 
 But also in practice, an analysis tool will expect that the "small"
 library has been loaded, and that function calls will use `fun`
 as defined there, and thus can base their analysis on the semantics
-of that macro without caring about its definition, or that its
+of that fexpr without caring about its definition, or that its
 definition contains `eval`.
 
 So the basic saving grace here is this: we can *define* the
-forms of the language using macros without necessarily *implementing*
-them using `macro`.  As long as the implementation's behaviour
-matches what the `macro` version specifies, it's compatible
+forms of the language using fexprs without necessarily *implementing*
+them using `fexpr`.  As long as the implementation's behaviour
+matches what the `fexpr` version specifies, it's compatible
 behaviour and thus an allowable implementation.
 
 No variable numbers of parameters
@@ -222,7 +222,7 @@ they are stupid (I can't tell, myself,) but they are what they are.
     that (should) have a (relatively) fixed meaning in all Robin
     programs, whether they are used in any given program or not.
 
-*   Note (that should be elsewhere?): most of the macros defined
+*   Note (that should be elsewhere?): most of the operators defined
     in `stdlib` are supposed to, intentionally, take a fixed number
     of arguments for some reason (nominally, to make some kind of
     future static analysis easier.)
@@ -349,12 +349,12 @@ Markdown.)
             prepend
             list?
             symbol?
-            macro?
+            operator?
             number?
             equal?
             subtract
             sign
-            macro
+            fexpr
             eval
             if
             abort
