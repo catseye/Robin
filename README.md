@@ -36,7 +36,7 @@ be built, but the `bin/robin` script will use `runhaskell` or `runhugs` instead.
 
 You can then run it on one of the example Robin sources in `eg` like so:
 
-    bin/robin eg/hello-world.robin
+    bin/robin pkg/stdlib.robin eg/hello-world.robin
 
 You should see
 
@@ -53,8 +53,8 @@ you can run the test suite (consisting of more than 400 unit tests) by running
 
     ./test.sh
 
-The tests that use only Robin's core semantics (`--no-builtins` flag) are quite
-slow, so you may want to skip them.  You can skip them by running
+The tests that use only Robin's core semantics (with no help from implementation
+"builtins") are quite slow, so you may want to skip them, by running
 
     APPLIANCES="appliances/robin.md" ./test.sh
 
@@ -126,15 +126,15 @@ For a full description of the Robin language, see
 Repository Layout
 -----------------
 
-*   appliances/ — test appliances for the literate test suite.
-*   bin/ — driver script, destination for executable when built.
-*   demo/ — contains HTML5 document demonstrating build to JS by Haste.
-*   [doc/](doc/README.md) — Tutorial, specification, rationale, etc.
-*   eg/ — example programs written in Robin
-*   src/ — Haskell source for reference interpreter.
-*   stdlib/ — normative definitions of standard library symbols.
-*   [HISTORY.md](HISTORY.md) — history of this distribution.
-*   [TODO.md](TODO.md) — plans.
+*   `appliances/` — test appliances for the literate test suite.
+*   `bin/` — driver script, destination for executable when built.
+*   `demo/` — contains HTML5 document demonstrating build to JS by Haste.
+*   [`doc/`](doc/README.md) — Tutorial, specification, rationale, etc.
+*   `eg/` — example programs written in Robin
+*   `src/` — Haskell source for reference interpreter.
+*   `stdlib/` — normative definitions of standard library symbols.
+*   [`HISTORY.md`](HISTORY.md) — history of this distribution.
+*   [`TODO.md`](TODO.md) — plans.
 
 [Scheme]:    http://schemers.org/
 [Haskell]:   https://www.haskell.org/
