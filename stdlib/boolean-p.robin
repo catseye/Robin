@@ -18,17 +18,16 @@ The argument to `boolean?` may (naturally) be any type, but there must be
 exactly one argument.
 
     | (boolean? #t #f)
-    ? abort (illegal-arguments (#t #f))
+    ? abort (illegal-arguments
 
     | (boolean?)
-    ? abort (illegal-arguments ())
+    ? abort (illegal-arguments
 
 '<<SPEC'
 
-(define boolean? (fexpr (args env)
-  (bind-args (b) args env
-    (if (equal? b #t)
+(define boolean? (fun (b)
+  (if (equal? b #t)
+    #t
+    (if (equal? b #f)
       #t
-      (if (equal? b #f)
-        #t
-        #f)))))
+      #f))))

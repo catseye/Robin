@@ -23,7 +23,7 @@ logical disjunction (boolean "or") of these two values.
     ? abort
 
     | (or #t #f #f)
-    ? abort (illegal-arguments (#t #f #f))
+    ? abort (illegal-arguments
 
 `or` expects both of its arguments to be booleans.
 
@@ -42,9 +42,5 @@ but it can be demonstrated as follows.
 
 '<<SPEC'
 
-(define or (fexpr (args env)
-  (if (equal? (tail (tail args)) ())
-    (if (eval env (head args))
-      #t
-      (if (eval env (head (tail args))) #t #f))
-    (abort (list (literal illegal-arguments) args)))))
+(define or (fun (a b)
+  (if a #t (if b #t #f))))
