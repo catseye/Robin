@@ -13,46 +13,6 @@ return a literal chunk of program, which we then evaluate.)
 It would just be a fexpr that evaluates (in the calling
 environment) what the body evaluates to.
 
-For static analysis (see below), it could also annotate
-the value with a version whose return value does not get
-evaluated.  This annotation "expand-macro" could be used
-by static analyzers to expand the macro to a form which
-they can then continue to analyze.
-
-Static analysis of fexprs
--------------------------
-
-It has been noted many times that fexprs are hard to statically
-analyze.  "Hard" isn't even the right word: they have a trivial
-equational theory.  In less formal terms, if I'm a static
-analyzer and you give me a fexpr I'm like, what can I say about
-this?  This thing could be doing literally _anything_ with its
-arguments...
-
-The idea so far is to be able to decorate operator values with
-some metadata which describes the equational theory that should
-apply to them.
-
-So, any operator defined with `fun` will come with some metadata
-that says "This operator takes _n_ arguments and evaluates all
-of them".
-
-A static analyzer is passed an environment, containing that value
-and its metadata; when it sees the name that maps to that value
-in the environment, it looks at the metadata and knows a bit more
-how to analyze the arguments it sees.
-
-This metadata would also be a good place for such an analyzer to
-store information it deduces, such as types.
-
-How exactly that information should be represented in the metadata
-is an open question.  In some sense it is very similar to early
-Lisps associating a property list with each symbol.  But I think
-ultimately it could be far more general, e.g. the metadata for an
-operator could faithfully capture the complete axiomatic or
-algebraic semantics of that operator, which could be used in a
-proof.  But that's a long way off.
-
 Disjointness of types
 ---------------------
 
@@ -96,15 +56,6 @@ Other libs
 
 `lispish` lib, that just gives you all the old jargon-y names
 as aliases.
-
-Static analysis lib.  This is its own bucket of worms.  It should
-expose an operator that can be wrapped around an arbitrary standard
-Robin program _p_ and, if static analysis of _p_ is successful,
-simply evaluates to whatever _p_ evaluates to.  And if not
-successful, produces an abort.  Should probably start small --
-statically check the arity of every application, for instance.
-Note that this relies on the assumption that all standard symbols
-have their standard meanings.
 
 TopLevel
 --------
