@@ -3,6 +3,22 @@ TODO
 
 (Note, some of these are possibly long-term plans.)
 
+Macros
+------
+
+Just as we have defined `fun` in terms of fexprs, we can
+define `macro` in terms of fexprs.  (It is expected to
+return a literal chunk of program, which we then evaluate.)
+
+It would just be a fexpr that evaluates (in the calling
+environment) what the body evaluates to.
+
+For static analysis (see below), it could also annotate
+the value with a version whose return value does not get
+evaluated.  This annotation "expand-macro" could be used
+by static analyzers to expand the macro to a form which
+they can then continue to analyze.
+
 Static analysis of fexprs
 -------------------------
 

@@ -4,18 +4,20 @@ History of Robin
 Robin 0.8
 ---------
 
-*   The `macro` form no longer provides the `self`
+*   What was previously known as a `macro` is now known
+    as a `fexpr`.
+*   The `fexpr` form no longer provides the `self`
     argument to its definition.  If recursion is desired
-    in the definition of a macro, the macro should be
+    in the definition of a fexpr, the fexpr should be
     written recursively (in the same way functions have
     traditionally been written recursively in Robin: pass
-    the macro itself as the first argument to the macro.)
-    The Robin definitions of macros in the standard library
+    the fexpr itself as the first argument to the fexpr.)
+    The Robin definitions of fexprs in the standard library
     such as `let` and `list` have been rewritten this way.
-*   The object that a `macro` form evaluates to is no
+*   The object that calling `fexpr` or `fun` produces is no
     longer called a "macro".  It is an "operator".  There
     there are other ways to obtain an operator than applying
-    a `macro` form (for instance there have always been
+    a `fexpr` or `fun` (for instance there have always been
     intrinsic operators; it's not fair to call them "macros".)
 *   When a reactor produces an abort value, it does not cause
     a further event reporting the abort value to occur.
