@@ -1,0 +1,42 @@
+;'<<SPEC'
+
+### `operator?` ###
+
+    -> Tests for functionality "Evaluate core Robin Expression"
+
+`operator?` evaluates its argument, then evaluates to `#t` if it is an operator,
+or `#f` if it is not.
+
+    | (operator? (fexpr (args env) args))
+    = #t
+
+Intrinsic operators are operators.
+
+    | (operator? fexpr)
+    = #t
+
+    | (operator? operator?)
+    = #t
+
+Literal symbols are not operators, even if they're the name of one.
+
+    | (operator? ((fexpr (args env) (head args)) fexpr))
+    = #f
+
+Numbers are not operators.
+
+    | (operator? 5)
+    = #f
+
+The argument to `operator?` may (naturally) be any type, but there must be
+exactly one argument.
+
+    | (operator? fexpr fexpr)
+    ? abort (illegal-arguments (fexpr fexpr))
+
+    | (operator?)
+    ? abort (illegal-arguments ())
+
+'<<SPEC'
+
+(require operator?)

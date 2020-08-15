@@ -1,9 +1,9 @@
 Robin
 =====
 
-This document defines version 0.7 of the Robin programming language.
+This document defines version 0.8 of the Robin programming language.
 In this document, the name "Robin" by itself refers to the Robin
-programming language version 0.7.
+programming language version 0.8.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,
@@ -62,14 +62,14 @@ The characters of the string are given between pairs of single quotes.
 Such a form is parsed as a conventional string data type (see
 the "String" section in the Robin Expression Language for details.)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal ''Hello''))
     = (72 101 108 108 111)
 
 A single single quote may appear in string literals of this kind.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal ''He'llo''))
     = (72 101 39 108 108 111)
@@ -79,24 +79,24 @@ may be given.  The sentinel between the leading single quote pair must
 match the sentinel given between the trailing single quote pair.  The
 sentinel may consist of any text not containing a single quote.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal 'X'Hello'X'))
     = (72 101 108 108 111)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal '...('Hello'...('))
     = (72 101 108 108 111)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal 'X'Hello'Y'))
     ? unexpected end of input
 
 A sentinelized literal like this may embed a pair of single quotes.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal 'X'Hel''lo'X'))
     = (72 101 108 39 39 108 111)
@@ -104,7 +104,7 @@ A sentinelized literal like this may embed a pair of single quotes.
 By choosing different sentinels, string literals may contain any other
 string literal.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal 'X'Hel'Y'bye'Y'lo'X'))
     = (72 101 108 39 89 39 98 121 101 39 89 39 108 111)
@@ -113,7 +113,7 @@ No interpolation of escape sequences is done in a Robin string literal.
 (Functions to convert escape sequences commonly found in other languages
 may one day be available in a standard module.)
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal ''Hello\nworld''))
     = (72 101 108 108 111 92 110 119 111 114 108 100)
@@ -121,7 +121,7 @@ may one day be available in a standard module.)
 All characters which appear in the source text between the delimiters
 of the string literal are literally included in the string.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal ''Hello
     | world''))
@@ -129,7 +129,7 @@ of the string literal are literally included in the string.
 
 Adjacent string literals are not automatically concatenated.
 
-    | (define literal (macro (s a e) (head a)))
+    | (define literal (fexpr (args env) (head args)))
     | (display
     |   (literal (''Hello'' ''world'')))
     = ((72 101 108 108 111) (119 111 114 108 100))
@@ -224,7 +224,7 @@ all the other data types.  It is inductively defined as follows:
 *   A symbol is a term.
 *   A boolean is a term.
 *   An integer is a term.
-*   A macro is a term.
+*   An operator is a term.
 *   An empty list is a term.
 *   A list cell containing a term, prepended to another list
     (which may be empty), is a term.
@@ -256,10 +256,10 @@ an abort value will be produced.
 For a symbol to appear unevaluated in a Robin program, it must be
 introduced as a literal.  However, there is no intrinsic way to do this,
 so in order to demonstrate it, we must use something we haven't
-covered yet: a macro.  We'll just go ahead and show the example, and
-will explain macros later.
+covered yet: an operator.  We'll just go ahead and show the example, and
+will explain operators later.
 
-    | ((macro (s a e) (head a)) hello)
+    | ((fexpr (a e) (head a)) hello)
     = hello
 
 A Robin implementation is not expected to be able to generate new symbols
@@ -272,7 +272,7 @@ it is what the symbol is bound to in the environment that is applied.
 
 There are two values of Boolean type, `#t`, representing truth, and `#f`,
 representing falsehood.  By convention, an identifier which ends in `?`
-is a macro or function which evaluates to a Boolean.  The `if` intrinsic
+denotes an operator which evaluates to a Boolean.  The `if` intrinsic
 expects a Boolean expression as its first argument.
 
 Booleans always evaluate to themselves.
@@ -312,50 +312,43 @@ Integers cannot be applied.
     | (900 1 2 3)
     ? (abort (inapplicable-object 900))
 
-### Macros ###
+### Operators ###
 
-A macro is a term which, in an environment, describes how to
-translate one S-expression to another.
+An operator is a term which describes how to translate a given term to
+another term, in a given environment.
 
 One area where Robin diverges significantly from Lisp and Scheme is that,
-whereas Lisp and Scheme support macro capabilities, in Robin, the macro
-is a **fundamental type**.  Other abstractions, such as function values, are
-built on top of macros.  Macros are "first-class" objects that may exist
-at runtime and can evaluate to other macros.  Therefore, the word "macro"
-has, perhaps, a slightly different meaning in Robin than in Lisp or Scheme.
+whereas only some (older and more fringe) Lisps support fexprs, in Robin,
+`fexpr` is the fundamental way to define new operators.  Other ways to
+define operators, such as functions and macros, are built on top of `fexpr`.
 
-They can also be compared to the one-argument `lambda` form from PicoLisp;
-again, however, unlike PicoLisp's variety of `lambda` forms, Robin's
-macros are the *only* abstraction of this kind fundamentally available, and
-other such abstractions *must* be built on top of macros.
-
-Whereas a function evaluates each of its arguments to values, and
+A conventional function evaluates each of its arguments to values, and
 binds each of those values to a formal parameter of the function, then
-evaluates the body of the function in that new environment, a macro:
+evaluates the body of the function in that new environment.  In contrast,
+an operator defined by `fexpr`:
 
-*   binds the macro value itself to the first formal parameter of the
-    macro (by convention called `self`) — this is to facilitate writing
-    recursive macros;
-*   binds the literal tail of the list of the macro application to
-    the second formal parameter of the macro (by convention called `args`);
+*   binds the literal tail of the list of the operator application to
+    the first formal parameter of the `fexpr` (by convention called `args`);
 *   binds a binding alist representing the environment in effect at the
-    point the macro was evaluated to the third formal parameter (by
+    point the operator was evaluated to the second formal parameter (by
     convention called `env`); and
-*   evaluates the body of the macro in that environment.
+*   evaluates the body of the `fexpr` in that environment.
 
-Macros are defined with the `macro` intrinsic.
+Operators are either intrinsic, or are defined with the `fexpr` intrinsic.
+(They may be built-in to an implementation as well, but they still need to
+be given a definition in terms of `fexpr` in any case.)
 
-Macros evaluate to themselves.
+Operators evaluate to themselves.
 
-Macros are represented as the S-expression expansion of their
-implementation.
+Operators are represented as an opaque descriptor (TODO this should be the
+metadata of the operator.)
 
-    | (macro (self args env) args)
-    = (macro (self args env) args)
+    | (fexpr (args env) args)
+    = <operator>
 
-Macros can be applied, and that is the typical use of them.
+Operators can be applied, and that is the typical use of them.
 
-    | ((macro (self args env) args) 1)
+    | ((fexpr (args env) args) 1)
     = (1)
 
 ### Lists ###
@@ -379,11 +372,12 @@ A list with several elements is notated as a sequence of those
 elements, preceded by a `(`, followed by a `)`, and delimited
 by whitespace.
 
-Non-empty lists do not evaluate to themselves; rather, they represent a macro
-application.  However, the `literal` macro (whose definition is
-`(macro (s a e) (head a))`) may be used to obtain a literal list.
+Non-empty lists do not evaluate to themselves; rather, they represent an
+application of an operator to zero or more arguments.  However, the
+`literal` operator (whose definition is `(fexpr (args env) (head args))`)
+may be used to obtain a literal list.
 
-    | ((macro (s a e) (head a)) (7 8)))
+    | ((fexpr (args env) (head args)) (7 8)))
     = (7 8)
 
 Lists cannot be directly applied, but since a list itself represents an
@@ -444,7 +438,7 @@ we call it a _binding alist_.  The idea is that it is a Robin representation
 of an evaluation environment, where the symbols in the heads of the sublists
 are bound to the values in the tails of the pairs.  Binding alists can be
 created from the environment currently in effect (such as in the case of the
-third argument of a macro) and can be used to change the evaluation
+second argument of a fexpr) and can be used to change the evaluation
 environment that is in effect (such as in the first argument to `eval`.)
 
 (d) Standard Environments
@@ -463,37 +457,33 @@ list functions, arithmetic functions, etc.)
 
 ### Intrinsics ###
 
-Robin provides 15 intrinsics.  These represent the fundamental functionality
-that is used to evaluate programs, and that cannot be expressed as macros
-written in Robin (not without resorting to meta-circularity, at any rate.)
-All other macros are built up on top of the intrinsics.
+Robin provides 15 intrinsic operators.  These represent the fundamental
+functionality that is used to evaluate programs, and that cannot be expressed
+as fexprs written in Robin (not without resorting to meta-circularity, at any
+rate.)  All other operators are built up on top of the intrinsics.
 
 This set of intrinsics is not optional — every Robin implementation must
 provide them, or it's not Robin.
 
-One important intrinsic is `eval`.  Many macros will make use of `eval`,
+One important intrinsic is `eval`.  Many fexprs will make use of `eval`,
 to evaluate the literal args they receive.  When they do this in the
 environment in which they were called, they behave a lot like functions.
 But they are not obligated to; they might evaluate them in a modified
 environment, or not evaluate them at all and treat them as a literal
 S-expression.
 
-Macros that are defined intrinsically does not support every operation
-that defined macro support; for example, they do not support examining
-their internals.  The canonical representation of an intrinsic is the name
-its bound to.
+The canonical representation of an intrinsic operator is the canonical
+name, to which it is bound in the standard environment.  (TODO: this will
+likely change when operators get metadata.)
 
     | head
     = head
 
-All parts of the Robin Expression Language, including intrinsics,
+All parts of the Robin Expression Language, including intrinsic operators,
 can be passed around as values.
 
     | (prepend if (prepend head ()))
     = (if head)
-
-All of the 15 intrinsics are macros, but there is nothing ontologically
-requiring an intrinsic to be a value of macro type.
 
 Each of the 15 intrinsics provided by Robin is specified in its own file
 in the standard library.  Because these are intrinsics, no Robin
@@ -507,9 +497,9 @@ which describe their behaviour are.
 *   [head](../stdlib/head.robin)
 *   [if](../stdlib/if.robin)
 *   [list?](../stdlib/list-p.robin)
-*   [macro?](../stdlib/macro-p.robin)
-*   [macro](../stdlib/macro.robin)
+*   [fexpr](../stdlib/fexpr.robin)
 *   [number?](../stdlib/number-p.robin)
+*   [operator?](../stdlib/operator-p.robin)
 *   [prepend](../stdlib/prepend.robin)
 *   [sign](../stdlib/sign.robin)
 *   [subtract](../stdlib/subtract.robin)
@@ -522,12 +512,13 @@ The "small" library represents indispensible functionality that
 all but the most austere Robin programs would like to be built on.
 
 *   [literal](../stdlib/literal.robin)
-*   [list](../stdlib/list.robin)
-*   [bind](../stdlib/bind.robin)
 *   [env](../stdlib/env.robin)
+*   [bind](../stdlib/bind.robin)
+*   [list](../stdlib/list.robin)
 *   [let](../stdlib/let.robin)
 *   [choose](../stdlib/choose.robin)
 *   [bind-args](../stdlib/bind-args.robin)
+*   [fun](../stdlib/fun.robin)
 
 ### Standard Library ###
 
@@ -539,7 +530,7 @@ It's categorized in "packages".
     take-while drop-while first rest last prefix? flatten
 *   *alist*: lookup extend delete
 *   *env*: env? bound? export sandbox unbind unshadow
-*   *arith*: abs add > >= < <= multiply divide remainder
+*   *arith*: abs add gt? gte? lt? lte? multiply divide remainder
 *   *misc*: itoa
 
 Part 2. Robin Toplevel Language
@@ -673,7 +664,7 @@ the definitions are semantically equivalent.  (The following example
 is perhaps not the best example.)
 
     | (define true #t)
-    | (define true ((macro (self args env) #t)))
+    | (define true ((fexpr (args env) #t)))
     | (display true)
     = #t
 
@@ -693,8 +684,8 @@ for each symbol that has multiple definitions.
 ### `reactor` ###
 
 `(reactor LIST-OF-SYMBOLS STATE-EXPR BODY-EXPR)` installs a reactor.  Reactors
-permit the construction of reactive Robin programs.  See the
-[Reactors](#reactors) section for more information on reactors.
+permit the construction of Robin programs that interact with their environment.
+See the [Reactors](#reactors) section for more information on reactors.
 
 Part 3. Robin Reactors
 ----------------------
@@ -704,10 +695,9 @@ Part 3. Robin Reactors
 To separate the concerns of computation and interaction, Robin provides
 a construct called a _reactor_.  While evaluation of a Robin expression
 accomplishes side-effect-free computation, reactors permit the construction
-of so-called "reactive" programs, which are driven by events and may
-interact with a user, a remote server on a network, or other source of
-events.  Reactors are similar to event handlers in Javascript, or to
-processes in Erlang.
+of event-driven programs which may interact with a user, a remote server on
+a network, or other source of events, while they are executing.  Reactors
+are similar to event handlers in Javascript, or to processes in Erlang.
 
 In Robin, a reactor is installed by giving a top-level form with the
 following syntax:
@@ -721,8 +711,8 @@ a _facility_ with which the reactor wishes to be able to interact.
 The second argument is evaluated, and becomes the _initial state_ of the
 reactor.
 
-The third argument of the `reactor` form is evaluated to obtain a
-macro.  This is called the _transducer_ of the reactor.
+The third argument of the `reactor` form is evaluated to obtain an
+operator.  This is called the _transducer_ of the reactor.
 
 Whenever an event of interest to the reactor occurs, the transducer is
 evaluated, being passed two (pre-evaluated) arguments:
@@ -795,7 +785,7 @@ Let's describe one such facility for concreteness.
 
 #### `line-terminal` ####
 
-    -> Tests for functionality "Execute Robin Toplevel Program (with Small)"
+    -> Tests for functionality "Execute Robin Toplevel Program (with Stdlib)"
 
 The `line-terminal` facility allows a Robin program to interact with
 something or someone over a line-oriented protocol, similar to what
@@ -827,14 +817,13 @@ essentially doesn't keep any state — the initial state of the reactor is simpl
 the integer 0, and the state is set to 0 after each event is reacted to.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
-    |     (bind event (head args)
-    |       (bind event-type (head event)
-    |         (if (equal? event-type (literal init))
-    |           (list 0
-    |             (list (literal writeln) (literal ''Hello, world!''))
-    |             (list (literal stop) 0))
-    |           (list 0))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal init))
+    |         (list state
+    |           (list (literal writeln) (literal ''Hello, world!''))
+    |           (list (literal stop) 0))
+    |         (list state)))))
     = Hello, world!
 
 Reactors which interact with `line-terminal` receive `readln` events.
@@ -847,14 +836,12 @@ marker characters.
 Thus we can construct a simple `cat` program:
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
-    |     (bind event (head args)
-    |       (bind event-type (head event)
-    |         (bind event-payload (head (tail event))
-    |           (if (equal? event-type (literal readln))
-    |             (list 0
-    |               (list (literal writeln) event-payload))
-    |             (list 0)))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (list state
+    |           (list (literal writeln) event-payload))
+    |         (list state)))))
     + Cat
     + Dog
     = Cat
@@ -882,15 +869,13 @@ where NUMBER is a random number between 0 and 65535.
 A reactor can issue multiple commands in its response to an event.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
-    |     (bind event (head args)
-    |       (bind event-type (head event)
-    |         (bind event-payload (head (tail event))
-    |           (if (equal? event-type (literal readln))
-    |             (list 0
-    |               (list (literal writeln) (literal ''Line:''))
-    |               (list (literal writeln) event-payload))
-    |             (list 0)))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (list state
+    |           (list (literal writeln) (literal ''Line:''))
+    |           (list (literal writeln) event-payload))
+    |         (list state)))))
     + Cat
     + Dog
     = Line:
@@ -902,16 +887,14 @@ When receiving a malformed command, a facility may produce a warning
 message of some kind, but it should otherwise ignore it and keep going.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
-    |     (bind event (head args)
-    |       (bind event-type (head event)
-    |         (bind event-payload (head (tail event))
-    |           (if (equal? event-type (literal readln))
-    |             (list 0
-    |               (literal what-is-this)
-    |               (literal i-dont-even)
-    |               (list (literal writeln) event-payload))
-    |             (list 0)))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (list state
+    |           (literal what-is-this)
+    |           (literal i-dont-even)
+    |           (list (literal writeln) event-payload))
+    |         (list state)))))
     + Cat
     + Dog
     = Cat
@@ -926,15 +909,13 @@ reference implementation will display them if `--show-events` is given)
 but this is not a strict requirement.
 
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
-    |     (bind event (head args)
-    |       (bind event-type (head event)
-    |         (bind event-payload (head (tail event))
-    |           (if (equal? event-type (literal readln))
-    |             (if (equal? (head event-payload) 65)
-    |               (abort 999999)
-    |               (list 0 (list (literal writeln) event-payload)))
-    |             (list 0)))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (if (equal? (head event-payload) 65)
+    |           (abort 999999)
+    |           (list state (list (literal writeln) event-payload)))
+    |         (list state)))))
     + Cat
     + Dog
     + Alligator
@@ -945,17 +926,14 @@ but this is not a strict requirement.
 
 Reactors can keep state.
 
-    | (define inc (macro (self args env)
+    | (define inc (fexpr (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
-    |         (bind event-type (head event)
-    |           (bind event-payload (head (tail event))
-    |             (if (equal? event-type (literal readln))
-    |               (list (inc state) (list (literal writeln) (list state)))
-    |               (list state))))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (list (inc state) (list (literal writeln) (list state)))
+    |         (list state)))))
     + Cat
     + Dog
     + Giraffe
@@ -966,26 +944,21 @@ Reactors can keep state.
 Multiple reactors can be instantiated, will react to the same events.
 Note that reactors react in the *opposite* order they were installed.
 
-    | (define inc (macro (self args env)
+    | (define inc (fexpr (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
-    |         (bind event-type (head event)
-    |           (bind event-payload (head (tail event))
-    |             (if (equal? event-type (literal readln))
-    |               (list (inc state) (list (literal writeln) (list state)))
-    |               (list state))))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (list (inc state) (list (literal writeln) (list state)))
+    |         (list state)))))
     | (reactor (line-terminal) 0
-    |   (macro (self args env)
-    |     (bind event (head args)
-    |       (bind event-type (head event)
-    |         (bind event-payload (head (tail event))
-    |           (if (equal? event-type (literal readln))
-    |             (list 0
-    |               (list (literal writeln) event-payload))
-    |             (list 0)))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (list state
+    |           (list (literal writeln) event-payload))
+    |         (list state)))))
     + Cat
     + Dog
     + Giraffe
@@ -998,19 +971,16 @@ Note that reactors react in the *opposite* order they were installed.
 
 A reactor can stop by issuing a `stop` command.
 
-    | (define inc (macro (self args env)
+    | (define inc (fexpr (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
-    |         (bind event-type (head event)
-    |           (bind event-payload (head (tail event))
-    |             (if (equal? event-type (literal readln))
-    |               (if (equal? state 68)
-    |                 (list state (list (literal stop) 0))
-    |                 (list (inc state) (list (literal writeln) event-payload)))
-    |               (list state))))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (if (equal? state 68)
+    |           (list state (list (literal stop) 0))
+    |           (list (inc state) (list (literal writeln) event-payload)))
+    |         (list state)))))
     + Cat
     + Dog
     + Giraffe
@@ -1022,28 +992,22 @@ A reactor can stop by issuing a `stop` command.
 
 Stopping one reactor does not stop others.
 
-    | (define inc (macro (self args env)
+    | (define inc (fexpr (args env)
     |               (subtract (eval env (head args)) (subtract 0 1))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
-    |         (bind event-type (head event)
-    |           (bind event-payload (head (tail event))
-    |             (if (equal? event-type (literal readln))
-    |               (if (equal? state 68)
-    |                 (list state (list (literal stop) 0))
-    |                 (list (inc state) (list (literal writeln) event-payload)))
-    |               (list state))))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (if (equal? state 68)
+    |           (list state (list (literal stop) 0))
+    |           (list (inc state) (list (literal writeln) event-payload)))
+    |         (list state)))))
     | (reactor (line-terminal) 65
-    |   (macro (self args env)
-    |     (bind state (head (tail args))
-    |       (bind event (head args)
-    |         (bind event-type (head event)
-    |           (bind event-payload (head (tail event))
-    |             (if (equal? event-type (literal readln))
-    |               (list (inc state) (list (literal writeln) (list state)))
-    |               (list state))))))))
+    |   (fexpr (args env)
+    |     (bind-vals ((event-type event-payload) state) args
+    |       (if (equal? event-type (literal readln))
+    |         (list (inc state) (list (literal writeln) (list state)))
+    |         (list state)))))
     + Cat
     + Dog
     + Giraffe
@@ -1071,7 +1035,7 @@ reactor has started, and later even unsubscribe from it as well.
 
 It is not really recommended to implement a system with multiple
 reactors.  It is better to compose a single large reactor out of
-multiple macros.
+multiple operators.
 
 But currently we allow it, so we should say some words about it.
 

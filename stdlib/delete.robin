@@ -2,26 +2,35 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with List)"
 
-    |   (delete (literal b) (literal ((a 1) (b 2) (c 3))))
+`delete` evaluates its first argument to a value of any type, and its
+second argument to obtain an alist.  A new alist is returned which
+contains no pairs whose first element are equal to the given element.
+
+    | (delete (literal b) (literal ((a 1) (b 2) (c 3))))
     = ((a 1) (c 3))
 
-    |   (delete (literal b) (literal ((a 1) (b 2) (c 3) (b 4))))
+All pairs with the given element as key are removed.
+
+    | (delete (literal b) (literal ((a 1) (b 2) (c 3) (b 4))))
     = ((a 1) (c 3))
 
-    |   (delete (literal r) (literal ((a 1) (b 2) (c 3))))
+If there are no pairs with the given element as key, the same alist
+is returned unchanged.
+
+    | (delete (literal r) (literal ((a 1) (b 2) (c 3))))
     = ((a 1) (b 2) (c 3))
 
 The following should be true for any identifier i and alist x.
 
-    |   (let ((i (literal a))
-    |         (x (literal ((a 5) (b 7)))))
-    |     (lookup i (delete i x)))
+    | (let ((i (literal a))
+    |       (x (literal ((a 5) (b 7)))))
+    |   (lookup i (delete i x)))
     = ()
 
-    |   (delete (literal q) 55)
+    | (delete (literal q) 55)
     ? abort (expected-list 55)
 
-    |   (delete (literal q) (literal ((a 7) 99 (q 4))))
+    | (delete (literal q) (literal ((a 7) 99 (q 4))))
     ? abort (expected-list 99)
 
 '<<SPEC'

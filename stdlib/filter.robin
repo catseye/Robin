@@ -2,7 +2,7 @@
 
     -> Tests for functionality "Evaluate Robin Expression (with List)"
 
-`filter` evaluates its first argument to obtain a macro, generally assumed
+`filter` evaluates its first argument to obtain an operator, generally assumed
 to be a predicate (a one-argument function which evaluates to a boolean).
 It then evaluates its second argument to obtain a list.  It then evaluates
 to a list which contains all the elements of the given list, in the same

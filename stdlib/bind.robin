@@ -1,50 +1,59 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Evaluate Robin Expression (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with literal and bind)"
 
 `bind` binds a single identifier to the result of evaluating a single
 expression, and makes that binding available in another expression which
 it evaluates.
 
-    |   (bind x (literal hello)
-    |     (list x x))
+    | (bind x (literal hello)
+    |   (prepend x (prepend x ())))
     = (hello hello)
 
-    |   (bind dup (macro (self args env)
-    |               (list (head args) (head args)))
-    |     (dup g))
+    | (bind dup (fexpr (args env)
+    |             (prepend (head args) (prepend (head args) ())))
+    |   (dup g))
     = (g g)
 
-    |   (bind dup (macro (self args env)
-    |               (bind x (eval env (head args))
-    |                 (list x x)))
-    |     (dup (literal g)))
+    | (bind dup (fexpr (args env)
+    |             (bind x (eval env (head args))
+    |               (prepend x (prepend x ()))))
+    |   (dup (literal g)))
     = (g g)
 
-    |   (bind dup (macro (self args env)
-    |               (bind x (eval env (head args))
-    |                 (list x x)))
-    |     (dup (dup (literal g))))
+    | (bind dup (fexpr (args env)
+    |             (bind x (eval env (head args))
+    |               (prepend x (prepend x ()))))
+    |   (dup (dup (literal g))))
     = ((g g) (g g))
 
-    |   (bind find (macro (self args env)
-    |                (bind-args (alist key) args env
-    |                  (if (equal? alist (literal ())) (literal ())
-    |                    (if (equal? key (head (head alist)))
-    |                       (head alist)
-    |                       (self (tail alist) key)))))
-    |     (find (literal ((c d) (e f) (a b))) (literal a)))
-    = (a b)
+`bind` can bind a recursive fexpr to a name.
+
+    | (bind elem?-r
+    |   (fexpr (args env)
+    |     (bind self (eval env (head args))
+    |       (bind target (eval env (head (tail args)))
+    |         (bind items (eval env (head (tail (tail args))))
+    |           (if (equal? items ()) #f
+    |             (if (equal? (head items) target) #t
+    |               (self self target (tail items))))))))
+    |   (elem?-r elem?-r (literal c) (literal (a b c d e f))))
+    = #t
 
 `bind` expects exactly three arguments, or else an abort value will be produced.
 
-    |   (bind smoosh (fun (x y) (list y x)))
+    | (bind smoosh (fun (x y) (list y x)))
     ? abort
 
-    |   (bind smoosh)
+    | (bind smoosh)
     ? abort
 
-    |   (bind)
+    | (bind)
+    ? abort
+
+The identifier in a binding must be a symbol.
+
+    | (bind 3 1 3)
     ? abort
 
 `bind` is basically equivalent to Scheme's `let`, but only one
@@ -52,9 +61,12 @@ binding may be given.
 
 '<<SPEC'
 
-(define bind (macro (self args env)
-  (eval
-    (prepend
-      (prepend (head args) (prepend (eval env (head (tail args)))
-                                       ())) env)
-    (head (tail (tail args))))))
+(define bind (fexpr (args env)
+  (if
+    (symbol? (head args))
+    (eval
+      (prepend
+        (prepend (head args) (prepend (eval env (head (tail args)))
+                                         ())) env)
+      (head (tail (tail args))))
+    (abort ((literal expected-symbol) (head args))))))

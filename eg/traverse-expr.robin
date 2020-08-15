@@ -1,0 +1,24 @@
+(require let) (require choose) (require fold)
+
+;''Demonstration of some code that traverses an expression, in preparation for
+   writing some actual Robin static analysis code, in Robin.
+
+   Note, this example code is woefully incomplete.''
+
+(define traverse-expr (fun (expr)
+  (bind traverse-r (fun (self expr acc)
+    (if (list? expr)
+        (let ((fname (head expr))
+              (args  (tail expr))
+              (acc1  (prepend fname acc))
+              (visit (fun (x a) (self self x a)))
+              (acc2  (fold visit acc1 args)))
+          acc2)
+        (prepend expr acc)))
+    (traverse-r traverse-r expr ()))))
+
+(define little-program (literal
+  (add (mul 7 8) (mul 5 9))
+))
+
+(display (traverse-expr little-program))

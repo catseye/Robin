@@ -2,8 +2,6 @@
 
 module Language.Robin.Parser (parseToplevel, parseExpr) where
 
-import Prelude (return, read, map, fromIntegral, (==), (/=), (++), ($), String, Bool(True, False), Either(Left, Right))
-
 import Data.Char
 import Data.Int
 

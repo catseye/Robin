@@ -1,94 +1,80 @@
 module Language.Robin.Intrinsics where
 
-import Prelude (($), (==), (>=), (<), (-), map)
-
 import Language.Robin.Expr
 import Language.Robin.Env (Env, fromList, insert)
 import Language.Robin.Eval
 
 
-head :: Evaluable
-head env (List [expr]) cc =
-    eval env expr (\x ->
-        assertList env x (\val ->
-            case val of
-                List (a:_) -> cc a
-                other -> errMsg "expected-list" other))
-head env other cc = errMsg "illegal-arguments" other
+head_ :: Evaluable
+head_ env (List [expr]) cc =
+    evalToList cc env expr (\val ->
+       case val of
+           List (a:_) -> cc a
+           other -> errMsg cc "expected-list" other)  -- FIXME: should really be "expected-nonempty-list"
+head_ env other cc = errMsg cc "illegal-arguments" other
 
-tail :: Evaluable
-tail env (List [expr]) cc =
-    eval env expr (\x ->
-        assertList env x (\val ->
-            case val of
-                List (_:b) -> cc (List b)
-                other -> errMsg "expected-list" other))
-tail env other cc = errMsg "illegal-arguments" other
+tail_ :: Evaluable
+tail_ env (List [expr]) cc =
+    evalToList cc env expr (\val ->
+        case val of
+            List (_:b) -> cc (List b)
+            other -> errMsg cc "expected-list" other)
+tail_ env other cc = errMsg cc "illegal-arguments" other
 
 prepend :: Evaluable
 prepend env (List [e1, e2]) cc =
-    eval env e1 (\x1 -> eval env e2 (\val ->
-            case val of
-                List x2 -> cc $ List (x1:x2)
-                other -> errMsg "expected-list" other))
-prepend env other cc = errMsg "illegal-arguments" other
+    evalB cc env e1 (\x1 ->
+        evalToList cc env e2 (\(List x2) -> cc $ List (x1:x2)))
+prepend env other cc = errMsg cc "illegal-arguments" other
 
 equalP :: Evaluable
 equalP env (List [e1, e2]) cc =
-    eval env e1 (\x1 -> eval env e2 (\x2 -> cc $ Boolean (x1 == x2)))
-equalP env other cc = errMsg "illegal-arguments" other
+    evalB cc env e1 (\x1 -> evalB cc env e2 (\x2 -> cc $ Boolean (x1 == x2)))
+equalP env other cc = errMsg cc "illegal-arguments" other
 
 predP pred env (List [expr]) cc =
-    eval env expr (\x -> cc $ Boolean $ pred x)
-predP pred env other cc = errMsg "illegal-arguments" other
+    evalB cc env expr (\x -> cc $ Boolean $ pred x)
+predP pred env other cc = errMsg cc "illegal-arguments" other
 
 symbolP = predP isSymbol
 listP = predP isList
-macroP = predP isMacro
+operatorP = predP isOperator
 numberP = predP isNumber
 
-subtract :: Evaluable
-subtract env (List [xexpr, yexpr]) cc =
-    eval env xexpr (\x ->
-        assertNumber env x (\(Number xv) ->
-            eval env yexpr (\y ->
-                assertNumber env y (\(Number yv) ->
-                    cc (Number (xv - yv))))))
-subtract env other cc = errMsg "illegal-arguments" other
+subtract_ :: Evaluable
+subtract_ = evalTwoNumbers (\x y cc -> cc $ Number (x - y))
 
 sign :: Evaluable
 sign env (List [expr]) cc =
     let
         sgn x = if x == 0 then 0 else if x < 0 then -1 else 1
     in
-        eval env expr (\x ->
-            assertNumber env x (\(Number xv) ->
-                cc $ Number $ sgn xv))
-sign env other cc = errMsg "illegal-arguments" other
+        evalToNumber cc env expr (\(Number xv) ->
+            cc $ Number $ sgn xv)
+sign env other cc = errMsg cc "illegal-arguments" other
 
 if_ :: Evaluable
-if_ env (List [test, texpr, fexpr]) cc =
-    eval env test (\x ->
-        assertBoolean env x (\(Boolean b) ->
-            if b then eval env texpr cc else eval env fexpr cc))
-if_ env other cc = errMsg "illegal-arguments" other
+if_ env (List [testExpr, trueExpr, falseExpr]) cc =
+    evalToBoolean cc env testExpr (\(Boolean b) ->
+        if b then eval env trueExpr cc else eval env falseExpr cc)
+if_ env other cc = errMsg cc "illegal-arguments" other
 
 eval_ :: Evaluable
 eval_ env (List [envlist, form]) cc =
-    eval env envlist (\newEnvVal ->
-        eval env form (\body ->
+    evalB cc env envlist (\newEnvVal ->
+        evalB cc env form (\body ->
             eval newEnvVal body cc))
-eval_ env other cc = errMsg "illegal-arguments" other
+eval_ env other cc = errMsg cc "illegal-arguments" other
 
-macro :: Evaluable
-macro env (List [args@(List [(Symbol selfS), (Symbol argsS), (Symbol envS)]), body]) cc =
-    cc $ Macro env args body
-macro env other cc = errMsg "illegal-arguments" other
+fexpr :: Evaluable
+fexpr env (List [args@(List [(Symbol argsS), (Symbol envS)]), body]) cc =
+    cc $ Operator "<operator>" $ makeFexpr env args body
+fexpr env other cc = errMsg cc "illegal-arguments" other
 
 abort :: Evaluable
 abort env (List [expr]) cc =
     eval env expr (\v -> cc $ Abort v)
-abort env other cc = errMsg "illegal-arguments" other
+abort env other cc = errMsg cc "illegal-arguments" other
 
 recover :: Evaluable
 recover env (List [expr, (Symbol okName), okExpr, (Symbol abortName), abortExpr]) cc =
@@ -98,22 +84,22 @@ recover env (List [expr, (Symbol okName), okExpr, (Symbol abortName), abortExpr]
                 eval (insert abortName contents env) abortExpr cc
             other ->
                 eval (insert okName other env) okExpr cc)
-recover env other cc = errMsg "illegal-arguments" other
+recover env other cc = errMsg cc "illegal-arguments" other
 
 robinIntrinsics :: Env
-robinIntrinsics = fromList $ map (\(name,bif) -> (name, Builtin name bif))
+robinIntrinsics = fromList $ map (\(name,bif) -> (name, Operator name bif))
       [
-        ("head",     head),
-        ("tail",     tail),
+        ("head",     head_),
+        ("tail",     tail_),
         ("prepend",  prepend),
         ("list?",    listP),
         ("symbol?",  symbolP),
-        ("macro?",   macroP),
+        ("operator?",operatorP),
         ("number?",  numberP),
         ("equal?",   equalP),
-        ("subtract", subtract),
+        ("subtract", subtract_),
         ("sign",     sign),
-        ("macro",    macro),
+        ("fexpr",    fexpr),
         ("eval",     eval_),
         ("if",       if_),
         ("abort",    abort),

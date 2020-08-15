@@ -1,7 +1,5 @@
 module Language.Robin.Reactor where
 
-import Prelude (id, Show, Eq, (++))
-
 import qualified Data.Char as Char
 import Data.Int
 import System.IO
@@ -34,7 +32,9 @@ update reactor@Reactor{rid=rid, env=env, state=state, body=body} event =
             (List (state':commands)) ->
                 (reactor{ state=state' }, applyStop commands)
             expr ->
-                (reactor, [List [(Symbol "malformed-response"), expr]])
+                -- make sure this event is ill-formed so that no reactors react to it
+                -- TODO handle this in a more elegant way
+                (reactor, [List [(Symbol "malformed-response"), (Symbol "malformed-response"), expr]])
 
 
 updateMany :: [Reactor] -> Expr -> ([Reactor], [Expr])

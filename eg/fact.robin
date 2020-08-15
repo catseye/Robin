@@ -1,4 +1,4 @@
-(require multiply)
+;''Example of a recursive function.''
 
 (define fact (fun (self n)
   (multiply n

@@ -20,10 +20,10 @@ the "exclusive-or" of those booleans.
 `xor` expects exactly two arguments.
 
     | (xor #f)
-    ? abort (illegal-arguments (#f))
+    ? abort (illegal-arguments
 
     | (xor #t #f #f)
-    ? abort (illegal-arguments (#t #f #f))
+    ? abort (illegal-arguments
 
 `xor` expects both of its arguments to be booleans.
 
@@ -41,6 +41,5 @@ arguments.
 
 '<<SPEC'
 
-(define xor (macro (self args env)
-  (bind-args (a b) args env
-    (or (and a (not b)) (and (not a) b)))))
+(define xor (fun (a b)
+  (or (and a (not b)) (and (not a) b))))

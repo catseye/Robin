@@ -2,7 +2,7 @@
 
 ### `recover` ###
 
-    -> Tests for functionality "Evaluate Robin Expression (with literal and list)"
+    -> Tests for functionality "Evaluate Robin Expression (with literal and bind and list)"
 
 `recover` handles abort values.  It takes 5 arguments.  It
 evaluates the first argument to a value.
@@ -29,14 +29,23 @@ environment the fifth argument is evaluated.
     |   error (list error #f))
     = ((nasty-value 999999) #f)
 
-If an abort is returned from the body of a macro that is applied
+If an abort value is returned from an operator that is applied
 in the context of a `recover`, it will still be recovered.
 
     | (recover
-    |   ((macro (self args env) (abort (literal (nasty-value 1111)))) joe)
+    |   ((fexpr (args env) (abort (literal (nasty-value 1111)))) joe)
     |   value (list value #t)
     |   error (list error #f))
     = ((nasty-value 1111) #f)
+
+If an abort value is returned from an intrinsic operator, it will still
+be recovered.
+
+    | (recover
+    |   (subtract 4 (literal joe))
+    |   value (list value #t)
+    |   error (list error #f))
+    = ((expected-number joe) #f)
 
 Abort values are just values, so the innermost `recover` will handle
 an abort value.
@@ -78,22 +87,20 @@ handle the abort value it returned.
     | (recover error (list error #f) 42 43 44 45)
     ? abort (illegal-arguments (error (list error #f) 42 43 44 45))
 
-    -> Tests for functionality "Evaluate Robin Expression (with Small)"
-
 `recover` handles abort values, and this does not include the environment
 in which the abort value was produced.
 
     | (recover
     |   (bind flop 1
     |     (abort 2))
-    |   value (list 123 value)
-    |   error (list flop error))
+    |   value (prepend 123 (prepend value ()))
+    |   error (prepend flop (prepend error ())))
     ? abort (unbound-identifier flop)
 
 `recover` handles abort values, and this does not include the environment
 in which the abort value was produced.
 
-    | (bind flop (fun (x) (abort x))
+    | (bind flop (fexpr (args env) (bind x (eval env (head args)) (abort x)))
     |   (list
     |     (recover (flop 44) value value error (list 55 error))
     |     (recover (flop 44) value value error (list 66 error))))

@@ -1,6 +1,6 @@
 module Language.Robin.Eval where
 
-import Prelude (Maybe(Just, Nothing), Bool(True, False))
+import Data.Int
 
 import Language.Robin.Expr
 import Language.Robin.Env (Env, find, insert)
@@ -36,24 +36,21 @@ eval env sym@(Symbol s) cc =
         Just value ->
             cc value
         Nothing ->
-            errMsg "unbound-identifier" sym
+            errMsg cc "unbound-identifier" sym
 
 --
 -- Evaluating a list means we must make several evaluations.  We
--- evaluate the head to obtain something to apply (which must be a
--- macro or intrinsic.)  We then apply the body of the macro,
--- passing it the tail of the list.
+-- evaluate the head to obtain something to apply, which must be an
+-- operator.  We then apply the operator, passing it the tail of the list.
 --
 
 eval env (List (applierExpr:actuals)) cc =
     eval env applierExpr (\applier ->
         case applier of
-            m@(Macro _ _ body) ->
-                eval (makeMacroEnv env (List actuals) m) body cc
-            b@(Builtin _ fun) ->
+            Operator _ fun ->
                 fun env (List actuals) cc
             other ->
-                errMsg "inapplicable-object" other)
+                errMsg cc "inapplicable-object" other)
 
 --
 -- Everything else just evaluates to itself.  Continue the current
@@ -64,34 +61,55 @@ eval env e cc =
     cc e
 
 --
+-- Evaluate, handling abort values
+--
+
+evalB ecc env e cc =
+    eval env e (\value ->
+        case value of
+            Abort _ -> ecc value
+            _       -> cc value)
+
+--
 -- Helper functions
 --
 
-errMsg msg term =
-    Abort (List [(Symbol msg), term])
+errMsg cc msg term = cc $ abortVal msg term
 
-makeMacroEnv :: Env -> Expr -> Expr -> Env
-makeMacroEnv env actuals m@(Macro closedEnv argList _)  =
+makeFexpr :: Expr -> Expr -> Expr -> Evaluable
+makeFexpr defineTimeEnv formals body =
+    \callTimeEnv actuals cc ->
+        let
+            env = makeFexprEnv callTimeEnv actuals defineTimeEnv formals
+        in
+            eval env body cc
+
+makeFexprEnv callTimeEnv actuals defineTimeEnv argList =
     let
-        (List [(Symbol argSelf), (Symbol argFormal),
-               (Symbol envFormal)]) = argList
-        newEnv = insert argSelf m closedEnv
-        newEnv' = insert argFormal actuals newEnv
-        newEnv'' = insert envFormal env newEnv'
+        (List [(Symbol argFormal), (Symbol envFormal)]) = argList
+        newEnv' = insert argFormal actuals defineTimeEnv
+        newEnv'' = insert envFormal callTimeEnv newEnv'
     in
         newEnv''
+
 
 --
 -- Assertions
 --
 
-assert env pred msg expr cc =
-    case pred expr of
-        True -> cc expr
-        False -> errMsg msg expr
+evalExpect pred msg ecc env expr cc =
+   eval env expr (\value ->
+       case pred value of
+           True -> cc value
+           False -> errMsg ecc msg value)
 
-assertSymbol env = assert env (isSymbol) "expected-symbol"
-assertBoolean env = assert env (isBoolean) "expected-boolean"
-assertList env = assert env (isList) "expected-list"
-assertNumber env = assert env (isNumber) "expected-number"
-assertMacro env = assert env (isMacro) "expected-macro"
+evalToBoolean = evalExpect (isBoolean) "expected-boolean"
+evalToList = evalExpect (isList) "expected-list"
+evalToNumber = evalExpect (isNumber) "expected-number"
+
+evalTwoNumbers :: (Int32 -> Int32 -> (Expr -> Expr) -> Expr) -> Evaluable
+evalTwoNumbers fn env (List [xexpr, yexpr]) cc =
+    evalToNumber cc env xexpr (\(Number xv) ->
+        evalToNumber cc env yexpr (\(Number yv) ->
+            (fn xv yv cc)))
+evalTwoNumbers fn env other cc = errMsg cc "illegal-arguments" other

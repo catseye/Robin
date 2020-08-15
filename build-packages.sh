@@ -5,13 +5,13 @@ echo "Building Robin convenience packages..."
 mkdir -p pkg
 
 cat stdlib/abort.robin stdlib/equal-p.robin stdlib/eval.robin stdlib/head.robin \
-    stdlib/if.robin stdlib/list-p.robin stdlib/macro-p.robin stdlib/macro.robin \
+    stdlib/if.robin stdlib/list-p.robin stdlib/operator-p.robin stdlib/fexpr.robin \
     stdlib/number-p.robin stdlib/prepend.robin stdlib/recover.robin stdlib/sign.robin \
     stdlib/subtract.robin stdlib/symbol-p.robin stdlib/tail.robin \
     > pkg/intrinsics.robin
 
-cat stdlib/literal.robin stdlib/env.robin stdlib/list.robin stdlib/bind.robin \
-    stdlib/let.robin stdlib/choose.robin \
+cat stdlib/literal.robin stdlib/env.robin stdlib/bind.robin \
+    stdlib/list.robin stdlib/let.robin stdlib/choose.robin \
     stdlib/bind-args.robin \
     stdlib/fun.robin > pkg/small.robin
 
@@ -33,7 +33,7 @@ cat stdlib/boolean-p.robin \
 cat stdlib/env-p.robin stdlib/bound-p.robin stdlib/export.robin stdlib/sandbox.robin \
     stdlib/unbind.robin stdlib/unshadow.robin > pkg/env.robin
 
-cat stdlib/itoa.robin > pkg/misc.robin
+cat stdlib/itoa.robin stdlib/bind-vals.robin > pkg/misc.robin
 
 cat pkg/small.robin \
     pkg/boolean.robin \

@@ -1,15 +1,15 @@
 ;'<<SPEC'
 
-    -> Tests for functionality "Evaluate Robin Expression (with Small)"
+    -> Tests for functionality "Evaluate Robin Expression (with literal and bind and list)"
 
-`list` is a macro which evaluates each of its arguments, and evaluates to a
+`list` is an operator which evaluates each of its arguments, and evaluates to a
 (proper) list containing each of the results, in the same order.
 
     | (list 1 2 3 4 5)
     = (1 2 3 4 5)
 
-    | (list (list 2 3) (list 6 7))
-    = ((2 3) (6 7))
+    | (list (list 2 3) (list 6 7) (list (subtract 9 1) 9))
+    = ((2 3) (6 7) (8 9))
 
 `list` need not have any arguments at all; the result is the empty list.
 
@@ -21,11 +21,24 @@ Unlike `literal`, `list` does evaluate its arguments, all of them.
     | (list (literal x) (literal y))
     = (x y)
 
+Attempting to construct a list containing an `abort` value will produce an
+`abort` value.
+
+    | (list (literal x) (abort 999))
+    ? abort 999
+
+    | (list (abort 999) (literal x))
+    ? abort 999
+
 '<<SPEC'
 
-(define list (macro (self args env)
-  (if (equal? args ())
-    ()
-    (prepend (eval env (head args))
-              (eval env (prepend self (tail args)))))))
+(define list (fexpr (args env)
+  (bind list-r (fexpr (iargs ienv)
+    (bind self (eval ienv (head iargs))
+      (bind items (eval ienv (head (tail iargs)))
+        (if (equal? items ())
+          ()
+          (prepend (eval env (head items))
+                   (self self (tail items)))))))
+    (list-r list-r args))))
 

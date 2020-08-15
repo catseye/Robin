@@ -1,7 +1,5 @@
 module Language.Robin.EventLoop where
 
-import Prelude (return, show, filter, (/=), (++), ($), Bool(True, False), Either(Left, Right))
-
 import qualified Data.Char as Char
 import Data.Int
 import System.IO

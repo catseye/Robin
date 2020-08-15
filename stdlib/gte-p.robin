@@ -25,10 +25,10 @@ if the first number is greater than or equal to the second.
 `gte?` expects exactly two arguments, both numbers.
 
     | (gte? 14)
-    ? abort (illegal-arguments (14))
+    ? abort (illegal-arguments
 
     | (gte? 14 23 57)
-    ? abort (illegal-arguments (14 23 57))
+    ? abort (illegal-arguments
 
     | (gte? 14 #t)
     ? abort (expected-number #t)
@@ -38,6 +38,5 @@ if the first number is greater than or equal to the second.
 
 '<<SPEC'
 
-(define gte? (macro (self args env)
-  (bind-args (a b) args env
-    (if (equal? a b) #t (gt? a b)))))
+(define gte? (fun (a b)
+  (if (equal? a b) #t (gt? a b))))

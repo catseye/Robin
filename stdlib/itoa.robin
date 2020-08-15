@@ -23,19 +23,23 @@ a string representing that integer in decimal.
     | (itoa (literal m))
     ? abort (expected-number m)
 
+    | (itoa)
+    ? abort (illegal-arguments
+
+    | (itoa 100 101)
+    ? abort (illegal-arguments
+
 '<<SPEC'
 
-(define itoa (macro (self args env)
-  (bind itoa-r (macro (self args env)
-    (bind-args (val) args env
-      (if (equal? val 0)
-        ()
-        (let ((digit (remainder val 10))
-              (rest  (divide val 10)))
-          (prepend (add 48 digit) (self rest))))))
-    (bind-args (val) args env
-      (if (equal? val 0)
-        (list 48)
-        (if (lt? val 0)
-          (prepend 45 (reverse (itoa-r (subtract 0 val))))
-          (reverse (itoa-r val))))))))
+(define itoa (fun (val)
+  (bind itoa-r (fun (self val)
+    (if (equal? val 0)
+      ()
+      (let ((digit (remainder val 10))
+            (rest  (divide val 10)))
+        (prepend (add 48 digit) (self self rest)))))
+    (if (equal? val 0)
+      (list 48)
+      (if (lt? val 0)
+        (prepend 45 (reverse (itoa-r itoa-r (subtract 0 val))))
+        (reverse (itoa-r itoa-r val)))))))

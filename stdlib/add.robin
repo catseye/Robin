@@ -11,10 +11,10 @@ of those two numbers.
 `add` expects exactly two arguments.
 
     | (add 14)
-    ? abort (illegal-arguments (14))
+    ? abort (illegal-arguments
 
     | (add 6 7 7)
-    ? abort (illegal-arguments (6 7 7))
+    ? abort (illegal-arguments
 
 Both of the arguments to `add` must be numbers.
 
@@ -26,6 +26,5 @@ Both of the arguments to `add` must be numbers.
 
 '<<SPEC'
 
-(define add (macro (self args env)
-  (bind-args (a b) args env
-    (subtract a (subtract 0 b)))))
+(define add (fun (a b)
+  (subtract a (subtract 0 b))))

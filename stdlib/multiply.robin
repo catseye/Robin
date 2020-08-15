@@ -5,43 +5,42 @@
 `multiply` evaluates both of its arguments to numbers and evaluates to the product
 of those two numbers.
 
-    |   (multiply 6 7)
+    | (multiply 6 7)
     = 42
 
-    |   (multiply (subtract 0 6) 7)
+    | (multiply (subtract 0 6) 7)
     = -42
 
-    |   (multiply 6 (subtract 0 7))
+    | (multiply 6 (subtract 0 7))
     = -42
 
-    |   (multiply (subtract 0 6) (subtract 0 7))
+    | (multiply (subtract 0 6) (subtract 0 7))
     = 42
 
 `multiply` expects exactly two arguments.
 
-    |   (multiply 14)
-    ? abort (illegal-arguments (14))
+    | (multiply 14)
+    ? abort (illegal-arguments
 
-    |   (multiply 6 7 7)
-    ? abort (illegal-arguments (6 7 7))
+    | (multiply 6 7 7)
+    ? abort (illegal-arguments
 
 Both of the arguments to `multiply` must be numbers.
 
-    |   (multiply 14 #t)
+    | (multiply 14 #t)
     ? abort (expected-number #t)
 
-    |   (multiply #t 51)
+    | (multiply #t 51)
     ? abort (expected-number #t)
 
 '<<SPEC'
 
-(define multiply (macro (self args env)
+(define multiply (fun (a b)
   (bind multiply-r (fun (self a b) ;(b must be positive)
     (if (equal? b 1)
       a
       (add a (self self a (subtract b 1)))))
-    (bind-args (a b) args env
-      (if (equal? b 0) 0
-        (if (lt? b 0)
-          (subtract 0 (multiply-r multiply-r a (subtract 0 b)))
-          (multiply-r multiply-r a b)))))))
+    (if (equal? b 0) 0
+      (if (lt? b 0)
+        (subtract 0 (multiply-r multiply-r a (subtract 0 b)))
+        (multiply-r multiply-r a b))))))

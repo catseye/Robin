@@ -1,6 +1,52 @@
 History of Robin
 ================
 
+Robin 0.8
+---------
+
+*   What was previously known as a `macro` is now known
+    as a `fexpr`.
+*   The `fexpr` form no longer provides the `self`
+    argument to its definition.  If recursion is desired
+    in the definition of a fexpr, the fexpr should be
+    written recursively (in the same way functions have
+    traditionally been written recursively in Robin: pass
+    the fexpr itself as the first argument to the fexpr.)
+    The Robin definitions of fexprs in the standard library
+    such as `let` and `list` have been rewritten this way.
+*   The object that calling `fexpr` or `fun` produces is no
+    longer called a "macro".  It is an "operator".  There
+    there are other ways to obtain an operator than applying
+    a `fexpr` or `fun` (for instance there have always been
+    intrinsic operators; it's not fair to call them "macros".)
+*   When a reactor produces an abort value, it does not cause
+    a further event reporting the abort value to occur.
+
+In the standard library,
+
+*   The Robin definition of `bind` now checks that the name
+    being bound is a symbol.  The Robin definition of `let`
+    is now based on that of `bind` so it inherits this behaviour.
+*   The documentation for the alist functions in the standard
+    library was improved.
+*   Added the `bind-vals` operator, which is like `bind-args`
+    but does not evaluate the arguments, and which works on
+    possibly-deep lists.
+
+For the reference implementation,
+
+*   When exceptions were replaced with abort values in 0.6, the
+    evaluator wasn't fully adapted to handling abort values in
+    all places.  Evaluator support has been changed to make it
+    harder to forget to check for the abort value when needed.
+*   Fixed recent import changes which prevented it from
+    running under Hugs.
+*   The `Macro` type of expressions has been removed,
+    and `Builtin` renamed `Operator`.
+*   No builtins are exposed by default.  The `--no-builtins`
+    flag was replaced by the `--enable-builtins` flag, which
+    has the complementary effect.
+
 Robin 0.7
 ---------
 

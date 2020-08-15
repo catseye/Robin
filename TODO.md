@@ -3,6 +3,16 @@ TODO
 
 (Note, some of these are possibly long-term plans.)
 
+Macros
+------
+
+Just as we have defined `fun` in terms of fexprs, we can
+define `macro` in terms of fexprs.  (It is expected to
+return a literal chunk of program, which we then evaluate.)
+
+It would just be a fexpr that evaluates (in the calling
+environment) what the body evaluates to.
+
 Disjointness of types
 ---------------------
 
@@ -32,27 +42,20 @@ to runtime system that an error occurred.
 Stdlib
 ------
 
-`(compose f1 f2)` composes two functions.
-
-`(sgn x)`
+`(compose f1 f2)` to compose two operators.
 
 `(modulo x y)` which is always positive, change `remainder` to
 be sign of divisor (like R6RS.)
 
+`let` and `choose` follow the same pattern.  Consider a general
+`chain` combinator such that `(chain bind (...) ...)` is `let` and
+`(chain if (...) ...)` is `choose`.
+
 Other libs
 ----------
 
-`schemeish` lib, that just gives you all the old jargon-y names
+`lispish` lib, that just gives you all the old jargon-y names
 as aliases.
-
-Static analysis lib.  This is its own bucket of worms.  It should
-expose a macro that can be wrapped around an arbitrary standard
-Robin program _p_ and, if static analysis of _p_ is successful,
-simply evaluates to whatever _p_ evaluates to.  And if not
-successful, produces an abort.  Should probably start small --
-statically check the arity of every application, for instance.
-Note that this relies on the assumption that all standard symbols
-have their standard meanings.
 
 TopLevel
 --------
@@ -63,7 +66,18 @@ Testing
 -------
 
 Some way to make it easier to test reactive programs, i.e.
-some way to provide mock facilities.
+some way to provide mock facilities.  (Actually, do we need this?
+Or rather, how reactor-specific is this?  You can just test the
+transducer itself, feeding it a set of mock events.)
+
+The QuickCheck tests for equivalency don't seem to be very strong.  They might
+even be outright wrong.  Generally, lots and lots more could be done with
+the QuickCheck tests.
+
+Documentation
+-------------
+
+Finish the tutorial (recursive fexprs, advanced usage of reactors).
 
 Reactors
 --------
@@ -78,6 +92,14 @@ For that matter, `HasteMain.hs` should inject facilities that
 only make sense in the HTML5 DOM.
 
 Subscription and unsubscription from facilities using standard commands.
+
+More elegant way for handling abort responses (they should not
+trigger events -- because this can lead to a cascade of abort
+responses, if the reactor is erroneously handling those events too --
+but they should be displayed if requested.)
+
+Allow only one reactor.  (Its transducer can be composed from
+multiple operators, instead of having multiple reactors.)
 
 Example programs
 ----------------

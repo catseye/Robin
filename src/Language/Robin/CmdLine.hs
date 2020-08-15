@@ -1,13 +1,13 @@
 module Language.Robin.CmdLine where
 
-import Prelude (id, return, show, (++), ($), String, Bool(True), Either(Left, Right))
-
 import System.IO
 import System.Exit
 
 import Language.Robin.Expr (Expr(List, Symbol, Abort))
+import Language.Robin.Env (mergeEnvs)
 import Language.Robin.Parser (parseToplevel, parseExpr)
 import Language.Robin.Intrinsics (robinIntrinsics)
+import Language.Robin.Builtins (robinBuiltins)
 import Language.Robin.TopLevel (initialWorld, destructureWorld, collect, secondaryDefs)
 
 
@@ -16,9 +16,14 @@ abortWith msg = do
     exitWith $ ExitFailure 1
 
 
-processFlags ("--no-builtins":rest) env showEvents = processFlags rest robinIntrinsics showEvents
-processFlags ("--show-events":rest) env showEvents = processFlags rest env True
-processFlags args env showEvents = (args, env, showEvents)
+abortWithUsage = do
+    abortWith "Usage: robin [--enable-builtins] [--show-events] {[eval] source.robin}"
+
+
+processFlags flags = processFlags' flags (robinIntrinsics) False where
+    processFlags' ("--enable-builtins":rest) env showEvents = processFlags' rest (mergeEnvs robinIntrinsics robinBuiltins) showEvents
+    processFlags' ("--show-events":rest) env showEvents = processFlags' rest env True
+    processFlags' args env showEvents = (args, env, showEvents)
 
 
 processArgs args env = processArgs' args $ initialWorld env where

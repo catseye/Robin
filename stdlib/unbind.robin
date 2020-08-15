@@ -27,6 +27,6 @@ in effect.
 '<<SPEC'
 
 (define unbind
-  (macro (self args env)
+  (fexpr (args env)
     (eval (filter (fun (binding) (if (equal? (head binding) (head args)) #f #t)) env)
           (head (tail args)))))

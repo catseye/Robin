@@ -17,16 +17,15 @@ the absolute value of that number (where the sign is always positive.)
 `abs` expects exactly one numeric argument.
 
     |   (abs)
-    ? abort (illegal-arguments ())
+    ? abort (illegal-arguments
 
     |   (abs 14 23)
-    ? abort (illegal-arguments (14 23))
+    ? abort (illegal-arguments
 
     |   (abs #t)
     ? abort (expected-number #t)
 
 '<<SPEC'
 
-(define abs (macro (self args env)
-  (bind-args (a) args env
-    (if (equal? (sign a) 1) a (subtract 0 a)))))
+(define abs (fun (a)
+  (if (equal? (sign a) 1) a (subtract 0 a))))

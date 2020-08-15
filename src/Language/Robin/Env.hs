@@ -18,6 +18,7 @@ insert s value (List bindings) =
        entry = List [Symbol s, value]
     in
        List (entry:bindings)
+insert s value term = abortVal "expected-env-list" term
 
 find :: String -> Env -> Maybe Expr
 find _ (List []) = Nothing
@@ -33,3 +34,5 @@ fromList ((s, val):rest) = insert s val $ fromList rest
 
 mergeEnvs :: Env -> Env -> Env
 mergeEnvs (List a) (List b) = (List (a ++ b))
+mergeEnvs (List a) term = abortVal "expected-env-list" term
+mergeEnvs term (List b) = abortVal "expected-env-list" term
