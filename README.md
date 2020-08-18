@@ -1,7 +1,10 @@
 Robin
 =====
 
-_Version 0.8.  Work-in-progress, subject to change._
+_Version 0.8_ | _Try it online_ [@ catseye.tc](https://catseye.tc/installation/Robin)
+| _See also:_ [Pixley](https://github.com/catseye/Pixley#readme)
+
+- - - -
 
 Overview
 --------
