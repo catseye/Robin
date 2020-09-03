@@ -1,6 +1,12 @@
 History of Robin
 ================
 
+Robin 0.9
+---------
+
+*   Added a `cabalfile` for the purpose of tracking
+    dependencies.
+
 Robin 0.8
 ---------
 

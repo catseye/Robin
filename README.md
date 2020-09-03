@@ -1,7 +1,7 @@
 Robin
 =====
 
-_Version 0.8_ | _Try it online_ [@ catseye.tc](https://catseye.tc/installation/Robin)
+_Version 0.9_ | _Try it online_ [@ catseye.tc](https://catseye.tc/installation/Robin)
 | _See also:_ [Pixley](https://github.com/catseye/Pixley#readme)
 
 - - - -
@@ -31,7 +31,9 @@ To use it, you'll need an implementation of Haskell installed (typically either
 
 If you have [shelf][] installed, you can just run `shelf_dockgh catseye/Robin`.
 
-If not, you can clone this repository, `cd` into the repo directory, and run
+If not, you can clone this repository and `cd` into the repo directory.
+
+If you have `cabal` installed you can `cabal build` it.  Otherwise you can
 
     ./build.sh
 
