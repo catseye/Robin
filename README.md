@@ -68,7 +68,7 @@ Testing
 -------
 
 If you have a few minutes to spare, and you have [Falderal][] installed,
-you can run the test suite (consisting of more than 400 unit tests) by running
+you can run the test suite (consisting of more than 600 unit tests) by running
 
     ./test.sh
 
