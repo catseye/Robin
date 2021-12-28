@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ "${NOBUILD}x" = "x" ]; then
-  ./build.sh || exit 1
+  ./build-packages.sh || exit 1
 fi
 
 if [ "${APPLIANCES}x" = "x" ]; then

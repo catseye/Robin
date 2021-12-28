@@ -33,7 +33,7 @@ If you have [shelf][] installed, you can just run `shelf_dockgh catseye/Robin`.
 
 If not, you can clone this repository and `cd` into the repo directory.
 
-If you have `cabal` installed you can `cabal build` it.  Otherwise you can
+If you have `cabal` installed you can `cabal v2-build` it.  Otherwise you can
 
     ./build.sh
 

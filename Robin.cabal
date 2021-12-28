@@ -18,8 +18,22 @@ cabal-version:       >=1.10
 
 executable robin
   main-is:             Main.hs
-  -- other-modules:       
+  other-modules:
+        Language.Robin.Builtins
+        Language.Robin.CmdLine
+        Language.Robin.Env
+        Language.Robin.Eval
+        Language.Robin.EventLoop
+        Language.Robin.Expr
+        Language.Robin.Facilities
+        Language.Robin.Facilities.Concurrent
+        Language.Robin.Facilities.LineTerminal
+        Language.Robin.Facilities.RandomSource
+        Language.Robin.Intrinsics
+        Language.Robin.Parser
+        Language.Robin.Reactor
+        Language.Robin.TopLevel
   other-extensions:    FlexibleContexts
-  build-depends:       base >=4.9 && <4.10, QuickCheck >=2.13 && <2.14, random >=1.1 && <1.2, parsec >=3.1 && <3.2
+  build-depends:       base >=4.9 && <=4.16, QuickCheck >=2.13 && <2.14, random >=1.1 && <1.2, parsec >=3.1 && <3.2
   hs-source-dirs:      src
   default-language:    Haskell98
