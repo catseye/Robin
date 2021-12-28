@@ -29,18 +29,27 @@ The Robin reference interpreter is written in about 1300 lines of Haskell.
 To use it, you'll need an implementation of Haskell installed (typically either
 `ghc` or Hugs).
 
-If you have [shelf][] installed, you can just run `shelf_dockgh catseye/Robin`.
+First, clone this repository and `cd` into the repo directory.
 
-If not, you can clone this repository and `cd` into the repo directory.
+If you have `cabal` installed you can run
 
-If you have `cabal` installed you can `cabal v2-build` it.  Otherwise you can
+    cabal v2-build
 
-    ./build.sh
+and the executable will be built somewhere under `dist-newstyle`.  The driver
+script `bin/robin` will look for it and execute it.
+
+If you do not have `cabal`, you can run
+
+    make exe
 
 to build the reference interpreter.  (If you don't have `ghc`, no executable will
-be built, but the `bin/robin` script will use `runhaskell` or `runhugs` instead.)
+be built, but in this case the `bin/robin` script will fall back to using
+`runhaskell` or `runhugs` instead.)  It will also build the standard library
+(`pkg/stdlib.robin`).  This same Makefile can be used to build the JavaScript
+version of the interpreter, with `make web`.
 
-You can then run it on one of the example Robin sources in `eg` like so:
+After building the executable, you can then run it, using the driver script, on one
+of the example Robin sources in `eg` like so:
 
     bin/robin pkg/stdlib.robin eg/hello-world.robin
 
