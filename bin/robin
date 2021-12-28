@@ -6,6 +6,8 @@ NAME=`basename $THIS`
 SRC=$DIR/../src
 if [ "x$FORCE_HUGS" != "x" ] ; then
     exec runhugs -i$SRC $SRC/HugsMain.hs $*
+elif [ "x$ROBIN_EXE" != "x" ]; then
+    exec $ROBIN_EXE $*
 elif [ -x $DIR/$NAME.exe ] ; then
     exec $DIR/$NAME.exe $*
 elif [ -d $DIR/../dist-newstyle/ ]; then

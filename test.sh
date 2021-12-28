@@ -12,6 +12,18 @@ if [ "${FALDERAL}x" = "x" ]; then
   FALDERAL="falderal -b"
 fi
 
+if [ -d dist-newstyle ]; then
+  export ROBIN_EXE=`find dist-newstyle -name robin -executable -type f`
+elif [ -x "bin/robin.exe" ]; then
+  export ROBIN_EXE="bin/robin.exe"
+fi
+
+if [ "x$ROBIN_EXE" != "x" ]; then
+  echo "Testing executable '$ROBIN_EXE'..."
+else
+  echo "Testing Robin under runhaskell/runhugs..."
+fi
+
 echo "Running tests on core semantics..."
 $FALDERAL $APPLIANCES doc/Robin.md || exit 1
 
