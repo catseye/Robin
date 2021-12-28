@@ -6,6 +6,9 @@ Robin 0.9
 
 *   Added a `cabalfile` for the purpose of tracking
     dependencies.
+*   Replaced `build.sh` and `clean.sh` with a Makefile
+    which also supports building the JavaScript version
+    using `hastec`.
 
 Robin 0.8
 ---------
