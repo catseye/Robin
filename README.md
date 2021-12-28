@@ -42,14 +42,18 @@ If you do not have `cabal`, you can run
 
     make exe
 
-to build the reference interpreter.  (If you don't have `ghc`, no executable will
-be built, but in this case the `bin/robin` script will fall back to using
-`runhaskell` or `runhugs` instead.)  It will also build the standard library
-(`pkg/stdlib.robin`).  This same Makefile can be used to build the JavaScript
-version of the interpreter, with `make web`.
+to build the reference interpreter.  (Note that in this case, you will need
+to ensure you have dependencies like `parsec` and `random` installed, yourself.)
+It will also build the standard library (`pkg/stdlib.robin`).  This same
+Makefile can be used to build the JavaScript version of the interpreter, with
+`make web`.
 
-After building the executable, you can then run it, using the driver script, on one
-of the example Robin sources in `eg` like so:
+If you don't have `ghc` at all, no executable will be built; but that's OK,
+because in this case the `bin/robin` script will fall back to using
+`runhaskell` or `runhugs` instead.
+
+After building (if you can), you can run the Robin interpreter using the
+driver script in `bin`, on one of the example Robin sources in `eg` like so:
 
     bin/robin pkg/stdlib.robin eg/hello-world.robin
 

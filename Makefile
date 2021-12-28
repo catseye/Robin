@@ -27,7 +27,7 @@ endif
 #    haste-cabal install random-1.1
 #
 
-web: pkg/stdlib.robin demo/$(PROG).js
+web: demo/$(PROG).js
 
 demo/$(PROG).js:
 ifeq (, $(shell command -v hastec 2>/dev/null))
