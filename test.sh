@@ -5,10 +5,15 @@ if [ "${NOBUILD}x" = "x" ]; then
 fi
 
 #
-# bin/robin is a shell script wrapper which is intended to be convenient
+# `bin/robin` is a shell script wrapper which is intended to be convenient
 # for command-line usage, but it is not used by this test driver.
+#
 # Instead, this test driver finds different implementations of robin
 # and uses Falderal appliances to test each of those implementations.
+#
+# It does not test under `runhaskell` by default because it's incredibly
+# slow.  But you can supply your own list of appliances in the APPLIANCES
+# env var, and include `appliances/runhaskell-robin.md` in it if you like.
 #
 
 if [ "${APPLIANCES}x" = "x" ]; then
@@ -37,8 +42,6 @@ for PACKAGE in $PACKAGES; do
     $FALDERAL $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
 
-if [ "x$FORCE_HUGS" != "x" ] ; then
-    echo "Can't run QuickCheck tests with Hugs, skipping"
-elif command -v runhaskell 2>&1 >/dev/null ; then
+if command -v runhaskell 2>&1 >/dev/null ; then
     runhaskell -isrc src/QuickCheckTests.hs || exit 1
 fi

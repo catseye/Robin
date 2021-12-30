@@ -7,8 +7,13 @@ Robin 0.9
 *   Added a `cabalfile` for the purpose of tracking
     dependencies.
 *   Replaced `build.sh` and `clean.sh` with a Makefile
-    which also supports building the JavaScript version
-    using `hastec`.
+    which uses `cabal`, if available, to build the
+    `robin.exe` executable.  It also supports building
+    the JavaScript version using `hastec`.
+*   Changed `test.sh` to search for and use Falderal
+    appliances to test the different implementations
+    rather than using them via the `bin/robin` convenience
+    wrapper script.
 
 Robin 0.8
 ---------
