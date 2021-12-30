@@ -4,6 +4,8 @@ History of Robin
 Robin 0.9
 ---------
 
+In the distribution,
+
 *   Added a `cabalfile` for the purpose of tracking
     dependencies.
 *   Replaced `build.sh` and `clean.sh` with a Makefile
@@ -14,6 +16,10 @@ Robin 0.9
     appliances to test the different implementations
     rather than using them via the `bin/robin` convenience
     wrapper script.
+*   Made the `LICENSE` file more succinct (no legal changes),
+    put the documentation license on the documentation
+    specifically, and placed the example programs in the
+    `eg` directory in the pubic domain.
 
 Robin 0.8
 ---------
