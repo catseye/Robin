@@ -15,12 +15,10 @@ if [ "${APPLIANCES}x" = "x" ]; then
   if [ -x "bin/robin.exe" ]; then
     APPLIANCES="${APPLIANCES} appliances/robin.exe.md appliances/robin.exe-no-builtins.md"
   fi
-  if [ -d dist-newstyle ]; then
-    APPLIANCES="${APPLIANCES} appliances/cabal-v2-run-robin.md"
-  fi
   if command -v runhugs 2>&1 >/dev/null ; then
     APPLIANCES="${APPLIANCES} appliances/runhugs-robin.md"
   fi
+  echo "Implementations under test: ${APPLIANCES}"
 fi
 
 if [ "${FALDERAL}x" = "x" ]; then

@@ -29,30 +29,26 @@ The Robin reference interpreter is written in about 1300 lines of Haskell.
 To use it, you'll need an implementation of Haskell installed (typically either
 `ghc` or Hugs).
 
-First, clone this repository and `cd` into the repo directory.
+First, clone this repository and `cd` into the repo directory.  Then run
 
-If you have `cabal` installed you can run
+    make
 
-    cabal v2-build
+If you have `cabal` installed, the Makefile will use it to build the `robin`
+executable, and this will take care of obtaining and building the dependencies.
 
-and the executable will be built somewhere under `dist-newstyle`.  The driver
-script `bin/robin` will look for it and execute it.
+If you do not have `cabal`, the Makefile will use `ghc` directly to build the
+executable, but in this case, you will need to ensure you have dependencies
+like `parsec` and `random` installed, yourself.
 
-If you do not have `cabal`, you can run
+(If you don't have `ghc` at all, no executable will be built; but that's OK,
+because in this case the `bin/robin` driver script will fall back to using
+`runhaskell` or `runhugs` instead.)
 
-    make exe
+In any case, the Makefile will also build build the standard library
+(`pkg/stdlib.robin`).  And this same Makefile can be used to build the
+JavaScript version of the interpreter, with `make web`.
 
-to build the reference interpreter.  (Note that in this case, you will need
-to ensure you have dependencies like `parsec` and `random` installed, yourself.)
-It will also build the standard library (`pkg/stdlib.robin`).  This same
-Makefile can be used to build the JavaScript version of the interpreter, with
-`make web`.
-
-If you don't have `ghc` at all, no executable will be built; but that's OK,
-because in this case the `bin/robin` script will fall back to using
-`runhaskell` or `runhugs` instead.
-
-After building (if you can), you can run the Robin interpreter using the
+After running `make`, you can run the Robin interpreter using the
 driver script in `bin`, on one of the example Robin sources in `eg` like so:
 
     bin/robin pkg/stdlib.robin eg/hello-world.robin

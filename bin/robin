@@ -8,9 +8,6 @@ if [ "x$FORCE_HUGS" != "x" ] ; then
     exec runhugs -i$SRC $SRC/HugsMain.hs $*
 elif [ -x $DIR/$NAME.exe ] ; then
     exec $DIR/$NAME.exe $*
-elif [ -d $DIR/../dist-newstyle/ ]; then
-    EXE=`find $DIR/../dist-newstyle/ -name $NAME -executable -type f`
-    exec $EXE $*
 elif command -v runhaskell 2>&1 >/dev/null ; then
     exec runhaskell -i$SRC $SRC/Main.hs $*
 elif command -v runhugs 2>&1 >/dev/null ; then

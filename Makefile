@@ -5,10 +5,15 @@ all: exe web
 exe: pkg/stdlib.robin bin/$(PROG).exe
 
 bin/$(PROG).exe:
-ifeq (, $(shell command -v ghc 2>/dev/null))
-	echo "ghc not found in PATH, skipping exe build"
+ifneq (, $(shell command -v cabal 2>/dev/null))
+	cabal v2-build $(PROG)
+	cp -p `find dist-newstyle/ -name $(PROG) -executable -type f` bin/$(PROG).exe
 else
+ifneq (, $(shell command -v ghc 2>/dev/null))
 	(cd src && ghc --make Main.hs -o ../bin/$(PROG).exe)
+else
+	echo "neither cabal nor ghc found in PATH, skipping exe build"
+endif
 endif
 
 # For the web build to work, you need parsec installed in a way where haste can use it:
@@ -45,3 +50,5 @@ clean:
 	find . -name '*.hi' -exec rm {} \;
 	find . -name '*.jsmod' -exec rm {} \;
 	find pkg -name '*.robin' -exec rm {} \;
+	rm -rf dist-newstyle
+	rm -f .ghc.environment.*
