@@ -4,24 +4,27 @@ if [ "${NOBUILD}x" = "x" ]; then
   ./build-packages.sh || exit 1
 fi
 
+#
+# bin/robin is a shell script wrapper which is intended to be convenient
+# for command-line usage, but it is not used by this test driver.
+# Instead, this test driver finds different implementations of robin
+# and uses Falderal appliances to test each of those implementations.
+#
+
 if [ "${APPLIANCES}x" = "x" ]; then
-  APPLIANCES="appliances/robin.md appliances/robin-no-builtins.md"
+  if [ -x "bin/robin.exe" ]; then
+    APPLIANCES="${APPLIANCES} appliances/robin.exe.md appliances/robin.exe-no-builtins.md"
+  fi
+  if [ -d dist-newstyle ]; then
+    APPLIANCES="${APPLIANCES} appliances/cabal-v2-run-robin.md"
+  fi
+  if command -v runhugs 2>&1 >/dev/null ; then
+    APPLIANCES="${APPLIANCES} appliances/runhugs-robin.md"
+  fi
 fi
 
 if [ "${FALDERAL}x" = "x" ]; then
   FALDERAL="falderal -b"
-fi
-
-if [ -d dist-newstyle ]; then
-  export ROBIN_EXE=`find dist-newstyle -name robin -executable -type f`
-elif [ -x "bin/robin.exe" ]; then
-  export ROBIN_EXE="bin/robin.exe"
-fi
-
-if [ "x$ROBIN_EXE" != "x" ]; then
-  echo "Testing executable '$ROBIN_EXE'..."
-else
-  echo "Testing Robin under runhaskell/runhugs..."
 fi
 
 echo "Running tests on core semantics..."
