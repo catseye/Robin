@@ -20,6 +20,9 @@ In the distribution,
     put the documentation license on the documentation
     specifically, and placed the example programs in the
     `eg` directory in the pubic domain.
+*   Made the HTML-based demo use the "standard" JavaScript
+    launcher used by Cat's Eye Technologies' other `hastec`-
+    built projects, as well as some example Robin programs.
 
 Robin 0.8
 ---------
