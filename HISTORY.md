@@ -1,6 +1,30 @@
 History of Robin
 ================
 
+Robin 0.8-2021.1231
+-------------------
+
+A minor release, with no changes to the language.
+In the distribution, however,
+
+*   Added a `cabalfile` for the purpose of tracking
+    dependencies.
+*   Replaced `build.sh` and `clean.sh` with a Makefile
+    which uses `cabal`, if available, to build the
+    `robin.exe` executable.  It also supports building
+    the JavaScript version using `hastec`.
+*   Changed `test.sh` to search for and use Falderal
+    appliances to test the different implementations
+    rather than using them via the `bin/robin` convenience
+    wrapper script.
+*   Made the `LICENSE` file more succinct (no legal changes),
+    put the documentation license on the documentation
+    specifically, and placed the example programs in the
+    `eg` directory in the pubic domain.
+*   Made the HTML-based demo use the "standard" JavaScript
+    launcher used by Cat's Eye Technologies' other `hastec`-
+    built projects, as well as some example Robin programs.
+
 Robin 0.8
 ---------
 

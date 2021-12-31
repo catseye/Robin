@@ -29,16 +29,27 @@ The Robin reference interpreter is written in about 1300 lines of Haskell.
 To use it, you'll need an implementation of Haskell installed (typically either
 `ghc` or Hugs).
 
-If you have [shelf][] installed, you can just run `shelf_dockgh catseye/Robin`.
+First, clone this repository and `cd` into the repo directory.  Then run
 
-If not, you can clone this repository, `cd` into the repo directory, and run
+    make
 
-    ./build.sh
+If you have `cabal` installed, the Makefile will use it to build the `robin`
+executable, and this will take care of obtaining and building the dependencies.
 
-to build the reference interpreter.  (If you don't have `ghc`, no executable will
-be built, but the `bin/robin` script will use `runhaskell` or `runhugs` instead.)
+If you do not have `cabal`, the Makefile will use `ghc` directly to build the
+executable, but in this case, you will need to ensure you have dependencies
+like `parsec` and `random` installed, yourself.
 
-You can then run it on one of the example Robin sources in `eg` like so:
+(If you don't have `ghc` at all, no executable will be built; but that's OK,
+because in this case the `bin/robin` driver script will fall back to using
+`runhaskell` or `runhugs` instead.)
+
+In any case, the Makefile will also build build the standard library
+(`pkg/stdlib.robin`).  And this same Makefile can be used to build the
+JavaScript version of the interpreter, with `make web`.
+
+After running `make`, you can run the Robin interpreter using the
+driver script in `bin`, on one of the example Robin sources in `eg` like so:
 
     bin/robin pkg/stdlib.robin eg/hello-world.robin
 
@@ -53,7 +64,7 @@ Testing
 -------
 
 If you have a few minutes to spare, and you have [Falderal][] installed,
-you can run the test suite (consisting of more than 400 unit tests) by running
+you can run the test suite (consisting of more than 600 unit tests) by running
 
     ./test.sh
 
