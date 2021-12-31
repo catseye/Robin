@@ -1,10 +1,11 @@
 History of Robin
 ================
 
-Robin 0.9
----------
+Robin 0.8-2021.1231
+-------------------
 
-In the distribution,
+A minor release, with no changes to the language.
+In the distribution, however,
 
 *   Added a `cabalfile` for the purpose of tracking
     dependencies.

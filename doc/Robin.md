@@ -1,9 +1,9 @@
 Robin
 =====
 
-This document defines version 0.9 of the Robin programming language.
+This document defines version 0.8 of the Robin programming language.
 In this document, the name "Robin" by itself refers to the Robin
-programming language version 0.9.
+programming language version 0.8.
 
 The Robin specification is modular in the sense that it consists
 of several smaller specifications, some of which depend on others,

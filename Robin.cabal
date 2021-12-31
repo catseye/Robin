@@ -2,7 +2,7 @@
 --  see http://haskell.org/cabal/users-guide/
 
 name:                Robin
-version:             0.9
+version:             0.8
 synopsis:            Experimental language where both functions and macros are defined in terms of fexprs
 -- description:         
 homepage:            https://catseye.tc/node/Robin
