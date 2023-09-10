@@ -4,5 +4,6 @@
 /bin/*.exe
 /pkg/*
 /demo/*.js
+/dist/
 /dist-newstyle/
 .ghc.*
