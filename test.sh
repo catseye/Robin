@@ -44,6 +44,14 @@ for PACKAGE in $PACKAGES; do
   $FALDERAL $APPLIANCES pkg/$PACKAGE.robin || exit 1
 done
 
+# Note: runhaskell doesn't automatically see any modules
+# from the dependencies that are installed when cabal
+# builds robin.exe from robin.cabal.  So you may need to
+#
+#   cabal install --lib random parsec QuickCheck
+#
+# additionally yourself, to run the QuickCheck tests.
+
 if command -v runhaskell 2>&1 >/dev/null ; then
   runhaskell -isrc src/QuickCheckTests.hs || exit 1
 else

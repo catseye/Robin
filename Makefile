@@ -7,7 +7,7 @@ exe: pkg/stdlib.robin bin/$(PROG).exe
 bin/$(PROG).exe:
 ifneq (, $(shell command -v cabal 2>/dev/null))
 	cabal build $(PROG)
-	cp -p `find dist/ -name $(PROG) -executable -type f` bin/$(PROG).exe
+	cp -p `find dist-newstyle/ -name $(PROG) -executable -type f` bin/$(PROG).exe
 else
 ifneq (, $(shell command -v ghc 2>/dev/null))
 	(cd src && ghc --make Main.hs -o ../bin/$(PROG).exe)
