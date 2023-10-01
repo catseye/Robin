@@ -1,4 +1,4 @@
-from haskell:9.4.5-slim-buster
+from haskell:9.2.8-slim-buster
 
 WORKDIR /opt/robin
 
