@@ -369,4 +369,4 @@ Markdown.)
 </table>
 
 [Pixley]: https://catseye.tc/node/Pixley
-[Programming Language Feature Desiderata]: https://gist.github.com/cpressey/2f12b865027a30f86fc3a3d1f08216ad
+[Programming Language Feature Desiderata]: https://codeberg.org/catseye/Specs-on-Spec/src/branch/master/sampo/Programming_Language_Feature_Desiderata.markdown

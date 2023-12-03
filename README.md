@@ -2,7 +2,7 @@ Robin
 =====
 
 _Version 0.8_ | _Try it online_ [@ catseye.tc](https://catseye.tc/installation/Robin)
-| _See also:_ [Pixley](https://github.com/catseye/Pixley#readme)
+| _See also:_ [Pixley](https://codeberg.org/catseye/Pixley#pixley)
 
 - - - -
 

@@ -4,13 +4,11 @@ A Robin Tutorial
 This tutorial will lead you through writing a few simple Robin programs.
 
 This document is aimed at programmers who have written some programs in a
-Lisp-like language such as Scheme or Racket or [Irken][].  If you haven't,
+Lisp-like language such as Common Lisp or Scheme or Racket.  If you haven't,
 it will probably help a lot if you work through one of the many excellent
 tutorials available for these languages first.  This tutorial will
 concentrate on the more unusual features of Robin, the ones that are not
 shared with many other languages.
-
-[Irken]: https://github.com/samrushing/irken-compiler/blob/master/docs/intro.md
 
 Basic usage
 -----------
